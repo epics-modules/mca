@@ -427,6 +427,9 @@ static long init_record(mcaRecord *pmca, int pass)
         return(0);
     }
 
+	/* check nuse */
+	if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
+
     /* simulation links */
     if (pmca->siml.type == CONSTANT) {
         recGblInitConstantLink(&pmca->siml, DBF_USHORT, &pmca->simm);
@@ -529,6 +532,7 @@ static long process(mcaRecord *pmca)
         }
         if (NEWV_MARKED(M_NUSE)) {
             MARK(M_NUSE);
+			if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
             status = (*pdset->send_msg)
                 (pmca,  MSG_SET_NCHAN, (void *)(&pmca->nuse));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
