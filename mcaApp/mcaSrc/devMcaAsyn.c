@@ -28,15 +28,13 @@
 #include <epicsExport.h>
 
 #include "asynDriver.h"
+#include "asynInt32Array.h"
 #include "asynUtils.h"
 
 #include "mcaRecord.h"
 #include "mca.h"
 #include "asynMca.h"
 
-/* For now we use a fixed-size message queue.  This will be fixed later */
-
-#define MSG_QUEUE_SIZE 100
 typedef struct {
     mcaCommand command;
     int ivalue;
@@ -46,8 +44,10 @@ typedef struct {
 typedef struct {
     mcaRecord *pmca;
     asynUser *pasynUser;
-    asynMca *pasynMcaInterface;
-    void *asynMcaInterfacePvt;
+    asynMca *pasynMca;
+    void *asynMcaPvt;
+    asynInt32Array *pasynInt32Array;
+    void *asynInt32ArrayPvt;
     mcaAsynAcquireStatus acquireStatus;
     int nread;
     int *data;
@@ -125,8 +125,20 @@ static long init_record(mcaRecord *pmca)
                   pmca->name);
         goto bad;
     }
-    pPvt->pasynMcaInterface = (asynMca *)pasynInterface->pinterface;
-    pPvt->asynMcaInterfacePvt = pasynInterface->drvPvt;
+    pPvt->pasynMca = (asynMca *)pasynInterface->pinterface;
+    pPvt->asynMcaPvt = pasynInterface->drvPvt;
+
+    /* Get the asynInt32Array interface */
+    pasynInterface = pasynManager->findInterface(pasynUser, 
+                                                 asynInt32ArrayType, 1);
+    if (!pasynInterface) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "devMcaAsyn::init_record, %s find int32Array interface failed\n",
+                  pmca->name);
+        goto bad;
+    }
+    pPvt->pasynInt32Array = (asynInt32Array *)pasynInterface->pinterface;
+    pPvt->asynInt32ArrayPvt = pasynInterface->drvPvt;
 
     return(0);
 bad:
@@ -282,9 +294,8 @@ void asynCallback(asynUser *pasynUser)
     switch (pmsg->command) {
     case MSG_READ:
         /* Read data */
-       pPvt->pasynMcaInterface->readData(pPvt->asynMcaInterfacePvt, 
-                                         pPvt->pasynUser, 
-                                         pmca->nuse, &pPvt->nread, pPvt->data);
+       pPvt->pasynInt32Array->read(pPvt->asynMcaPvt, pPvt->pasynUser, 
+                                   pPvt->data, pmca->nuse, &pPvt->nread);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);
@@ -292,9 +303,8 @@ void asynCallback(asynUser *pasynUser)
 
     case MSG_GET_ACQ_STATUS:
         /* Read the current status of the device */
-       pPvt->pasynMcaInterface->readStatus(pPvt->asynMcaInterfacePvt, 
-                                           pPvt->pasynUser, 
-                                           &pPvt->acquireStatus);
+       pPvt->pasynMca->readStatus(pPvt->asynMcaPvt, pPvt->pasynUser, 
+                                        &pPvt->acquireStatus);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);     
@@ -302,9 +312,8 @@ void asynCallback(asynUser *pasynUser)
 
     default:
         /* All other commands just call drivers command() function */
-        pPvt->pasynMcaInterface->command(pPvt->asynMcaInterfacePvt, 
-                                         pPvt->pasynUser,
-                                         pmsg->command, pmsg->ivalue, pmsg->dvalue);
+        pPvt->pasynMca->command(pPvt->asynMcaPvt, pPvt->pasynUser,
+                                pmsg->command, pmsg->ivalue, pmsg->dvalue);
         break;
     }
     pasynManager->memFree(pmsg, sizeof(*pmsg));

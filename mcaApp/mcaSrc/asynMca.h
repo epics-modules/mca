@@ -13,8 +13,6 @@ typedef struct {
                           mcaCommand command, int ivalue, double dvalue);
     asynStatus (*readStatus)(void *drvPvt, asynUser *pasynUser,
                              mcaAsynAcquireStatus *status);
-    asynStatus (*readData)(void *drvPvt, asynUser *pasynUser, int maxChans, 
-                           int *nactual, int *data);
 } asynMca;
 
 #endif /* asynMcaH */

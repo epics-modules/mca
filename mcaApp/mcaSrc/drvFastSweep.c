@@ -22,6 +22,7 @@
 #include <iocsh.h>
 #include <cantProceed.h>
 #include <asynDriver.h>
+#include <asynInt32Array.h>
 #include <asynInt32ArrayCallback.h>
 
 #include "mca.h"
@@ -48,6 +49,7 @@ typedef struct {
     double *pAverageStore;
     asynInterface common;
     asynInterface mca;
+    asynInterface int32Array;
     asynInt32ArrayCallback *pint32ArrayCallback;
     void *int32ArrayCallbackPvt;
     asynUser *pasynUser;
@@ -66,7 +68,9 @@ static asynStatus command(void *drvPvt, asynUser *pasynUser,
 static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
                              mcaAsynAcquireStatus *pstat);
 static asynStatus readData(void *drvPvt, asynUser *pasynUser,
-                           int maxChans, int *nactual, int *data);
+                           epicsInt32 *data, size_t maxChans, size_t *nactual);
+static asynStatus writeData(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *data, size_t maxChans);
 /* These functions are in the asynCommon interface */
 static void report(void *drvPvt, FILE *fp, int details);
 static asynStatus connect(void *drvPvt, asynUser *pasynUser);
@@ -82,7 +86,12 @@ static const struct asynCommon fastSweepCommon = {
 /* asynMca methods */
 static const asynMca fastSweepMca = {
     command,
-    readStatus,
+    readStatus
+};
+
+/* asynInt32Array methods */
+static const asynInt32Array fastSweepInt32Array = {
+    writeData,
     readData
 };
 
@@ -122,6 +131,9 @@ int initFastSweep(const char *portName, const char *inputName,
     pPvt->mca.interfaceType = asynMcaType;
     pPvt->mca.pinterface  = (void *)&fastSweepMca;
     pPvt->mca.drvPvt = pPvt;
+    pPvt->int32Array.interfaceType = asynInt32ArrayType;
+    pPvt->int32Array.pinterface  = (void *)&fastSweepInt32Array;
+    pPvt->int32Array.drvPvt = pPvt;
 
     status = pasynManager->registerInterface(pPvt->portName, &pPvt->common);
     if (status != asynSuccess) {
@@ -131,6 +143,12 @@ int initFastSweep(const char *portName, const char *inputName,
     status = pasynManager->registerInterface(pPvt->portName, &pPvt->mca);
     if (status != asynSuccess) {
         errlogPrintf("initFastSweep: Can't register mca.\n");
+        return -1;
+    }
+
+    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32Array);
+    if (status != asynSuccess) {
+        errlogPrintf("initFastSweep: Can't register int32Array.\n");
         return -1;
     }
 
@@ -340,7 +358,7 @@ static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
 }
 
 static asynStatus readData(void *drvPvt, asynUser *pasynUser,
-                           int maxChans, int *nactual, int *data)
+                           epicsInt32 *data, size_t maxChans, size_t *nactual)
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
     int signal;
@@ -350,6 +368,22 @@ static asynStatus readData(void *drvPvt, asynUser *pasynUser,
     memcpy(data, &pPvt->pData[pPvt->maxPoints*signal], 
            pPvt->numPoints*sizeof(int));
     *nactual = pPvt->numPoints;
+    epicsMutexUnlock(pPvt->mutexId);
+    return(asynSuccess);
+}
+
+static asynStatus writeData(void *drvPvt, asynUser *pasynUser,
+                           epicsInt32 *data, size_t maxChans)
+{
+    fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
+    int signal;
+
+    if (maxChans > pPvt->maxPoints) maxChans = pPvt->maxPoints;
+
+    epicsMutexLock(pPvt->mutexId);
+    pasynManager->getAddr(pasynUser, &signal);
+    memcpy(&pPvt->pData[pPvt->maxPoints*signal], data,
+           maxChans*sizeof(int));
     epicsMutexUnlock(pPvt->mutexId);
     return(asynSuccess);
 }

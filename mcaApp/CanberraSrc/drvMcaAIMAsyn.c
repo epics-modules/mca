@@ -17,6 +17,7 @@
 #include <epicsTime.h>
 #include <epicsExport.h>
 #include <asynDriver.h>
+#include <asynInt32Array.h>
 
 #include "mca.h"
 #include "asynMca.h"
@@ -48,6 +49,7 @@ typedef struct {
     int acquiring;
     asynInterface common;
     asynInterface mca;
+    asynInterface int32Array;
 } mcaAIMPvt;
 
 static int sendAIMSetup(mcaAIMPvt *drvPvt);
@@ -57,7 +59,10 @@ static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser,
 static asynStatus AIMReadStatus(void *drvPvt, asynUser *pasynUser,
                                 mcaAsynAcquireStatus *pstat);
 static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser, 
-                              int maxChans, int *nactual, int *data);
+                              epicsInt32 *data, size_t maxChans, 
+                              size_t *nactual);
+static asynStatus AIMWriteData(void *drvPvt, asynUser *pasynUser, 
+                               epicsInt32 *data, size_t maxChans);
 static void AIMReport(void *drvPvt, FILE *fp, int details);
 static asynStatus AIMConnect(void *drvPvt, asynUser *pasynUser);
 static asynStatus AIMDisconnect(void *drvPvt, asynUser *pasynUser);
@@ -75,7 +80,11 @@ static const struct asynCommon mcaAIMCommon = {
  */
 static const asynMca mcaAIMMca = {
     AIMCommand,
-    AIMReadStatus,
+    AIMReadStatus
+};
+
+static const asynInt32Array mcaAIMInt32Array = {
+    AIMWriteData,
     AIMReadData
 };
 
@@ -156,6 +165,9 @@ int AIMConfig(
     pPvt->mca.interfaceType = asynMcaType;
     pPvt->mca.pinterface  = (void *)&mcaAIMMca;
     pPvt->mca.drvPvt = pPvt;
+    pPvt->int32Array.interfaceType = asynInt32ArrayType;
+    pPvt->int32Array.pinterface  = (void *)&mcaAIMInt32Array;
+    pPvt->int32Array.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
                                         ASYN_MULTIDEVICE | ASYN_CANBLOCK,
                                         1,  /* autoconnect */
@@ -173,6 +185,11 @@ int AIMConfig(
     status = pasynManager->registerInterface(pPvt->portName,&pPvt->mca);
     if (status != asynSuccess) {
         errlogPrintf("AIMConfig ERROR: Can't register mca.\n");
+        return -1;
+    }
+    status = pasynManager->registerInterface(pPvt->portName,&pPvt->int32Array);
+    if (status != asynSuccess) {
+        errlogPrintf("AIMConfig ERROR: Can't register int32Array.\n");
         return -1;
     }
     return(0);
@@ -324,7 +341,8 @@ static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser,
 
 
 static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser,
-                              int maxChans, int *nactual, int *data)
+                              epicsInt32 *data, size_t maxChans, 
+                              size_t *nactual)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
     int status;
@@ -345,6 +363,31 @@ static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser,
               "(mcaAIMAsynDriver [%s signal=%d]): read %d chans, status=%d\n", 
               pPvt->portName, signal, maxChans, status);
     *nactual = maxChans;
+    return(asynSuccess);
+}
+
+static asynStatus AIMWriteData(void *drvPvt, asynUser *pasynUser,
+                              epicsInt32 *data, size_t maxChans)
+{
+    mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
+    int status;
+    int address;
+    int signal;
+
+    if (maxChans > pPvt->maxChans) maxChans = pPvt->maxChans;
+
+    pasynManager->getAddr(pasynUser, &signal);
+
+    asynPrint(pasynUser, ASYN_TRACE_FLOW,
+             "mcaAIMAsynDriver::AIMWrtieData entry, signal=%d, maxChans=%d\n",
+             signal, maxChans);
+
+    address = pPvt->seq_address + pPvt->maxChans*signal*4;
+
+    /* There seems to be a way to write the AIM memory, with SETHOSTMEM,
+     * but there is no callable function to do it yet */
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "drvMcaAIM::AIMWriteData, write to AIM not implemented\n");
     return(asynSuccess);
 }
 
