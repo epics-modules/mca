@@ -1,7 +1,7 @@
-/* drvMcaAsyn.h */
+/* asynMca.h */
 
-#ifndef drvMcaAsynH
-#define drvMcaAsynH
+#ifndef asynMcaH
+#define asynMcaH
 
 #include <asynDriver.h>
 #include <mca.h>
@@ -17,5 +17,5 @@ typedef struct {
                            int *nactual, int *data);
 } asynMca;
 
-#endif /* drvMcaAsynH */
+#endif /* asynMcaH */
 
