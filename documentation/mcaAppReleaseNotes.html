@@ -9,7 +9,7 @@ content="text/html; charset=iso-8859-1">
 
 <body>
 
-<h1 align="center">mca Release Notes</h1>
+<h1 align="center">mcaApp Release Notes</h1>
 
 <h2 align="center">Mark Rivers</h2>
 
@@ -17,18 +17,7 @@ content="text/html; charset=iso-8859-1">
 
 <h2 align="center">Contents</h2>
 
-<p align="left"><a href="#Release 6-2">Release 6-2 - March 4, 2004</a></p>
-
-<p align="left"><a href="#Release 6-1">Release 6-1 - November 5,
-2003</a></p>
-
-<p align="left"><a href="#Release 5-4">Release 5-4 - May 26,
-2003</a></p>
-
-<p align="left"><a href="#Release 5.03 - April3, 2003">Release 5-3 - April 3,
-2003</a></p>
-
-<p align="left"><a href="#Release 5.02 - January 11, 2001">Release 5-2 - July
+<p align="left"><a href="#Release 5.02 - January 11, 2001">Release 5.2 - July
 29, 2002</a></p>
 
 <p align="left"><a href="#Release 5.02 - January 11, 2001">Release 5.02 -
@@ -44,47 +33,12 @@ January 11, 2001</a></p>
 
 <p align="left"><a href="#December 6, 1999">December 6, 1999</a></p>
 
-<h2 align="center"><a name="Release 6-2">Release 6-2 - March 4, 2004</a></h2>
-
-<p align="left">Now depends on mpf, calc (transform record), sscan (busy record), std (scaler record),
-and autosave (only for mca/iocBoot) modules</p>
-<p align="left">Reordered device support entries in mcaSupport.dbd so that soft support is the default</p>
-<p align="left">Added genSub-based support for summing spectra.  (Not built by default.)</p>
-<p align="left">Initial enum values for icb amp, adc, dsp no longer cause medm error</p>
-<p align="left">Fixed handling of non-existent ICB modules.</p>
-<p align="left">devIcbMpf.cc no longer directs ao record to convert RVAL to VAL.</p>
-<p align="left">CanberraSrc now builds on Darwin</p>
-<p align="left">Fixed memory leak in mcaAIMServer.cc</p>
-
-
-<h2 align="center"><a name="Release 6-1">Release 6-1 - November 5,
-2003</a></h2>
-
-<p align="left">First official release for EPICS 3.14.</p>
-
-<p align="left">THIS DOCUMENTATION NEEDS WORK</p>
-
-<h2 align="center"><a name="Release 5-4">Release 5-4 - May 26,
-2003</a></h2>
-
-<p align="left">THIS DOCUMENTATION NEEDS WORK</p>
-
-<h2 align="center"><a name="Release 5.03 - April3, 2003">Release 5-3 - April 3,
-2003</a></h2>
-
-<p align="left">This release requires at least MPF 1-10.</p>
-
-<p align="left">Modified devMcaMpf.cc and devIcbMpf.cc to work with MPF 1-10 by
-adding &quot;bind&quot; call.</p>
-
-<p align="left">Fixed bug with 25MHz reference pulses in drvSTR7201.c</p>
-
-<p align="left">Added 9element .adl files and 4element_time.adl.</p>
-
-<p align="left">&nbsp;</p>
-
-<h2 align="center"><a name="Release 5.02 - January 11, 2001">Release 5-2 - July
+<h2 align="center"><a name="Release 5.02 - January 11, 2001">Release 5.2 - July
 29, 2002</a></h2>
+
+<p align="left">This new
+release is available at <a
+href="pub/mcaApp.tar">mcaApp.tar</a>.&nbsp;</p>
 
 <p align="left">This new release has the following enhancements:</p>
 <ul>
@@ -114,6 +68,10 @@ adding &quot;bind&quot; call.</p>
 
 <h2 align="center"><a name="Release 5.02 - January 11, 2001">Release 5.02 -
 January 11, 2001</a></h2>
+
+<p align="left">This new
+release is available at <a
+href="pub/mcaApp.tar">mcaApp.tar</a>.&nbsp;</p>
 
 <p align="left">This new release has the following enhancements:</p>
 <ul>
@@ -331,6 +289,10 @@ mpfServLib: $(IPMPFSERVERLIBOBJS)
 <h2 align="center"><a name="Release 5.01 - October 3, 2000">Release
 5.01 - October 3, 2000</a></h2>
 
+<p align="left">This new
+release is available at <a
+href="pub/mcaApp.tar">mcaApp.tar</a>.&nbsp;</p>
+
 <p align="left">The Struck STR7201/SIS 380x device support for the scaler record
 is improved so that acquisition terminates within 0.01 seconds of the preset
 time.&nbsp; The device support for the MCA record and scaler record are now
@@ -361,7 +323,10 @@ records (ao, mbbo, ai, mbbi).</p>
 5.0 - September 9, 2000</a></h2>
 
 <p align="left">This release of mcaApp is intended primarily to
-improve performance with the Canberra AIM MCA hardware.&nbsp; The main enhancements are:</p>
+improve performance with the Canberra AIM MCA hardware. The new
+release is available at <a
+href="pub/mcaApp.tar">mcaApp.tar</a>.
+The main enhancements are:</p>
 
 <ol>
     <li><p align="left">To make the low-level AIM support
@@ -453,7 +418,8 @@ Ip330SweepServer.cc was rewritten slightly to handle the more
 general messages from devMcaMpf.cc.&nbsp; Ip330Sweep.cc was
 rewritten slightly to handle live-time as well as real-time
 messages. This new version of ip330App must be used when
-upgrading to this release of mcaApp.&nbsp;</p>
+upgrading to this release of mcaApp. It is available at <a
+href="pub/ip330App.tar">ip330App.tar</a></p>
 
 <p align="left">A new MPF server, mcaAIMServer.cc was written to
 communicate with AIM modules.&nbsp; There is one such server per
@@ -660,7 +626,9 @@ $(LINK.c) $@ $(MPFSERVERLIBOBJS)</pre>
 <p>This works by looking at the files ipApp/mpfServerLIBOBJS and
 mcaApp/mpfServerLIBOBJS to make a list of all the object files
 required to build mpfServerLib. Users may need to get the latest
-version of ipApp from Tim Mooney in order to get mpfServerLIBOBJS. If
+version of ipApp from <a
+href="pub/ipApp.tar">ipApp.tar</a>
+or from Tim Mooney in order to get mpfServerLIBOBJS. If
 mpfServerLib is built this way and is loaded on a CPU which does
 not have IP slots (e.g. MV167 or PPC) then there is some unused
 code, but the memory cost is not large.</p>

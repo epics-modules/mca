@@ -12,22 +12,13 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.14.5
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.4
 
-# Transform record
-CALC=/corvette/home/epics/3-14-devel/calc
-
-# Busy record 
-SSCAN=/corvette/home/epics/3-14-devel/sscan
-
-# Scaler record
-STD=/corvette/home/epics/3-14-devel/std
-
-# save_restore
-AUTOSAVE=/corvette/home/epics/3-14-devel/autosave
+# We use some records from std
+STD = /corvette/home/epics/3.14/std
 
 # MPF
-MPF=/corvette/home/epics/3-14-devel/mpf/2-4-2
+MPF=/corvette/home/epics/3.14/mpf2-4
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
