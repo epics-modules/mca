@@ -94,32 +94,38 @@ static asynStatus AIMRead(void *drvPvt, asynUser *pasynUser,
 /*
  * asynCommon methods
  */
-static const struct asynCommon mcaAIMCommon = {
+static struct asynCommon mcaAIMCommon = {
     AIMReport,
     AIMConnect,
     AIMDisconnect
 };
 
 /* asynInt32 methods */
-static const asynInt32 mcaAIMInt32 = {
+static asynInt32 mcaAIMInt32 = {
     int32Write,
     int32Read,
-    getBounds
+    getBounds,
+    NULL,
+    NULL
 };
 
 /* asynFloat64 methods */
-static const asynFloat64 mcaAIMFloat64 = {
+static asynFloat64 mcaAIMFloat64 = {
     float64Write,
-    float64Read
+    float64Read,
+    NULL,
+    NULL
 };
 
 /* asynInt32Array methods */
-static const asynInt32Array mcaAIMInt32Array = {
+static asynInt32Array mcaAIMInt32Array = {
     int32ArrayWrite,
-    int32ArrayRead
+    int32ArrayRead,
+    NULL,
+    NULL
 };
 
-static const asynDrvUser mcaAIMDrvUser = {
+static asynDrvUser mcaAIMDrvUser = {
     drvUserCreate,
     drvUserGetType,
     drvUserDestroy

@@ -99,32 +99,38 @@ static asynStatus connect           (void *drvPvt, asynUser *pasynUser);
 static asynStatus disconnect         (void *drvPvt, asynUser *pasynUser);
 
 /* asynCommon methods */
-static const struct asynCommon fastSweepCommon = {
+static struct asynCommon fastSweepCommon = {
     report,
     connect,
     disconnect
 };
 
 /* asynInt32 methods */
-static const asynInt32 fastSweepInt32 = {
+static asynInt32 fastSweepInt32 = {
     int32Write,
     int32Read,
-    getBounds
+    getBounds,
+    NULL,
+    NULL
 };
 
 /* asynFloat64 methods */
-static const asynFloat64 fastSweepFloat64 = {
+static asynFloat64 fastSweepFloat64 = {
     float64Write,
-    float64Read
+    float64Read,
+    NULL,
+    NULL
 };
 
 /* asynInt32Array methods */
-static const asynInt32Array fastSweepInt32Array = {
+static asynInt32Array fastSweepInt32Array = {
     int32ArrayWrite,
-    int32ArrayRead
+    int32ArrayRead,
+    NULL,
+    NULL
 };
 
-static const asynDrvUser fastSweepDrvUser = {
+static asynDrvUser fastSweepDrvUser = {
     drvUserCreate,
     drvUserGetType,
     drvUserDestroy

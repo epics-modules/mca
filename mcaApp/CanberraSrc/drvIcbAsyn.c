@@ -339,27 +339,31 @@ static asynStatus verifyModule(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                                icbModule **m);
 
 /* asynCommon interface */
-static const struct asynCommon icbCommon = {
+static struct asynCommon icbCommon = {
     icbReport,
     icbConnect,
     icbDisconnect
 };
 
 /* asynInt32 interface */
-static const asynInt32 icbInt32 = {
+static asynInt32 icbInt32 = {
     int32Write,
     int32Read,
-    getBounds
+    getBounds,
+    NULL,
+    NULL
 };
 
 /* asynFloat64 interface */
-static const asynFloat64 icbFloat64 = {
+static asynFloat64 icbFloat64 = {
     float64Write,
-    float64Read
+    float64Read,
+    NULL,
+    NULL
 };
 
 /* asynDrvUser interface */
-static const asynDrvUser icbDrvUser = {
+static asynDrvUser icbDrvUser = {
     drvUserCreate,
     drvUserGetType,
     drvUserDestroy
