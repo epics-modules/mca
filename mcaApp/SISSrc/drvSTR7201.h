@@ -23,8 +23,8 @@
 
 /* Function prototypes */
 int STR7201Setup(int maxCards, int baseAddress, int intVector, int intLevel);
-int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable);
-int drvSTR7201GetConfig(int card, int *maxSignals, int *maxChans, int *ch1RefEnable);
+int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable, int softAdvance);
+int drvSTR7201GetConfig(int card, int *maxSignals, int *maxChans, int *ch1RefEnable, int *softAdvance);
 int drvSTR7201Init(int card);
 int drvSTR7201AcqOn(int card);
 int drvSTR7201AcqOff(int card);

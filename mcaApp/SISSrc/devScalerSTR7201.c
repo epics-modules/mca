@@ -133,7 +133,7 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 {
     int card = psr->out.value.vmeio.card;
     CALLBACK *pcallbacks;
-    int maxSignals, maxChans, ch1RefEnable;
+    int maxSignals, maxChans, ch1RefEnable, softAdvance;
 
     Debug(5,"scaler_init_record: card %d\n", card);
 
@@ -154,7 +154,7 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 
     scaler_state[card]->prev_counting = 0;
 
-    drvSTR7201GetConfig(card, &maxSignals, &maxChans, &ch1RefEnable);
+    drvSTR7201GetConfig(card, &maxSignals, &maxChans, &ch1RefEnable, &softAdvance);
     if (maxSignals > MAX_SCALER_CHANNELS) maxSignals = MAX_SCALER_CHANNELS;
     scaler_state[card]->num_channels = maxSignals;
     psr->nch = scaler_state[card]->num_channels;

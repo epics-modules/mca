@@ -216,6 +216,7 @@ static struct strCard {
     int lneSource;
     int lnePrescale;
     int ch1RefEnable;
+    int softAdvance;
     long *buffer;  /* maxSignals * maxChans */
     long *buffPtr;
     int acquiring;
@@ -241,7 +242,7 @@ int STR7201Setup(int numCards, int baseAddress, int intVector, int intLevel)
     return (0);
 }
 
-int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable)
+int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable, int softAdvance)
 {
     struct strCard *p;
     int i;
@@ -287,6 +288,7 @@ int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable)
     p->lneSource = LNE_EXTERNAL;
     p->lnePrescale = 0;
     p->ch1RefEnable = ch1RefEnable;
+    p->softAdvance = softAdvance;
     p->buffer = (long *)malloc(maxSignals*maxChans*sizeof(long));
 
     /* Create semaphore to interlock access to card */
@@ -363,7 +365,8 @@ int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable)
     return (OK);
 }
 
-int drvSTR7201GetConfig(int card, int *maxSignals, int *maxChans, int *ch1RefEnable)
+int drvSTR7201GetConfig(int card, int *maxSignals, int *maxChans, int *ch1RefEnable,
+                        int *softAdvance)
 {
     struct strCard *p = &strCard[card];
 
@@ -371,6 +374,7 @@ int drvSTR7201GetConfig(int card, int *maxSignals, int *maxChans, int *ch1RefEna
     *maxSignals = p->maxSignals;
     *maxChans = p->maxChans;
     *ch1RefEnable = p->ch1RefEnable;
+    *softAdvance = p->softAdvance;
     return(OK);
 }
     
@@ -690,11 +694,17 @@ int drvSTR7201AcqOn(int card)
 
     /* Do one software next_clock. This starts the module counting without 
      * waiting for the first external next clock. 
-     * Only do this if we are using internal channel advance and
-     * MCS mode on new firmware */
+     * Only do this if:
+     *    Old firmware (not new SIS modules) OR
+     *    (Using MCS (not scaler) MODE) AND
+     *    ((Using internal channel advance) OR
+     *    ((Using external channel advance) AND (softAdvance flag=1))
+     */
     if ((p->firmwareVersion < 5) ||
-        ((p->mode == MULTICHANNEL_SCALER_MODE) && 
-         (p->lneSource == LNE_INTERNAL))) p->address->soft_next_reg = 1; 
+       ((p->mode == MULTICHANNEL_SCALER_MODE) && 
+       ((p->lneSource == LNE_INTERNAL) ||
+       ((p->lneSource == LNE_EXTERNAL) && (p->softAdvance == 1)))))
+       p->address->soft_next_reg = 1; 
 
     /* Set software acquiring flag */
     p->acquiring = 1;

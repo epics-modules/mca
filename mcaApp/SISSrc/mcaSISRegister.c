@@ -27,15 +27,17 @@ static const iocshArg STR7201ConfigArg0 = { "card",iocshArgInt};
 static const iocshArg STR7201ConfigArg1 = { "maxSignals",iocshArgInt};
 static const iocshArg STR7201ConfigArg2 = { "maxChans",iocshArgInt};
 static const iocshArg STR7201ConfigArg3 = { "ch1RefEnable",iocshArgInt};
-static const iocshArg * const STR7201ConfigArgs[4] = {&STR7201ConfigArg0,
+static const iocshArg STR7201ConfigArg4 = { "softAdvance",iocshArgInt};
+static const iocshArg * const STR7201ConfigArgs[5] = {&STR7201ConfigArg0,
                                                       &STR7201ConfigArg1,
                                                       &STR7201ConfigArg2,
-                                                      &STR7201ConfigArg3};
-static const iocshFuncDef STR7201ConfigFuncDef = {"STR7201Config",4,STR7201ConfigArgs};
+                                                      &STR7201ConfigArg3,
+                                                      &STR7201ConfigArg4};
+static const iocshFuncDef STR7201ConfigFuncDef = {"STR7201Config",5,STR7201ConfigArgs};
 static void STR7201ConfigCallFunc(const iocshArgBuf *args)
 {
     STR7201Config(args[0].ival, args[1].ival,
-                  args[2].ival, args[3].ival);
+                  args[2].ival, args[3].ival, args[4].ival);
 }
 
 void mcaSISRegister(void)
