@@ -15,7 +15,8 @@ DBD += mcaCanberra.dbd
 DBD += mcaCanberraSupport.dbd
 
 #=============================
-LIBRARY_IOC += mcaCanberra
+LIBRARY_IOC_DEFAULT += mcaCanberra
+LIBRARY_IOC_solaris += -nil-
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaCanberra_SRCS += nmc_comm_subs_1.c 
@@ -42,7 +43,8 @@ mcaCanberra_SYS_LIBS_DEFAULT += net pcap
 mcaCanberra_SYS_LIBS_vxWorks += -nil-
 
 #==================================
-PROD_IOC += mcaAIM
+PROD_IOC_DEFAULT += mcaAIM
+PROD_IOC_solaris += -nil-
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAIM_SRCS += mcaCanberra_registerRecordDeviceDriver.cpp
 mcaAIM_SRCS_DEFAULT += mcaCanberraMain.cpp
@@ -59,7 +61,8 @@ mcaAIM_LDOBJS_DEFAULT += mcaCanberraRegister.o
 mcaAIM_LDOBJS_vxWorks += -nil-
 
 #=============================
-PROD_IOC += nmcTest
+PROD_IOC_DEFAULT += nmcTest
+PROD_IOC_solaris += -nil-
 
 nmcTest_LIBS += ca Com 
 nmcTest_SYS_LIBS_DEFAULT += net pcap
@@ -72,7 +75,8 @@ nmcTest_SRCS += nmc_user_subs_2.c
 nmcTest_SRCS += nmc_test.c
 
 #=============================
-PROD_IOC += nmcDemo
+PROD_IOC_DEFAULT += nmcDemo
+PROD_IOC_solaris += -nil-
 
 nmcDemo_LIBS += ca Com 
 nmcDemo_SYS_LIBS_DEFAULT += net pcap
