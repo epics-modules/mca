@@ -1,12 +1,12 @@
 
 file {
-	name="j:\epics\R3.13.1\share\mcaApp\op\adl\16element_time.adl"
+	name="C:\Program Files\EPICS\op\adl\mcaApp\16element_time.adl"
 	version=020306
 }
 display {
 	object {
-		x=134
-		y=289
+		x=282
+		y=124
 		width=490
 		height=530
 	}
@@ -108,7 +108,7 @@ text {
 	"basic attribute" {
 		clr=0
 	}
-	textix="13 Element Detector Timing"
+	textix="16 Element Detector Timing"
 	align="horiz. centered"
 }
 text {
@@ -252,18 +252,16 @@ text {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=92
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=93
 				width=10
 				height=20
@@ -277,7 +275,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=92
 				width=100
 				height=22
@@ -287,29 +285,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=92
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca1.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=92
 				width=100
 				height=22
@@ -319,21 +300,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=92
-				width=100
-				height=22
+				x=371
+				y=93
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca1.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=93
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca1.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -342,18 +337,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=119
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=120
 				width=10
 				height=20
@@ -367,7 +360,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=56
+				x=51
 				y=119
 				width=100
 				height=22
@@ -377,29 +370,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=119
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca2.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=119
 				width=100
 				height=22
@@ -409,21 +385,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=119
-				width=100
-				height=22
+				x=371
+				y=120
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca2.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=120
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca2.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -432,18 +422,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=146
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=147
 				width=10
 				height=20
@@ -457,7 +445,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=146
 				width=100
 				height=22
@@ -467,29 +455,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=146
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca3.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=146
 				width=100
 				height=22
@@ -499,21 +470,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=146
-				width=100
-				height=22
+				x=371
+				y=147
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca3.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=147
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca3.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -522,18 +507,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=173
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=174
 				width=10
 				height=20
@@ -547,7 +530,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=173
 				width=100
 				height=22
@@ -557,29 +540,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=173
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca4.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=173
 				width=100
 				height=22
@@ -589,21 +555,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=173
-				width=100
-				height=22
+				x=371
+				y=174
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca4.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=174
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca4.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -612,18 +592,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=200
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=201
 				width=10
 				height=20
@@ -637,7 +615,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=200
 				width=100
 				height=22
@@ -647,29 +625,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=200
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca5.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=200
 				width=100
 				height=22
@@ -679,21 +640,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=200
-				width=100
-				height=22
+				x=371
+				y=201
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca5.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=201
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca5.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -702,18 +677,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=227
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=228
 				width=10
 				height=20
@@ -727,7 +700,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=227
 				width=100
 				height=22
@@ -737,29 +710,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=227
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca6.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=227
 				width=100
 				height=22
@@ -769,21 +725,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=227
-				width=100
-				height=22
+				x=371
+				y=228
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca6.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=228
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca6.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -792,18 +762,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=254
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=255
 				width=10
 				height=20
@@ -817,7 +785,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=254
 				width=100
 				height=22
@@ -827,29 +795,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=254
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca7.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=254
 				width=100
 				height=22
@@ -859,21 +810,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=254
-				width=100
-				height=22
+				x=371
+				y=255
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca7.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=255
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca7.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -882,18 +847,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=281
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=282
 				width=10
 				height=20
@@ -907,7 +870,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=281
 				width=100
 				height=22
@@ -917,29 +880,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=281
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca8.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=281
 				width=100
 				height=22
@@ -949,21 +895,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=281
-				width=100
-				height=22
+				x=371
+				y=282
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca8.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=282
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca8.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -972,18 +932,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=308
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=309
 				width=10
 				height=20
@@ -997,7 +955,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=308
 				width=100
 				height=22
@@ -1007,29 +965,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=308
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca9.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=308
 				width=100
 				height=22
@@ -1039,21 +980,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=308
-				width=100
-				height=22
+				x=371
+				y=309
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca9.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=309
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca9.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -1062,18 +1017,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=335
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=336
 				width=10
 				height=20
@@ -1087,7 +1040,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=335
 				width=100
 				height=22
@@ -1097,29 +1050,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=335
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca10.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=335
 				width=100
 				height=22
@@ -1129,21 +1065,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=335
-				width=100
-				height=22
+				x=371
+				y=336
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca10.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=336
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca10.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -1152,18 +1102,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=362
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=363
 				width=10
 				height=20
@@ -1177,7 +1125,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=362
 				width=100
 				height=22
@@ -1187,29 +1135,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=362
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca11.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=362
 				width=100
 				height=22
@@ -1219,21 +1150,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=362
-				width=100
-				height=22
+				x=371
+				y=363
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca11.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=363
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca11.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -1242,18 +1187,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=389
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=390
 				width=10
 				height=20
@@ -1267,7 +1210,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=389
 				width=100
 				height=22
@@ -1277,29 +1220,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=389
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca12.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=389
 				width=100
 				height=22
@@ -1309,21 +1235,35 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
-		"text entry" {
+		"text update" {
 			object {
-				x=368
-				y=389
-				width=100
-				height=22
+				x=371
+				y=390
+				width=90
+				height=20
 			}
-			control {
+			monitor {
 				chan="$(P)mca12.ERTM"
-				clr=14
-				bclr=51
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=390
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca12.ELTM"
+				clr=54
+				bclr=1
 			}
 			limits {
 			}
@@ -1332,18 +1272,16 @@ composite {
 }
 composite {
 	object {
-		x=20
+		x=18
 		y=416
-		width=448
+		width=443
 		height=22
 	}
 	"composite name"=""
-	vis="static"
-	chan=""
 	children {
 		text {
 			object {
-				x=20
+				x=18
 				y=417
 				width=10
 				height=20
@@ -1357,7 +1295,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=53
+				x=51
 				y=416
 				width=100
 				height=22
@@ -1367,29 +1305,12 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
 		"text entry" {
 			object {
-				x=158
-				y=416
-				width=100
-				height=22
-			}
-			control {
-				chan="$(P)mca13.ELTM"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=263
+				x=261
 				y=416
 				width=100
 				height=22
@@ -1399,255 +1320,293 @@ composite {
 				clr=14
 				bclr=51
 			}
-			format="exponential"
 			limits {
 			}
 		}
+		"text update" {
+			object {
+				x=371
+				y=417
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca13.ERTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=417
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca13.ELTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=18
+		y=443
+		width=443
+		height=22
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=18
+				y=444
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="14"
+			align="horiz. centered"
+		}
 		"text entry" {
 			object {
-				x=368
-				y=416
+				x=51
+				y=443
 				width=100
 				height=22
 			}
 			control {
-				chan="$(P)mca13.ERTM"
+				chan="$(P)mca14.PLTM"
 				clr=14
 				bclr=51
 			}
 			limits {
 			}
 		}
+		"text entry" {
+			object {
+				x=261
+				y=443
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)mca14.PRTM"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=371
+				y=444
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca14.ERTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=444
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca14.ELTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
 	}
 }
-text {
+composite {
 	object {
-		x=20
-		y=444
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="14"
-	align="horiz. centered"
-}
-"text entry" {
-	object {
-		x=53
-		y=443
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca14.PLTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=158
-		y=443
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca14.ELTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=263
-		y=443
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca14.PRTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=368
-		y=443
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca14.ERTM"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=20
-		y=471
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="15"
-	align="horiz. centered"
-}
-"text entry" {
-	object {
-		x=53
+		x=18
 		y=470
-		width=100
+		width=443
 		height=22
 	}
-	control {
-		chan="$(P)mca15.PLTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=18
+				y=471
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="15"
+			align="horiz. centered"
+		}
+		"text entry" {
+			object {
+				x=51
+				y=470
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)mca15.PLTM"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=261
+				y=470
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)mca15.PRTM"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=371
+				y=471
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca15.ERTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=471
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca15.ELTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
 	}
 }
-"text entry" {
+composite {
 	object {
-		x=158
-		y=470
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca15.ELTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=263
-		y=470
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca15.PRTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=368
-		y=470
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca15.ERTM"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=20
-		y=498
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="16"
-	align="horiz. centered"
-}
-"text entry" {
-	object {
-		x=53
+		x=18
 		y=497
-		width=100
+		width=443
 		height=22
 	}
-	control {
-		chan="$(P)mca16.PLTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=158
-		y=497
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca16.ELTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=263
-		y=497
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca16.PRTM"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-"text entry" {
-	object {
-		x=368
-		y=497
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca16.ERTM"
-		clr=14
-		bclr=51
-	}
-	limits {
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=18
+				y=498
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+				fill="outline"
+			}
+			textix="16"
+			align="horiz. centered"
+		}
+		"text entry" {
+			object {
+				x=51
+				y=497
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)mca16.PLTM"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text entry" {
+			object {
+				x=261
+				y=497
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)mca16.PRTM"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=371
+				y=498
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca16.ERTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
+		"text update" {
+			object {
+				x=161
+				y=498
+				width=90
+				height=20
+			}
+			monitor {
+				chan="$(P)mca16.ELTM"
+				clr=54
+				bclr=1
+			}
+			limits {
+			}
+		}
 	}
 }
