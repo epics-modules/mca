@@ -1,0 +1,16 @@
+# Set the default gateway 
+routeAdd "0","164.54.160.1"
+
+# The following line eliminates "cksum: out of data" messages due to DHCP
+proxyPortFwdOff(67)
+
+# Set the UNIX uid/gid to the EPICS account
+nfsAuthUnixSet("corvette",401,400,0,0)
+
+# Mount drives with NFS
+nfsMount("corvette","/home","/corvette/home")
+
+# Define locations for logging and for APS EPICS process variables
+putenv("EPICS_IOC_LOG_INET=164.54.160.82")
+putenv("EPICS_CA_AUTO_ADDR_LIST=NO")
+putenv("EPICS_CA_ADDR_LIST=164.54.160.127")
