@@ -200,10 +200,10 @@ int icbSetup(const char *portName, int maxModules, int queueSize)
     pPvt->icb.pinterface  = (void *)&icbIcb;
     pPvt->icb.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
-                                        1, /* is multiDevice */
-                                        1, /* autoconnect */
-                                        epicsThreadPriorityMedium,
-                                        0); /* stack size */
+                                        ASYN_MULTIDEVICE | ASYN_CANBLOCK,
+                                        1,  /* autoconnect */
+                                        0,  /* medium priority */
+                                        0); /* default stack size */
     if (status != asynSuccess) {
         errlogPrintf("icbConfig ERROR: Can't register common\n");
         return -1;

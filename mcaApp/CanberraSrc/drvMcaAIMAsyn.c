@@ -157,10 +157,10 @@ int AIMConfig(
     pPvt->mca.pinterface  = (void *)&mcaAIMMca;
     pPvt->mca.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
-                                        1, /* is multiDevice */
-                                        1, /* autoconnect */
-                                        epicsThreadPriorityMedium,
-                                        0); /* stacksize */
+                                        ASYN_MULTIDEVICE | ASYN_CANBLOCK,
+                                        1,  /* autoconnect */
+                                        0,  /* medium priority */
+                                        0); /* default stacksize */
     if (status != asynSuccess) {
         errlogPrintf("AIMConfig ERROR: Can't register myself.\n");
         return -1;
