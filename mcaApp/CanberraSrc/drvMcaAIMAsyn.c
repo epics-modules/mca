@@ -87,7 +87,6 @@ int AIMConfig(
     unsigned char enet_address[6];
     int status;
     mcaAIMPvt *pPvt;
-    int priority=0;
 
     pPvt = callocMustSucceed(1, sizeof(mcaAIMPvt), "AIMConfig");
     status = nmc_initialize(ethernetDevice);
@@ -158,10 +157,10 @@ int AIMConfig(
     pPvt->mca.pinterface  = (void *)&mcaAIMMca;
     pPvt->mca.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
-                                   0, /*not multiDevice*/
-                                   1,
-                                   priority,
-                                   0);
+                                        1, /* is multiDevice */
+                                        1, /* autoconnect */
+                                        epicsThreadPriorityMedium,
+                                        0); /* stacksize */
     if (status != asynSuccess) {
         errlogPrintf("AIMConfig ERROR: Can't register myself.\n");
         return -1;

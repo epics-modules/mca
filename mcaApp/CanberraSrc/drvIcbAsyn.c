@@ -183,7 +183,6 @@ int icbSetup(const char *portName, int maxModules, int queueSize)
     int status;
     drvIcbAsynPvt *pPvt;
     GPHENTRY *hashEntry;
-    int priority=0;
 
     pPvt = callocMustSucceed(1, sizeof(drvIcbAsynPvt), "icbSetup"); 
     if (icbHash == NULL) gphInitPvt(&icbHash, 256);
@@ -201,10 +200,10 @@ int icbSetup(const char *portName, int maxModules, int queueSize)
     pPvt->icb.pinterface  = (void *)&icbIcb;
     pPvt->icb.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
-                                   1, /*is multiDevice*/
-                                   1,
-                                   priority,
-                                   0);
+                                        1, /* is multiDevice */
+                                        1, /* autoconnect */
+                                        epicsThreadPriorityMedium,
+                                        0); /* stack size */
     if (status != asynSuccess) {
         errlogPrintf("icbConfig ERROR: Can't register common\n");
         return -1;

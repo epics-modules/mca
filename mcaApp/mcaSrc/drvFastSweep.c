@@ -15,6 +15,7 @@
 
 #include <epicsTime.h>
 #include <epicsTypes.h>
+#include <epicsThread.h>
 #include <epicsExport.h>
 #include <epicsString.h>
 #include <errlog.h>
@@ -83,7 +84,6 @@ int initFastSweep(const char *portName, const char *inputName,
     fastSweepPvt *pPvt;
     asynStatus status;
     asynInterface *pasynInterface;
-    int priority=0;
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt), "initFastSweep");
     pPvt->maxSignals = maxSignals;
@@ -98,10 +98,10 @@ int initFastSweep(const char *portName, const char *inputName,
                                            sizeof(double), "initFastSweep");
     /*  Link with higher level routines */
     status = pasynManager->registerPort(portName,
-                                        0, /*not multiDevice*/
-                                        1,
-                                        priority,
-                                        0);
+                                        1, /* is multiDevice */
+                                        1, /* autoconnect */
+                                        epicsThreadPriorityMedium,
+                                        0); /* stack size */
     if (status != asynSuccess) {
         errlogPrintf("initQuadEM: Can't register myself.\n");
         return -1;
