@@ -149,7 +149,8 @@ long DevAoIcbMpf::init_record(void* v)
        pm->extra = ICB_WRITE;
        pobj->send(pm, replyTypeReceiveReply);
     }
-    return(0);
+    // Return 2, which means do not convert RVAL to VAL, use VAL
+    return(2);
 }
 
 
