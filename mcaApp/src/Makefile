@@ -20,7 +20,7 @@ DBD += mcaAIM.dbd
 PROD_IOC += mcaAIM
 
 mpf_DIR = $(MPF_LIB)
-synaRec_DIR = $(INSTALL_LIB)
+#synaRec_DIR = $(INSTALL_LIB)
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAIM_SRCS += mcaAIM_registerRecordDeviceDriver.cpp
@@ -45,11 +45,13 @@ mcaAIM_SRCS += icbServer.cc
 mcaAIM_SRCS += devIcbMpf.cc
 mcaAIM_SRCS += icbTcaServer.cc
 mcaAIM_SRCS += icbDspServer.cc
+mcaAIM_SRCS += fastSweep.cc
 
 OBJS += aimRegister
+INC += fastSweep.h
 
-mcaAIM_LIBS += synaRec
-mcaAIM_LIBS += mpf mpfEpics
+#mcaAIM_LIBS += synaRec
+mcaAIM_LIBS += mpf mpfEpics std
 mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 # should be mcaAIM_LIBS_linux-x86 which won't work
