@@ -15,7 +15,7 @@
 
 #include <epicsTime.h>
 #include <epicsTypes.h>
-#include <epicsThread.h>
+#include <epicsMutex.h>
 #include <epicsExport.h>
 #include <epicsString.h>
 #include <errlog.h>
@@ -38,7 +38,10 @@ typedef struct {
     double realTime;
     double liveTime;
     double elapsedTime;
+    double dwellTime;
     epicsTimeStamp startTime;
+    epicsMutexId mutexId;
+    double callbackInterval;
     int *pData;
     int numAverage;
     int accumulated;
@@ -50,8 +53,13 @@ typedef struct {
     asynUser *pasynUser;
 } fastSweepPvt;
 
-static void callback(void *drvPvt, epicsInt32 *data);
-static void nextPoint(fastSweepPvt *drvPvt, int *newData);
+/* These are callback functions, called from driver */
+static void dataCallback(void *drvPvt, epicsInt32 *data);
+static void intervalCallback(void *drvPvt, double seconds);
+/* These are private functions, not in any interface */
+static void nextPoint(fastSweepPvt *pPvt, int *newData);
+static void computeNumAverage(fastSweepPvt *pPvt);
+/* These functions are in the asynMca interface */
 static asynStatus command(void *drvPvt, asynUser *pasynUser,
                           mcaCommand command,
                           int ivalue, double dvalue);
@@ -59,6 +67,7 @@ static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
                              mcaAsynAcquireStatus *pstat);
 static asynStatus readData(void *drvPvt, asynUser *pasynUser,
                            int maxChans, int *nactual, int *data);
+/* These functions are in the asynCommon interface */
 static void report(void *drvPvt, FILE *fp, int details);
 static asynStatus connect(void *drvPvt, asynUser *pasynUser);
 static asynStatus disconnect(void *drvPvt, asynUser *pasynUser);
@@ -92,18 +101,19 @@ int initFastSweep(const char *portName, const char *inputName,
     pPvt->inputName = epicsStrDup(inputName);
     epicsTimeGetCurrent(&pPvt->startTime);
 
+    pPvt->mutexId = epicsMutexCreate();
     pPvt->pData = (int *)callocMustSucceed(pPvt->maxPoints*pPvt->maxSignals,
                                            sizeof(int), "initFastSweep");
     pPvt->pAverageStore = (double *)callocMustSucceed(pPvt->maxSignals,
                                            sizeof(double), "initFastSweep");
     /*  Link with higher level routines */
     status = pasynManager->registerPort(portName,
-                                        1, /* is multiDevice */
+                                        ASYN_MULTIDEVICE | ASYN_CANBLOCK,
                                         1, /* autoconnect */
-                                        epicsThreadPriorityMedium,
-                                        0); /* stack size */
+                                        0,  /* medium priority */
+                                        0); /* default stack size */
     if (status != asynSuccess) {
-        errlogPrintf("initQuadEM: Can't register myself.\n");
+        errlogPrintf("initFastSweep: Can't register myself.\n");
         return -1;
     }
     pPvt->common.interfaceType = asynCommonType;
@@ -145,12 +155,28 @@ int initFastSweep(const char *portName, const char *inputName,
                           (asynInt32ArrayCallback *)pasynInterface->pinterface;
     pPvt->int32ArrayCallbackPvt = pasynInterface->drvPvt;
 
-    pPvt->pint32ArrayCallback->registerCallback(pPvt->int32ArrayCallbackPvt, 
-                                                pPvt->pasynUser, callback, pPvt);
+    pPvt->pint32ArrayCallback->registerCallbacks(pPvt->int32ArrayCallbackPvt, 
+                                                 pPvt->pasynUser, 
+                                                 dataCallback, intervalCallback,
+                                                 pPvt);
+    pPvt->callbackInterval = pPvt->pint32ArrayCallback->getCallbackInterval(
+                                                 pPvt->int32ArrayCallbackPvt, 
+                                                 pPvt->pasynUser);
     return(0);
 }
 
-static void callback(void *drvPvt, epicsInt32 *newData)
+static void intervalCallback(void *drvPvt, double seconds)
+{
+    /* This is callback function that is called from the port-specific driver */
+    fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
+
+    epicsMutexLock(pPvt->mutexId);
+    pPvt->callbackInterval = seconds;
+    computeNumAverage(pPvt);
+    epicsMutexUnlock(pPvt->mutexId);
+}
+
+static void dataCallback(void *drvPvt, epicsInt32 *newData)
 {
     /* This is callback function that is called from the port-specific driver */
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
@@ -159,19 +185,22 @@ static void callback(void *drvPvt, epicsInt32 *newData)
 
     if (!pPvt->acquiring) return;
 
+    epicsMutexLock(pPvt->mutexId);
     /* No need to average if collecting every point */
     if (pPvt->numAverage == 1) {
         nextPoint(pPvt, newData);
-        return;
+        goto done;
     }
     for (i=0; i<pPvt->maxSignals; i++) pPvt->pAverageStore[i] += newData[i];
-    if (++(pPvt->accumulated) < pPvt->numAverage) return;
+    if (++(pPvt->accumulated) < pPvt->numAverage) goto done;
     /* We have now collected the desired number of points to average */
     for (i=0; i<pPvt->maxSignals; i++) data[i] = 0.5 +
                                        pPvt->pAverageStore[i]/pPvt->accumulated;
     nextPoint(pPvt, data);
     for (i=0; i<pPvt->maxSignals; i++) pPvt->pAverageStore[i] = 0;
     pPvt->accumulated = 0;
+done:
+    epicsMutexUnlock(pPvt->mutexId);
 }
 
 
@@ -200,6 +229,12 @@ static void nextPoint(fastSweepPvt *pPvt, epicsInt32 *newData)
         pPvt->acquiring = 0;
 }
 
+static void computeNumAverage(fastSweepPvt *pPvt)
+{
+    pPvt->numAverage = (int) (pPvt->dwellTime/pPvt->callbackInterval + 0.5);
+    if (pPvt->numAverage < 1) pPvt->numAverage = 1;
+    pPvt->accumulated = 0;
+}
 
 static asynStatus command(void *drvPvt, asynUser *pasynUser,
                           mcaCommand command,
@@ -208,6 +243,7 @@ static asynStatus command(void *drvPvt, asynUser *pasynUser,
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
     asynStatus status=asynSuccess;
 
+    epicsMutexLock(pPvt->mutexId);
     switch (command) {
         case MSG_ACQUIRE:
             if (!pPvt->acquiring) {
@@ -222,16 +258,15 @@ static asynStatus command(void *drvPvt, asynUser *pasynUser,
             /* No-op for fastSweep */
             break;
         case MSG_SET_NCHAN:
-            if ((ivalue < 1) || (ivalue > pPvt->maxPoints)) return(asynError);
+            if ((ivalue < 1) || (ivalue > pPvt->maxPoints)) {
+               status = asynError;
+               goto done;
+            }
             pPvt->numPoints = ivalue;
             break;
         case MSG_SET_DWELL:
-            pPvt->numAverage = (int) (dvalue /
-                 pPvt->pint32ArrayCallback->getCallbackInterval(
-                                                  pPvt->int32ArrayCallbackPvt,
-                                                  pPvt->pasynUser) + 0.5);
-            if (pPvt->numAverage < 1) pPvt->numAverage = 1;
-            pPvt->accumulated = 0;
+            pPvt->dwellTime = dvalue;
+            computeNumAverage(pPvt);
             break;
         case MSG_SET_REAL_TIME:
             pPvt->realTime = dvalue;
@@ -283,6 +318,8 @@ static asynStatus command(void *drvPvt, asynUser *pasynUser,
                       command);
             break;
     }
+done:
+    epicsMutexUnlock(pPvt->mutexId);
     return(status);
 }
 
@@ -292,14 +329,13 @@ static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
 
+    epicsMutexLock(pPvt->mutexId);
     pstat->realTime = pPvt->elapsedTime;
     pstat->liveTime = pPvt->elapsedTime;
-    pstat->dwellTime = pPvt->pint32ArrayCallback->getCallbackInterval(
-                                                   pPvt->int32ArrayCallbackPvt,
-                                                   pPvt->pasynUser) * 
-                                               pPvt->numAverage;
+    pstat->dwellTime = pPvt->callbackInterval * pPvt->numAverage;
     pstat->acquiring = pPvt->acquiring;
     pstat->totalCounts = 0;
+    epicsMutexUnlock(pPvt->mutexId);
     return(asynSuccess);
 }
 
@@ -309,10 +345,12 @@ static asynStatus readData(void *drvPvt, asynUser *pasynUser,
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
     int signal;
 
+    epicsMutexLock(pPvt->mutexId);
     pasynManager->getAddr(pasynUser, &signal);
     memcpy(data, &pPvt->pData[pPvt->maxPoints*signal], 
            pPvt->numPoints*sizeof(int));
     *nactual = pPvt->numPoints;
+    epicsMutexUnlock(pPvt->mutexId);
     return(asynSuccess);
 }
 
