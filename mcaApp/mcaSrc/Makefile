@@ -22,7 +22,6 @@ mca_SRCS += mcaRecord.c
 mca_SRCS += devMCA_soft.c
 mca_SRCS += devMcaMpf.cc
 mca_SRCS += fastSweep.cc
-mca_SRCS += mcaRegister.c
 mca_LIBS += mpf mpfEpics std
 mca_LIBS += $(EPICS_BASE_IOC_LIBS)
 
