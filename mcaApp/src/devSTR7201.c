@@ -194,7 +194,7 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                 s = drvSTR7201Erase(card);
                 Debug(5, "devSTR7201(send_msg): erase %d\n", s);
                 break;
-                * set sequence - noop for  */
+        case MSG_SET_SEQ:
                 /* set sequence for time-resolved spectra */
                 /* This is a NOOP for STR7201 */
                 break;
