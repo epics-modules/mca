@@ -1,20 +1,3 @@
 include "base.dbd"
 include "mcaAIMSupport.dbd"
-################
-# RECORD SUPPORT
-################
-include "calcRecord.dbd"
-include "calcoutRecord.dbd"
-include "boRecord.dbd"
-include "transformRecord.dbd"
-include "swaitRecord.dbd"
-include "busyRecord.dbd"
- 
-################
-# DEVICE SUPPORT
-################
-device(bo,CONSTANT,devBoSoft,"Soft Channel")
-device(bo,CONSTANT,devBoSoftRaw,"Raw Soft Channel")
-device(swait,CONSTANT,devSWaitIoEvent,"Soft Channel")
-#
-###############
+include "std.dbd"
