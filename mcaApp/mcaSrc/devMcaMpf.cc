@@ -98,7 +98,7 @@ extern "C" {
         DevMcaMpf::read_array
     };
 };
-epicsExportAddress(MCAMPF_DSET, devMcaMpf);
+epicsExportAddress(dset, devMcaMpf);
 
 
 DevMcaMpf::DevMcaMpf(dbCommon* pr,DBLINK* l) : DevMpf(pr,l,false)
