@@ -54,6 +54,7 @@ extern "C"
 #endif
 volatile int devMcaMpfDebug = 0;
 }
+epicsExportAddress(int, devMcaMpfDebug);
 
 class DevMcaMpf : public DevMpf
 {
@@ -241,6 +242,15 @@ long DevMcaMpf::send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 {
     DevMcaMpf* devMcaMpf = (DevMcaMpf *)pmca->dpvt;
 
+    // If we are already in COMM_ALARM then this server is not reachable, return
+    if ((pmca->nsta == COMM_ALARM) || (pmca->stat == COMM_ALARM)) return(-1);
+    // Wait up to 30 seconds to connect, since server may not yet be running
+    if (!devMcaMpf->connectWait(30.)) {
+       errlogPrintf("%s ::send_msg connectWait failed!\n", pmca->name);
+       recGblSetSevr(pmca,COMM_ALARM,INVALID_ALARM);
+       return(-1);
+    }
+
     switch (msg) {
     case MSG_ACQUIRE:
         /* start acquisition */
@@ -341,11 +351,6 @@ int DevMcaMpf::sendFloat64Message(int cmd, double value)
 {
     Float64Message *pfm = new Float64Message;
     
-    // Wait up to 30 seconds to connect, since server may not yet be running
-    if (!connectWait(30.)) {
-       DEBUG(1, "(sendFloat64Message): connectWait failed!\n");
-       return(-1);
-    }
     pfm->cmd = cmd;
     pfm->value = value;
     pfm->address = channel;
