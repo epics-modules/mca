@@ -228,8 +228,7 @@ long DevMcaMpf::completeIO(dbCommon* pr,Message* m)
 long DevMcaMpf::init_record(void* v)
 {
     mcaRecord* pmca = (mcaRecord*)v;
-    DevMcaMpf *pDevMcaMpf = new DevMcaMpf((dbCommon*)pmca,&(pmca->inp));
-    pDevMcaMpf->bind();
+    new DevMcaMpf((dbCommon*)pmca,&(pmca->inp));
     return(0);
 }
 
