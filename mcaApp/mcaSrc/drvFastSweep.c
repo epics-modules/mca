@@ -307,7 +307,6 @@ static void dataCallback(void *drvPvt, asynUser *pasynUser,
 {
     /* This is callback function that is called from the port-specific driver */
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
-    int data[pPvt->maxSignals];
     int i;
 
     if (!pPvt->acquiring) return;
@@ -321,9 +320,9 @@ static void dataCallback(void *drvPvt, asynUser *pasynUser,
     for (i=0; i<pPvt->maxSignals; i++) pPvt->pAverageStore[i] += newData[i];
     if (++(pPvt->accumulated) < pPvt->numAverage) goto done;
     /* We have now collected the desired number of points to average */
-    for (i=0; i<pPvt->maxSignals; i++) data[i] = 0.5 +
+    for (i=0; i<pPvt->maxSignals; i++) newData[i] = 0.5 +
                                        pPvt->pAverageStore[i]/pPvt->accumulated;
-    nextPoint(pPvt, data);
+    nextPoint(pPvt, newData);
     for (i=0; i<pPvt->maxSignals; i++) pPvt->pAverageStore[i] = 0;
     pPvt->accumulated = 0;
 done:
