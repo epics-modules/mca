@@ -5,10 +5,10 @@ file {
 }
 display {
 	object {
-		x=6
-		y=26
-		width=820
-		height=945
+		x=143
+		y=27
+		width=1160
+		height=610
 	}
 	clr=14
 	bclr=4
@@ -87,43 +87,19 @@ display {
 		1a7309,
 	}
 }
-rectangle {
-	object {
-		x=43
-		y=39
-		width=333
-		height=40
-	}
-	"basic attribute" {
-		clr=54
-	}
-}
-text {
-	object {
-		x=58
-		y=40
-		width=302
-		height=40
-	}
-	"basic attribute" {
-		clr=0
-	}
-	textix="9 Element Spectra"
-	align="horiz. centered"
-}
 composite {
 	object {
-		x=20
-		y=97
+		x=4
+		y=63
 		width=380
-		height=743
+		height=176
 	}
 	"composite name"=""
 	children {
 		"cartesian plot" {
 			object {
-				x=20
-				y=114
+				x=4
+				y=80
 				width=380
 				height=159
 			}
@@ -151,10 +127,33 @@ composite {
 				rangeStyle="auto-scale"
 			}
 		}
+		text {
+			object {
+				x=189
+				y=63
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=54
+			}
+			textix="1"
+		}
+	}
+}
+composite {
+	object {
+		x=389
+		y=63
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
 		"cartesian plot" {
 			object {
-				x=20
-				y=303
+				x=389
+				y=80
 				width=380
 				height=159
 			}
@@ -182,41 +181,33 @@ composite {
 				rangeStyle="auto-scale"
 			}
 		}
-		"cartesian plot" {
+		text {
 			object {
-				x=20
-				y=681
-				width=380
-				height=159
+				x=574
+				y=63
+				width=10
+				height=20
 			}
-			plotcom {
-				title="$(P)4"
-				xlabel="channel"
-				ylabel="counts"
-				clr=14
-				bclr=2
+			"basic attribute" {
+				clr=54
 			}
-			style="line"
-			erase_oldest="plot last n pts"
-			trace[0] {
-				ydata="$(P)4.VAL"
-				data_clr=27
-			}
-			x_axis {
-				rangeStyle="auto-scale"
-			}
-			y1_axis {
-				axisStyle="log10"
-				rangeStyle="auto-scale"
-			}
-			y2_axis {
-				rangeStyle="auto-scale"
-			}
+			textix="2"
 		}
+	}
+}
+composite {
+	object {
+		x=774
+		y=63
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
 		"cartesian plot" {
 			object {
-				x=20
-				y=492
+				x=774
+				y=80
 				width=380
 				height=159
 			}
@@ -246,32 +237,8 @@ composite {
 		}
 		text {
 			object {
-				x=205
-				y=97
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=54
-			}
-			textix="1"
-		}
-		text {
-			object {
-				x=205
-				y=286
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=54
-			}
-			textix="2"
-		}
-		text {
-			object {
-				x=205
-				y=475
+				x=959
+				y=63
 				width=10
 				height=20
 			}
@@ -280,10 +247,52 @@ composite {
 			}
 			textix="3"
 		}
+	}
+}
+composite {
+	object {
+		x=4
+		y=244
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
+		"cartesian plot" {
+			object {
+				x=4
+				y=261
+				width=380
+				height=159
+			}
+			plotcom {
+				title="$(P)4"
+				xlabel="channel"
+				ylabel="counts"
+				clr=14
+				bclr=2
+			}
+			style="line"
+			erase_oldest="plot last n pts"
+			trace[0] {
+				ydata="$(P)4.VAL"
+				data_clr=27
+			}
+			x_axis {
+				rangeStyle="auto-scale"
+			}
+			y1_axis {
+				axisStyle="log10"
+				rangeStyle="auto-scale"
+			}
+			y2_axis {
+				rangeStyle="auto-scale"
+			}
+		}
 		text {
 			object {
-				x=205
-				y=664
+				x=189
+				y=244
 				width=10
 				height=20
 			}
@@ -296,17 +305,17 @@ composite {
 }
 composite {
 	object {
-		x=420
-		y=4
+		x=389
+		y=244
 		width=380
-		height=932
+		height=176
 	}
 	"composite name"=""
 	children {
 		"cartesian plot" {
 			object {
-				x=420
-				y=21
+				x=389
+				y=261
 				width=380
 				height=159
 			}
@@ -334,72 +343,33 @@ composite {
 				rangeStyle="auto-scale"
 			}
 		}
-		"cartesian plot" {
+		text {
 			object {
-				x=420
-				y=399
-				width=380
-				height=159
+				x=574
+				y=244
+				width=10
+				height=20
 			}
-			plotcom {
-				title="$(P)7"
-				xlabel="channel"
-				ylabel="counts"
-				clr=14
-				bclr=2
+			"basic attribute" {
+				clr=54
 			}
-			style="line"
-			erase_oldest="plot last n pts"
-			trace[0] {
-				ydata="$(P)7.VAL"
-				data_clr=27
-			}
-			x_axis {
-				rangeStyle="auto-scale"
-			}
-			y1_axis {
-				axisStyle="log10"
-				rangeStyle="auto-scale"
-			}
-			y2_axis {
-				rangeStyle="auto-scale"
-			}
+			textix="5"
 		}
+	}
+}
+composite {
+	object {
+		x=774
+		y=244
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
 		"cartesian plot" {
 			object {
-				x=420
-				y=588
-				width=380
-				height=159
-			}
-			plotcom {
-				title="$(P)8"
-				xlabel="channel"
-				ylabel="counts"
-				clr=14
-				bclr=2
-			}
-			style="line"
-			erase_oldest="plot last n pts"
-			trace[0] {
-				ydata="$(P)8.VAL"
-				data_clr=27
-			}
-			x_axis {
-				rangeStyle="auto-scale"
-			}
-			y1_axis {
-				axisStyle="log10"
-				rangeStyle="auto-scale"
-			}
-			y2_axis {
-				rangeStyle="auto-scale"
-			}
-		}
-		"cartesian plot" {
-			object {
-				x=420
-				y=210
+				x=774
+				y=261
 				width=380
 				height=159
 			}
@@ -427,10 +397,141 @@ composite {
 				rangeStyle="auto-scale"
 			}
 		}
+		text {
+			object {
+				x=959
+				y=244
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=54
+			}
+			textix="6"
+		}
+	}
+}
+composite {
+	object {
+		x=4
+		y=425
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
 		"cartesian plot" {
 			object {
-				x=420
-				y=777
+				x=4
+				y=442
+				width=380
+				height=159
+			}
+			plotcom {
+				title="$(P)7"
+				xlabel="channel"
+				ylabel="counts"
+				clr=14
+				bclr=2
+			}
+			style="line"
+			erase_oldest="plot last n pts"
+			trace[0] {
+				ydata="$(P)7.VAL"
+				data_clr=27
+			}
+			x_axis {
+				rangeStyle="auto-scale"
+			}
+			y1_axis {
+				axisStyle="log10"
+				rangeStyle="auto-scale"
+			}
+			y2_axis {
+				rangeStyle="auto-scale"
+			}
+		}
+		text {
+			object {
+				x=189
+				y=425
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=54
+			}
+			textix="7"
+		}
+	}
+}
+composite {
+	object {
+		x=389
+		y=425
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
+		"cartesian plot" {
+			object {
+				x=389
+				y=442
+				width=380
+				height=159
+			}
+			plotcom {
+				title="$(P)8"
+				xlabel="channel"
+				ylabel="counts"
+				clr=14
+				bclr=2
+			}
+			style="line"
+			erase_oldest="plot last n pts"
+			trace[0] {
+				ydata="$(P)8.VAL"
+				data_clr=27
+			}
+			x_axis {
+				rangeStyle="auto-scale"
+			}
+			y1_axis {
+				axisStyle="log10"
+				rangeStyle="auto-scale"
+			}
+			y2_axis {
+				rangeStyle="auto-scale"
+			}
+		}
+		text {
+			object {
+				x=574
+				y=425
+				width=10
+				height=20
+			}
+			"basic attribute" {
+				clr=54
+			}
+			textix="8"
+		}
+	}
+}
+composite {
+	object {
+		x=774
+		y=425
+		width=380
+		height=176
+	}
+	"composite name"=""
+	children {
+		"cartesian plot" {
+			object {
+				x=774
+				y=442
 				width=380
 				height=159
 			}
@@ -460,56 +561,8 @@ composite {
 		}
 		text {
 			object {
-				x=605
-				y=4
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=54
-			}
-			textix="5"
-		}
-		text {
-			object {
-				x=605
-				y=193
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=54
-			}
-			textix="6"
-		}
-		text {
-			object {
-				x=605
-				y=382
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=54
-			}
-			textix="7"
-		}
-		text {
-			object {
-				x=605
-				y=571
-				width=10
-				height=20
-			}
-			"basic attribute" {
-				clr=54
-			}
-			textix="8"
-		}
-		text {
-			object {
-				x=605
-				y=760
+				x=959
+				y=425
 				width=10
 				height=20
 			}
@@ -517,6 +570,41 @@ composite {
 				clr=54
 			}
 			textix="9"
+		}
+	}
+}
+composite {
+	object {
+		x=414
+		y=9
+		width=333
+		height=41
+	}
+	"composite name"=""
+	children {
+		rectangle {
+			object {
+				x=414
+				y=9
+				width=333
+				height=40
+			}
+			"basic attribute" {
+				clr=54
+			}
+		}
+		text {
+			object {
+				x=429
+				y=10
+				width=302
+				height=40
+			}
+			"basic attribute" {
+				clr=0
+			}
+			textix="9 Element Spectra"
+			align="horiz. centered"
 		}
 	}
 }
