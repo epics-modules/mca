@@ -1,0 +1,282 @@
+<HTML>
+<HEAD>
+<TITLE>AIM Device Device Support for the MCA Record</TITLE>
+</HEAD>
+<BODY>
+<H1>AIM Device Device Support for the MCA Record</H1>
+
+<ADDRESS>Mark Rivers and Tim Mooney</ADDRESS>
+
+<HR>
+<H2>Contents</H2>
+<UL>
+<LI><A HREF="#Overview">Overview</A>
+<LI><A HREF="#Files">Files</A>
+<LI><A HREF="#Example">Example Startup Script</A>
+<LI><A HREF="#Performance">Performance Measurements</A>
+</UL>
+
+<A NAME="Overview">
+<H2>Overview</H2></A>
+<P>
+In the past the MCA record and AIM device support was limited to supporting
+only one "spectrum" per ADC input.  This was insufficient for several purposes:
+<OL>
+<LI> When acquiring data using the Canberra multiplexor each ADC is processing
+spectra for several inputs, which each input being automatically stored in a
+separate region of memory in the AIM.  The memory offset between these spectra
+is set by switch settings in the multiplexor.  There was previously no way to 
+tell the AIM device support to allocate the memory in the AIM required to
+support this, nor to read out the separate spectra.  For this application it is
+preferable to have separate MCA records for each multiplexor input, since each
+input may have a different energy calibration, etc.  The only limitation is
+that it is not possible to start and stop acquisition independently on the
+various inputs, since the hardware cannot do this.  However, it is possible to
+independently erase the different spectra.
+<P>
+<LI> The same limitations applied when using the Canberra Multichannel Scaler. 
+This device is very similar to the multiplexor, in that each MCS input is
+stored in a different region of the AIM memory, with the number of segments and
+size of each segment being determined by the front panel switches.  Since each
+input is used to measure a different quantity it is generally desirable to have
+each input be a separate MCA record.
+<P>
+<LI>For time-resolved spectroscopy it is very desirable to be able to rapidly
+change the region of the AIM memory into which an ADC acquires.  One can then
+acquire a number of spectra in rapid succession, without incurring the delay of
+reading the spectra from the AIM and erasing the memory between acquisitions. 
+The only delay is the few msec required to transmit a message changing the
+memory address of acquisition.  For this application it is preferable to have
+the data in a single MCA record, with a new field which controls the memory
+location for acquisition, reading and erasing.
+</OL>
+Version 4.0 of the MCA record and the AIM device support software fully supports
+the above 3 applications.  
+
+
+<P>
+The previous version of the MCA device support did not use the INP field of the
+MCA record, but rather used two other fields, ADDR and PORT to specify the
+address of the AIM module and which ADC port on the AIM should be used.
+The new version of AIM device support declares the INP field of the MCA record
+to be type VME_IO, and uses the concept of "card" and "signal" to specify the
+location of the input.  A new routine, AIMConfig(), has been added, and this
+routine must be called in the vxWorks startup file before iocInit.
+
+<P>
+In the new device support a logical "card" corresponds to one ADC input port on
+one AIM.  Each AIM can thus have two "cards" associated with it.  Each logical
+card can have multiple "signals", where a signal is a region of AIM memory
+associated with a physical signal input.  Each input signal can have
+more than one "sequence" or time-slice allocated to it. The association of a
+particular AIM port with a logical card, and the allocation of memory within
+the AIM for this input is done by routine AIMConfig.  AIMConfig is called as 
+follows:
+
+<PRE>
+AIMConfig(int card, int address, int port, int maxChans, int maxSignals,
+          int maxSequences)
+</PRE>
+<P>
+<UL>
+<LI> "card" is a logical card number for this AIM port. "card" values must be
+in the range 0 to maxCards-1, where maxCards is discussed below.
+
+<LI> "address" is the Ethernet address of the AIM, specified as a hex number
+as printed on the front of the AIM, for example 0xE85.
+
+<LI> "port" is the ADC port number on the AIM, either 1 or 2.
+
+<LI> "maxChans" is the maximum number of channels for each input signal.
+When using the multiplexor this value must agree with the switch setting
+inside the multiplexor, e.g. 1024, 2048, etc.
+When using the MCS this value must agree with the front panel switch,
+e.g. 256, 512, 1024, etc.
+
+<LI> "maxSignals" is the maximum number of inputs which will be used with this
+port. When using the multiplexor this value must agree with the switch 
+setting inside the multiplexor, i.e. 1, 2, 4, or 8.  When using the MCS 
+this value must agree with the front panel switch, e.g. 1, 2, 4, or 8.
+
+<LI> "maxSequences" is the maximum number of sequences or time slices which 
+will be used with this port.
+
+</UL>
+The total amount of memory (in channels) allocated for the port will be
+maxChans*maxSignals*maxSequences
+<P>
+The total amount of memory in the AIM is about 64,000 channels, and this is
+shared by the two ports.
+<P>
+When creating an MCA record which uses the new AIM device support the INP field
+must be specified in the form:
+<PRE>
+    #Cn #Sm @
+</PRE>
+where "n" is the logical card number defined in the call to AIMConfig and "m"
+is the signal number in the range 0 to maxSignals-1.
+
+The default maximum number of logical cards is 10 which corresponds to 5 AIM
+modules.  To increase this value simply call AIMSetup(maxCards) before the
+first call to AIMConfig().
+
+
+<A NAME="Example">
+<H2>Example startup script</H2></A>
+<P>
+
+
+Assume we have an AIM with Ethernet address 0x100.  To port 1 of this AIM there
+is a single ADC which is set for 2048 channels.  This ADC will be used for
+"conventional" data acquisition, i.e. with no multiplexor and not doing 
+time-resolved work. To port 2 of this AIM there is a multiplexor.  The switches
+in the multiplexor have been set for 4 inputs and 4096 channels.  The records
+for these multiplexor inputs only use 1024 channels in this example.
+
+The system has a second AIM at Ethernet address 0x200.  To port 1 of this AIM 
+there is a single ADC which is set for 1024 channels.  This ADC will be used
+for time-resolved work, and we want to collect 20 spectra within the AIM. To
+port 2 of this AIM there is an MCS which has front panel switches set to 2
+inputs and 8192 channels.  The following are excerpts from the vxWorks startup
+file.
+
+<PRE>
+# Start of example ##################################################
+AIMConfig(0, 0x100, 1, 2048, 1, 1)
+AIMConfig(1, 0x100, 2, 4096, 4, 1)
+AIMConfig(2, 0x200, 1, 1024, 1, 20)
+AIMConfig(3, 0x200, 2, 8192, 2, 1)
+
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_adc1,CARD=0,SIGNAL=0,CHANS=2048")
+
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux1,CARD=1,SIGNAL=0,CHANS=1024")
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux2,CARD=1,SIGNAL=1,CHANS=1024")
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux3,CARD=1,SIGNAL=2,CHANS=1024")
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux4,CARD=1,SIGNAL=3,CHANS=1024")
+
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_adc2,CARD=2,SIGNAL=0,CHANS=1024")
+
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mcs1,CARD=3,SIGNAL=0,CHANS=8192")
+dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mcs1,CARD=3,SIGNAL=1,CHANS=8192")
+# End of example ##################################################
+</PRE>
+<P>
+Note that it is convenient to set the multiplexor switches for the largest
+spectral size and largest number of inputs which you anticipate using.  Smaller
+spectral sizes can be selected by setting NUSE to a smaller value in the MCA
+record, without having to open the multiplexor and change the switch settings.
+Extra inputs are ignored simply by not assigning any records to those inputs.
+The only disadvantage of this approach is that it wastes AIM memory.  However,
+the AIM has a total of more than 64,000 channels of acquisition memory which is
+more than enough for many applications.
+
+
+<A NAME="Performance">
+<H2>Performance Measurements</H2></A>
+<P>
+
+
+The following IDL program measures how fast time-resolved data can be acquired.
+It was tested with record 13LAB:aim_adc1 configured with maxSequences=4 and
+with an input pulser at about 100 kHz.
+
+<PRE>
+;************************************************************
+; This program tests the time-resolved spectroscopy capabilities of the
+; new MCA record with the AIM.  The hardware configuration is an ADC with
+; pulses coming in at about 100 kHz.
+
+; Create EPICS MCA object
+rec = '13LAB:aim_adc1'
+casettimeout, .005  ; Fast channel access timeout
+max_sequences = 4
+mca = obj_new('epics_mca', rec)
+
+; Turn of acquisition, erase all of the spectra in the AIM
+mca->acquire_off
+for i=0,max_sequences-1 do begin
+   mca->set_sequence, i
+   mca->erase
+endfor
+
+; Acquire data in sequence 0 for 1 second to determine input count rate
+mca->set_sequence, 0
+presets = mca->get_presets()
+presets.real_time = 1.0
+presets.live_time = 0.0
+mca->set_presets, presets
+mca->erase
+mca->acquire_on
+mca->acquire_wait
+data = mca->get_data()
+count_rate = total(data)
+print, 'Input count rate = ', count_rate
+
+; Clear presets, erase sequence 0
+presets.live_time = 0.0
+mca->set_presets, presets
+mca->erase
+
+; Now collect time-resolved spectra as fast as possible
+mca->acquire_on
+t0 = systime(1)
+for i=0,max_sequences-1 do begin
+   mca->set_sequence, i
+endfor
+t1 = systime(1)
+mca->acquire_off
+
+print, 'Elapsed time for time-resolved spectra= ', t1-t0
+; Read out each spectrum, print number of counts
+time = fltarr(max_sequences)
+for i=0, max_sequences-1 do begin
+    mca->set_sequence, i
+    data = mca->get_data()
+    time(i) = total(data)/count_rate
+    print, '  Total counts in sequence ', i, ' = ', total(data)
+    print, '    time in sequence = ', time(i) * 1000., ' msec.'
+endfor
+print, 'Real time = ', t1-t0
+print, 'Live time = ', total(time)
+print, 'Dead time = ', total(time)/(t1-t0)*100., ' percent'
+end
+;************************************************************
+
+The following are the results of the test:
+
+Input count rate =       125459.
+Elapsed time for time-resolved spectra=       0.24195898
+  Total counts in sequence        0 =       8187.00
+    time in sequence =       65.2564 msec.
+  Total counts in sequence        1 =       3787.00
+    time in sequence =       30.1852 msec.
+  Total counts in sequence        2 =       3803.00
+    time in sequence =       30.3127 msec.
+  Total counts in sequence        3 =       2862.00
+    time in sequence =       22.8122 msec.
+Real time =       0.24195898
+Live time =      0.148566
+Dead time =        61.401506 percent
+</PRE>
+<P>
+The total elapsed time to collect 4 time-resolved spectra is 241 msec.  The
+first spectrum collected for 65 msec (because it includes the overhead of the
+acquire on command), while the other spectra were collected for 20-30 msec.
+The dead time was about 100 msec for 4 spectra, or about 25 msec per spectrum.
+Note that if the .SEQ field were incremented by a process in the crate, rather
+than IDL channel access the performance might be somewhat better.
+<P>
+The conclusion is that the MCA record and AIM can acquire about 20 spectra
+per second, which is fast enough for many applications.
+
+<HR>
+<ADDRESS>
+Suggestions and comments to: 
+<A HREF="mailto:rivers@cars.uchicago.edu">
+Mark Rivers </A> : (rivers@cars.uchicago.edu)
+<BR>
+Last modified: November 23, 1997
+</ADDRESS>
+
+</BODY>
+</HTML>
