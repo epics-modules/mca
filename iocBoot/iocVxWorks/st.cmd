@@ -9,7 +9,7 @@ cd topbin
 ld < mcaAIM.munch
 
 cd startup
-dbLoadDatabase("../../dbd/mcaAIM.dbd",0,0)
+dbLoadDatabase("../../dbd/mcaCanberra.dbd",0,0)
 registerRecordDeviceDriver(pdbbase) 
 
 dbLoadRecords("../../mcaApp/Db/mca.db","P=mcaTest:,M=aim_adc1,NCHAN=2048,NUSE=2048,DTYPE=MPF MCA,INP=#C0 S0@AIMServ")
