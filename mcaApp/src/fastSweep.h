@@ -34,10 +34,10 @@ private:
     int maxPoints;
     int acquiring;
     int numAcquired;
-    int realTime;
-    int liveTime;
-    int elapsedTime;
-    int startTime;
+    double realTime;
+    double liveTime;
+    double elapsedTime;
+    epicsTime startTime;
     int numChans;
     int numPoints;
     int *pData;

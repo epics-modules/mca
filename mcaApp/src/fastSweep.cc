@@ -14,22 +14,22 @@
                    class must be created that implements the 
                    writeOutput(), readOutput(), setMicroSecondsPerScan and 
                    getMicroSecondsPerScan functions.
+    06/10/03 MLR   Converted to EPICS R3.14.2
 */
 
-#include <vxWorks.h>
-#include <iv.h>
 #include <stdlib.h>
-#include <sysLib.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
-#include <tickLib.h>
+
+#include <epicsTime.h>
 
 #include "Message.h"
 #include "Float64Message.h"
 #include "Int32ArrayMessage.h"
 #include "Float64ArrayMessage.h"
 #include "mpfType.h"
+
 #include "mca.h"
 #include "fastSweep.h"
 #include "DevMcaMpf.h"
@@ -50,7 +50,7 @@ volatile int fastSweepDebug = 0;
 fastSweep:: fastSweep(int firstChan, int lastChan, int maxPoints) : 
                       firstChan(firstChan), lastChan(lastChan), maxPoints(maxPoints),
                       acquiring(0), numAcquired(0), 
-                      elapsedTime(0), startTime(0),
+                      elapsedTime(0.), startTime(epicsTime::getCurrent()),
                       numChans(lastChan - firstChan + 1)
 {
     DEBUG(1, "fastSweep:fastSweep, maxPoints=%d, numChans=%d, this=%p\n", 
@@ -81,7 +81,7 @@ void fastSweep::nextPoint(int *newData)
         offset += maxPoints;
     }
     numAcquired++;
-    elapsedTime = tickGet() - startTime;
+    elapsedTime = epicsTime::getCurrent() - startTime;
     if ((realTime > 0) && (elapsedTime >= realTime))
             acquiring = 0;
     if ((liveTime > 0) && (elapsedTime >= liveTime))
@@ -94,14 +94,14 @@ void fastSweep::erase()
     numAcquired = 0;
     /* Reset the elapsed time */
     elapsedTime = 0;
-    startTime = tickGet();
+    startTime = epicsTime::getCurrent();
 }   
 
 void fastSweep::startAcquire()
 {
     if (!acquiring) {
        acquiring = 1;
-       startTime = tickGet();
+       startTime = epicsTime::getCurrent();
     }
 }   
 
@@ -124,22 +124,22 @@ int fastSweep::getNumPoints()
 
 int fastSweep::setRealTime(double time)
 {
-    // "time" is in seconds, convert to clock ticks
-    realTime = (int) (time*sysClkRateGet() + 0.5);
+    // "time" is in seconds
+    realTime = time;
     return(0);
 }   
 
 int fastSweep::setLiveTime(double time)
 {
-    // "time" is in seconds, convert to clock ticks
-    liveTime = (int) (time*sysClkRateGet() + 0.5);
+    // "time" is in seconds
+    liveTime = time;
     return(0);
 }   
 
 double fastSweep::getElapsedTime()
 {
-    // Return elapsed time in seconds, convert from clock ticks
-    return( (double)elapsedTime / (double)sysClkRateGet());
+    // Return elapsed time in seconds
+    return(elapsedTime);
 }
 
 int fastSweep::getStatus()
@@ -198,7 +198,7 @@ void fastSweepServer::fastServer(fastSweepServer *pFastSweepServer)
                   // No-op for fastSweep
                   break;
                case MSG_SET_NCHAN:
-                  if(pFastSweep->setNumPoints(pim->value))
+                  if(pFastSweep->setNumPoints((int)pim->value))
                         pim->status= -1;
                   break;
                case MSG_SET_DWELL:
