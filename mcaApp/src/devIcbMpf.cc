@@ -137,7 +137,8 @@ void DevAoIcbMpf::receiveReply(dbCommon* pr, Message* m)
 long DevAoIcbMpf::init_record(void* v)
 {
     aoRecord* pao = (aoRecord*)v;
-    new DevAoIcbMpf((dbCommon*)pao,&(pao->out));
+    DevAoIcbMpf *pDevAoIcbMpf = new DevAoIcbMpf((dbCommon*)pao,&(pao->out));
+    pDevAoIcbMpf->bind();
     DevAoIcbMpf* pobj = (DevAoIcbMpf *)pao->dpvt;
     Float64Message *pm = new Float64Message;
     if (pao->pini) {
@@ -207,7 +208,8 @@ long DevAiIcbMpf::completeIO(dbCommon* pr,Message* m)
 long DevAiIcbMpf::init_record(void* v)
 {
     aiRecord* pai = (aiRecord*)v;
-    new DevAiIcbMpf((dbCommon*)pai,&(pai->inp));
+    DevAiIcbMpf *pDevAiIcbMpf = new DevAiIcbMpf((dbCommon*)pai,&(pai->inp));
+    pDevAiIcbMpf->bind();
     return(0);
 }
 
@@ -280,7 +282,8 @@ void DevMbboIcbMpf::receiveReply(dbCommon* pr, Message* m)
 long DevMbboIcbMpf::init_record(void* v)
 {
     mbboRecord* pmbbo = (mbboRecord*)v;
-    new DevMbboIcbMpf((dbCommon*)pmbbo,&(pmbbo->out));
+    DevMbboIcbMpf *pDevMbboIcbMpf = new DevMbboIcbMpf((dbCommon*)pmbbo,&(pmbbo->out));
+    pDevMbboIcbMpf->bind();
     DevMbboIcbMpf* pobj = (DevMbboIcbMpf *)pmbbo->dpvt;
     Int32Message *pm = new Int32Message;
     if (pmbbo->pini) {
@@ -351,6 +354,7 @@ long DevMbbiIcbMpf::completeIO(dbCommon* pr,Message* m)
 long DevMbbiIcbMpf::init_record(void* v)
 {
     mbbiRecord* pmbbi = (mbbiRecord*)v;
-    new DevMbbiIcbMpf((dbCommon*)pmbbi,&(pmbbi->inp));
+    DevMbbiIcbMpf *pDevMbbiIcbMpf = new DevMbbiIcbMpf((dbCommon*)pmbbi,&(pmbbi->inp));
+    pDevMbbiIcbMpf->bind();
     return(0);
 }
