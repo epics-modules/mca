@@ -176,8 +176,8 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     int status;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-              "devMcaAsyn::send_msg: command=%d, pact=%d, rdns=%d, rdng=%d\n", 
-              command, pmca->pact, pmca->rdns, pmca->rdng);
+              "devMcaAsyn::send_msg: %s command=%d, pact=%d, rdns=%d, rdng=%d\n", 
+              pmca->name, command, pmca->pact, pmca->rdns, pmca->rdng);
 
     /* If we are already in COMM_ALARM then this server is not reachable, 
      * return */
@@ -276,14 +276,15 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         break;
     default:
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devMcaAsyn::send_msg, invalid command=%d\n", command);
+                  "devMcaAsyn::send_msg, %s invalid command=%d\n", 
+                  pmca->name, command);
     }
     /* Queue asyn request, so we get a callback when driver is ready */
     status = pasynManager->queueRequest(pasynUser, 0, 0);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-                  "devMcaAsyn::send_msg: error calling queueRequest, %s\n", 
-                  pasynUser->errorMessage);
+                  "devMcaAsyn::send_msg: %s error calling queueRequest, %s\n", 
+                  pmca->name, pasynUser->errorMessage);
         return(-1);
     }
     return(0);
@@ -300,8 +301,8 @@ void asynCallback(asynUser *pasynUser)
     mcaCommand command;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-              "devMcaAsyn::asynCallback: command=%d, ivalue=%d, dvalue=%f\n",
-              pmsg->command, pmsg->ivalue, pmsg->dvalue);
+              "devMcaAsyn::asynCallback: %s command=%d, ivalue=%d, dvalue=%f\n",
+              pmca->name, pmsg->command, pmsg->ivalue, pmsg->dvalue);
     pasynUser->drvUser = &pmsg->command;
 
     switch (pmsg->command) {
@@ -350,7 +351,8 @@ void asynCallback(asynUser *pasynUser)
     status = pasynManager->freeAsynUser(pasynUser);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-                  "devMcaAsyn::asynCallback: error in freeAsynUser\n");
+                  "devMcaAsyn::asynCallback: %s error in freeAsynUser, %s\n",
+                  pmca->name, pasynUser->errorMessage);
     }
 }
 
