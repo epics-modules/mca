@@ -83,8 +83,9 @@
  *                          first starts.
  * .24  05-26-03  mlr  V5.5 Converted to R3.14.2, Jens Eden did most of the work
  * .xx  07-23-03  tmm  V5.501 Keep nuse <= nmax
+ * .xx  09-16-03  mlr  V5.502 Added export for mcaRecordDebug, to access from iocsh
  */
-#define VERSION 5.501
+#define VERSION 5.502
 
 
 #include    <stdlib.h>
@@ -120,6 +121,7 @@
                             errlogPrintf(FMT,##V);}}
 #endif
 volatile int mcaRecordDebug = 0;
+epicsExportAddress(int, mcaRecordDebug);
 
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
