@@ -23,6 +23,9 @@
 *
 *******************************************************************************/
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define ICB_K_MAX_MODULES 96    /* The number of entries in ICB_MODULE_INFO */
 
@@ -523,3 +526,7 @@ int icb_str2dsc (CHAR *dsc,     CHAR *str);
 int strnicmp (CHAR *s1, CHAR *s2, int len);
 int StrUpCase (CHAR *dst, CHAR *src, int len);
 int StrTrim (CHAR *dst, CHAR *src, int len, int *trim_len);
+
+#ifdef __cplusplus
+}
+#endif /*__cplusplus */

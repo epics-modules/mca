@@ -11,9 +11,7 @@
 //  mbbi records).  pm->extra is ICB_READ for ai or mbbi, and ICB_WRITE for ao
 //  or mbbo.
 
-#include <vxWorks.h>
 #include <stdlib.h>
-#include <taskLib.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
@@ -26,8 +24,6 @@
 #include "mpfType.h"
 #include "DevIcbMpf.h"
 
-extern "C"
-{
 #include "ndtypes.h"
 #include "nmc_sys_defs.h"
 #include "icb_user_subs.h"
@@ -41,6 +37,8 @@ extern "C"
 #define SCA_2   0x40
 #define SCA_3   0x80
 
+extern "C"
+{
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
@@ -67,7 +65,7 @@ typedef struct {
    int  pur_amp;
    float lld[3];
    float uld[3];
-} icbTcaModule;
+} ICB_TCA_MODULE;
 
 class icbTcaServer;
 extern "C" int icbTcaAddModule(icbTcaServer *picbTcaServer,
@@ -78,11 +76,11 @@ public:
     void processMessages();
     MessageServer *pMessageServer;
     static void icbTcaServerTask(icbTcaServer *);
-    int writeReg2(struct icbTcaModule *m);
-    int writeReg6(struct icbTcaModule *m);
-    int writeDiscrim(struct icbTcaModule *m, double percent, int discrim_spec);
+    int writeReg2(ICB_TCA_MODULE *m);
+    int writeReg6(ICB_TCA_MODULE *m);
+    int writeDiscrim(ICB_TCA_MODULE *m, double percent, int discrim_spec);
     int maxModules;
-    struct icbTcaModule *icbTcaModule;
+    ICB_TCA_MODULE *icbTcaModule;
 };
 
 extern "C" icbTcaServer *icbTcaConfig(const char *serverName, int maxModules,
@@ -94,8 +92,8 @@ extern "C" icbTcaServer *icbTcaConfig(const char *serverName, int maxModules,
     icbTcaServer *p = new icbTcaServer;
     p->pMessageServer = new MessageServer(serverName, queueSize);
     p->maxModules = maxModules;
-    p->icbTcaModule = (struct icbTcaModule *)
-                           calloc(maxModules, sizeof(struct icbTcaModule));
+    p->icbTcaModule = (ICB_TCA_MODULE *)
+                           calloc(maxModules, sizeof(ICB_TCA_MODULE));
 
     // Initialize the ICB software in case this has not been done
     s=icb_initialize();
@@ -104,11 +102,10 @@ extern "C" icbTcaServer *icbTcaConfig(const char *serverName, int maxModules,
     icbTcaAddModule(p, 0, address);
     strcpy(taskname, "t");
     strcat(taskname, serverName);
-    int taskId = taskSpawn(taskname,100,VX_FP_TASK,4000,
-        (FUNCPTR)icbTcaServer::icbTcaServerTask,(int)p,
-        0,0,0,0,0,0,0,0,0);
-    if(taskId==ERROR)
-        errlogPrintf("%s icbTcaServer taskSpawn Failure\n",
+    epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000, 
+                      (EPICSTHREADFUNC)icbTcaServer::icbTcaServerTask, (void*) p);
+    if(threadId == NULL)
+       errlogPrintf("%s icbTcaServer ThreadCreate Failure\n",
             p->pMessageServer->getName());
     return(p);
 }
@@ -116,7 +113,7 @@ extern "C" icbTcaServer *icbTcaConfig(const char *serverName, int maxModules,
 extern "C" int icbTcaAddModule(icbTcaServer *p, int module,
                              char *address)
 {
-   struct icbTcaModule *m;
+   ICB_TCA_MODULE *m;
    unsigned char csr;
 
    if ((module < 0) || (module >= p->maxModules)) {
@@ -151,7 +148,7 @@ void icbTcaServer::processMessages()
    while(true) {
       pMessageServer->waitForMessage();
       Message *inmsg;
-      struct icbTcaModule *m;
+      ICB_TCA_MODULE *m;
       int icbCommand;
       int module, icbAddress;
       int index;
@@ -326,7 +323,7 @@ void icbTcaServer::processMessages()
 }
 
 
-int icbTcaServer::writeReg2(struct icbTcaModule *m)
+int icbTcaServer::writeReg2(ICB_TCA_MODULE *m)
 {
    unsigned char reg;
 
@@ -343,7 +340,7 @@ int icbTcaServer::writeReg2(struct icbTcaModule *m)
    return(write_icb(m->module, m->icbAddress, 2, 1, &reg));
 }
 
-int icbTcaServer::writeReg6(struct icbTcaModule *m)
+int icbTcaServer::writeReg6(ICB_TCA_MODULE *m)
 {
    unsigned char reg;
 
@@ -356,7 +353,7 @@ int icbTcaServer::writeReg6(struct icbTcaModule *m)
    return(write_icb(m->module, m->icbAddress, 6, 1, &reg));
 }
 
-int icbTcaServer::writeDiscrim(struct icbTcaModule *m, double percent, int discrim_spec)
+int icbTcaServer::writeDiscrim(ICB_TCA_MODULE *m, double percent, int discrim_spec)
 {
    ULONG dac;
    unsigned char registers[2];

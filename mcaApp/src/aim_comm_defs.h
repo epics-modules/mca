@@ -26,6 +26,20 @@
 /*
 * Host to Module Command Definitions
 */
+#ifdef vxWorks
+#else
+#ifndef _EPICS_AIM_NMC_TYPE_REDEFINITIONS
+typedef epicsInt8 			INT8;
+typedef epicsUInt8			UINT8;
+typedef epicsInt16			INT16;
+typedef epicsUInt16			UINT16;
+typedef epicsInt32			INT32;
+typedef epicsUInt32			UINT32;
+typedef epicsFloat32		FLOAT32;
+typedef epicsFloat64		FLOAT64;
+#define _EPICS_AIM_NMC_TYPE_REDEFINITIONS
+#endif /* _EPICS_AIM_NMC_TYPE_REDEFINITIONS */
+#endif /* vxWorks */
 
 /*
 * The command codes are found in ncp_comm_packet.packet_code.

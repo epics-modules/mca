@@ -23,6 +23,9 @@
 *                             turn acquisition off and back on.  This is not
 *                             necessary, and it hurts performance.
 *       07-Sep-2000     MLR   Cleaned up formatting
+*       01-Feb-2003     jee   Changes for Release 3.14.and Linux port
+*                             replaced semaphore by epicsEvent in 
+*                             nmc_acqu_addeventsem/nmc_acqu_remeventsem
 ******************************************************************************/
 
 #include "nmc_sys_defs.h"
@@ -34,7 +37,7 @@ extern struct nmc_module_info_struct *nmc_module_info;
 extern struct nmc_comm_info_struct *nmc_comm_info;
                                         /* Stores comm info for each network type */
 
-extern LIST nmc_sem_list;
+extern ELLLIST nmc_sem_list;
 
 char list_buffer_ready_array[2];        /* global array that indicates list buffer full status */
 
@@ -172,15 +175,14 @@ int module,adc,buffer,bytes,*address,release;
 *
 * "event" is the event type (NMC_C_EVTYPE_x)
 *
-* "sem" (SEM_ID) is the semaphore to be given when the specified event message
+* "evt_id"  is the epicsEventId to be signaled when the specified event message
 *  arrives.
 *
 *******************************************************************************/
 
-int nmc_acqu_addeventsem(module, adc, event_type, sem_id)
-
+int nmc_acqu_addeventsem(module, adc, event_type, evt_id)
 int module,adc,event_type;
-SEM_ID sem_id;
+epicsEventId evt_id;
 {
    struct nmc_sem_node *node;
    int resp_buffer,actual;
@@ -192,9 +194,9 @@ SEM_ID sem_id;
    (*node).module = module;
    (*node).adc = adc;
    (*node).event_type = event_type;
-   (*node).sem_id = sem_id;
+   (*node).evt_id = evt_id;
 
-   lstAdd(&nmc_sem_list, (NODE *) node);
+   ellAdd(&nmc_sem_list, (ELLNODE *) node);
 
    /*
     * Send our asynchronous SAP address to the module.
@@ -223,7 +225,7 @@ SEM_ID sem_id;
 *
 * The calling format is:
 *
-*       NMC_ACQU_REMEVENTSEM(module, adc, event, sem)
+*       NMC_ACQU_REMEVENTSEM(module, adc, event, evt)
 *
 * where
 *
@@ -233,14 +235,14 @@ SEM_ID sem_id;
 *
 * "event" is the event type (NMC_C_EVTYPE_x)
 *
-* "sem" (SEM_ID) is the semaphore to be given when the specified event message
+* "evt_id"  is the epicsEventId to be signaled when the specified event message
 *  arrives.
 *
 *******************************************************************************/
 
-int nmc_acqu_remeventsem(module, adc, event_type, sem_id)
+int nmc_acqu_remeventsem(module, adc, event_type, evt_id)
    int module,adc,event_type;
-   SEM_ID sem_id;
+   epicsEventId evt_id;
 
 {
    struct nmc_sem_node *p;
@@ -248,19 +250,19 @@ int nmc_acqu_remeventsem(module, adc, event_type, sem_id)
    /*
     *  Scan the list and delete the node if there is match.
     */
-   p = (struct nmc_sem_node *) lstFirst(&nmc_sem_list);
+   p = (struct nmc_sem_node *) ellFirst(&nmc_sem_list);
    while (p != NULL) {
       if (((*p).module == module) &&
           ((*p).adc == adc) &&
           ((*p).event_type == event_type) &&
-          ((*p).sem_id == sem_id))
+          ((*p).evt_id == evt_id))
       {
-         lstDelete(&nmc_sem_list, (NODE *) p);
+         ellDelete(&nmc_sem_list, (ELLNODE *) p);
          free(p);
          return OK;
       }
 
-      p = (struct nmc_sem_node *) lstNext( (NODE *) p);
+      p = (struct nmc_sem_node *) ellNext( (ELLNODE *) p);
    }
 
    /* We did not find the specified entry */

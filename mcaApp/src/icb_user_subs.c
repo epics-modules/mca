@@ -6,9 +6,7 @@
  * These routines provide a simple way to communicate with ICB modules which
  * are not currently supported by icb_handler_subs.c
  */
-#include        <vxWorks.h>
-#include        <types.h>
-#include        <stdioLib.h>
+#include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
 
@@ -40,7 +38,6 @@ int parse_ICB_address(char *address, int *ni_module, int *icb_addr)
       int integer;
    } temp_int;
    unsigned char temp_array[6];
-   unsigned char tmp, *p;
    char *pc;
 
    *ni_module = *icb_addr = 0;

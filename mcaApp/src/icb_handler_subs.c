@@ -77,8 +77,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <sysLib.h>
-#include <taskLib.h>
 #include "ndtypes.h"
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
@@ -1760,7 +1758,7 @@ LONG icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps)
   LONG s = OK;					/* Assume true status	*/
   REAL hvps_diff;
   REAL level;
-  LONG delay = sysClkRateGet() * 5;	/* Delta time of 5 seconds */
+  double delay = 5.0;	/* Delta time of 5 seconds */
 
 /*
 * Clear the AST Id
@@ -1797,7 +1795,7 @@ while (1) {
    /*
    * If there is more to be done, wait 5 seconds.
    */
-	taskDelay(delay);
+	epicsThreadSleep(delay);
 }
 
 /*
@@ -3920,7 +3918,7 @@ LONG icb_amp_write_gain2 (ICB_CCNIM_AMP *amp)
   LONG nvpos;
   ULONG pos;
   ICB_MODULE_INFO *entry;
-  LONG dt_qsec= sysClkRateGet() / 4;
+  double dt_qsec = 0.25;
 
 /*
 * Get a pointer to the icb module database entry.
@@ -3937,7 +3935,7 @@ while (1) {
    */
 	amp->flags.bit.motrbusy = 1;
 	if ((entry->registers[0] & AMP_M_R2_BUSY) == 0) break;
-	taskDelay(dt_qsec);
+	epicsThreadSleep(dt_qsec);
 }
 
 /*
@@ -4077,7 +4075,7 @@ LONG icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp)
   ULONG pos;
   UBYTE temp[4];
   ICB_MODULE_INFO *entry;
-  LONG dt_qsec= sysClkRateGet() / 4;
+  double dt_qsec = 0.25;
 
 /*
 * Get a pointer to the icb module database entry.
@@ -4093,7 +4091,7 @@ while (1) {
 	if (s != OK) return s;
 
 	if ((temp[0] & AMP_M_R2_BUSY) == 0) break;
-	taskDelay(dt_qsec);
+	epicsThreadSleep(dt_qsec);
 }
 	entry->registers[0] = temp[0];
 
@@ -4212,7 +4210,7 @@ LONG icb_amp_test_home (ICB_CCNIM_AMP *amp)
   LONG s;
   UBYTE temp[4];
   ICB_MODULE_INFO *entry;
-  LONG dt_qsec= sysClkRateGet() / 4;
+  double dt_qsec= .25;
 
 /*
 * Get a pointer to the icb module database entry.
@@ -4228,7 +4226,7 @@ while (1) {
 	if (s != OK) return s;
 
 	if ((temp[0] & AMP_M_R2_BUSY) == 0) break;
-	taskDelay(dt_qsec);
+	epicsThreadSleep(dt_qsec);
 }
 	entry->registers[0] = temp[0];
 
@@ -4454,7 +4452,7 @@ LONG flags;
   LONG s;
   UBYTE temp[4];
   ICB_MODULE_INFO *entry;
-  long wait_time = sysClkRateGet() * 0.1;	/* for taskDelay */
+  double wait_time = 0.1;	/* for taskDelay */
 
 /*
 * Get a pointer to the icb module database entry.
@@ -4493,7 +4491,7 @@ LONG flags;
 	s = icb_input (index, 2, 1, temp);
 	if (s != OK) return s;
 	while ((temp[0] & AMP_M_R2_BUSY) != 0) {
-	    taskDelay(wait_time);
+	    epicsThreadSleep(wait_time);
 	    s = icb_input (index, 2, 1, temp);
 	    if (s != OK) return s;
 	}
@@ -4534,7 +4532,7 @@ LONG icb_amp_start_pz (ICB_CCNIM_AMP *amp)
   LONG s=OK;
   UCHAR reg_val;
   ICB_MODULE_INFO *entry;
-  LONG dt_qsec= sysClkRateGet() / 4;
+  double dt_qsec = 0.25;
 
 /*
 * Get a pointer to the icb module database entry.
@@ -4551,7 +4549,7 @@ LONG icb_amp_start_pz (ICB_CCNIM_AMP *amp)
 	amp->flags.bit.pzfail = 0;
 while(1) {
 	if ((entry->registers[6] & AMP_M_R8_BUSY) == 0) break;
-	taskDelay(dt_qsec);
+	epicsThreadSleep(dt_qsec);
 }
 
 /*
@@ -4608,7 +4606,7 @@ LONG icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp)
   LONG s;
   UBYTE temp[4];
   ICB_MODULE_INFO *entry;
-  LONG dt_qsec= sysClkRateGet() / 4;
+  double dt_qsec = 0.25;
 
 /*
 * Get a pointer to the icb module database entry.
@@ -4627,7 +4625,7 @@ while (1) {
 	    return s;
 	}
 	if ((temp[0] & AMP_M_R8_BUSY) == 0) break;
-	taskDelay(dt_qsec);
+	epicsThreadSleep(dt_qsec);
 }
 	entry->registers[6] = temp[0];
 

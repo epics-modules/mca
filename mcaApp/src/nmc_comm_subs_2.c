@@ -21,13 +21,12 @@
 *                           task for nmc_broadcast_inq, rather than vxWorks
 *                           period().  This is more legible in vxWorks task
 *                           list.  Improved debugging.
+*    01-Feb-2003    jee     Changes for Release 3.14.and Linux port
 *******************************************************************************/
 
 #include "nmc_sys_defs.h"
 #include <string.h>
 #include <stdio.h>
-#include <taskLib.h>
-#include <sysLib.h>
 #include <errlog.h>
 
 extern struct nmc_module_info_struct *nmc_module_info;  /* Keeps info on modules */
@@ -37,7 +36,7 @@ extern struct nmc_comm_info_struct *nmc_comm_info;      /* Keeps comm info */
 static unsigned char ni_broadcast_address[6] = {1,0,0xaf,0,0,0};
                                                 /* Basic Ethernet multicast address */
 
-extern SEM_ID nmc_global_mutex;                 /* Mutual exclusion semaphore
+extern epicsMutexId nmc_global_mutex;           /* Mutual exclusion semaphore
                                                    to interlock access to
                                                    global variables */
 
@@ -125,7 +124,10 @@ int nmc_buymodule(int module, int override)
     * Make sure the module number is reasonable
     */
 
-   if(nmc_check_module(module, &s, &netinfo) != NMC_K_MCS_REACHABLE) goto done;
+   if(nmc_check_module(module, &s, &netinfo) != NMC_K_MCS_REACHABLE) {
+      MODULE_INTERLOCK_OFF(module);
+	  goto done;
+   }
    p = &nmc_module_info[module];
    /*
     * Return success if we already own the module
@@ -133,6 +135,7 @@ int nmc_buymodule(int module, int override)
 
    if((*p).module_ownership_state == NMC_K_MOS_OWNEDBYUS) {
       s = OK; 
+      MODULE_INTERLOCK_OFF(module);
       goto done;
    }
 
@@ -142,6 +145,7 @@ int nmc_buymodule(int module, int override)
 
    if((*p).module_ownership_state == NMC_K_MOS_NOTBYUS && !(override)) {
       s = NMC__OWNERNOTSET;
+      MODULE_INTERLOCK_OFF(module);
       goto done;
    }
 
@@ -167,7 +171,6 @@ int nmc_buymodule(int module, int override)
    if (s == NCP_K_MRESP_SUCCESS) s = OK;
 
 done:
-   MODULE_INTERLOCK_OFF(module);
    if (s  == OK)
       return OK;
    else {
@@ -268,8 +271,7 @@ int nmc_build_enet_addr(int input_addr, unsigned char *output_addr)
       int i;
       char c[4];
    } temp;
-   register UINT8 tmp, *p;
-   
+    
    temp.i = input_addr;
    LSWAP(temp.i);
 
@@ -289,12 +291,13 @@ int nmc_build_enet_addr(int input_addr, unsigned char *output_addr)
 *
 *     status=NMC_BROADCAST_INQ_TASK(net device,inquiry type,multicast address)
 *******************************************************************************/
-int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i, int inqtype, 
-                            int addr)
+int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i)
 {
+   int inqtype=NCP_C_INQTYPE_ALL;
+   int addr=0;
    while (1) {
       nmc_broadcast_inq(i, inqtype, addr);
-      taskDelay(NCP_BROADCAST_PERIOD * sysClkRateGet());
+	  epicsThreadSleep((double)NCP_BROADCAST_PERIOD);
    }
    return(0);  /* Never get here */
 }
@@ -336,8 +339,7 @@ int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i, int inqtype,
 
 int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
 {
-
-   int s, module;
+   int s, module, length;
    struct ether_header ether_header;
    struct inquiry_packet ipkt;
    struct enet_header *e;
@@ -398,8 +400,23 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
       /* Change byte order */
       nmc_byte_order_out(&ipkt);
       AIM_DEBUG(2, "nmc_broadcast_inq, sending inquiry\n");
+	  length=sizeof(ipkt);
+#ifdef vxWorks
       s=etherOutput((*i).pIf, &ether_header,
                (char *) &ipkt.enet_header.dsap, sizeof(ipkt)-14);
+	  if (s==OK) s=length;
+#else
+	  /* fill the ethernet header of ipkt */
+	  /* copy only addresses */
+	  if ( libnet_build_ethernet(ether_header.ether_dhost, i->pIf->hw_address->ether_addr_octet,
+	     	      ether_header.ether_type, &(e->dsap), 0, (unsigned char *)e) < 0) {
+	  	 printf("\n error building ethernet packet");
+	  }
+	  if ((s=libnet_write_link_layer(i->pIf->netlnk, i->pIf->if_name, (unsigned char *) &ipkt, length)) != length) {
+	  	 printf("\n error writing ethernet broadcasting packet");
+	  }
+#endif
+      AIM_DEBUG(1, "(nmc_broadcast_inq): wrote %d bytes of %d\n",s,length);
 
       /*
        * If we sent one of the "conditional" inquiry messages, nothing to
@@ -435,7 +452,7 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
     * Signal errors
     */
 done:
-   GLOBAL_INTERLOCK_OFF;
+  GLOBAL_INTERLOCK_OFF;
    if (s == OK)
       return OK;
    else {
@@ -481,7 +498,10 @@ int nmc_freemodule(int module, int oflag)
     * Make sure the module number is reasonable
     */
 
-   if (nmc_check_module(module, &s, &netinfo) != NMC_K_MCS_REACHABLE) goto done;
+   if (nmc_check_module(module, &s, &netinfo) != NMC_K_MCS_REACHABLE) {
+   	  MODULE_INTERLOCK_OFF(module);
+   	  goto done;
+   }
    p = &nmc_module_info[module];
 
    /*
@@ -489,6 +509,7 @@ int nmc_freemodule(int module, int oflag)
     */
    if (!oflag && (*p).module_ownership_state != NMC_K_MOS_OWNEDBYUS) {
       s = OK;
+   	  MODULE_INTERLOCK_OFF(module);
       goto done;
    }
    /*
@@ -514,7 +535,6 @@ int nmc_freemodule(int module, int oflag)
    if (s == NCP_K_MRESP_SUCCESS) s = OK;
 
 done:
-   MODULE_INTERLOCK_OFF(module);
    if (s == OK)
       return OK;
    else {
@@ -554,7 +574,6 @@ int nmc_byte_order_in(void *inpkt)
    struct ncp_comm_packet *r;
    
    int status;
-   register unsigned char tmp, *p;
 
    /* First fix the ncp_comm_header structure which is common to all
       packet types */
@@ -693,7 +712,6 @@ int nmc_byte_order_out(void *outpkt)
    struct ncp_comm_packet *r;
    
    int s, packet_code;
-   register unsigned char tmp, *p;
    
    /* First fix the ncp_comm_header structure which is common to all
       packet types */

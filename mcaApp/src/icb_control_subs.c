@@ -453,7 +453,6 @@ struct icb_module_info_struct *entry;
       int integer;
    } temp_int;
    unsigned char temp_array[6];
-   register UINT8 tmp, *p;
 
    /*
     * Isolate the network address: the part between the "NI" and the colon,

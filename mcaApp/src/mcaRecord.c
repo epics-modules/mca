@@ -81,14 +81,13 @@
  *                          fields.
  * .23  04-07-02  mlr  V5.4 Improved logic for dead time to avoid 100% when acquisition
  *                          first starts.
+ * .24  05-26-03  mlr  V5.5 Converted to R3.14.2, Jens Eden did most of the work
  */
-#define VERSION 5.4
+#define VERSION 5.5
 
-#include    <vxWorks.h>
-#include    <types.h>
-#include    <stdioLib.h>
-#include    <lstLib.h>
+
 #include    <stdlib.h>
+#include    <stdio.h>
 #include    <string.h>
 
 #include    <alarm.h>
@@ -101,12 +100,15 @@
 #include    <errMdef.h>
 #include    <errlog.h>
 #include    <recSup.h>
+#include    <recGbl.h>
 #include    <special.h>
+#include    <tsDefs.h>
 
 #define GEN_SIZE_OFFSET
 #include    "mcaRecord.h"
 #undef GEN_SIZE_OFFSET
 #include    "mca.h"
+#include    "epicsExport.h"
 
 /* Debug support */
 #if 0
@@ -137,7 +139,7 @@ static long get_graphic_double();
 static long get_control_double();
 static long get_alarm_double();
 
-struct rset mcaRSET={
+rset mcaRSET={
     RSETNUMBER,
     report,
     initialize,
@@ -156,6 +158,7 @@ struct rset mcaRSET={
     get_graphic_double,
     get_control_double,
     get_alarm_double };
+epicsExportAddress(rset, mcaRSET);
 
 struct mcaDSET { /* mca DSET */
     long            number;
@@ -610,6 +613,7 @@ static long process(mcaRecord *pmca)
             recGblGetTimeStamp(pmca);
             tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY,
                            pmca->stim);
+
             /* Trim STIM to 25 characters = .001 sec precision */
             pmca->stim[25]='\0';
             MARK(M_STIM);

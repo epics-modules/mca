@@ -9,16 +9,15 @@
   
     21-Jan-2001  MLR  Fixed bug when erasing a single spectrum with signal != 0, 
                       it was only erasing the first 25% of the memory.
+    01-Feb-2003  jee  Changes for Release 3.14.and Linux port
 */
 
-#include <vxWorks.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
-#include <taskLib.h>
-#include <sysLib.h>
-#include <tickLib.h>
+
+#include <epicsTime.h>
 
 #include <errlog.h>
 
@@ -67,8 +66,8 @@ public:
     int etotals;
     int acqmod;
     int exists;
-    unsigned int statusTime;
-    unsigned int maxStatusTime;
+    epicsTime *statusTime;
+    double maxStatusTime;
     int acquiring;
 };
 
@@ -85,6 +84,10 @@ extern "C" int AIMConfig(
     unsigned char enet_address[6];
     char taskname[80];
     int s;
+
+    DEBUG(8,"(AIMConfig): ethernetDevice=%s\n", ethernetDevice);
+    DEBUG(8,"(AIMConfig): serverName=%s\n", serverName);
+    DEBUG(8,"(AIMConfig): address=%d, QueuSize=%d\n",address,queueSize);
 
     mcaAIMServer *p = new mcaAIMServer;
     p->pMessageServer = new MessageServer(serverName, queueSize);
@@ -111,11 +114,10 @@ extern "C" int AIMConfig(
     p->ptechan = 0;
     p->acqmod  = 1;
     p->acquiring = 0;
-    p->statusTime = 0;
+    p->statusTime = new epicsTime;
     /* Maximum time to use old status info before a new query is sent. Only used 
-     * if signal!=0, typically with multiplexors. 0.1 seconds in ticks */
-    p->maxStatusTime = (int) (0.1 * sysClkRateGet());
-
+     * if signal!=0, typically with multiplexors. 0.1 seconds  */
+    p->maxStatusTime = 0.1;
     /* Compute the module Ethernet address */
     nmc_build_enet_addr(address, enet_address);
 
@@ -149,11 +151,10 @@ extern "C" int AIMConfig(
 
     strcpy(taskname, "t");
     strcat(taskname, serverName);
-    int taskId = taskSpawn(taskname,100,VX_FP_TASK,4000,
-        (FUNCPTR)mcaAIMServer::mcaAIMServerTask,(int)p,
-        0,0,0,0,0,0,0,0,0);
-    if(taskId==ERROR)
-        errlogPrintf("%s mcaAIMServer taskSpawn Failure\n",
+     epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000, 
+		 	 (EPICSTHREADFUNC)mcaAIMServer::mcaAIMServerTask, (void*) p);
+    if(threadId == NULL)
+        errlogPrintf("%s mcaAIMServer ThreadCreate Failure\n",
             p->pMessageServer->getName());
     return(0);
 }
@@ -165,6 +166,7 @@ void mcaAIMServer::mcaAIMServerTask(mcaAIMServer *pmcaAIMServer)
 
 void mcaAIMServer::processMessages()
 {
+    DEBUG(3,"(mcaAIMServer): processMessages starting \n");
     while(true) {
         pMessageServer->waitForMessage();
         Message *inmsg;
@@ -173,6 +175,7 @@ void mcaAIMServer::processMessages()
         struct devMcaMpfStatus *pstat;
         int signal, address, seq;
         int s;
+		epicsTime *pnow = new epicsTime;
 
         while((inmsg = pMessageServer->receive())) {
             Float64Message *pim = (Float64Message *)inmsg;
@@ -290,16 +293,16 @@ void mcaAIMServer::processMessages()
                   pf64m->setLength(len);
                   pstat = (struct devMcaMpfStatus *)pf64m->value;
 
-                  /* Read the current status of the device if signal 0 or
+                 /* Read the current status of the device if signal 0 or
                    * if the existing status info is too old */
                   if ((signal == 0) || 
-                      ((tickGet() - statusTime) > maxStatusTime)) {
+                      ((pnow->getCurrent() - maxStatusTime) > *statusTime)) {
                      s = nmc_acqu_statusupdate(module, adc, 0, 0, 0,
                               &elive, &ereal, &etotals, &acquiring);
                      DEBUG(2, 
                         "(mcaAIMServer [%s signal=%d]): get_acq_status=%d\n", 
                               pMessageServer->getName(), signal, s);
-                     statusTime = tickGet();
+                     statusTime->getCurrent();
                   }
                   pstat->realTime = ereal/100.0;
                   pstat->liveTime = elive/100.0;

@@ -22,21 +22,60 @@
 *                         Added nmc_broadcast_inq_task().
 *******************************************************************************/
 
+#include <epicsTypes.h>
+#include <ellLib.h>
+#include <epicsMessageQueue.h>
+#include <epicsMutex.h>
+#include <epicsEvent.h>
+#include <epicsThread.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#ifdef vxWorks
 #include <vxWorks.h>
 #include <msgQLib.h>
 #include <etherLib.h>
 #include <semLib.h>
-#include <lstLib.h>
-
+#else
+#include <libnet.h>
+#include <pcap.h> 		/* Packet Capturing: if this gives you an error try pcap/pcap.h */
+#endif
 #include <errlog.h>
+
 
 #include "aim_comm_defs.h"
 #include "ncp_comm_defs.h"
 #include "nmcmsgdef.h"
+
+
+#ifdef vxWorks
+#else
+/* VxWorks has these definitions */
+#define OK 			0
+#define ERROR 		(-1)
+#define FALSE       0
+#define TRUE            1
+
+#define IMPORT 
+
+#ifndef _EPICS_AIM_NMC_TYPE_REDEFINITIONS
+typedef epicsInt8 		INT8;
+typedef epicsUInt8		UINT8;
+typedef epicsInt16		INT16;
+typedef epicsUInt16		UINT16;
+typedef epicsInt32		INT32;
+typedef epicsUInt32		UINT32;
+typedef epicsFloat32		FLOAT32;
+typedef epicsFloat64		FLOAT64;
+#define _EPICS_AIM_NMC_TYPE_REDEFINITIONS
+#endif /* _EPICS_AIM_NMC_TYPE_REDEFINITIONS */
+
+/* this is defined by VxWorks */
+typedef       int             BOOL;
+typedef int STATUS;
+#endif /* vxWorks */
 
 #define AIM_DEBUG(l,FMT,V...) {if (l <= aimDebug) \
               { errlogPrintf("%s(%d):",__FILE__,__LINE__); \
@@ -44,6 +83,7 @@ extern "C" {
 extern volatile int aimDebug;
 
 #define NMC_K_MAX_MODULES 64                    /* we can know about 64 modules */
+#define NMC_K_CAPTURESIZE  2048                 /* Linux pcap Capture Buffer Size*/
 
 /*
 * This structure contains information concerning the state of networked modules
@@ -71,8 +111,8 @@ struct nmc_module_info_struct {
    unsigned char rcv_errors;           /* receive error counter */
    unsigned char timeout_errors;       /* timeout error counter */
    unsigned short int message_counter; /* total messages sent/received */
-   MSG_Q_ID responseQ;                 /* Message queue for response packets */
-   SEM_ID module_mutex;                /* Mutual exclusion semaphore */
+   epicsMessageQueueId responseQ;      /* message queue for response messages */
+   epicsMutexId module_mutex;          /* Mutual exclusion semaphore */
    struct response_packet *in_pkt;     /* Input packet buffer */
    struct response_packet *out_pkt;    /* Output packet buffer */
 };
@@ -95,6 +135,22 @@ struct nmc_module_info_struct {
 #define NMC_K_MCS_UNREACHABLE 1     /* module is unreachable */
 #define NMC_K_MCS_REACHABLE 2       /* module is reachable */
 
+#ifdef vxWorks
+#else
+/* ifnet: linux version is different from VxWorks */
+struct ifnet {
+        char    *if_name;               /* interface name, e.g. eth0 */
+		short   if_unit;				/* not used, always 0 */
+		struct  libnet_link_int *netlnk;	/* netlnk struct for packet injection */
+		struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
+};
+/* vxWorks has this defined, Linux also
+struct  ether_header {
+        epicsUInt8  ether_dhost[6];
+        epicsUInt8  ether_shost[6];
+        epicsUInt16 ether_type;
+}; */
+#endif
 /*
 * This structure contains data relating to the communications channel over
 * which we talk to networked modules.
@@ -106,13 +162,18 @@ struct nmc_comm_info_struct {
    char name[10];                 /* Network device name */
    unsigned char sys_address[6];  /* System network address */
    struct ifnet *pIf;             /* Pointer to ifnet structure */
-   int status_pid;                /* Task ID of status dispatch task */
-   int broadcast_pid;             /* Task ID of broadcast poller task */
-   int timeout_time;              /* 1 second timeout value */
+   epicsThreadId status_pid;       /* Thread ID of status dispatch */
+   epicsThreadId broadcast_pid;    /* Thread ID of broadcast poller  */
+#ifdef vxWorks
+#else
+   epicsThreadId capture_pid;      /* Thread ID of ether capture thread */
+#endif
+/* this was the no of ticks for timeout, it is float seconds now*/
+   float timeout_time;            /* time in s */
    int header_size;               /* The size of the device dependent header */
    int max_msg_size;              /* Largest possible message size */
    int max_tries;                 /* Number of command retries allowed */
-   MSG_Q_ID statusQ;              /* Message queue for status messages */
+   epicsMessageQueueId statusQ;   /* Message queue for status messages */
    unsigned char response_sap;    /* NI SAP address for normal messages */
    unsigned char status_sap;      /* NI SAP address for status/event messages */
    unsigned char response_snap[5]; /* NI SNAP ID for normal messages */
@@ -138,27 +199,25 @@ struct nmc_sem_node
    int module;
    int adc;
    int event_type;
-   SEM_ID sem_id;
+   epicsEventId evt_id;
    };
-
+   
 /* Interlock access to global variables. */
-#define GLOBAL_INTERLOCK_ON semTake(nmc_global_mutex, WAIT_FOREVER)
-#define GLOBAL_INTERLOCK_OFF semGive(nmc_global_mutex)
+#define GLOBAL_INTERLOCK_ON epicsMutexLock(nmc_global_mutex)
+#define GLOBAL_INTERLOCK_OFF epicsMutexUnlock(nmc_global_mutex)
 
 #define MODULE_INTERLOCK_ON(module) \
-        if (semTake(nmc_module_info[module].module_mutex, WAIT_FOREVER)) \
+        if (epicsMutexLock(nmc_module_info[module].module_mutex)) \
            AIM_DEBUG(1, "MODULE_INTERLOCK_ON failed!\n")
 #define MODULE_INTERLOCK_OFF(module) \
-        if (semGive(nmc_module_info[module].module_mutex)) \
-           AIM_DEBUG(1, "MODULE_INTERLOCK_OFF failed!\n")
+        epicsMutexUnlock(nmc_module_info[module].module_mutex)
 
 
 /* Function prototypes */
 
 /* These routines are in nmc_comm_subs_1.c */
-IMPORT STATUS nmc_initialize(char *device);
 void nmc_cleanup();
-IMPORT STATUS nmcEtherGrab(struct ifnet *pIf, char *buffer, int length);
+IMPORT STATUS nmc_initialize(char *device);
 IMPORT STATUS nmcStatusDispatch(struct nmc_comm_info_struct *net);
 IMPORT STATUS nmc_status_hdl(struct nmc_comm_info_struct *net,
                              struct status_packet *pkt);
@@ -179,8 +238,13 @@ IMPORT STATUS nmc_allocmodnum(int *module);
 IMPORT STATUS nmc_buymodule(int module, int override);
 IMPORT STATUS nmc_allocate_memory(int module, int size, int *base_address);
 IMPORT STATUS nmc_build_enet_addr(int input_addr, unsigned char *output_addr);
-IMPORT STATUS nmc_broadcast_inq_task(struct nmc_comm_info_struct *net,
-                                int inqtype, int addr);
+IMPORT STATUS nmc_broadcast_inq_task(struct nmc_comm_info_struct *net);
+#ifdef vxWorks
+IMPORT STATUS nmcEtherGrab(struct ifnet *pIf, char *buffer, int length);
+#else
+pcap_handler nmcEtherGrab(unsigned char *,const struct pcap_pkthdr*, const unsigned char*);
+void nmcEthCapture(struct nmc_comm_info_struct *);
+#endif
 IMPORT STATUS nmc_broadcast_inq(struct nmc_comm_info_struct *net,
                                 int inqtype, int addr);
 IMPORT STATUS nmc_freemodule(int module, int override);
@@ -202,9 +266,9 @@ IMPORT STATUS nmc_acqu_getlistbuf(int module, int adc, int buffer, int bytes,
                                int *address, int release);
 IMPORT STATUS nmc_acqu_event_hdl(struct event_packet *epkt);
 IMPORT STATUS nmc_acqu_addeventsem(int module, int adc, int event_type,
-                                SEM_ID semid);
+                                epicsEventId evt_id);
 IMPORT STATUS nmc_acqu_remeventsem(int module, int adc, int event_type,
-                                SEM_ID semid);
+                                epicsEventId evt_id);
 IMPORT STATUS nmc_acqu_getliststat(int module, int adc, int *acquire, int *current,
                                 int *buff1stat, int *buff1bytes,
                                 int *buff2stat, int *buff2bytes);

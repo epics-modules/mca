@@ -238,7 +238,6 @@ int ndl_diffdecm(input,channels,output,max_channels,actual_channels)
         int value;                      /* current channel's value */
         int *output_ptr;                /* points to current output channel */
         int channels_left;              /* number of channels left to process */
-        register unsigned char tmp, *p;
         short sdiff;
 /*
 * First, could the AIM have truncated a channel, or will the caller's buffer

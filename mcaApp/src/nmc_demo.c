@@ -11,8 +11,8 @@
 *	1. Sets up for networked module I/O, finds and "buys" the module whose
 *	   network address is specified by "address". You must change the last
 *	   three bytes of this variable to match that of your module!
-*	2. Sets up acquisition for the first ADC on the module (4K channels, 60
-*	   seconds preset live time; the ADC number is determined by the 
+*	2. Sets up acquisition for the first ADC on the module (4K channels, 10
+*	   seconds preset real time; the ADC number is determined by the 
 *	   variable "adc"), and tells the module to send an event message when 
 *	   the preset is reached.
 *	3. Erases the acquisition memory.
@@ -44,43 +44,65 @@
 /* Definitions */
 
 #include "nmc_sys_defs.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-
-nmc_demo(int low_address)
-
+#ifdef vxWorks
+int nmc_demo(char *intfc, int low_address)
 {
+#else
+int main(int argc, char** argv)
+{
+	int low_address;		/* Low order part of Ethernet address */
+	char *intfc;
+#endif
 
 /*
 * Declarations
 */
 
-	int i,s,module,response,actual,total=0,elive,ereal,etotals,acq;
-	SEM_ID acqoff_sem;
+	int i,s,module,total=0,elive,ereal,etotals,acq;
+	epicsEventId acqoff_evt;
 	int adc=0;				/* The ADC we're dealing with; 0 is the first, 1 the second */
-	int wait_period = 30 * sysClkRateGet();	/* Interval for "deadman" polling */
+	double wait_period = 30.0;	/* Interval in secs for "deadman" polling */
 	int acq_time = 10;			/* Acquisition time (seconds) */
 	static int data[4096];			/* Buffer for the spectrum = 4K channels */
 	unsigned char address[6];	/* Buffer for full Ethernet address */
 	int low_address_default=0x675;		/* Low order part of Ethernet address */
+
+#ifdef vxWorks
+#else
+	if (argc < 3){
+		printf("Usage: %s <ethernet-interface> <aim-ether-address>\n",argv[0]);
+		printf("eg: nmc_demo eth0 0xe26\n");
+		exit(1); 
+	}
+	intfc = argv[1];
+	low_address = strtol(argv[2],NULL,16);
+	printf("Using AIM-Module %x\n",low_address);
+#endif
 
 	if (low_address == 0) low_address = low_address_default;
 /*
 * First, setup to perform network module I/O.
 */
 
-	s=nmc_initialize("ei0");
+	printf("Calling nmc_initialize ...\n");
+	s=nmc_initialize(intfc);
 	if(s == ERROR) return ERROR;
 
 /*
 * Build the full Ethernet address from the low order portion
 */
-	nmc_build_enet_addr(low_address, &address);
+	printf("Calling nmc_build_enet_addr ...\n");
+	nmc_build_enet_addr(low_address, address);
 	
 /*
 * Find the "module number" of the networked module whose address is specified
 * by "address".
 */
 
+	printf("Calling nmc_findmod_by_addr ...\n");
 	s=nmc_findmod_by_addr(&module,address);
 	if(s==ERROR) {nmc_signal("nmc_demo",s); return ERROR;}
 
@@ -88,13 +110,19 @@ nmc_demo(int low_address)
 * Buy the module
 */
 
+	printf("Calling nmc_buymodule ...\n");
 	s=nmc_buymodule(module, 0);
 	if(s==ERROR) return ERROR;
+/*
+* Show all modules on network
+*/
+	printf("Calling nmc_show_modules ...\n");
+	s=nmc_show_modules();
 
 /*
-* Get a semphore  to wait for acquisition off events
+* Get an event to wait for acquisition off events
 */
-	acqoff_sem = semBCreate(SEM_Q_PRIORITY, SEM_EMPTY);
+	acqoff_evt = epicsEventCreate(epicsEventEmpty);
 
 /*
 * Set up to receive acquire off event messages from the module.  Semaphore
@@ -102,23 +130,33 @@ nmc_demo(int low_address)
 * the first ADC.
 */
 
-	nmc_acqu_addeventsem(module, adc, NCP_C_EVTYPE_ACQOFF, acqoff_sem);
+	printf("Calling nmc_addeventsem ...\n");
+	nmc_acqu_addeventsem(module, adc, NCP_C_EVTYPE_ACQOFF, acqoff_evt);
 
 /*
 * Setup the first ADC on that module for acquisition (note that ADCs are 
 * numbered starting with 0). We'll set it up for 4K channels, PHA mode, with
-* preset live time of "acq_time" seconds (all timing is in centiseconds!).
+* preset real time of "acq_time" seconds (all timing is in centiseconds!).
 */
-	s=nmc_acqu_setup(module, adc, 0, 4096, acq_time*100, 0, 0, 0, 0, NCP_C_AMODE_PHA);
+	printf("Calling nmc_acqu_setup ...\n");
+	s=nmc_acqu_setup(module, adc, 0, 4096, 0, acq_time*100, 0, 0, 0, NCP_C_AMODE_PHA);
 	if(s==ERROR) return ERROR;
 
 /*
 * Erase the memory and turn on acquisition
 */
+	printf("Calling nmc_acqu_setstate(0) ...\n");
+        s = nmc_acqu_setstate(module, adc, 0);  /* Make sure acquisition if off */
+	printf("Calling nmc_acqu_erase ...\n");
 	s = nmc_acqu_erase(module, 0, 4096*4);
+        /* Set the elapsed live and real time back to zero. */
+	printf("Calling nmc_acqu_setelapsed ...\n");
+        s = nmc_acqu_setelapsed(module, adc, 0, 0);
 	if(s==ERROR) return ERROR;
 
-	semTake(acqoff_sem, NO_WAIT);	/* make sure the acquisition off semaphore is clear */
+ 
+	epicsEventTryWait(acqoff_evt);	/* make sure the acquisition off event is clear */
+	printf("Calling nmc_setstate(1) ...\n");
 	s = nmc_acqu_setstate(module, adc, 1); /* Turn on acquire */
 	if(s==ERROR) return ERROR;
 
@@ -130,7 +168,9 @@ nmc_demo(int low_address)
 
 	acq = 1;
 	while (acq) {
-	   s=semTake(acqoff_sem, wait_period);
+           printf("Waiting for event flag or timeout.  Should complete in %d seconds.\n", acq_time);
+	   epicsEventWaitWithTimeout(acqoff_evt, wait_period);
+	   printf("Calling nmc_statusupdate ...\n");
 	   s=nmc_acqu_statusupdate(module,adc,0,0,0,&elive,&ereal,&etotals,&acq);
 	   if(s==ERROR) return ERROR;
 	}
@@ -139,6 +179,7 @@ nmc_demo(int low_address)
 * Get the data into "data"
 */
 
+	printf("Calling nmc_getmemory_cmp ...\n");
 	s=nmc_acqu_getmemory_cmp(module,adc,0,1,1,1,4096,data);
 	if(s==ERROR) return ERROR;
 
@@ -147,7 +188,15 @@ nmc_demo(int low_address)
 */
 
 	for(i=0; i < 4096; i++) total += data[i];
-	printf("\nTotal counts were %d; Real time was %.2f seconds.\n",total,ereal/100.00);
+	printf("Total counts were %d; Real time = %.2f, Live time=%.2f\n",total,ereal/100.,elive/100.);
 
+	printf("Calling nmc_freemodule ...\n");
 	nmc_freemodule(module, 0);
+/*
+* Show all modules on network
+*/
+	printf("Calling nmc_show_modules ...\n");
+	s=nmc_show_modules();
+
+        return(OK);
 }

@@ -38,3 +38,17 @@ mcaMpfServerLIBOBJS  -- referenced in user tree's Makefile.Vx
 mcaLib         -- not used
 mpfServLib     -- not used
 ================================================================================
+ 
+To compile the mca-application for Linux, you need to install
+
+1. libpcap from www.tcpdump.org
+and
+2. libnet from www.packetfactory.net/projects/libnet/
+
+Both packages are included in most major distributions.
+
+Don't forget to set LD_LIBRARY_PATH to all library locations.
+
+Debugging Ethernet traffic to/from AIMs on Linux 
+ tcpdump -i eth1 'ether[6] = 0 and ether[7] = 0 and ether[8] = 0xaf'
+ tcpdump -i eth1 '(ether src 00:04:76:27:5B:09 and ether[2] = 0xaf) or ether src 00:00:af:00:04:e8'

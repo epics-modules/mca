@@ -16,9 +16,7 @@
 //  mbbi records).  pm->extra is ICB_READ for ai or mbbi, and ICB_WRITE for ao
 //  or mbbo.
 
-#include <vxWorks.h>
 #include <stdlib.h>
-#include <taskLib.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
@@ -31,8 +29,6 @@
 #include "mpfType.h"
 #include "DevIcbMpf.h"
 
-extern "C"
-{
 #include "ndtypes.h"
 #include "nmc_sys_defs.h"
 #include "icb_user_subs.h"
@@ -41,6 +37,8 @@ extern "C"
 #include "campardef.h"
 #include "icbServerDefs.h"
 
+extern "C"
+{
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
@@ -53,7 +51,7 @@ typedef struct {
    char address[80];
    int  defined;
    int  index;
-} icbModule;
+} ICB_MODULE;
 
 class icbServer;
 extern "C" int icbAddModule(icbServer *picbServer,
@@ -64,14 +62,14 @@ public:
     void processMessages();
     MessageServer *pMessageServer;
     static void icbServerTask(icbServer *);
-    int writeAdc(struct icbModule *m, long command, char c, void *addr);
-    int writeAmp(struct icbModule *m, long command, char c, void *addr);
-    int writeHvps(struct icbModule *m, long command, char c, void *addr);
-    int readAdc(struct icbModule *m, long command, char c, void *addr);
-    int readAmp(struct icbModule *m, long command, char c, void *addr);
-    int readHvps(struct icbModule *m, long command, char c, void *addr);
+    int writeAdc(ICB_MODULE *m, long command, char c, void *addr);
+    int writeAmp(ICB_MODULE *m, long command, char c, void *addr);
+    int writeHvps(ICB_MODULE *m, long command, char c, void *addr);
+    int readAdc(ICB_MODULE *m, long command, char c, void *addr);
+    int readAmp(ICB_MODULE *m, long command, char c, void *addr);
+    int readHvps(ICB_MODULE *m, long command, char c, void *addr);
     int maxModules;
-    struct icbModule *icbModule;
+    ICB_MODULE *icbModule;
 };
 
 extern "C" icbServer *icbConfig(const char *serverName, int maxModules,
@@ -83,8 +81,8 @@ extern "C" icbServer *icbConfig(const char *serverName, int maxModules,
     icbServer *p = new icbServer;
     p->pMessageServer = new MessageServer(serverName, queueSize);
     p->maxModules = maxModules;
-    p->icbModule = (struct icbModule *)
-                           calloc(maxModules, sizeof(struct icbModule));
+    p->icbModule = (ICB_MODULE *)
+                           calloc(maxModules, sizeof(ICB_MODULE));
     // Initialize the ICB software in case this has not been done
     s=icb_initialize();
     DEBUG(5, "(icbConfig): icb_initialize=%d\n", s);
@@ -92,11 +90,10 @@ extern "C" icbServer *icbConfig(const char *serverName, int maxModules,
     icbAddModule(p, 0, address);
     strcpy(taskname, "t");
     strcat(taskname, serverName);
-    int taskId = taskSpawn(taskname,100,VX_FP_TASK,4000,
-        (FUNCPTR)icbServer::icbServerTask,(int)p,
-        0,0,0,0,0,0,0,0,0);
-    if(taskId==ERROR)
-        errlogPrintf("%s icbServer taskSpawn Failure\n",
+    epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000, 
+                      (EPICSTHREADFUNC)icbServer::icbServerTask, (void*) p);
+    if(threadId == NULL)
+       errlogPrintf("%s icbServer ThreadCreate Failure\n",
             p->pMessageServer->getName());
     return(p);
 }
@@ -104,7 +101,7 @@ extern "C" icbServer *icbConfig(const char *serverName, int maxModules,
 extern "C" int icbAddModule(icbServer *p, int module,
                              char *address)
 {
-   struct icbModule *m;
+   ICB_MODULE *m;
    int s;
 
    if ((module < 0) || (module >= p->maxModules)) {
@@ -136,7 +133,7 @@ void icbServer::processMessages()
    while(true) {
       pMessageServer->waitForMessage();
       Message *inmsg;
-      struct icbModule *m;
+      ICB_MODULE *m;
       int index;
       int icbCommand;
       int status=OK;
@@ -378,7 +375,7 @@ void icbServer::processMessages()
    } // End while(true)
 }
 
-int icbServer::writeAdc(struct icbModule *m, long command, char c, void *addr)
+int icbServer::writeAdc(ICB_MODULE *m, long command, char c, void *addr)
 {
    ICB_PARAM_LIST icb_write_list[] = {
       {command, c,  addr},   /* Parameter              */
@@ -386,7 +383,7 @@ int icbServer::writeAdc(struct icbModule *m, long command, char c, void *addr)
    return(icb_adc_hdlr(m->index, icb_write_list, ICB_M_HDLR_WRITE));
 }
 
-int icbServer::writeAmp(struct icbModule *m, long command, char c, void *addr)
+int icbServer::writeAmp(ICB_MODULE *m, long command, char c, void *addr)
 {
    ICB_PARAM_LIST icb_write_list[] = {
       {command, c,  addr},   /* Parameter              */
@@ -394,7 +391,7 @@ int icbServer::writeAmp(struct icbModule *m, long command, char c, void *addr)
    return(icb_amp_hdlr(m->index, icb_write_list, ICB_M_HDLR_WRITE));
 }
 
-int icbServer::writeHvps(struct icbModule *m, long command, char c, void *addr)
+int icbServer::writeHvps(ICB_MODULE *m, long command, char c, void *addr)
 {
    ICB_PARAM_LIST icb_write_list[] = {
       {command, c,  addr},   /* Parameter              */
@@ -405,7 +402,7 @@ int icbServer::writeHvps(struct icbModule *m, long command, char c, void *addr)
 // We need a way to determine if the module is communicating.  icb_xxx_hdlr does
 // not always return an error condition if the module is not available.  Read the
 // CSR and test it for the value 0xff, which is what it has if it is not on the ICB.
-int icbServer::readAdc(struct icbModule *m, long command, char c, void *addr)
+int icbServer::readAdc(ICB_MODULE *m, long command, char c, void *addr)
 {
    int s;
    unsigned char csr;
@@ -419,7 +416,7 @@ int icbServer::readAdc(struct icbModule *m, long command, char c, void *addr)
    else return(OK);
 }
 
-int icbServer::readAmp(struct icbModule *m, long command, char c, void *addr)
+int icbServer::readAmp(ICB_MODULE *m, long command, char c, void *addr)
 {
    int s;
    unsigned char csr;
@@ -433,7 +430,7 @@ int icbServer::readAmp(struct icbModule *m, long command, char c, void *addr)
    else return(OK);
 }
 
-int icbServer::readHvps(struct icbModule *m, long command, char c, void *addr)
+int icbServer::readHvps(ICB_MODULE *m, long command, char c, void *addr)
 {
    int s;
    unsigned char csr;

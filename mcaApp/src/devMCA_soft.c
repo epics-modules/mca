@@ -16,13 +16,9 @@
  */
 
 
-#include	<vxWorks.h>
-#include	<types.h>
-#include	<stdioLib.h>
-#include	<stdlib.h>
-#include	<wdLib.h>
-#include	<memLib.h>
+#include	<stdio.h>
 #include	<string.h>
+#include	<stdlib.h>
 
 #include	<alarm.h>
 #include	<dbDefs.h>
@@ -34,6 +30,7 @@
 
 #include	"mcaRecord.h"
 #include	"mca.h"
+#include        "epicsExport.h"
 
 /* Debug support */
 #if 0
@@ -68,7 +65,7 @@ MCA_SOFT_DSET devMCA_soft = {
 	send_msg,
 	read_array
 };
-
+epicsExportAddress(dset, devMCA_soft);
 
 
 static long init_record(mcaRecord *pmca)
@@ -83,8 +80,7 @@ static long init_record(mcaRecord *pmca)
 
 static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 {
-	int s, elive, ereal, etotals, acq_status, seq, nchans;
-	int nuse = pmca->nuse;
+	int s=0, seq, nchans;
 
 	switch (msg) {
 	case MSG_ACQUIRE:
@@ -177,8 +173,7 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 
 static long read_array(mcaRecord *pmca)
 {
-	int s, nuse = pmca->nuse;
-	int *ptr = (int *)pmca->bptr;
+	int nuse = pmca->nuse;
 
 	Debug(5, "(read_array): doing nothing\n");
 	pmca->nord = nuse;

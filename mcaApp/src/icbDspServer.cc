@@ -11,9 +11,7 @@
 //  mbbi records).  pm->extra is ICB_READ for ai or mbbi, and ICB_WRITE for ao
 //  or mbbo.
 
-#include <vxWorks.h>
 #include <stdlib.h>
-#include <taskLib.h>
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
@@ -26,8 +24,6 @@
 #include "mpfType.h"
 #include "DevIcbMpf.h"
 
-extern "C"
-{
 #include "ndtypes.h"
 #include "nmc_sys_defs.h"
 #include "icb_user_subs.h"
@@ -35,6 +31,8 @@ extern "C"
 #include "icb_bus_defs.h"
 #include "icbDsp.h"
 
+extern "C"
+{
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
@@ -53,7 +51,7 @@ typedef struct {
    int  info_bdc;
    int  info_thri;
    int  status_flgs;
-} icbDspModule;
+} ICB_DSP_MODULE;
 
 class icbDspServer;
 extern "C" int icbDspAddModule(icbDspServer *picbDspServer, 
@@ -72,7 +70,7 @@ public:
                                  unsigned short imin, unsigned short imax);
     double unpackThroughput(unsigned short ival);
     int maxModules;
-    struct icbDspModule *icbDspModule;
+    ICB_DSP_MODULE *icbDspModule;
 };
 
 extern "C" icbDspServer *icbDspConfig(const char *serverName, int maxModules, 
@@ -84,8 +82,8 @@ extern "C" icbDspServer *icbDspConfig(const char *serverName, int maxModules,
     icbDspServer *p = new icbDspServer;
     p->pMessageServer = new MessageServer(serverName, queueSize);
     p->maxModules = maxModules;
-    p->icbDspModule = (struct icbDspModule *)
-                           calloc(maxModules, sizeof(struct icbDspModule));
+    p->icbDspModule = (ICB_DSP_MODULE *)
+                           calloc(maxModules, sizeof(ICB_DSP_MODULE));
 
     // Initialize the ICB software in case this has not been done
     s=icb_initialize();
@@ -94,11 +92,10 @@ extern "C" icbDspServer *icbDspConfig(const char *serverName, int maxModules,
     icbDspAddModule(p, 0, address);
     strcpy(taskname, "t");
     strcat(taskname, serverName);
-    int taskId = taskSpawn(taskname,100,VX_FP_TASK,4000,
-        (FUNCPTR)icbDspServer::icbDspServerTask,(int)p,
-        0,0,0,0,0,0,0,0,0);
-    if(taskId==ERROR)
-        errlogPrintf("%s icbDspServer taskSpawn Failure\n",
+    epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000,
+                      (EPICSTHREADFUNC)icbDspServer::icbDspServerTask, (void*) p);
+    if(threadId == NULL)
+       errlogPrintf("%s icbDspServer ThreadCreate Failure\n",
             p->pMessageServer->getName());
     return(p);
 }
@@ -106,7 +103,7 @@ extern "C" icbDspServer *icbDspConfig(const char *serverName, int maxModules,
 extern "C" int icbDspAddModule(icbDspServer *p, int module, 
                              char *address)
 {
-   struct icbDspModule *m;
+   ICB_DSP_MODULE *m;
    unsigned char csr;
    
    if ((module < 0) || (module >= p->maxModules)) {
@@ -140,7 +137,7 @@ void icbDspServer::processMessages()
    while(true) {
       pMessageServer->waitForMessage();
       Message *inmsg;
-      struct icbDspModule *m;
+      ICB_DSP_MODULE *m;
       int icbCommand;
       int module, icbAddress;
       int status=OK;
@@ -435,7 +432,7 @@ int icbDspServer::sendDsp(int module, int icbAddress, int command,
    write_icb(module, icbAddress, 2, 4, registers);
    /* The following delay seems to be necessary or writes will sometimes 
     * timeout below */
-   taskDelay(DELAY_9660);
+   epicsThreadSleep(DELAY_9660);
 
    // Read register 6 back.  Return error flag on error.  Wait for WDONE to be
    // set 
@@ -451,7 +448,7 @@ int icbDspServer::sendDsp(int module, int icbAddress, int command,
                    module, icbAddress, command, data);
          return(OK);
       }
-      taskDelay(DELAY_9660);
+      epicsThreadSleep(DELAY_9660);
    }
    DEBUG(1, "icbDsp::sendDsp: timeout, module=%d, icbAddress=%d, command=%d, data=%d\n",
                    module, icbAddress, command, data);
@@ -482,7 +479,7 @@ int icbDspServer::readDsp(int module, int icbAddress, int command,
    }
    /* The following delay seems to be necessary or reads will sometimes 
     * timeout below */
-   taskDelay(DELAY_9660);
+   epicsThreadSleep(DELAY_9660);
 
    // Read register 6 back.  Return error flag on error.  Wait for RDAV to be
    // set 
@@ -501,7 +498,7 @@ int icbDspServer::readDsp(int module, int icbAddress, int command,
       if ((r6 & R6_RDAV) && ((r6 & R6_MBUSY) == 0)) {
          goto read_data;
       }
-      taskDelay(DELAY_9660);
+      epicsThreadSleep(DELAY_9660);
    }
    DEBUG(1, "icbDsp::readDsp: timeout, module=%d, icbAddress=%d, command=%d\n",
                    module, icbAddress, command);

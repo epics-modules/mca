@@ -5,9 +5,9 @@
  */
 
 /* Maximum retries for done reponse from module.  Each poll waits DELAY_9660
- *   clock ticks */
+ *   seconds */
 # define MAX_9660_POLLS 2 
-# define DELAY_9660 2
+# define DELAY_9660 0.05
 
 /* Bit definitions in R6 */
 #define R6_FAIL  0x01

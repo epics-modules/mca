@@ -55,37 +55,42 @@
 *                        proven to work.
 *   27-Aug-2001    mlr   Removed test for valid network in nmcEtherGrab to work
 *                        around a bug in Tornado 2.02
+*   01-Feb-2003    jee   Major changes for  Release 3.14.; Semaphores, Time and Tasks
+*                        use the EPICS osi-Api. Replaced msgQ with EpicsRingBuffer.
+*                        Linux port
+*   25-May-2003    mlr   Changed from EpicsRingBuffer and events (which did not work
+*                        reliably with multiple AIMS on the subnet) to 
+*                        EpicsMessageQueue, which is new to 3.14.2.
 *******************************************************************************/
 
 #include "nmc_sys_defs.h"
+
+#ifdef vxWorks
 #include <vme.h>
 #include <sysLib.h>
 #include <taskLib.h>
 #include <hostLib.h>
 #include <usrLib.h>
+#else
+#include <sys/types.h>
+#include <unistd.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
 struct nmc_module_info_struct *nmc_module_info; /* Keeps info on modules */
-
 struct nmc_comm_info_struct *nmc_comm_info;     /* Keeps comm info */
-
 char sys_node_name[9] = {"        "};           /* System node name */
-
 static int nmc_event_hdl(struct event_packet *epkt);
-
 volatile int aimDebug = 0;
-
 extern int errno;
-
 extern char list_buffer_ready_array[2];   /* Is this needed ? */
 
-SEM_ID nmc_global_mutex;                  /* Mutual exclusion semaphore to
+epicsMutexId nmc_global_mutex = NULL;   /* Mutual exclusion semaphore to
                                            interlock global memory references */
-
-LIST nmc_sem_list;                      /* Linked list of event semaphores */
-
+ELLLIST nmc_sem_list;                      /* Linked list of event semaphores */
 
 /*******************************************************************************
 *
@@ -125,7 +130,10 @@ int nmc_initialize(char *device)
    int s, id;
    int pid;
    struct nmc_comm_info_struct *i;
-
+#ifdef vxWorks
+#else
+   char ebuf;
+#endif
    /*
     * Allocate memory for the module and communications database structures
     *  if we have not done this already on a previous call
@@ -138,7 +146,7 @@ int nmc_initialize(char *device)
          calloc(NMC_K_MAX_IDS, sizeof(struct nmc_comm_info_struct));
 
       /* Initialize the linked list for event semaphores */
-      lstInit(&nmc_sem_list);
+      ellInit(&nmc_sem_list);
    }
 
    /*
@@ -180,8 +188,8 @@ found:
    }
 
    /* Create a semaphore to interlock access to the global memory variables*/
-   nmc_global_mutex = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
-
+   if (nmc_global_mutex == NULL) nmc_global_mutex = epicsMutexCreate(); 
+	
    /*
     * Split up into the different cases for different network types
     */
@@ -192,7 +200,7 @@ found:
           * largest legal message size, and the number of communications
           * tries allowed.
           */
-         (*i).timeout_time = 1 * sysClkRateGet();     /* 1.0 seconds (in ticks) */
+         (*i).timeout_time = 1000;        	 /* 1000 ms */
          (*i).max_msg_size = NMC_K_MAX_NIMSG; /* Maximum Ethernet message size */
          (*i).max_tries = 3;                  /* we try to send commands trice */
 
@@ -202,7 +210,12 @@ found:
           * For status and event messages use the same ID but set the top bit.
           */
 
+#ifdef vxWorks
          pid = taskIdSelf();
+#else
+         /*pid = epicsThreadGetIdSelf();*/
+         pid = (int)getpid();
+#endif
          AIM_DEBUG(1, "(nmc_initialize): task ID: 0x%8x\n", pid);
 
          (*i).response_sap = 0xAA;               /* Remember the SNAP SAP */
@@ -229,26 +242,46 @@ found:
             (*i).status_snap[0],(*i).status_snap[1],(*i).status_snap[2],
             (*i).status_snap[3],(*i).status_snap[4]);
 
-         /*
-          * Get our Ethernet address
-          */
-
-         if((s=nmc_get_niaddr(device,(*i).sys_address)) == ERROR) goto signal;
-
          /* Create the message queue for status packets */
-
-         if (((*i).statusQ = msgQCreate(MAX_STATUS_Q_MESSAGES,
-                                        MAX_STATUS_Q_MSG_SIZE,
-                                        MSG_Q_PRIORITY)) == NULL) {
+      	if (((i->statusQ = epicsMessageQueueCreate(MAX_STATUS_Q_MESSAGES, 
+                                                   MAX_STATUS_Q_MSG_SIZE))) == 0) {
             s = errno;
             goto signal;
-         }
+         }	 
 
          /* Define the size of the device dependent header */
          (*i).header_size = sizeof(struct enet_header);
 
+#ifdef vxWorks
+          
+         /* Get our Ethernet address */
+         if((s=nmc_get_niaddr(device,(*i).sys_address)) == ERROR) goto signal;
          /* Get a pointer to the ifnet structure for this device */
-         (*i).pIf = ifunit(device);
+         if ((i->pIf= ifunit(device)) == NULL) 
+				errlogPrintf("nmc_initialize: unknown ethernet device\n");
+#else
+	  
+         if ((i->pIf=malloc(sizeof(struct ifnet))) == NULL) {
+     	      printf("\nunable to alloc memory for ifnet");
+         }
+         if ((i->pIf->if_name=strdup(device)) == NULL) {
+	  	      printf("\nunable to alloc memory for interface name");
+         }
+         if ((i->pIf->netlnk = libnet_open_link_interface(device, &ebuf)) == NULL) {
+	  	      printf("\nunable to open ethernet interface; error: %d",ebuf);
+         }
+         if ((i->pIf->hw_address = libnet_get_hwaddr( i->pIf->netlnk, device, &ebuf)) == NULL) {
+	  	      printf("\nunable to detemine MAC-Address; error: %d",ebuf);
+         }
+         AIM_DEBUG(1, "(nmc_initialize): MAC=%2x:%2x:%2x:%2x:%2x:%2x\n", 
+	     	      	 	i->pIf->hw_address->ether_addr_octet[0],
+	     	      	 	i->pIf->hw_address->ether_addr_octet[1],
+	     	      	 	i->pIf->hw_address->ether_addr_octet[2],
+	     	      	 	i->pIf->hw_address->ether_addr_octet[3],
+	     	      	 	i->pIf->hw_address->ether_addr_octet[4],
+	     	      	 	i->pIf->hw_address->ether_addr_octet[5]);
+         COPY_ENET_ADDR(i->pIf->hw_address->ether_addr_octet, i->sys_address);	  
+#endif
          AIM_DEBUG(1, "(nmc_initialize): pIf=%p\n", (*i).pIf);
 
          (*i).valid = 1;
@@ -256,37 +289,37 @@ found:
           * Start the task which reads messages from the status message queue and calls
           * the status and event handler routines
           */
-         (*i).status_pid = taskSpawn("nmcMessages", 100, 0, 10000,
-                                      nmcStatusDispatch,
-                                      (int)i, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      	 i->status_pid = epicsThreadCreate("nmcMessages", epicsThreadPriorityHigh, 
+               10000, (EPICSTHREADFUNC)nmcStatusDispatch, (void*) i);
 
          /*
           * Start the routine which intercepts incoming Ethernet messages and
           * writes them to the message queues
           * This function is called differently with and without the SENS stack
           */
-#if ( defined (BSD) && ( BSD >= 44 ) )
+#ifdef vxWorks
          /* this is sens */
          etherInputHookAdd(nmcEtherGrab,(*i).pIf->if_name,(*i).pIf->if_unit);
+
 #else
-         /* original vxWorks */
-         etherInputHookAdd(nmcEtherGrab);
+      	 /* start a thread to check incoming ethernet packets */
+      	 i->capture_pid = epicsThreadCreate("nmcEthCap", epicsThreadPriorityHigh, 
+            10000, (EPICSTHREADFUNC)nmcEthCapture, (void*) i);
 #endif
 
          /*
           *  Start the task which periodically multicasts inquiry messages
           */
-
-         (*i).broadcast_pid = taskSpawn("nmcInquiry", 100, 0, 10000,
-                                 nmc_broadcast_inq_task,
-                  (int)i, NCP_C_INQTYPE_ALL, 0, 0, 0, 0, 0, 0, 0, 0);
+      	 i->broadcast_pid = epicsThreadCreate("nmcInquiry", epicsThreadPriorityMedium, 10000, 
+		 	      	 	   (EPICSTHREADFUNC)nmc_broadcast_inq_task, (void*) i);
 
          /*
           * Wait for 0.1 seconds for the first multicast inquiry to go out and for
           * responses to come back. This will allow time for the module database to be
           * built
           */
-         taskDelay(sysClkRateGet() / 10);
+         epicsThreadSleep(0.1);
+         AIM_DEBUG(1, "(nmc_initialize): returning\n");
          return OK;
    }
 
@@ -318,36 +351,103 @@ signal:
 void nmc_cleanup()
 {
    int net;
-   struct nmc_comm_info_struct *i;
+   struct nmc_comm_info_struct *i = NULL;
    struct nmc_module_info_struct *p;
    int module;
 
+#ifdef vxWorks
    etherInputHookDelete();
+#else
+    /* FIXME,  */
+    /* missing:
+       delete capture thread
+       free if_name
+	    free if_struct
+	 */
+	 if (libnet_close_link_interface(i->pIf->netlnk )< 0) {
+	  	 printf("\n error closing link interface");
+	 }
+#endif
+/* FIXME
+We should shut down Status and Broadcast thread first */
 
    for (net=0; net < NMC_K_MAX_IDS; net++) {
       i = &nmc_comm_info[net];
-      if ((*i).valid) {
-         if ((*i).statusQ != NULL) msgQDelete((*i).statusQ);
-         if ((*i).status_pid != NULL) taskDelete((*i).status_pid);
-         if ((*i).broadcast_pid != NULL) taskDelete((*i).broadcast_pid);
+      if (i->valid) {
+         if (i->statusQ != NULL) {
+            epicsMessageQueueDestroy(i->statusQ);
+			   i->statusQ = NULL;
+         }
       }
    }
    if (nmc_module_info != NULL) {
       for (module=0; module<NMC_K_MAX_MODULES; module++) {
          p = &nmc_module_info[module];
          if (!(*p).valid) break;
-         if ((*p).responseQ != NULL) msgQDelete((*p).responseQ);
-         if ((*p).module_mutex != NULL) semDelete((*p).module_mutex);
+         if (p->responseQ != NULL) {
+            epicsMessageQueueDestroy(p->responseQ);
+            p->responseQ = NULL;
+         }
+         if ((*p).module_mutex != NULL) {
+            epicsMutexDestroy((*p).module_mutex);
+            (*p).module_mutex =NULL;
+         }
       }
    }
    if (nmc_comm_info != NULL) free(nmc_comm_info);
    if (nmc_module_info != NULL) free(nmc_module_info);
    nmc_comm_info = NULL;
    nmc_module_info = NULL;
-   lstFree(&nmc_sem_list);
-   if (nmc_global_mutex != NULL) semDelete(nmc_global_mutex);
+   ellFree(&nmc_sem_list);
+   if (nmc_global_mutex != NULL) {
+     epicsMutexDestroy(nmc_global_mutex);
+     nmc_global_mutex=NULL;
+   }
 }
 
+#ifdef vxWorks
+#else /* not VxWorks */
+void nmcEthCapture(struct nmc_comm_info_struct *i)
+{
+   char errbuf[PCAP_ERRBUF_SIZE];
+   char *dev;
+   pcap_t* descr;
+   struct bpf_program bpfprog;      /* hold compiled program     */
+   bpf_u_int32 netp =0;           /* ip                        */
+   char *bpfstr="ether[6]=0 and ether[7]=0 and ether[8]=0xaf"; /* first 3 bytes of source address */
+ 
+   if (i->pIf == NULL) {
+	 printf("nmcEthCapture: Invalid if_net structure\n");
+	 return;
+   }
+   AIM_DEBUG(5, "(nmcEtherCapture): EthCapture started \n");
+
+   dev=i->pIf->if_name;
+   errbuf[0]='\0';
+   descr = pcap_open_live(dev, NMC_K_CAPTURESIZE,0,-1,errbuf);
+   if (errbuf[0]) {
+	 printf("nmcEthCapture: pcap_open_live: %s\n",errbuf);	   
+   }
+   if (descr == NULL) return;
+	
+   if(pcap_compile(descr,&bpfprog,bpfstr,0,netp) == -1){ 
+	  printf("nmcEthCapture: pcap_compile: %s \n",pcap_geterr(descr)); 
+	  return;
+   }
+   if(pcap_setfilter(descr,&bpfprog) == -1){ 
+	  printf("nmcEthCapture: pcap_setfilter: %s \n",pcap_geterr(descr)); 
+	  return;
+   }
+
+    /* ... and loop forever */ 
+    pcap_loop(descr, -1, (pcap_handler) nmcEtherGrab,(unsigned char*)i);
+
+    /* we should never reach this */
+	printf("nmcEthCapture: pcap_loop: %s\n",pcap_geterr(descr));
+	
+	return;
+}
+#endif  
 /******************************************************************************
 * nmcEtherGrab()
 *
@@ -357,14 +457,15 @@ void nmc_cleanup()
 * All other packets are ignored.
 *
 *******************************************************************************/
+#ifdef vxWorks
 BOOL nmcEtherGrab(struct ifnet *pIf, char *buffer, int length)
 {
    struct enet_header *h;
    struct nmc_comm_info_struct *net;
-   int i, s, module;
+   int module;
 
    h = (struct enet_header *) buffer;
-
+   net = &nmc_comm_info[0];
    /*
     * If this packet is not from an AIM module return immediately.
     * This test is based upon the first 3 bytes of the source address being
@@ -377,68 +478,51 @@ BOOL nmcEtherGrab(struct ifnet *pIf, char *buffer, int length)
          (*h).source[0], (*h).source[1], (*h).source[2]);
       return FALSE;
    }
+#else
+pcap_handler nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkthdr, const unsigned char *buffer)
+{
+   struct enet_header *h;
+   struct nmc_comm_info_struct *net;
+   int  length, module;
+
+   h = (struct enet_header *) buffer;
+   net = (struct nmc_comm_info_struct *) usrdata;
+   length = pkthdr->caplen;
+#endif
+
    AIM_DEBUG(5, "(nmcEtherGrab): got a packet from AIM\n");
 
-   /*
-    * Determine which network ID this packet came from
-    * Do this by comparing the network pointer for this packet with
-    * those for all valid network interfaces
-    */
-   for (i=0; i<NMC_K_MAX_IDS; i++) {
-      net = &nmc_comm_info[i];
-      /* NOTE: In vxWorks 5.3 and earlier we could compare the pIf
-         (address) directly to see what network this packet was from.
-         In vxWorks 5.4 the pIf which is passed to this routine is
-         apparently to a copy of the ifnet structure, so we need to
-         compare the if_name and if_unit fields.
-
-         NOTE: There was a bug introduced in a vxWorks patch with 5.4.2 that made
-         the following test fail, since pIf is no longer a valid pointer.  Skip
-         this test for now. Assume the message came from the first net.
-       */
-      goto writeMsg;
-      if ((*net).valid &&
-         (strcmp((*net).pIf->if_name, pIf->if_name) == 0) &&
-         ((*net).pIf->if_unit == pIf->if_unit)) goto writeMsg;
-      AIM_DEBUG(1, "(nmcEtherGrab): ...network pointer doesn't match:\n");
-      AIM_DEBUG(1, "(nmcEtherGrab): ... %s != %s\n", (*net).pIf->if_name, pIf->if_name);
-      AIM_DEBUG(1, "     or %d != %d\n", (*net).pIf->if_unit, pIf->if_unit);
-   }
-   return FALSE;
-
-writeMsg:
 
    /* If the packet has the statusSNAP ID then write the message to the statusQ */
    if (COMPARE_SNAP((*h).snap_id, (*net).status_snap)) {
-      AIM_DEBUG(5, "(nmcEtherGrab): ...status packet\n");
-      s = msgQSend((*net).statusQ, (char *) h, length, NO_WAIT, MSG_PRI_NORMAL);
-      if (s != OK) {
-         nmc_signal("nmcEtherGrab:1",errno);
-         return FALSE;
+      if (epicsMessageQueueSend(net->statusQ, h, length) == -1) {
+         nmc_signal("nmcEtherGrab: Status Queue full",0);
+	 return FALSE;  
       }
    }
-   /* If the packet has the responseSNAP ID then write the message to the
-    * responseQ for this module */
+   /* If the packet has the responseSNAP ID then write the message to the responseQ for this module */
    else if (COMPARE_SNAP((*h).snap_id, (*net).response_snap)) {
       AIM_DEBUG(5, "(nmcEtherGrab): ...response packet\n");
-      s = nmc_findmod_by_addr(&module, (*h).source);
-      if (s == OK) {
-         s = msgQSend(nmc_module_info[module].responseQ, (char *) h, length, 
-                      NO_WAIT, MSG_PRI_NORMAL);
-         if (s != OK) {
-            nmc_signal("nmcEtherGrab:2",errno);
-            return FALSE;
-         }
-         return TRUE;
+      if (nmc_findmod_by_addr(&module, (*h).source) == OK) {
+      	 AIM_DEBUG(5, "(nmcEtherGrab): sending %d bytes to module %d (%d)\n",
+                   length, module,nmc_module_info[module].responseQ);
+      	 if (epicsMessageQueueSend(nmc_module_info[module].responseQ, h, length) == -1) {
+            nmc_signal("nmcEtherGrab: Message Queue of module full",module);
+	    return FALSE;
+	 }
       }
-   } else {
+	  else { 
+	  	  nmc_signal("nmcEtherGrab: Can't find module",module);
+         return FALSE;
+      }
+   } 
+   else {
       AIM_DEBUG(1, "(nmcEtherGrab): ...unrecognized SNAP ID\n");
-      nmc_signal("nmcEtherGrab:3",NMC__INVMODRESP);
+      nmc_signal("nmcEtherGrab: unrecognized SNAP ID",NMC__INVMODRESP);
       return FALSE;
    }
    return TRUE;
 }
-
 
 /*******************************************************************************
 *
@@ -452,14 +536,18 @@ writeMsg:
 
 int nmcStatusDispatch(struct nmc_comm_info_struct *i)
 {
-   int s;
+   int s, len;
    struct status_packet pkt;   /* This assumes a staus_packet is larger */
    struct status_packet *spkt; /*  than an event packet, which is true */
    struct event_packet *epkt;
    struct ncp_comm_header *p;
 
    while (1) {
-      s=msgQReceive((*i).statusQ, (char *) &pkt, sizeof(pkt), WAIT_FOREVER);
+      len = epicsMessageQueueReceive(i->statusQ, &pkt);
+      if (len < 0)
+         s=ERROR;
+      else
+	  s=OK;
       if (s==ERROR) {
          nmc_signal("nmcStatusDispatch:1",errno);
       }
@@ -504,7 +592,8 @@ static int nmc_event_hdl(struct event_packet *epkt)
    struct ncp_comm_mevent *message;
    struct nmc_sem_node *p;
 
-   /* Figure out what module this event message is from */   
+   AIM_DEBUG(8, "(nmc_event_hdl) received status (event) message \n");
+  /* Figure out what module this event message is from */   
    if (nmc_findmod_by_addr(&module, (*epkt).enet_header.source) == ERROR)
       return ERROR;
 
@@ -515,12 +604,15 @@ static int nmc_event_hdl(struct event_packet *epkt)
     *  is a match.
     */
    GLOBAL_INTERLOCK_ON;
-   p = (struct nmc_sem_node *) lstFirst(&nmc_sem_list);
+   p = (struct nmc_sem_node *) ellFirst(&nmc_sem_list);
    while (p != NULL) {
       if (((*p).module == module) &&
           ((*p).adc == (*message).event_id1) &&
-          ((*p).event_type == (*message).event_type)) semGive((*p).sem_id);
-      p = (struct nmc_sem_node *) lstNext( (NODE *) p);
+          ((*p).event_type == (*message).event_type)) {
+             epicsEventSignal((*p).evt_id);
+             AIM_DEBUG(6, "(nmc_event_hdl) signaling event \n");
+      }
+      p = (struct nmc_sem_node *) ellNext( (ELLNODE *) p);
    }
    if ((*message).event_type == NCP_C_EVTYPE_BUFFER)
       list_buffer_ready_array[(*message).event_id2] = 1;
@@ -542,12 +634,13 @@ static int nmc_event_hdl(struct event_packet *epkt)
 
 int nmc_status_hdl(struct nmc_comm_info_struct *net, struct status_packet *pkt)
 {
-   int module,s;
+   int module,s=0;
    struct nmc_module_info_struct *p;
    struct enet_header *e;
    struct ncp_comm_mstatus *m;
    struct ncp_comm_header *h;
 
+   AIM_DEBUG(8, "(nmc_status_hdl) received status (status) message \n");
    /*
     * First, see if we already know about this module
     */
@@ -581,14 +674,13 @@ int nmc_status_hdl(struct nmc_comm_info_struct *net, struct status_packet *pkt)
       (*p).free_address = 0;
       (*p).current_message_number = 0;
       /* Create the message queue for response packets */
-      if (((*p).responseQ = msgQCreate(MAX_RESPONSE_Q_MESSAGES,
-                                       MAX_RESPONSE_Q_MSG_SIZE,
-                                       MSG_Q_PRIORITY)) == NULL) {
-         s = errno;
+      	 if ((p->responseQ = epicsMessageQueueCreate(MAX_RESPONSE_Q_MESSAGES, 
+                                                     MAX_RESPONSE_Q_MSG_SIZE)) == 0) {
+         nmc_signal("Unable to create response Queue",0);
          goto done;
       }
       /* Create a semaphore to interlock access to this module */
-      (*p).module_mutex = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+      (*p).module_mutex = epicsMutexCreate();
       
       /* Allocate buffers for input and output packets */
       (*p).in_pkt = (struct response_packet *)
@@ -682,7 +774,7 @@ int nmc_owner_hdl(int module, struct ncp_comm_header *h)
 *******************************************************************************/
 int nmc_getmsg(int module, struct response_packet *pkt, int size, int *actual)
 {
-   int s, length;
+   int  s=0, len;
    struct nmc_comm_info_struct *i;
    struct enet_header *e;
    struct ncp_comm_header *p;
@@ -703,10 +795,10 @@ int nmc_getmsg(int module, struct response_packet *pkt, int size, int *actual)
        * ETHERNET: Read a message from the response queue with timeout
        */
 read:
-      length = msgQReceive(m->responseQ, (char *) pkt, size, (*i).timeout_time);
-      /* If the read timed out then return an error */
-      if ( length == ERROR) {
-         AIM_DEBUG(1, "(nmc_getmsg): timeout calling msgQReceive\n");
+      len = epicsMessageQueueReceiveWithTimeout(m->responseQ, pkt, (double)(i->timeout_time));
+         AIM_DEBUG(6, "(nmc_getmsg): message length:%d (%d)\n", len,m->responseQ);
+      if (len < 0) {
+         AIM_DEBUG(1, "(nmc_getmsg): timeout while waiting for message\n");
          s = errno;
          goto signal;
       }
@@ -715,7 +807,6 @@ read:
        * Make sure the message came from the right module:
        *  if not, throw it away and try again
        */
-
       e = &(*pkt).enet_header;
       p = &(*pkt).ncp_comm_header;
       if (!COMPARE_ENET_ADDR( (*e).source, m->address)) {
@@ -748,7 +839,7 @@ read:
       /*
        * Return the received message size to the caller
        */
-      *actual = length;
+      *actual = len;
       return OK;
    }
 
@@ -789,9 +880,9 @@ signal:
 
 int nmc_flush_input(int module)
 {
-   int length, s;
-   char temp[2];  /* The size doesn't matter, since we are ignorring data */
+   int s, len;
    struct nmc_comm_info_struct *i;
+   char temp[MAX_RESPONSE_Q_MSG_SIZE];
 
    /* The module is known to be valid and reachable - checked in nmc_sendcmd */
    i = nmc_module_info[module].comm_device;
@@ -806,12 +897,9 @@ int nmc_flush_input(int module)
       /*
        * ETHERNET: Read messages from the queue until none remain.
        */
-
-      do length = msgQReceive(nmc_module_info[module].responseQ, temp, 
-                              sizeof(temp), NO_WAIT);
-      while (length != ERROR);
+      do len = epicsMessageQueueReceiveWithTimeout(nmc_module_info[module].responseQ, temp, 0.);
+      while (len != ERROR);
       return OK;
-
    }
 
    /*
@@ -853,6 +941,10 @@ int nmc_putmsg(int module, struct response_packet *pkt, int size)
    struct nmc_comm_info_struct *i;
    struct ether_header ether_header;
    struct enet_header *e;
+#ifdef vxWorks
+#else
+   unsigned char *packet;
+#endif
 
    /* The module is known to be valid and reachable - checked in nmc_sendcmd */
    i = nmc_module_info[module].comm_device;
@@ -878,8 +970,26 @@ int nmc_putmsg(int module, struct response_packet *pkt, int size)
       COPY_SNAP((*i).response_snap, (*e).snap_id);
 
       /* Send the packet */
+#ifdef vxWorks
       etherOutput((*i).pIf, &ether_header, (char *) &(*e).dsap, length);
-      return OK;
+#else
+      COPY_ENET_ADDR(i->pIf->hw_address->ether_addr_octet, ether_header.ether_shost);
+
+	  if (libnet_init_packet(length+14, &packet) < 0) {
+	  	 printf("\n error allocating packet memory");
+	  }
+	  if ( libnet_build_ethernet(ether_header.ether_dhost, ether_header.ether_shost,
+	     	      ether_header.ether_type, &(e->dsap), length, packet)< 0) {
+	  	 printf("\n error building ethernet packet");
+	  }
+	  if ( (s=libnet_write_link_layer(i->pIf->netlnk, i->pIf->if_name, packet, length+14))< 0) {
+	  	 printf("\n error writing ethernet packet");
+	  }
+      AIM_DEBUG(1, "(nmc_putmsg): wrote %d bytes of %d\n",s,length+14);
+	  libnet_destroy_packet(&packet);
+
+#endif
+     return OK;
    }
    /*
     * We should never get here (we fell thru the CASE)
@@ -951,6 +1061,8 @@ int nmc_sendcmd(int module, int command, void *data, int dsize, void *response,
    struct nmc_module_info_struct *m;
    /* Note, this code is specific to Ethernet. It will need
     * a little work if other networks are ever supported */
+
+   AIM_DEBUG(8, "(nmc_sendcmd): enter\n");
 
    MODULE_INTERLOCK_ON(module);
 
@@ -1056,7 +1168,7 @@ int nmc_sendcmd(int module, int command, void *data, int dsize, void *response,
       goto done;
 
 retry:
-      AIM_DEBUG(1, "(nmc_sendcmd): tries=%d, max_tries=%d, timeout_time=%d\n", 
+      AIM_DEBUG(1, "(nmc_sendcmd): tries=%d, max_tries=%d, timeout_time=%dms\n", 
              tries, i->max_tries, i->timeout_time);
       s = NMC__INVMODRESP;
    }
@@ -1096,15 +1208,15 @@ done:
 * This routine is called from nmc_initialize.
 *
 *******************************************************************************/
-
+#ifdef vxWorks
 int nmc_get_niaddr(char *device, unsigned char *address)
-{
+{   
    struct ifnet *ifPtr;
-   
    ifPtr = ifunit(device);
    memcpy(address, ((struct arpcom *) ifPtr)->ac_enaddr, 6);
-   return OK;
+  return OK;
 }
+#endif
 
 /*******************************************************************************
 *
@@ -1135,6 +1247,7 @@ int nmc_findmod_by_addr(int *module, unsigned char *address)
    struct nmc_module_info_struct *p;
    int s;
    
+   AIM_DEBUG(8, "nmc_findmod_by_addr enter\n");
    /*
     * Make sure there is a module database to make sure we don't embarass
     * ourselves (in particular, AICONTROL, which may call this routine without
@@ -1188,6 +1301,7 @@ int nmc_check_module(int module, int *err, struct nmc_comm_info_struct **net)
 {
    int c;
    
+   AIM_DEBUG(8, "nmc_check_module enter\n");
    if ((module < 0) || (module >= NMC_K_MAX_MODULES)) {
       *err = NMC__INVMODNUM;
       *net = NULL;

@@ -340,7 +340,6 @@ int module;
       int integer;
    } temp;
    char string[33];
-   register UINT8 tmp, *p;
 
    /*
     * First, if the ICB package has not been initialized, just return

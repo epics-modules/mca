@@ -38,18 +38,19 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" {
+#include <recGbl.h>
+
 #include "dbAccess.h"
 #include "dbDefs.h"
 #include "link.h"
 #include "errlog.h"
+#include "alarm.h"
 #include "dbCommon.h"
 #include "aoRecord.h"
 #include "aiRecord.h"
 #include "mbboRecord.h"
 #include "mbbiRecord.h"
 #include "recSup.h"
-}
 
 #include "Message.h"
 #include "Float64Message.h"

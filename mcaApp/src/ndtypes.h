@@ -98,12 +98,15 @@ typedef long HMEM;
 
 #else
 
-typedef int LONG;			/* 32 bit signed integer */
-/* typedef unsigned int ULONG;*/		/* 32 bit unsigned integer */
-typedef short int SHORT;		/* 16 bit signed integer */
-/* typedef unsigned short int USHORT; */	/* 16 bit unsigned integer */
+#ifdef vxWorks
+#else
+typedef unsigned int ULONG;		/* 32 bit unsigned integer */
+typedef unsigned short int USHORT;	/* 16 bit unsigned integer */
+typedef unsigned char UCHAR; 		/* 8 bit unsigned integer */
+#endif
 typedef char CHAR;			/* 8 bit signed integer */
-/* typedef unsigned char UCHAR; */		/* 8 bit unsigned integer */
+typedef short int SHORT;		/* 16 bit signed integer */
+typedef int LONG;			/* 32 bit signed integer */
 typedef unsigned char UBYTE;		/* 8 bit unsigned integer */
 typedef float REAL;			/* 32 bit floating point */
 typedef double DOUBLE;			/* 64 bit floating point */

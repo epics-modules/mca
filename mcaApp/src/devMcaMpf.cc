@@ -22,7 +22,8 @@
 #include <string.h>
 #include <stdio.h>
 
-extern "C" {
+#include <recGbl.h>
+
 #include "dbAccess.h"
 #include "dbDefs.h"
 #include "link.h"
@@ -31,7 +32,7 @@ extern "C" {
 #include "mcaRecord.h"
 #include "mca.h"
 #include "recSup.h"
-}
+#include "alarm.h"
 
 #include "Message.h"
 #include "Float64Message.h"
@@ -39,6 +40,7 @@ extern "C" {
 #include "Float64ArrayMessage.h"
 #include "DevMpf.h"
 #include "DevMcaMpf.h"
+#include "epicsExport.h"
 
 #define MAX(a,b) ((a)>(b) ? (a) : (b))
 #define MIN(a,b) ((a)<(b) ? (a) : (b))
@@ -59,7 +61,7 @@ public:
         DevMcaMpf(dbCommon*,DBLINK*);
         long startIO(dbCommon* pr);
         long completeIO(dbCommon* pr,Message* m);
-        virtual void receiveReply(dbCommon* pr, Message* m);
+        void receiveReply(dbCommon* pr, Message* m);
         static long init_record(void*);
         static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg);
         static long read_array(mcaRecord *pmca);
@@ -95,6 +97,7 @@ extern "C" {
         DevMcaMpf::read_array
     };
 };
+epicsExportAddress(MCAMPF_DSET, devMcaMpf);
 
 
 DevMcaMpf::DevMcaMpf(dbCommon* pr,DBLINK* l) : DevMpf(pr,l,false)

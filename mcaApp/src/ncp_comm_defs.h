@@ -339,25 +339,38 @@ struct event_packet{
         register UINT8 tmp, *p;
    These macros swap a short or long integer "in place", i.e. the result
    replaces the previous value.
+
+	Linux uses macros with 2 or none undersores
+	VxWorks needs 1 underscore
 */
 
-#if (_BYTE_ORDER == _BIG_ENDIAN)
+#ifndef BYTE_ORDER
+#define BYTE_ORDER _BYTE_ORDER
+#endif
+
+#ifndef BIG_ENDIAN
+#define BIG_ENDIAN _BIG_ENDIAN
+#endif
+
+#if (BYTE_ORDER == BIG_ENDIAN)
 /* Swap an INT16 or UINT16 integer */
 #define SSWAP(num) \
+      { register UINT8 tmp, *p; \
         p = (UINT8 *) &num; \
         tmp = *p; \
         *p = *(p+1); \
-        *(p+1) = tmp
+        *(p+1) = tmp; }
 
 /* Swap an INT32 or UINT32 integer */
 #define LSWAP(num) \
+      { register UINT8 tmp, *p; \
         p = (UINT8 *) &num; \
         tmp = *p; \
         *p = *(p+3); \
         *(p+3) = tmp; \
         tmp = *(p+1); \
         *(p+1) = *(p+2); \
-        *(p+2) = tmp
+        *(p+2) = tmp; }
 
 #else  /* Nothing to do, little-endian */
 #define SSWAP(num)
