@@ -4,13 +4,6 @@ eval 'exec perl -S $0 ${1+"$@"}'  # -*- Mode: perl -*-
 use Cwd;
 use Env;
 
-$post = $ENV{"EPICS_SUPPORT_PATH"};
-if ($post ne "")
-{
-    $prefix = "EPICS_SUPPORT_PATH";
-    $applications{$prefix} = $post;
-}
-
 $cwd  = cwd();
 #hack for sun4
 $cwd =~ s|/tmp_mnt||;
@@ -52,13 +45,13 @@ foreach $file (@files) {
 		    ($prefix,$post) = /(.*)\s* \s*(.*)/;
 		}
 		else {
-		    $base = $applications{$macro};
-		    if ($base eq "") {
-			#print "error: $macro was not previously defined\n";
-		    }
-		    else {
-			$post = $base . $post;
-		    }
+                    if ($macro eq "TOP") {
+                       $base = $top;
+                       $post = $base . $post;
+                       #print "info: \$macro= $macro \$base= $base \$post= $post\n";
+                    } else {
+                       print "error: $macro is not TOP\n";
+                    }
 		}
 		push(@files,"$post")
 	    }
@@ -71,14 +64,14 @@ foreach $file (@files) {
 		    # prefix = post
 		    ($prefix,$post) = /(.*)\s*=\s*(.*)/;
 		} else {
-		    $base = $applications{$macro};
-		    if ($base eq "") {
-			print "error: $macro was not previously defined\n";
-		    } else {
-			$post = $base . $post;
-		    }
+                    if ($macro eq "TOP") {
+                       $base = $top;
+                       $post = $base . $post;
+                       #print "info: \$macro= $macro \$base= $base \$post= $post\n";
+                    } else {
+                       print "error: $macro is not TOP\n";
+                    }
 		}
-		$applications{$prefix} = $post;
 		$app = lc($prefix);
 		if ( -d "$post") { #check that directory exists
 		    print OUT "$app = \"$post\"\n";
