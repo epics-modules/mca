@@ -8,6 +8,33 @@
 
 <h1 align="center">mca Release Notes</h1>
 
+<h2 align="center">Release 6-5 (March 29, 2005)</h2>
+<ul>
+  <li>Changed behavior on the SIS (Struck) MCS with software_next.
+      In release 6-4 we never do a software channel advance ("software Next") when starting acquire in MCS mode
+      with external channel advance.  This has the side effect, documented in the 6-4 release
+      notes, that it takes one extra external pulse to arm the system, so
+      the unit does not count at all until the first external pulse arrives, and it
+      takes N+1 pulses before it gets to channel 2.
+      <p>There is thus a trade-off.  If the software does not issue a channel advance
+      then it takes one external pulse to start the system counting.  If the software does
+      issue a channel advance, then the module starts counting immediately, which leads
+      to "hot" first pixels.</p>
+      <p>It was decided to make the behavior be configurable in the startup script, so
+      that users can choose the behavior that best meets their needs.</p>
+      An additional argument was added to the STR7201Config command.  The new syntax is:
+      <pre>
+      # STR7201Config(int card, int maxSignals, int maxChans,
+      #               int 1=enable internal 25MHZ clock,
+      #               int 1=enable initial software channel advance in MCS external advance mode)
+      </pre>
+      By setting the last argument to 1 a software channel advance will be issued when acquisition starts.
+      Setting the argument to 0 or omitting it will lead to no software channel advance.
+  <li>Fixed several bugs in the Canberra ICB support, mostly dereferencing null pointers, found in Linux testing.</li>
+</ul>
+<p></p>
+
+
 <h2 align="center">Release 6-4 (March 24, 2005)</h2>
 <ul>
   <li>Converted from mpf to asyn for device and driver support. This was a major re-write
