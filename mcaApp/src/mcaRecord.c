@@ -81,8 +81,9 @@
  *                          fields.
  * .23  04-07-02  mlr  V5.4 Improved logic for dead time to avoid 100% when acquisition
  *                          first starts.
+ * .24  07-23-03  tmm  V5.401 Keep nuse <= nmax
  */
-#define VERSION 5.4
+#define VERSION 5.401
 
 #include    <vxWorks.h>
 #include    <types.h>
