@@ -83,73 +83,73 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 	int s=0, seq, nchans;
 
 	switch (msg) {
-	case MSG_ACQUIRE:
+	case mcaStartAcquire:
 		/* start acquisition */
 		Debug(5, "(send_msg): start acquisition %d\n", s);
 		break;
-	case MSG_READ:
+	case mcaData:
 		/* start read operation */
 		/* This is a no-op. Read-array does everything. */
 		break;
-	case MSG_SET_CHAS_INT:
+	case mcaChannelAdvanceInternal:
 		/* set channel advance source to internal (timed) */
 		/* This is a NOOP for current MCS hardware - done manually */
 		break;
-	case MSG_SET_CHAS_EXT:
+	case mcaChannelAdvanceExternal:
 		/* set channel advance source to external */
 		/* This is a NOOP for current MCS hardware - done manually */
 		break;
-	case MSG_SET_NCHAN:
+	case mcaNumChannels:
 		/* set number of channels */
 		nchans = *(long *)parg;
 		Debug(5, "(send_msg): acqu setup %d\n", s);
 		break;
-	case MSG_SET_SEQ:
+	case mcaSequence:
 		/* set sequence number */
 		seq = *(long *)parg;
 		Debug(5, "(send_msg): acqu setup %d\n", s);
 		break;
-	case MSG_SET_DWELL:
+	case mcaDwellTime:
 		/* set dwell time */
 		/* This is a NOOP for current MCS hardware - done manually */
 		break;
-	case MSG_SET_REAL_TIME:
+	case mcaPresetRealTime:
 		/* set preset real time. Convert to centiseconds */
 		Debug(5, "(send_msg): acqu setpresets %d\n", s);
 		break;
-	case MSG_SET_LIVE_TIME:
+	case mcaPresetLiveTime:
 		/* set preset live time. Convert to centiseconds */
 		Debug(5, "(send_msg): acqu setpresets %d\n", s);
 		break;
-	case MSG_SET_COUNTS:
+	case mcaPresetCounts:
 		/* set preset counts */
 		Debug(5, "(send_msg): acqu setpresets %d\n", s);
 		break;
-	case MSG_SET_LO_CHAN:
+	case mcaPresetLowChannel:
 		/* set lower side of region integrated for preset counts */
 		Debug(5, "(send_msg): acqu setpresets %d\n", s);
 		break;
-	case MSG_SET_HI_CHAN:
+	case mcaPresetHighChannel:
 		/* set high side of region integrated for preset counts */
 		Debug(5, "(send_msg): acqu setpresets %d\n", s);
 		break;
-	case MSG_SET_NSWEEPS:
+	case mcaPresetSweeps:
 		/* set number of sweeps (for MCS mode) */
 		/* This is a NOOP on current version of MCS */
 		break;
-	case MSG_SET_MODE_PHA:
+	case mcaModePHA:
 		/* set mode to Pulse Height Analysis */
 		Debug(5, "(send_msg): acqu setup %d\n", s);
 		break;
-	case MSG_SET_MODE_MCS:
+	case mcaModeMCS:
 		/* set mode to MultiChannel Scaler */
 		Debug(5, "(send_msg): acqu setup %d\n", s);
 		break;
-	case MSG_SET_MODE_LIST:
+	case mcaModeList:
 		/* set mode to LIST (record each incoming event) */
 		Debug(5, "(send_msg): acqu setup %d\n", s);
 		break;
-	case MSG_GET_ACQ_STATUS:
+	case mcaReadStatus:
 		/* Read the current status of the device */
 		Debug(5, "(send_msg): status update %d\n", s);
 		/* pmca->ertm = ereal/100.0; */
@@ -157,11 +157,11 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		/* pmca->act = etotals; */
 		/* pmca->acqg = acq_status; */
 		break;
-	case MSG_STOP_ACQUISITION:
+	case mcaStopAcquire:
 		/* stop data acquisition */
 		Debug(5, "(send_msg): stop acquisition %d\n", s);
 		break;
-	case MSG_ERASE:
+	case mcaErase:
 		/* erase */
 		Debug(5, "(send_msg): erase %d\n", s);
 		/* Set the elapsed live and real time back to zero. */

@@ -113,71 +113,71 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
         float ereal;
 
         switch (msg) {
-        case MSG_ACQUIRE:
+        case mcaStartAcquire:
                 /* start acquisition */
                 sendSetup(pmca);
                 s = drvSTR7201AcqOn(card);
                 Debug(5, "devSTR7201(send_msg): start acquisition %d\n", s);
                 break;
-        case MSG_READ:
+        case mcaData:
                 /* start read operation */
                 /* This is a no-op. Read-array does everything. */
                 break;
-        case MSG_SET_CHAS_INT:
+        case mcaChannelAdvanceInternal:
                 /* set channel advance source to internal (timed) */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_CHAS_EXT:
+        case mcaChannelAdvanceExternal:
                 /* set channel advance source to external */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_NCHAN:
+        case mcaNumChannels:
                 /* set number of channels */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_DWELL:
+        case mcaDwellTime:
                 /* set dwell time per channel. */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_REAL_TIME:
+        case mcaPresetRealTime:
                 /* set preset real time. */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_LIVE_TIME:
+        case mcaPresetLiveTime:
                 /* set preset live time */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_COUNTS:
+        case mcaPresetCounts:
                 /* set preset counts */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_LO_CHAN:
+        case mcaPresetLowChannel:
                 /* set preset count low channel */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_HI_CHAN:
+        case mcaPresetHighChannel:
                 /* set preset count high channel */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_NSWEEPS:
+        case mcaPresetSweeps:
                 /* set number of sweeps (for MCS mode)
                  * This is a NOOP on STR7201 but should be implemented in
                  * software in the future
                  */
                 break;
-        case MSG_SET_MODE_PHA:
+        case mcaModePHA:
                 /* set mode to pulse height analysis */
                 /* This is a NOOP for STR7201 */
                 break;
-        case MSG_SET_MODE_MCS:
+        case mcaModeMCS:
                 /* set mode to MultiChannel Scaler */
                 /* This is a NOOP for STR7201 */
                 break;
-        case MSG_SET_MODE_LIST:
+        case mcaModeList:
                 /* set mode to LIST (record each incoming event) */
                 /* This is a NOOP for STR7201 */
                 break;
-        case MSG_GET_ACQ_STATUS:
+        case mcaReadStatus:
                 /* Read the current status of the device */
                 s = drvSTR7201GetAcqStatus(card, signal, &ereal, &ecounts, 
                                                 &acq_status);
@@ -187,22 +187,22 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                 pmca->act = ecounts;
                 pmca->acqg = acq_status;
                 break;
-        case MSG_STOP_ACQUISITION:
+        case mcaStopAcquire:
                 /* stop data acquisition */
                 s = drvSTR7201AcqOff(card);
                 Debug(5, "devSTR7201(send_msg): stop acquisition %d\n", s);
                 break;
-        case MSG_ERASE:
+        case mcaErase:
                 /* erase */
                 sendSetup(pmca);
                 s = drvSTR7201Erase(card);
                 Debug(5, "devSTR7201(send_msg): erase %d\n", s);
                 break;
-        case MSG_SET_SEQ:
+        case mcaSequence:
                 /* set sequence for time-resolved spectra */
                 /* This is a NOOP for STR7201 */
                 break;
-        case MSG_SET_PSCL:
+        case mcaPrescale:
                 /* set channel advance prescaler. */
                 sendSetup(pmca);
                 break;

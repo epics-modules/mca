@@ -324,12 +324,12 @@ field to all listeners.  monitor() does this.
    1) Examine record to see what fields which control MCA setup have changed
       and send the approriate commands to device support (e.g. set preset live
       or real time, erase spectrum, turn acquisition on and off, etc.)
-   2) Send command to read device status (MSG_GET_ACQ_STATUS)
+   2) Send command to read device status (mcaReadStatus)
       If device support sets .rdns=1 then return immediately
       2a) If .acqg makes a 1 to 0 transition (acquisition stopped) then set
           .read=1
    3) If .read=1 or .rdns=1 then do the following
-      3a) If .read=1 then send command to read spectrum data (MSG_READ)
+      3a) If .read=1 then send command to read spectrum data (mcaReadData)
           If device support sets .rdng=1 then return immediately
       3b) Call device support routine to read the data (read_array)
    4) Sum ROIS if there is new data, check for presets reached
@@ -348,15 +348,15 @@ field to all listeners.  monitor() does this.
     (4)      X       0        1     Callback from device support when read
                                     data completes. Go to step 3b.
 
-   Note that device support is allowed to do callbacks for MSG_READ and
-   MSG_GET_ACQ_STATUS, which are the only commands which return data from
+   Note that device support is allowed to do callbacks for mcaReadData and
+   mcaReadStatus, which are the only commands which return data from
    the device to the record.  All other device support messages must be handled
    without a callback to record support.
    
    If .strt=1 or .erst=1 then a message is sent to device support to start 
-   acquisition (MSG_ACQUIRE)
+   acquisition (mcaStartAcquire)
    If .stop=1 then a message is sent to device support to stop acquisition
-   (MSG_STOP_ACQUISITION)
+   (mcaStopAcquire)
 */
 
 /* The following macro is long, but it saves 6 pages of repetitive code */
@@ -463,37 +463,37 @@ static long init_record(mcaRecord *pmca, int pass)
     /* Initialize hardware to agree with the record */
     status = (*pdset->send_msg)
                 (pmca, (pmca->chas==mcaCHAS_Internal) ?
-                MSG_SET_CHAS_INT : MSG_SET_CHAS_EXT, NULL);
+                mcaChannelAdvanceInternal : mcaChannelAdvanceExternal, NULL);
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_NCHAN, (void *)(&pmca->nuse));
+                (pmca,  mcaNumChannels, (void *)(&pmca->nuse));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_SEQ, (void *)(&pmca->seq));
+                (pmca,  mcaSequence, (void *)(&pmca->seq));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_DWELL, (void *)(&pmca->dwel));
+                (pmca,  mcaDwellTime, (void *)(&pmca->dwel));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_PSCL, (void *)(&pmca->pscl));
+                (pmca,  mcaPrescale, (void *)(&pmca->pscl));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_REAL_TIME, (void *)(&pmca->prtm));
+                (pmca,  mcaPresetRealTime, (void *)(&pmca->prtm));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_LIVE_TIME, (void *)(&pmca->pltm));
+                (pmca,  mcaPresetLiveTime, (void *)(&pmca->pltm));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_COUNTS, (void *)(&pmca->pct));
+                (pmca,  mcaPresetCounts, (void *)(&pmca->pct));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_LO_CHAN, (void *)(&pmca->pctl));
+                (pmca,  mcaPresetLowChannel, (void *)(&pmca->pctl));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_HI_CHAN, (void *)(&pmca->pcth));
+                (pmca,  mcaPresetHighChannel, (void *)(&pmca->pcth));
     status = (*pdset->send_msg)
-                (pmca,  MSG_SET_NSWEEPS, (void *)(&pmca->pswp));
+                (pmca,  mcaPresetSweeps, (void *)(&pmca->pswp));
     switch (pmca->mode) {
       case mcaMODE_PHA:
       default:
-         status = (*pdset->send_msg) (pmca, MSG_SET_MODE_PHA, NULL);
+         status = (*pdset->send_msg) (pmca, mcaModePHA, NULL);
          break;
       case mcaMODE_MCS:
-         status = (*pdset->send_msg) (pmca, MSG_SET_MODE_MCS, NULL);
+         status = (*pdset->send_msg) (pmca, mcaModeMCS, NULL);
          break;
       case mcaMODE_List:
-         status = (*pdset->send_msg) (pmca, MSG_SET_MODE_LIST, NULL);
+         status = (*pdset->send_msg) (pmca, mcaModeList, NULL);
          break;
     }
     return(0);
@@ -534,7 +534,7 @@ static long process(mcaRecord *pmca)
             MARK(M_CHAS);
             status = (*pdset->send_msg)
                 (pmca, (pmca->chas==mcaCHAS_Internal) ?
-                MSG_SET_CHAS_INT : MSG_SET_CHAS_EXT, NULL);
+                mcaChannelAdvanceInternal : mcaChannelAdvanceExternal, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_CHAS);
         }
@@ -542,76 +542,76 @@ static long process(mcaRecord *pmca)
             MARK(M_NUSE);
 			if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_NCHAN, (void *)(&pmca->nuse));
+                (pmca,  mcaNumChannels, (void *)(&pmca->nuse));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_NUSE);
         }
         if (NEWV_MARKED(M_SEQ)) {
             MARK(M_SEQ);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_SEQ, (void *)(&pmca->seq));
+                (pmca,  mcaSequence, (void *)(&pmca->seq));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_SEQ);
         }
         if (NEWV_MARKED(M_DWEL)) {
             MARK(M_DWEL);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_DWELL, (void *)(&pmca->dwel));
+                (pmca,  mcaDwellTime, (void *)(&pmca->dwel));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_DWEL);
         }
         if (NEWV_MARKED(M_PSCL)) {
             MARK(M_PSCL);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_PSCL, (void *)(&pmca->pscl));
+                (pmca,  mcaPrescale, (void *)(&pmca->pscl));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PSCL);
         }
         if (NEWV_MARKED(M_PRTM)) {
             MARK(M_PRTM);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_REAL_TIME, (void *)(&pmca->prtm));
+                (pmca,  mcaPresetRealTime, (void *)(&pmca->prtm));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PRTM);
         }
         if (NEWV_MARKED(M_PLTM)) {
             MARK(M_PLTM);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_LIVE_TIME, (void *)(&pmca->pltm));
+                (pmca,  mcaPresetLiveTime, (void *)(&pmca->pltm));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PLTM);
         }
         if (NEWV_MARKED(M_PCT)) {
             MARK(M_PCT);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_COUNTS, (void *)(&pmca->pct));
+                (pmca,  mcaPresetCounts, (void *)(&pmca->pct));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PCT);
         }
         if (NEWV_MARKED(M_PCTL)) {
             MARK(M_PCTL);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_LO_CHAN, (void *)(&pmca->pctl));
+                (pmca,  mcaPresetLowChannel, (void *)(&pmca->pctl));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PCTL);
         }
         if (NEWV_MARKED(M_PCTH)) {
             MARK(M_PCTH);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_HI_CHAN, (void *)(&pmca->pcth));
+                (pmca,  mcaPresetHighChannel, (void *)(&pmca->pcth));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PCTH);
         }
         if (NEWV_MARKED(M_PSWP)) {
             MARK(M_PSWP);
             status = (*pdset->send_msg)
-                (pmca,  MSG_SET_NSWEEPS, (void *)(&pmca->pswp));
+                (pmca,  mcaPresetSweeps, (void *)(&pmca->pswp));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PSWP);
         }
         if (NEWV_MARKED(M_ERAS) || NEWV_MARKED(M_ERST)) {
             status = (*pdset->send_msg)
-                (pmca,  MSG_ERASE, NULL);
+                (pmca,  mcaErase, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             if (NEWV_MARKED(M_ERAS)) {
                pmca->eras = 0;
@@ -637,13 +637,13 @@ static long process(mcaRecord *pmca)
             switch (pmca->mode) {
             case mcaMODE_PHA:
             default:
-                status = (*pdset->send_msg) (pmca, MSG_SET_MODE_PHA, NULL);
+                status = (*pdset->send_msg) (pmca, mcaModePHA, NULL);
                 break;
             case mcaMODE_MCS:
-                status = (*pdset->send_msg) (pmca, MSG_SET_MODE_MCS, NULL);
+                status = (*pdset->send_msg) (pmca, mcaModeMCS, NULL);
                 break;
             case mcaMODE_List:
-                status = (*pdset->send_msg) (pmca, MSG_SET_MODE_LIST, NULL);
+                status = (*pdset->send_msg) (pmca, mcaModeList, NULL);
                 break;
             }
             if (status) {pmca->nack = 1; MARK(M_NACK);}
@@ -654,7 +654,7 @@ static long process(mcaRecord *pmca)
     /* Turn acquisition on or off.  Do this before reading device status */
     if (pmca->strt || NEWV_MARKED(M_ERST)) {
        Debug(5,"process: start acquisition.\n");
-       status = (*pdset->send_msg) (pmca, MSG_ACQUIRE, NULL);
+       status = (*pdset->send_msg) (pmca, mcaStartAcquire, NULL);
        if (pmca->strt) {
           pmca->strt=0; 
           MARK(M_STRT);
@@ -676,7 +676,7 @@ static long process(mcaRecord *pmca)
     }
     if (pmca->stop) {
        Debug(5,"process: stop acquisition.\n");
-       status = (*pdset->send_msg) (pmca, MSG_STOP_ACQUISITION, NULL);
+       status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
        pmca->stop=0; MARK(M_STOP);
     }
 
@@ -686,7 +686,7 @@ static long process(mcaRecord *pmca)
      * in preset region and the current acquisition status. 
      */
 read_status:
-    /* Save fields updated by MSG_GET_ACQ_STATUS */
+    /* Save fields updated by mcaReadStatus */
     pmca->acqp = pmca->acqg;
     pmca->ertp = pmca->ertm;
     pmca->eltp = pmca->eltm;
@@ -695,9 +695,9 @@ read_status:
     rdns = pmca->rdns;  /* Save current state of rdns */
 
     Debug(5,"process: reading elapsed time, etc.\n");
-    status = (*pdset->send_msg)(pmca, MSG_GET_ACQ_STATUS, NULL);
+    status = (*pdset->send_msg)(pmca, mcaReadStatus, NULL);
     if (status) {
-       Debug(1,"process: error sending MSG_GET_ACQ_STATUS\n");
+       Debug(1,"process: error sending mcaReadStatus\n");
        pmca->nack = 1; MARK(M_NACK);
        pmca->acqg = 0;
     } else {
@@ -772,7 +772,7 @@ read_data:
        recGblGetTimeStamp(pmca);
        pmca->rtim = pmca->time.secPastEpoch + pmca->time.nsec*1.e-9;
        MARK(M_RTIM);
-       status = (*pdset->send_msg)(pmca, MSG_READ, NULL);
+       status = (*pdset->send_msg)(pmca, mcaData, NULL);
        pmca->read = 0; MARK(M_READ);
        if (status) {
           /* no ack from device support; go quiescent */
@@ -806,7 +806,7 @@ read_data:
 
     if (preset_reached) {
         Debug(5,"process: stop acquisition.\n");
-        status = (*pdset->send_msg) (pmca, MSG_STOP_ACQUISITION, NULL);
+        status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
     }
 
     pmca->udf = FALSE;
