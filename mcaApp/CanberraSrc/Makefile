@@ -17,10 +17,9 @@ DBD += mcaCanberra.dbd
 DBD += mcaCanberraSupport.dbd
 
 #=============================
-LIBRARY_IOC_DEFAULT += mcaCanberra
-LIBRARY_IOC_solaris += -nil-
-# For now we don't build on darwin.  It's close to working with libnet, but a few errors still
-LIBRARY_IOC_Darwin += -nil-
+# Right now we only build this on vxWorks and Linux
+LIBRARY_IOC_vxWorks += mcaCanberra
+LIBRARY_IOC_Linux += mcaCanberra
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaCanberra_SRCS += nmc_comm_subs_1.c 
@@ -48,9 +47,8 @@ mcaCanberra_SYS_LIBS_DEFAULT += net pcap
 mcaCanberra_SYS_LIBS_vxWorks += -nil-
 
 #==================================
-PROD_IOC_DEFAULT += mcaAIM
-PROD_IOC_solaris += -nil-
-PROD_IOC_Darwin += -nil-
+PROD_IOC_vxWorks += mcaAIM
+PROD_IOC_Linux += mcaAIM
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAIM_SRCS += mcaCanberra_registerRecordDeviceDriver.cpp
 mcaAIM_SRCS_DEFAULT += mcaCanberraMain.cpp
@@ -69,9 +67,8 @@ mcaAIM_LDOBJS_DEFAULT += mcaCanberraRegister.o
 mcaAIM_LDOBJS_vxWorks += -nil-
 
 #=============================
-PROD_IOC_DEFAULT += nmcTest
-PROD_IOC_solaris += -nil-
-PROD_IOC_Darwin += -nil-
+PROD_IOC_vxWorks += nmcTest
+PROD_IOC_Linux += nmcTest
 
 nmcTest_LIBS += ca Com 
 nmcTest_SYS_LIBS_DEFAULT += net pcap
@@ -84,9 +81,8 @@ nmcTest_SRCS += nmc_user_subs_2.c
 nmcTest_SRCS += nmc_test.c
 
 #=============================
-PROD_IOC_DEFAULT += nmcDemo
-PROD_IOC_solaris += -nil-
-PROD_IOC_Darwin += -nil-
+PROD_IOC_vxWorks += nmcDemo
+PROD_IOC_Linux += nmcDemo
 
 nmcDemo_LIBS += ca Com 
 nmcDemo_SYS_LIBS_DEFAULT += net pcap
