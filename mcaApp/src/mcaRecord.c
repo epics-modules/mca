@@ -69,8 +69,9 @@
  *                          The record should be set to PINI="Yes" in all databases
  *                          so that device support is in sync with the record.
  *                          Changed debugging to use errlogPrintf for legibility
+ * .20  07-21-01  mlr  V5.1 Increased number of ROIs from 10 to 32.
  */
-#define VERSION 5.0
+#define VERSION 5.1
 
 #include    <vxWorks.h>
 #include    <types.h>
@@ -171,13 +172,15 @@ struct roi {
     short nbg;
     unsigned short isPreset;
 };
+/* The number of fields per ROI above */
+#define FIELDS_PER_ROI 4
 struct roiSum {
     double sum;
     double net;
     double preset;
 };
 static long sum_ROIs(mcaRecord *pmca, short *preset_reached);
-#define NUM_ROI 10
+#define NUM_ROI 32
 
 /*******************************************************************************
 Support for keeping track of which record fields have been changed, so we can
@@ -219,22 +222,6 @@ field to all listeners.  monitor() does this.
 #define M_RTIM      0x00001000
 #define M_RDNS      0x00002000
 
-/* These bits are in the rmap and newv fields.  RMAP  records ROI fields whose
- * values must be posted.  NEWV records fields whose values are new and for
- * which processing is required.
- */
-#define M_R0        0x00000001
-#define M_R1        0x00000002
-#define M_R2        0x00000004
-#define M_R3        0x00000008
-#define M_R4        0x00000010
-#define M_R5        0x00000020
-#define M_R6        0x00000040
-#define M_R7        0x00000080
-#define M_R8        0x00000100
-#define M_R9        0x00000200
-#define M_ROI_ALL   (M_R0|M_R1|M_R2|M_R3|M_R4|M_R5|M_R6|M_R7|M_R8|M_R9)
-
 /* These bits are in the mmap and newv fields */
 #define M_ERAS      0x00004000
 #define M_CHAS      0x00008000
@@ -252,6 +239,45 @@ field to all listeners.  monitor() does this.
 #define M_ERST      0x08000000
 
 
+/* These bits are in the rmap and newr fields.  RMAP records ROI fields whose
+ * values must be posted.  NEWR records ROI fields whose values are new and for
+ * which processing is required.
+ */
+#define M_R0        0x00000001
+#define M_R1        0x00000002
+#define M_R2        0x00000004
+#define M_R3        0x00000008
+#define M_R4        0x00000010
+#define M_R5        0x00000020
+#define M_R6        0x00000040
+#define M_R7        0x00000080
+#define M_R8        0x00000100
+#define M_R9        0x00000200
+#define M_R10       0x00000400
+#define M_R11       0x00000800
+#define M_R12       0x00001000
+#define M_R13       0x00002000
+#define M_R14       0x00004000
+#define M_R15       0x00008000
+#define M_R16       0x00010000
+#define M_R17       0x00020000
+#define M_R18       0x00040000
+#define M_R19       0x00080000
+#define M_R20       0x00100000
+#define M_R21       0x00200000
+#define M_R22       0x00400000
+#define M_R23       0x00800000
+#define M_R24       0x01000000
+#define M_R25       0x02000000
+#define M_R26       0x04000000
+#define M_R27       0x08000000
+#define M_R28       0x10000000
+#define M_R29       0x20000000
+#define M_R30       0x40000000
+#define M_R31       0x80000000
+#define M_ROI_ALL   0xFFFFFFFF
+
+
 #define MARK(a)     pmca->mmap |= (a);
 #define MARKED(a)   (pmca->mmap & (a))
 #define UNMARK(a)   pmca->mmap &= ~(a);
@@ -266,6 +292,11 @@ field to all listeners.  monitor() does this.
 #define NEWV_MARKED(a)  (pmca->newv & (a))
 #define NEWV_UNMARK(a)  pmca->newv &= ~(a);
 #define NEWV_UNMARK_ALL pmca->newv = 0;
+
+#define NEWR_MARK(a)    pmca->newr |= (a);
+#define NEWR_MARKED(a)  (pmca->newr & (a))
+#define NEWR_UNMARK(a)  pmca->newr &= ~(a);
+#define NEWR_UNMARK_ALL pmca->newr = 0;
 
 /* The "process" function in this record performs the following steps:
    1) Examine record to see what fields which control MCA setup have changed
@@ -348,7 +379,7 @@ field to all listeners.  monitor() does this.
     psum->sum = sum;\
     psum->net = net;\
     if (proi->isPreset) *preset_reached |= psum->net >= psum->preset;\
-    NEWV_UNMARK(M_R0<<i);\
+    NEWR_UNMARK(M_R0<<i);\
     }\
 \
     proi = (struct roi *)&pmca->r0lo;\
@@ -551,7 +582,7 @@ static long process(mcaRecord *pmca)
              * forcing a read from device support for perfomance reasons. */
             memset(pmca->bptr, 0, pmca->nuse*sizeofTypes[pmca->ftvl]);
             MARK(M_VAL);           /* Post monitor on VAL field */
-            NEWV_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
+            NEWR_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
         }
         if (NEWV_MARKED(M_MODE)) {
             MARK(M_MODE);
@@ -698,7 +729,7 @@ read_data:
     }
 
     /* If any ROI is marked, sumROIs */
-    if (NEWV_MARKED(M_ROI_ALL)) {
+    if (NEWR_MARKED(M_ROI_ALL)) {
         (void)sum_ROIs(pmca, &preset_reached);
     }
 
@@ -803,6 +834,8 @@ struct dbr_ctrlDouble *pcd;
 static void monitor(mcaRecord *pmca)
 {
     unsigned short monitor_mask;
+    struct roiSum *psum = (struct roiSum *)&pmca->r0;
+    int i;
 
     monitor_mask = recGblResetAlarms(pmca);
     monitor_mask |= (DBE_VALUE|DBE_LOG);
@@ -820,46 +853,12 @@ static void monitor(mcaRecord *pmca)
     if (MARKED(M_STIM)) db_post_events(pmca,&pmca->stim,monitor_mask);
     if (MARKED(M_RTIM)) db_post_events(pmca,&pmca->rtim,monitor_mask);
     if (MARKED(M_DWEL)) db_post_events(pmca,&pmca->dwel,monitor_mask);
-
-    if (ROI_MARKED(M_R0)) {
-        db_post_events(pmca,&pmca->r0 ,monitor_mask);
-        db_post_events(pmca,&pmca->r0n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R1)) {
-        db_post_events(pmca,&pmca->r1 ,monitor_mask);
-        db_post_events(pmca,&pmca->r1n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R2)) {
-        db_post_events(pmca,&pmca->r2 ,monitor_mask);
-        db_post_events(pmca,&pmca->r2n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R3)) {
-        db_post_events(pmca,&pmca->r3 ,monitor_mask);
-        db_post_events(pmca,&pmca->r3n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R4)) {
-        db_post_events(pmca,&pmca->r4 ,monitor_mask);
-        db_post_events(pmca,&pmca->r4n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R5)) {
-        db_post_events(pmca,&pmca->r5 ,monitor_mask);
-        db_post_events(pmca,&pmca->r5n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R6)) {
-        db_post_events(pmca,&pmca->r6 ,monitor_mask);
-        db_post_events(pmca,&pmca->r6n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R7)) {
-        db_post_events(pmca,&pmca->r7 ,monitor_mask);
-        db_post_events(pmca,&pmca->r7n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R8)) {
-        db_post_events(pmca,&pmca->r8 ,monitor_mask);
-        db_post_events(pmca,&pmca->r8n ,monitor_mask);
-    }
-    if (ROI_MARKED(M_R9)) {
-        db_post_events(pmca,&pmca->r9 ,monitor_mask);
-        db_post_events(pmca,&pmca->r9n ,monitor_mask);
+    
+    for (i=0; i<NUM_ROI; i++) {
+       if (ROI_MARKED(M_R0 << i)) {
+          db_post_events(pmca,&psum[i].sum ,monitor_mask);
+          db_post_events(pmca,&psum[i].net ,monitor_mask);
+       }
     }
     UNMARK_ALL;
     ROI_UNMARK_ALL;
@@ -891,11 +890,12 @@ static long special(struct dbAddr *paddr, int after)
     case mcaRecordPSWP: NEWV_MARK(M_PSWP); break;
     case mcaRecordMODE: NEWV_MARK(M_MODE); break;
     default:
-        if ((fieldIndex >= mcaRecordR0LO) && (fieldIndex <= mcaRecordR9IP)) {
+        if ((fieldIndex >= mcaRecordR0LO) && 
+            (fieldIndex <= mcaRecordR0IP + NUM_ROI*FIELDS_PER_ROI)) {
             /* Which ROI is affected? */
-            i = (fieldIndex - mcaRecordR0LO)/4;
+            i = (fieldIndex - mcaRecordR0LO)/FIELDS_PER_ROI;
             /* Mark the ROI for recalculation. */
-            NEWV_MARK(M_R0 << i);
+            NEWR_MARK(M_R0 << i);
         }
         break;
     }
@@ -924,7 +924,7 @@ static long readValue(mcaRecord *pmca)
     struct mcaDSET *pdset = (struct mcaDSET *) (pmca->dset);
     long nRequest = 1;
 
-    NEWV_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
+    NEWR_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
 
     status = dbGetLink(&(pmca->siml), DBR_ENUM, &(pmca->simm), NULL, NULL);
     if (status) return(status);

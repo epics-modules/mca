@@ -367,6 +367,11 @@ recordtype(mca) {
 		special(SPC_NOMOD)
 		interest(4)
 	}
+	field(NEWR,DBF_ULONG) {
+		prompt("New ROI Value map")
+		special(SPC_NOMOD)
+		interest(4)
+	}
 	field(R0LO,DBF_LONG) {
 		prompt("Region 0 low channel")
 		promptgroup(GUI_COMMON)
@@ -667,6 +672,666 @@ recordtype(mca) {
 		pp(TRUE)
 		menu(mcaR0IP)
 	}
+	field(R10LO,DBF_LONG) {
+		prompt("Region 10 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R10HI,DBF_LONG) {
+		prompt("Region 10 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R10BG,DBF_SHORT) {
+		prompt("Region 10 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R10IP,DBF_MENU) {
+		prompt("Region 10 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R11LO,DBF_LONG) {
+		prompt("Region 11 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R11HI,DBF_LONG) {
+		prompt("Region 11 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R11BG,DBF_SHORT) {
+		prompt("Region 11 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R11IP,DBF_MENU) {
+		prompt("Region 11 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R12LO,DBF_LONG) {
+		prompt("Region 12 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R12HI,DBF_LONG) {
+		prompt("Region 12 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R12BG,DBF_SHORT) {
+		prompt("Region 12 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R12IP,DBF_MENU) {
+		prompt("Region 12 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R13LO,DBF_LONG) {
+		prompt("Region 13 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R13HI,DBF_LONG) {
+		prompt("Region 13 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R13BG,DBF_SHORT) {
+		prompt("Region 13 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R13IP,DBF_MENU) {
+		prompt("Region 13 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R14LO,DBF_LONG) {
+		prompt("Region 14 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R14HI,DBF_LONG) {
+		prompt("Region 14 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R14BG,DBF_SHORT) {
+		prompt("Region 14 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R14IP,DBF_MENU) {
+		prompt("Region 14 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R15LO,DBF_LONG) {
+		prompt("Region 15 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R15HI,DBF_LONG) {
+		prompt("Region 15 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R15BG,DBF_SHORT) {
+		prompt("Region 15 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R15IP,DBF_MENU) {
+		prompt("Region 15 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R16LO,DBF_LONG) {
+		prompt("Region 16 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R16HI,DBF_LONG) {
+		prompt("Region 16 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R16BG,DBF_SHORT) {
+		prompt("Region 16 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R16IP,DBF_MENU) {
+		prompt("Region 16 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R17LO,DBF_LONG) {
+		prompt("Region 17 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R17HI,DBF_LONG) {
+		prompt("Region 17 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R17BG,DBF_SHORT) {
+		prompt("Region 17 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R17IP,DBF_MENU) {
+		prompt("Region 17 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R18LO,DBF_LONG) {
+		prompt("Region 18 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R18HI,DBF_LONG) {
+		prompt("Region 18 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R18BG,DBF_SHORT) {
+		prompt("Region 18 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R18IP,DBF_MENU) {
+		prompt("Region 18 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R19LO,DBF_LONG) {
+		prompt("Region 19 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R19HI,DBF_LONG) {
+		prompt("Region 19 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R19BG,DBF_SHORT) {
+		prompt("Region 19 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R19IP,DBF_MENU) {
+		prompt("Region 19 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R20LO,DBF_LONG) {
+		prompt("Region 20 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R20HI,DBF_LONG) {
+		prompt("Region 20 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R20BG,DBF_SHORT) {
+		prompt("Region 20 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R20IP,DBF_MENU) {
+		prompt("Region 20 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R21LO,DBF_LONG) {
+		prompt("Region 21 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R21HI,DBF_LONG) {
+		prompt("Region 21 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R21BG,DBF_SHORT) {
+		prompt("Region 21 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R21IP,DBF_MENU) {
+		prompt("Region 21 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R22LO,DBF_LONG) {
+		prompt("Region 22 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R22HI,DBF_LONG) {
+		prompt("Region 22 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R22BG,DBF_SHORT) {
+		prompt("Region 22 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R22IP,DBF_MENU) {
+		prompt("Region 22 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R23LO,DBF_LONG) {
+		prompt("Region 23 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R23HI,DBF_LONG) {
+		prompt("Region 23 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R23BG,DBF_SHORT) {
+		prompt("Region 23 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R23IP,DBF_MENU) {
+		prompt("Region 23 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R24LO,DBF_LONG) {
+		prompt("Region 24 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R24HI,DBF_LONG) {
+		prompt("Region 24 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R24BG,DBF_SHORT) {
+		prompt("Region 24 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R24IP,DBF_MENU) {
+		prompt("Region 24 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R25LO,DBF_LONG) {
+		prompt("Region 25 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R25HI,DBF_LONG) {
+		prompt("Region 25 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R25BG,DBF_SHORT) {
+		prompt("Region 25 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R25IP,DBF_MENU) {
+		prompt("Region 25 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R26LO,DBF_LONG) {
+		prompt("Region 26 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R26HI,DBF_LONG) {
+		prompt("Region 26 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R26BG,DBF_SHORT) {
+		prompt("Region 26 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R26IP,DBF_MENU) {
+		prompt("Region 26 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R27LO,DBF_LONG) {
+		prompt("Region 27 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R27HI,DBF_LONG) {
+		prompt("Region 27 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R27BG,DBF_SHORT) {
+		prompt("Region 27 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R27IP,DBF_MENU) {
+		prompt("Region 27 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R28LO,DBF_LONG) {
+		prompt("Region 28 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R28HI,DBF_LONG) {
+		prompt("Region 28 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R28BG,DBF_SHORT) {
+		prompt("Region 28 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R28IP,DBF_MENU) {
+		prompt("Region 28 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R29LO,DBF_LONG) {
+		prompt("Region 29 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R29HI,DBF_LONG) {
+		prompt("Region 29 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R29BG,DBF_SHORT) {
+		prompt("Region 29 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R29IP,DBF_MENU) {
+		prompt("Region 29 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R30LO,DBF_LONG) {
+		prompt("Region 30 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R30HI,DBF_LONG) {
+		prompt("Region 30 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R30BG,DBF_SHORT) {
+		prompt("Region 30 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R30IP,DBF_MENU) {
+		prompt("Region 30 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R31LO,DBF_LONG) {
+		prompt("Region 31 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R31HI,DBF_LONG) {
+		prompt("Region 31 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R31BG,DBF_SHORT) {
+		prompt("Region 31 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R31IP,DBF_MENU) {
+		prompt("Region 31 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
 	field(R0,DBF_DOUBLE) {
 		prompt("Region 0 counts")
 		special(SPC_NOMOD)
@@ -817,6 +1482,336 @@ recordtype(mca) {
 		special(SPC_MOD)
 		interest(1)
 	}
+	field(R10,DBF_DOUBLE) {
+		prompt("Region 10 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R10N,DBF_DOUBLE) {
+		prompt("Region 10 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R10P,DBF_DOUBLE) {
+		prompt("Region 10 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R11,DBF_DOUBLE) {
+		prompt("Region 11 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R11N,DBF_DOUBLE) {
+		prompt("Region 11 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R11P,DBF_DOUBLE) {
+		prompt("Region 11 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R12,DBF_DOUBLE) {
+		prompt("Region 12 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R12N,DBF_DOUBLE) {
+		prompt("Region 12 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R12P,DBF_DOUBLE) {
+		prompt("Region 12 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R13,DBF_DOUBLE) {
+		prompt("Region 13 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R13N,DBF_DOUBLE) {
+		prompt("Region 13 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R13P,DBF_DOUBLE) {
+		prompt("Region 13 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R14,DBF_DOUBLE) {
+		prompt("Region 14 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R14N,DBF_DOUBLE) {
+		prompt("Region 14 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R14P,DBF_DOUBLE) {
+		prompt("Region 14 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R15,DBF_DOUBLE) {
+		prompt("Region 15 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R15N,DBF_DOUBLE) {
+		prompt("Region 15 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R15P,DBF_DOUBLE) {
+		prompt("Region 15 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R16,DBF_DOUBLE) {
+		prompt("Region 16 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R16N,DBF_DOUBLE) {
+		prompt("Region 16 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R16P,DBF_DOUBLE) {
+		prompt("Region 16 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R17,DBF_DOUBLE) {
+		prompt("Region 17 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R17N,DBF_DOUBLE) {
+		prompt("Region 17 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R17P,DBF_DOUBLE) {
+		prompt("Region 17 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R18,DBF_DOUBLE) {
+		prompt("Region 18 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R18N,DBF_DOUBLE) {
+		prompt("Region 18 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R18P,DBF_DOUBLE) {
+		prompt("Region 18 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R19,DBF_DOUBLE) {
+		prompt("Region 19 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R19N,DBF_DOUBLE) {
+		prompt("Region 19 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R19P,DBF_DOUBLE) {
+		prompt("Region 19 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R20,DBF_DOUBLE) {
+		prompt("Region 20 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R20N,DBF_DOUBLE) {
+		prompt("Region 20 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R20P,DBF_DOUBLE) {
+		prompt("Region 20 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R21,DBF_DOUBLE) {
+		prompt("Region 21 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R21N,DBF_DOUBLE) {
+		prompt("Region 21 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R21P,DBF_DOUBLE) {
+		prompt("Region 21 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R22,DBF_DOUBLE) {
+		prompt("Region 22 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R22N,DBF_DOUBLE) {
+		prompt("Region 22 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R22P,DBF_DOUBLE) {
+		prompt("Region 22 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R23,DBF_DOUBLE) {
+		prompt("Region 23 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R23N,DBF_DOUBLE) {
+		prompt("Region 23 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R23P,DBF_DOUBLE) {
+		prompt("Region 23 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R24,DBF_DOUBLE) {
+		prompt("Region 24 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R24N,DBF_DOUBLE) {
+		prompt("Region 24 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R24P,DBF_DOUBLE) {
+		prompt("Region 24 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R25,DBF_DOUBLE) {
+		prompt("Region 25 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R25N,DBF_DOUBLE) {
+		prompt("Region 25 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R25P,DBF_DOUBLE) {
+		prompt("Region 25 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R26,DBF_DOUBLE) {
+		prompt("Region 26 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R26N,DBF_DOUBLE) {
+		prompt("Region 26 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R26P,DBF_DOUBLE) {
+		prompt("Region 26 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R27,DBF_DOUBLE) {
+		prompt("Region 27 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R27N,DBF_DOUBLE) {
+		prompt("Region 27 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R27P,DBF_DOUBLE) {
+		prompt("Region 27 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R28,DBF_DOUBLE) {
+		prompt("Region 28 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R28N,DBF_DOUBLE) {
+		prompt("Region 28 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R28P,DBF_DOUBLE) {
+		prompt("Region 28 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R29,DBF_DOUBLE) {
+		prompt("Region 29 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R29N,DBF_DOUBLE) {
+		prompt("Region 29 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R29P,DBF_DOUBLE) {
+		prompt("Region 29 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R30,DBF_DOUBLE) {
+		prompt("Region 30 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R30N,DBF_DOUBLE) {
+		prompt("Region 30 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R30P,DBF_DOUBLE) {
+		prompt("Region 30 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R31,DBF_DOUBLE) {
+		prompt("Region 31 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R31N,DBF_DOUBLE) {
+		prompt("Region 31 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R31P,DBF_DOUBLE) {
+		prompt("Region 31 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
 	field(R0NM,DBF_STRING) {
 		prompt("Region 0 name")
 		promptgroup(GUI_COMMON)
@@ -873,6 +1868,138 @@ recordtype(mca) {
 	}
 	field(R9NM,DBF_STRING) {
 		prompt("Region 9 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R10NM,DBF_STRING) {
+		prompt("Region 10 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R11NM,DBF_STRING) {
+		prompt("Region 11 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R12NM,DBF_STRING) {
+		prompt("Region 12 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R13NM,DBF_STRING) {
+		prompt("Region 13 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R14NM,DBF_STRING) {
+		prompt("Region 14 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R15NM,DBF_STRING) {
+		prompt("Region 15 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R16NM,DBF_STRING) {
+		prompt("Region 16 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R17NM,DBF_STRING) {
+		prompt("Region 17 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R18NM,DBF_STRING) {
+		prompt("Region 18 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R19NM,DBF_STRING) {
+		prompt("Region 19 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R20NM,DBF_STRING) {
+		prompt("Region 20 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R21NM,DBF_STRING) {
+		prompt("Region 21 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R22NM,DBF_STRING) {
+		prompt("Region 22 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R23NM,DBF_STRING) {
+		prompt("Region 23 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R24NM,DBF_STRING) {
+		prompt("Region 24 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R25NM,DBF_STRING) {
+		prompt("Region 25 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R26NM,DBF_STRING) {
+		prompt("Region 26 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R27NM,DBF_STRING) {
+		prompt("Region 27 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R28NM,DBF_STRING) {
+		prompt("Region 28 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R29NM,DBF_STRING) {
+		prompt("Region 29 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R30NM,DBF_STRING) {
+		prompt("Region 30 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R31NM,DBF_STRING) {
+		prompt("Region 31 name")
 		promptgroup(GUI_COMMON)
 		interest(1)
 		size(16)
