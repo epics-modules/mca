@@ -20,15 +20,14 @@ LIBRARY_IOC_solaris += -nil-
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mca_SRCS += mcaRecord.c
 mca_SRCS += devMCA_soft.c
-mca_SRCS += devMcaMpf.cc
-mca_SRCS += fastSweep.cc
-mca_LIBS += mpf sscan
+mca_SRCS += devMcaAsyn.c
+mca_SRCS += drvFastSweep.c
+mca_LIBS += sscan
+mca_LIBS += asyn
 mca_LIBS += $(EPICS_BASE_IOC_LIBS)
 
-INC += fastSweep.h
 INC += mca.h
-INC += DevMcaMpf.h
-INC += mcamsgdef.h
+INC += drvMcaAsyn.h
 #===========================
 
 include $(TOP)/configure/RULES

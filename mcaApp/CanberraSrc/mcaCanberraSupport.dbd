@@ -2,10 +2,10 @@
 # DEVICE SUPPORT
 ################
 # MPF ICB support, used by Canberra ICB modules
-device(ao,VME_IO,devAoIcbMpf,"MPF ICB")
-device(mbbo,VME_IO,devMbboIcbMpf,"MPF ICB")
-device(ai,VME_IO,devAiIcbMpf,"MPF ICB")
-device(mbbi,VME_IO,devMbbiIcbMpf,"MPF ICB")
+device(ao,VME_IO,devAoIcbAsyn,"asyn ICB")
+device(mbbo,VME_IO,devMbboIcbAsyn,"asyn ICB")
+device(ai,VME_IO,devAiIcbAsyn,"asyn ICB")
+device(mbbi,VME_IO,devMbbiIcbAsyn,"asyn ICB")
 ###############
 
 
@@ -14,13 +14,7 @@ device(mbbi,VME_IO,devMbbiIcbMpf,"MPF ICB")
 ################
 registrar(mcaCanberraRegister)
 registrar(mcaAIMRegister)
-registrar(icbServerRegister)
-registrar(icbTcaServerRegister)
-registrar(icbDspServerRegister)
+registrar(icbAsynRegister)
 
-variable("icbDspDebug", int)
-variable("icbTcaDebug", int)
 variable("icbDebug", int)
-variable("icbServerDebug", int)
 variable("aimDebug", int)
-variable("mcaAIMServerDebug", int)

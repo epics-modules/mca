@@ -22,8 +22,8 @@ grecord(mbbo,"$(P)$(AMP)CGAIN") {
     field(SVVL,"500")
     field(SVST,"500")
     field(RVAL,"100")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S513 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S0 @$(PORT),$(ADDR)")
 }
 grecord(ao,"$(P)$(AMP)FGAIN") {
     field(DESC,"Fine gain")
@@ -34,8 +34,8 @@ grecord(ao,"$(P)$(AMP)FGAIN") {
     field(HOPR,"3")
     field(PREC,"3")
     field(VAL,"1")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S514 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S1 @$(PORT),$(ADDR)")
 }
 grecord(ao,"$(P)$(AMP)SFGAIN") {
     field(DESC,"Super-fine gain")
@@ -46,8 +46,8 @@ grecord(ao,"$(P)$(AMP)SFGAIN") {
     field(HOPR,"1.002")
     field(PREC,"5")
     field(VAL,"1")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S515 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S2 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)INPP") {
     field(DESC,"Input polarity")
@@ -56,8 +56,8 @@ grecord(mbbo,"$(P)$(AMP)INPP") {
     field(ZRST,"Positive")
     field(ONVL,"1")
     field(ONST,"Negative")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S516 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S3 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)INHP") {
     field(DESC,"Inhibit polarity")
@@ -66,8 +66,8 @@ grecord(mbbo,"$(P)$(AMP)INHP") {
     field(ZRST,"Positive")
     field(ONVL,"1")
     field(ONST,"Negative")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S517 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S4 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)DMOD") {
     field(DESC,"Differential mode")
@@ -76,8 +76,8 @@ grecord(mbbo,"$(P)$(AMP)DMOD") {
     field(ZRST,"Single-ended")
     field(ONVL,"1")
     field(ONST,"Differential")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S518 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S5 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)SMOD") {
     field(DESC,"Shaping mode")
@@ -86,8 +86,8 @@ grecord(mbbo,"$(P)$(AMP)SMOD") {
     field(ZRST,"Gaussian")
     field(ONVL,"1")
     field(ONST,"Triangular")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S519 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S6 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)PTYP") {
     field(DESC,"Pre-amp type")
@@ -96,8 +96,9 @@ grecord(mbbo,"$(P)$(AMP)PTYP") {
     field(ZRST,"RC")
     field(ONVL,"1")
     field(ONST,"TRP")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S520 @$(SERVER),$(ADDR)")
+    field(RVAL,"1")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S7 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)PURMOD") {
     field(DESC,"Pileup reject mode")
@@ -106,8 +107,8 @@ grecord(mbbo,"$(P)$(AMP)PURMOD") {
     field(ZRST,"Off")
     field(ONVL,"1")
     field(ONST,"On")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S521 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S8 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)BLMOD") {
     field(DESC,"Baseline restore mode")
@@ -116,8 +117,8 @@ grecord(mbbo,"$(P)$(AMP)BLMOD") {
     field(ZRST,"Symmetric")
     field(ONVL,"1")
     field(ONST,"Asymmetric")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S522 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S9 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)DTMOD") {
     field(DESC,"Deatime control mode")
@@ -126,8 +127,8 @@ grecord(mbbo,"$(P)$(AMP)DTMOD") {
     field(ZRST,"Normal")
     field(ONVL,"1")
     field(ONST,"Loss-free cntg")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S523 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S10 @$(PORT),$(ADDR)")
 }
 grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
     field(DESC,"Start auto-PZ")
@@ -136,8 +137,8 @@ grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
     field(ZRST,"Done")
     field(ONVL,"1")
     field(ONST,"Start")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S524 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S11 @$(PORT),$(ADDR)")
 }
 grecord(ao,"$(P)$(AMP)PZ") {
     field(DESC,"Requested pole-zero")
@@ -147,8 +148,8 @@ grecord(ao,"$(P)$(AMP)PZ") {
     field(DRVH,"4095")
     field(HOPR,"4095")
     field(PREC,"0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S525 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(OUT,"#C1 S12 @$(PORT),$(ADDR)")
 }
 
 grecord(bo,"$(P)$(AMP)READBACK") {
@@ -164,8 +165,8 @@ grecord(ai,"$(P)$(AMP)SHAPING") {
     field(LOPR,"0")
     field(HOPR,"20")
     field(PREC,"2")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S526 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(INP,"#C1 S13 @$(PORT),$(ADDR)")
     field(FLNK,"$(P)$(AMP)PZRBV")
 }
 
@@ -175,6 +176,6 @@ grecord(ai,"$(P)$(AMP)PZRBV") {
     field(LOPR,"1")
     field(HOPR,"4095")
     field(PREC,"0")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S527 @$(SERVER),$(ADDR)")
+    field(DTYP, "asyn ICB")
+    field(INP,"#C1 S14 @$(PORT),$(ADDR)")
 }

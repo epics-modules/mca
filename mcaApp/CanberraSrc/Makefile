@@ -18,15 +18,15 @@ DBD += mcaCanberraSupport.dbd
 
 #=============================
 # Right now we only build this on vxWorks and Linux
-LIBRARY_IOC_vxWorks += mcaCanberra
 LIBRARY_IOC_Linux += mcaCanberra
+LIBRARY_IOC_vxWorks += mcaCanberra
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaCanberra_SRCS += nmc_comm_subs_1.c 
 mcaCanberra_SRCS += nmc_comm_subs_2.c 
 mcaCanberra_SRCS += nmc_user_subs_1.c
 mcaCanberra_SRCS += nmc_user_subs_2.c 
-mcaCanberra_SRCS += mcaAIMServer.cc
+mcaCanberra_SRCS += drvMcaAIMAsyn.c
 mcaCanberra_SRCS += icb_strings.c
 mcaCanberra_SRCS += icb_crmpsc.c
 mcaCanberra_SRCS += icb_handler_subs.c
@@ -34,13 +34,11 @@ mcaCanberra_SRCS += icb_control_subs.c
 mcaCanberra_SRCS += icb_control_subs2.c
 mcaCanberra_SRCS += icb_user_subs.c
 mcaCanberra_SRCS += icb_show_modules.c
-mcaCanberra_SRCS += icbServer.cc
-mcaCanberra_SRCS += devIcbMpf.cc
-mcaCanberra_SRCS += icbTcaServer.cc
-mcaCanberra_SRCS += icbDspServer.cc
+mcaCanberra_SRCS += drvIcbAsyn.c
+mcaCanberra_SRCS += devIcbAsyn.c
 mcaCanberra_SRCS += mcaCanberraRegister.c
 mcaCanberra_LIBS += calc sscan autosave
-mcaCanberra_LIBS += mpf 
+mcaCanberra_LIBS += asyn 
 mcaCanberra_LIBS += $(EPICS_BASE_IOC_LIBS)
 # should be mcaAIM_LIBS_linux-x86 which won't work
 mcaCanberra_SYS_LIBS_DEFAULT += net pcap
@@ -56,7 +54,7 @@ mcaAIM_SRCS_vxWorks += -nil-
 mcaAIM_LIBS += mca
 mcaAIM_LIBS += mcaCanberra
 mcaAIM_LIBS += calc sscan autosave
-mcaAIM_LIBS += mpf 
+mcaAIM_LIBS += asyn
 mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 # should be mcaAIM_LIBS_linux-x86 which won't work
