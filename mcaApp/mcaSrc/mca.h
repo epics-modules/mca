@@ -3,35 +3,33 @@
 #ifndef mcaH
 #define mcaH
 
-typedef struct {
-   double acquiring;
-   double realTime;
-   double liveTime;
-   double totalCounts;
-   double dwellTime;
-} mcaAsynAcquireStatus;
-
-typedef enum { 
-   MSG_ACQUIRE,
-   MSG_READ,
-   MSG_SET_CHAS_INT,
-   MSG_SET_CHAS_EXT,
-   MSG_SET_NCHAN,
-   MSG_SET_DWELL,
-   MSG_SET_REAL_TIME,
-   MSG_SET_LIVE_TIME,
-   MSG_SET_COUNTS,
-   MSG_SET_LO_CHAN,
-   MSG_SET_HI_CHAN,
-   MSG_SET_NSWEEPS,
-   MSG_SET_MODE_PHA,
-   MSG_SET_MODE_MCS,
-   MSG_SET_MODE_LIST,
-   MSG_GET_ACQ_STATUS,
-   MSG_STOP_ACQUISITION,
-   MSG_ERASE,
-   MSG_SET_SEQ,
-   MSG_SET_PSCL
+typedef enum {
+    mcaData,                   /* int32Array, write/read */
+    mcaStartAcquire,           /* int32, write */
+    mcaStopAcquire,            /* int32, write */
+    mcaErase,                  /* int32, write */
+    mcaReadStatus,             /* int32, write */
+    mcaChannelAdvanceInternal, /* int32, write */
+    mcaChannelAdvanceExternal, /* int32, write */
+    mcaNumChannels,            /* int32, write */
+    mcaModePHA,                /* int32, write */
+    mcaModeMCS,                /* int32, write */
+    mcaModeList,               /* int32, write */
+    mcaSequence,               /* int32, write */
+    mcaPrescale,               /* int32, write */
+    mcaPresetSweeps,           /* int32, write */
+    mcaPresetLowChannel,       /* int32, write */
+    mcaPresetHighChannel,      /* int32, write */
+    mcaDwellTime,              /* float64, write/read */
+    mcaPresetLiveTime,         /* float64, write */
+    mcaPresetRealTime,         /* float64, write */
+    mcaPresetCounts,           /* float64, write */
+    mcaAcquiring,              /* int32, read */
+    mcaElapsedLiveTime,        /* float64, read */
+    mcaElapsedRealTime,        /* float64, read */
+    mcaElapsedCounts           /* float64, read */
 } mcaCommand;
+
+#define MAX_MCA_COMMANDS 24
 
 #endif /* mcaH */
