@@ -23,7 +23,10 @@
 #include <cantProceed.h>
 #include <asynDriver.h>
 #include <asynInt32Array.h>
+#include <asynFloat64.h>
+#include <asynFloat64Callback.h>
 #include <asynInt32ArrayCallback.h>
+#include <asynDrvUser.h>
 
 #include "mca.h"
 #include "asynMca.h"
@@ -50,13 +53,11 @@ typedef struct {
     asynInterface common;
     asynInterface mca;
     asynInterface int32Array;
-    asynInt32ArrayCallback *pint32ArrayCallback;
-    void *int32ArrayCallbackPvt;
     asynUser *pasynUser;
 } fastSweepPvt;
 
 /* These are callback functions, called from driver */
-static void dataCallback(void *drvPvt, epicsInt32 *data);
+static void dataCallback(void *drvPvt, epicsInt32 *data, epicsUInt32 nelem);
 static void intervalCallback(void *drvPvt, double seconds);
 /* These are private functions, not in any interface */
 static void nextPoint(fastSweepPvt *pPvt, int *newData);
@@ -102,6 +103,15 @@ int initFastSweep(const char *portName, const char *inputName,
     fastSweepPvt *pPvt;
     asynStatus status;
     asynInterface *pasynInterface;
+    asynUser *pasynUser;
+    asynFloat64Callback *pfloat64Callback;
+    void *float64CallbackPvt;
+    asynInt32ArrayCallback *pint32ArrayCallback;
+    void *int32ArrayCallbackPvt;
+    asynFloat64 *pfloat64;
+    void *float64Pvt;
+    asynDrvUser *pdrvUser;
+    void *drvUserPvt;
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt), "initFastSweep");
     pPvt->maxSignals = maxSignals;
@@ -152,15 +162,16 @@ int initFastSweep(const char *portName, const char *inputName,
         return -1;
     }
 
-    pPvt->pasynUser = pasynManager->createAsynUser(0,0);
+    pasynUser = pasynManager->createAsynUser(0,0);
+    pPvt->pasynUser = pasynUser;
     status = pasynManager->connectDevice(pPvt->pasynUser, inputName, 0);
     if (status != asynSuccess) {
         asynPrint(pPvt->pasynUser, ASYN_TRACE_ERROR,
                   "drvFastSweep::initFastSweep, connectDevice failed\n");
         return -1;
     }
-    /* Get the asynInt32Callback interface */
-    pasynInterface = pasynManager->findInterface(pPvt->pasynUser, 
+    /* Get the asynInt32ArrayCallback interface */
+    pasynInterface = pasynManager->findInterface(pasynUser, 
                                                  asynInt32ArrayCallbackType, 1);
     if (!pasynInterface) {
         asynPrint(pPvt->pasynUser, ASYN_TRACE_ERROR,
@@ -169,17 +180,39 @@ int initFastSweep(const char *portName, const char *inputName,
                   inputName);
         return -1;
     }
-    pPvt->pint32ArrayCallback = 
-                          (asynInt32ArrayCallback *)pasynInterface->pinterface;
-    pPvt->int32ArrayCallbackPvt = pasynInterface->drvPvt;
+    pint32ArrayCallback = (asynInt32ArrayCallback *)pasynInterface->pinterface;
+    int32ArrayCallbackPvt = pasynInterface->drvPvt;
+    pint32ArrayCallback->registerCallback(int32ArrayCallbackPvt, pasynUser, 
+                                          dataCallback, pPvt);
 
-    pPvt->pint32ArrayCallback->registerCallbacks(pPvt->int32ArrayCallbackPvt, 
-                                                 pPvt->pasynUser, 
-                                                 dataCallback, intervalCallback,
-                                                 pPvt);
-    pPvt->callbackInterval = pPvt->pint32ArrayCallback->getCallbackInterval(
-                                                 pPvt->int32ArrayCallbackPvt, 
-                                                 pPvt->pasynUser);
+    /* Get the asynFloat64Callback interface */
+    pasynInterface = pasynManager->findInterface(pasynUser,
+                                                 asynFloat64CallbackType, 1);
+    if (!pasynInterface) {
+        asynPrint(pPvt->pasynUser, ASYN_TRACE_ERROR,
+                  "initFastSweep, find asynFloat64Callback"
+                  " interface failed for input %s\n",
+                  inputName);
+        return -1;
+    }
+    pfloat64Callback = (asynFloat64Callback *)pasynInterface->pinterface;
+    float64CallbackPvt = pasynInterface->drvPvt;
+    pfloat64Callback->registerCallback(float64CallbackPvt, pasynUser, 
+                                       intervalCallback, pPvt);
+
+    /* Get the asynFloat64 interface */
+    pasynInterface = pasynManager->findInterface(pasynUser,
+                                                 asynFloat64Type, 1);
+    if (!pasynInterface) {
+        asynPrint(pPvt->pasynUser, ASYN_TRACE_ERROR,
+                  "initFastSweep, find asynFloat64"
+                  " interface failed for input %s\n",
+                  inputName);
+        return -1;
+    }
+    pfloat64 = (asynFloat64 *)pasynInterface->pinterface;
+    float64Pvt = pasynInterface->drvPvt;
+    status = pfloat64->read(float64Pvt, pasynUser, &pPvt->callbackInterval);
     return(0);
 }
 
@@ -194,7 +227,7 @@ static void intervalCallback(void *drvPvt, double seconds)
     epicsMutexUnlock(pPvt->mutexId);
 }
 
-static void dataCallback(void *drvPvt, epicsInt32 *newData)
+static void dataCallback(void *drvPvt, epicsInt32 *newData, epicsUInt32 nelem)
 {
     /* This is callback function that is called from the port-specific driver */
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
