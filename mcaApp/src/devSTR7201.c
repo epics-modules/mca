@@ -18,6 +18,7 @@
  * .06  10/03/00  mlr  Send all setup data each time acquisition is started. This
  *                     allows MCA record and scaler records to use the same hardware
  *                     "simultaneously", i.e. without rebooting the crate
+ * .07  23/02/02  mlr  Add support for MSG_SET_SEQ, although this is a NO-OP.
  */
 
 
@@ -134,10 +135,6 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                 /* set dwell time per channel. */
                 sendSetup(pmca);
                 break;
-        case MSG_SET_PSCL:
-                /* set channel advance prescaler. */
-                sendSetup(pmca);
-                break;
         case MSG_SET_REAL_TIME:
                 /* set preset real time. */
                 sendSetup(pmca);
@@ -196,6 +193,14 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                 sendSetup(pmca);
                 s = drvSTR7201Erase(card);
                 Debug(5, "devSTR7201(send_msg): erase %d\n", s);
+                break;
+                * set sequence - noop for  */
+                /* set sequence for time-resolved spectra */
+                /* This is a NOOP for STR7201 */
+                break;
+        case MSG_SET_PSCL:
+                /* set channel advance prescaler. */
+                sendSetup(pmca);
                 break;
         }
         return(0);
