@@ -7,7 +7,7 @@
 
 # Database for 13 element detector with AIMs and multiplexors
 
-grecord(ddfanout,"$(P)EraseAll") {
+grecord(dfanout,"$(P)EraseAll") {
         field(VAL, "1")
         field(OUTA,"$(P)mca1.ERAS  PP MS")
         field(OUTB,"$(P)mca2.ERAS  PP MS")
@@ -20,7 +20,7 @@ grecord(ddfanout,"$(P)EraseAll") {
         field(FLNK,"$(P)EraseAll1.PROC")
 }
 
-grecord(ddfanout,"$(P)EraseAll1") {
+grecord(dfanout,"$(P)EraseAll1") {
         field(VAL, "1")
         field(OUTA,"$(P)mca9.ERAS  PP MS")
         field(OUTB,"$(P)mca10.ERAS  PP MS")
@@ -29,7 +29,7 @@ grecord(ddfanout,"$(P)EraseAll1") {
         field(OUTE,"$(P)mca13.ERAS  PP MS")
 }
 
-grecord(ddfanout,"$(P)EraseStart") {
+grecord(dfanout,"$(P)EraseStart") {
         field(VAL, "1")
         field(OUTA,"$(P)mca1.ERST  CA MS")
         field(OUTB,"$(P)mca5.ERST  CA MS")
@@ -40,7 +40,7 @@ grecord(ddfanout,"$(P)EraseStart") {
         field(FLNK,"$(P)SetClientWait")
 }
 
-grecord(ddfanout,"$(P)StartAll") {
+grecord(dfanout,"$(P)StartAll") {
         field(VAL, "1")
         field(OUTA,"$(P)mca1.STRT  PP MS")
         field(OUTB,"$(P)mca5.STRT  PP MS")
@@ -49,7 +49,7 @@ grecord(ddfanout,"$(P)StartAll") {
         field(FLNK,"$(P)SetClientWait")
 }
 
-grecord(ddfanout,"$(P)StopAll") {
+grecord(dfanout,"$(P)StopAll") {
         field(VAL, "1")
         field(OUTA,"$(P)mca1.STOP  PP MS")
         field(OUTB,"$(P)mca5.STOP  PP MS")
@@ -57,7 +57,7 @@ grecord(ddfanout,"$(P)StopAll") {
         field(OUTD,"$(P)mca13.STOP  PP MS")
 }
 
-grecord(ddfanout,"$(P)PresetReal") {
+grecord(dfanout,"$(P)PresetReal") {
         field(DOL, "$(P)PresetReal.VAL")
         field(OMSL, "closed_loop")
         field(OUTA,"$(P)mca1.PRTM  PP MS")
@@ -67,7 +67,7 @@ grecord(ddfanout,"$(P)PresetReal") {
         field(PREC, "2")
 }
 
-grecord(ddfanout,"$(P)PresetLive") {
+grecord(dfanout,"$(P)PresetLive") {
         field(DOL, "$(P)PresetLive.VAL")
         field(OMSL, "closed_loop")
         field(OUTA,"$(P)mca1.PLTM  PP MS")
@@ -102,7 +102,7 @@ grecord(calcout,"$(P)ElapsedLive") {
         field(PREC, "2")
 }
 
-grecord(ddfanout,"$(P)ReadAll") {
+grecord(dfanout,"$(P)ReadAll") {
         field(SCAN,"5 second")
         field(DISV,"0")
         field(SDIS,"$(P)Acquiring NPP NMS")
@@ -117,7 +117,7 @@ grecord(ddfanout,"$(P)ReadAll") {
         field(OUTH,"$(P)mca8.READ  PP MS")
         field(FLNK,"$(P)ReadAll1.PROC")
 }
-grecord(ddfanout,"$(P)ReadAll1") {
+grecord(dfanout,"$(P)ReadAll1") {
         field(VAL, "1")
         field(OUTA,"$(P)mca9.READ  PP MS")
         field(OUTB,"$(P)mca10.READ  PP MS")
@@ -126,7 +126,7 @@ grecord(ddfanout,"$(P)ReadAll1") {
         field(OUTE,"$(P)mca13.READ  PP MS")
 }
 
-grecord(ddfanout,"$(P)StatusAll") {
+grecord(dfanout,"$(P)StatusAll") {
         field(SCAN,".5 second")
         field(DISV,"0")
         field(SDIS,"$(P)Acquiring NPP NMS")
@@ -141,7 +141,7 @@ grecord(ddfanout,"$(P)StatusAll") {
         field(OUTH,"$(P)mca8.PROC  PP MS")
         field(FLNK,"$(P)StatusAll1.PROC")
 }
-grecord(ddfanout,"$(P)StatusAll1") {
+grecord(dfanout,"$(P)StatusAll1") {
         field(VAL, "1")
         field(OUTA,"$(P)mca9.PROC  PP MS")
         field(OUTB,"$(P)mca10.PROC  PP MS")

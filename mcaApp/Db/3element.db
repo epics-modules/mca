@@ -9,28 +9,28 @@ grecord(fanout,"$(P)EraseStart") {
         field(LNK2,"$(P)StartAll.PROC  PP MS")
 }
 
-grecord(ddfanout,"$(P)EraseAll") {
+grecord(dfanout,"$(P)EraseAll") {
         field(VAL, "1")
 	field(OUTA,"$(P)$(BASENAME)1.ERAS  PP NMS")
 	field(OUTB,"$(P)$(BASENAME)2.ERAS  PP NMS")
 	field(OUTC,"$(P)$(BASENAME)3.ERAS  PP NMS")
 }
 
-grecord(ddfanout,"$(P)StartAll") {
+grecord(dfanout,"$(P)StartAll") {
         field(VAL, "1")
 	field(OUTA,"$(P)$(BASENAME)1.STRT  PP NMS")
 	field(OUTB,"$(P)$(BASENAME)2.STRT  PP NMS")
 	field(OUTC,"$(P)$(BASENAME)3.STRT  PP NMS")
 }
 
-grecord(ddfanout,"$(P)StopAll") {
+grecord(dfanout,"$(P)StopAll") {
         field(VAL, "1")
 	field(OUTA,"$(P)$(BASENAME)1.STOP  CA NMS")
 	field(OUTB,"$(P)$(BASENAME)2.STOP  CA NMS")
 	field(OUTC,"$(P)$(BASENAME)3.STOP  CA NMS")
 }
 
-grecord(ddfanout,"$(P)PresetReal") {
+grecord(dfanout,"$(P)PresetReal") {
         field(DOL, "$(P)PresetReal.VAL")
         field(OMSL, "closed_loop")
 	field(OUTA,"$(P)$(BASENAME)1.PRTM  CA NMS")
@@ -39,7 +39,7 @@ grecord(ddfanout,"$(P)PresetReal") {
         field(PREC, "2")
 }
 
-grecord(ddfanout,"$(P)PresetLive") {
+grecord(dfanout,"$(P)PresetLive") {
         field(DOL, "$(P)PresetLive.VAL")
         field(OMSL, "closed_loop")
 	field(OUTA,"$(P)$(BASENAME)1.PLTM  CA NMS")
@@ -71,7 +71,7 @@ grecord(calcout,"$(P)ElapsedLive") {
         field(PREC, "2")
 }
 
-grecord(ddfanout,"$(P)ReadAll") {
+grecord(dfanout,"$(P)ReadAll") {
         field(SCAN,"5 second")
         field(DISV,"0")
         field(SDIS,"$(P)Acquiring NPP NMS")
@@ -82,7 +82,7 @@ grecord(ddfanout,"$(P)ReadAll") {
 	field(FLNK,"$(P)ROISUM_0.PROC PP NMS")
 }
 
-grecord(ddfanout,"$(P)StatusAll") {
+grecord(dfanout,"$(P)StatusAll") {
         field(SCAN,".5 second")
         field(DISV,"0")
         field(SDIS,"$(P)Acquiring NPP NMS")

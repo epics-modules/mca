@@ -9,7 +9,7 @@ grecord(fanout,"$(P)EraseStart") {
       field(LNK2,"$(P)StartAll.PROC  PP MS")
 }
 
-grecord(ddfanout,"$(P)EraseAll") {
+grecord(dfanout,"$(P)EraseAll") {
       field(VAL, "1")
       field(OUTA,"$(P)mca1.ERAS  PP MS")
       field(OUTB,"$(P)mca2.ERAS  PP MS")
@@ -21,7 +21,7 @@ grecord(ddfanout,"$(P)EraseAll") {
       field(OUTH,"$(P)mca8.ERAS  PP MS")
 }
 
-grecord(ddfanout,"$(P)StartAll") {
+grecord(dfanout,"$(P)StartAll") {
       field(VAL, "1")
       field(OUTA,"$(P)mca1.STRT  PP MS")
       field(OUTB,"$(P)mca2.STRT  PP MS")
@@ -34,7 +34,7 @@ grecord(ddfanout,"$(P)StartAll") {
       field(FLNK,"$(P)SetClientWait")
 }
 
-grecord(ddfanout,"$(P)StopAll") {
+grecord(dfanout,"$(P)StopAll") {
       field(VAL, "1")
       field(OUTA,"$(P)mca1.STOP  PP MS")
       field(OUTB,"$(P)mca2.STOP  PP MS")
@@ -53,7 +53,7 @@ grecord(ao,"$(P)InitNuse") {
       field(OUT,"$(P)NuseAll.VAL NPP MS")
 }
 
-grecord(ddfanout,"$(P)NuseAll") {
+grecord(dfanout,"$(P)NuseAll") {
       field(OUTA,"$(P)mca1.NUSE  PP MS")
       field(OUTB,"$(P)mca2.NUSE  PP MS")
       field(OUTC,"$(P)mca3.NUSE  PP MS")
@@ -64,7 +64,7 @@ grecord(ddfanout,"$(P)NuseAll") {
       field(OUTH,"$(P)mca8.NUSE  PP MS")
 }
 
-grecord(ddfanout,"$(P)StatusAll") {
+grecord(dfanout,"$(P)StatusAll") {
       field(SCAN,".1 second")
       field(DISV,"0")
       field(SDIS,"$(P)mca1.ACQG NPP NMS")
@@ -79,7 +79,7 @@ grecord(ddfanout,"$(P)StatusAll") {
       field(OUTH,"$(P)mca8.PROC  PP MS")
 }
 
-grecord(ddfanout,"$(P)ReadAll") {
+grecord(dfanout,"$(P)ReadAll") {
       field(SCAN,"2 second")
       field(DISV,"0")
       field(SDIS,"$(P)mca1.ACQG NPP NMS")
@@ -136,7 +136,7 @@ grecord(bo,"$(P)Acquiring") {
 
 # NOTE:  In the past we just set the presets for MCA1.  However, all MCAs now send
 # their presets to the driver each time acquisition is started, so they must all agree.
-grecord(ddfanout,"$(P)PresetReal") {
+grecord(dfanout,"$(P)PresetReal") {
       field(VAL,"0")
       field(PINI,"YES")
       field(PREC,"3")
@@ -150,7 +150,7 @@ grecord(ddfanout,"$(P)PresetReal") {
       field(OUTH,"$(P)mca8.PRTM  PP MS")
 }
 
-grecord(ddfanout,"$(P)PresetLive") {
+grecord(dfanout,"$(P)PresetLive") {
       field(VAL,"0")
       field(PINI,"YES")
       field(PREC,"3")
@@ -164,7 +164,7 @@ grecord(ddfanout,"$(P)PresetLive") {
       field(OUTH,"$(P)mca8.PLTM  PP MS")
 }
 
-grecord(ddfanout,"$(P)Dwell") {
+grecord(dfanout,"$(P)Dwell") {
       field(VAL,"0.1")
       field(PINI,"YES")
       field(PREC,"3")
@@ -186,7 +186,7 @@ grecord(bo,"$(P)ChannelAdvance") {
       field(ONAM,"External")
 }
 
-grecord(ddfanout,"$(P)ChannelAdvanceAll") {
+grecord(dfanout,"$(P)ChannelAdvanceAll") {
       field(OUTA,"$(P)mca1.CHAS  PP MS")
       field(OUTB,"$(P)mca2.CHAS  PP MS")
       field(OUTC,"$(P)mca3.CHAS  PP MS")
@@ -197,7 +197,7 @@ grecord(ddfanout,"$(P)ChannelAdvanceAll") {
       field(OUTH,"$(P)mca8.CHAS  PP MS")
 }
 
-grecord(ddfanout,"$(P)Prescale") {
+grecord(dfanout,"$(P)Prescale") {
       field(VAL,"1")
       field(PINI,"YES")
       field(PREC,"0")
