@@ -6,11 +6,11 @@ include "mcaRecord.dbd"
 ################
 # DEVICE SUPPORT
 ################
+# soft mca record
+device(mca,CONSTANT,devMCA_soft,"Soft Channel")
 # MPF MCA support, used by Canberra AIM multichannel analyzer and
 # Acromag IP-330 ADC as waveform recorder
 device(mca,VME_IO,devMcaMpf,"MPF MCA")
-# soft mca record
-device(mca,CONSTANT,devMCA_soft,"Soft Channel")
 
 variable("mcaRecordDebug", int)
 variable("devMcaMpfDebug", int)
