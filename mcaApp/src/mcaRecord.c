@@ -79,8 +79,10 @@
  *                          Added alarm fields for high deadtime alarms.
  *                          Modified get_precision() to return 6 digits for calibration
  *                          fields.
+ * .23  04-07-02  mlr  V5.4 Improved logic for dead time to avoid 100% when acquisition
+ *                          first starts.
  */
-#define VERSION 5.3
+#define VERSION 5.4
 
 #include    <vxWorks.h>
 #include    <types.h>
@@ -705,13 +707,21 @@ read_status:
     if (pmca->dwel != pmca->dwlp) MARK(M_DWEL);
     if (MARKED(M_ERTM) || MARKED(M_ELTM)) {
        /* Compute average and instantaneous dead time */
-       pmca->dtim = 100. * (pmca->ertm - pmca->eltm) / MAX(pmca->ertm, .0001); 
+       if (pmca->ertm > .001) {
+          pmca->dtim = 100. * (pmca->ertm - pmca->eltm) / pmca->ertm; 
+       } else {
+          pmca->dtim = 0.;
+       }
        pmca->dtim = MAX(MIN(pmca->dtim, 100.), 0.);
        /* If acquiring then compute instantaneous dead time else use average */
        if (pmca->acqg) {
-          pmca->idtim = 100. * ((pmca->ertm - pmca->ertp) - (pmca->eltm - pmca->eltp))
-                        / MAX((pmca->ertm - pmca->ertp), .0001);
-          pmca->idtim = MAX(MIN(pmca->idtim, 100.), 0.);
+          double drt = pmca->ertm - pmca->ertp;
+          if (drt > .001) {
+             pmca->idtim = 100. * (drt - (pmca->eltm - pmca->eltp)) / drt;
+             pmca->idtim = MAX(MIN(pmca->idtim, 100.), 0.);
+          } else {
+             pmca->idtim = 0.;
+          }
        } else {
           pmca->idtim = pmca->dtim;
        }
