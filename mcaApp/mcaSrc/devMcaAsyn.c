@@ -26,7 +26,6 @@
 #include <devSup.h>
 #include <alarm.h>
 #include <epicsExport.h>
-#include <epicsMessageQueue.h>
 
 #include "asynDriver.h"
 #include "asynUtils.h"
