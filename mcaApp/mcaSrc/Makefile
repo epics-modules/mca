@@ -14,7 +14,8 @@ DBD += mca.dbd
 DBD += mcaSupport.dbd
 
 #=============================
-LIBRARY_IOC += mca
+LIBRARY_IOC_DEFAULT += mca
+LIBRARY_IOC_solaris += -nil-
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mca_SRCS += mcaRecord.c
