@@ -29,7 +29,7 @@
 
 #include "asynDriver.h"
 #include "asynInt32Array.h"
-#include "asynUtils.h"
+#include "asynEpicsUtils.h"
 
 #include "mcaRecord.h"
 #include "mca.h"
@@ -84,7 +84,7 @@ static long init_record(mcaRecord *pmca)
 {
     asynUser *pasynUser;
     char *port, *userParam;
-    int card, signal;
+    int signal;
     asynStatus status;
     asynInterface *pasynInterface;
     mcaAsynPvt *pPvt;
@@ -100,8 +100,8 @@ static long init_record(mcaRecord *pmca)
     pPvt->pmca = pmca;
     pmca->dpvt = pPvt;
 
-    status = pasynUtils->parseVmeIo(pasynUser, &pmca->inp, &card, &signal,
-                                    &port, &userParam);
+    status = pasynEpicsUtils->parseLink(pasynUser, &pmca->inp,
+                                    &port, &signal, &userParam);
     if (status != asynSuccess) {
         errlogPrintf("devMcaAsyn::init_record %s bad link %s\n",
                      pmca->name, pasynUser->errorMessage);

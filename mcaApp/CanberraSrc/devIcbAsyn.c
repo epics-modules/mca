@@ -50,9 +50,10 @@
 #include "devSup.h"
 
 #include <epicsExport.h>
+#include <epicsString.h>
 #include <cantProceed.h>
 #include <asynDriver.h>
-#include <asynUtils.h>
+#include <asynEpicsUtils.h>
 
 #include "devIcbAsyn.h"
 
@@ -117,6 +118,9 @@ static long initCommon(dbCommon *pr, DBLINK *plink, recType rt)
     asynUser *pasynUser=NULL;
     asynInterface *pasynInterface;
     asynStatus status;
+    struct vmeio *pvmeio;
+    char temp[100], *p;
+    int i;
 
     pPvt = callocMustSucceed(1, sizeof(devIcbPvt), "devIcbAsyn::init_common");
     pr->dpvt = pPvt;
@@ -126,14 +130,29 @@ static long initCommon(dbCommon *pr, DBLINK *plink, recType rt)
     pPvt->pasynUser = pasynUser;
     pasynUser->userPvt = pr;
 
-    status = pasynUtils->parseVmeIo(pasynUser, plink, 
-                                    &card, &pPvt->icbCommand,
-                                    &port, &userParam);
+/* We can't use this yet, because the database still uses the CARD field of
+ * VMEIO
+    status = pasynEpicsUtils->parseLink(pasynUser, plink, 
+                                        &port, &pPvt->icbCommand,
+                                        &userParam);
     if (status != asynSuccess) {
         errlogPrintf("devIcbAsyn::initCommon %s bad link %s\n", 
                      pr->name, pasynUser->errorMessage);
         goto bad;
     }
+*/
+
+/* Parse VME link here for now */
+    pvmeio=(struct vmeio*)&(plink->value);
+    pPvt->icbCommand = pvmeio->signal;
+    card = pvmeio->card;
+    p = pvmeio->parm;
+    /* first field of parm is always the asyn port name */
+    for(i=0; *p && *p!=',' && *p!=' '; i++, p++) temp[i]=*p;
+    temp[i]='\0';
+    port = epicsStrDup(temp);
+    userParam = epicsStrDup(++p);
+
     pPvt->icbModuleType = card;
     pPvt->address = atoi(userParam);
     status = pasynManager->connectDevice(pasynUser, port, pPvt->address);
