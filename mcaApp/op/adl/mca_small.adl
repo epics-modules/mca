@@ -1,6 +1,6 @@
 
 file {
-	name="j:\epics\R3.13.1\share\mcaApp\op\adl\mca_small.adl"
+	name="j:\epics\devel\mca\mcaApp\op\adl\mca_small.adl"
 	version=020306
 }
 display {
@@ -302,7 +302,7 @@ composite {
 text {
 	object {
 		x=11
-		y=170
+		y=132
 		width=50
 		height=14
 	}
@@ -316,7 +316,7 @@ text {
 "text update" {
 	object {
 		x=11
-		y=187
+		y=149
 		width=50
 		height=13
 	}
@@ -332,7 +332,7 @@ text {
 "text update" {
 	object {
 		x=11
-		y=203
+		y=165
 		width=50
 		height=13
 	}
@@ -348,7 +348,7 @@ text {
 text {
 	object {
 		x=11
-		y=93
+		y=77
 		width=50
 		height=14
 	}
@@ -362,7 +362,7 @@ text {
 "text update" {
 	object {
 		x=11
-		y=110
+		y=94
 		width=50
 		height=13
 	}
@@ -378,7 +378,7 @@ text {
 "text update" {
 	object {
 		x=11
-		y=126
+		y=110
 		width=50
 		height=13
 	}
@@ -394,7 +394,7 @@ text {
 composite {
 	object {
 		x=4
-		y=63
+		y=48
 		width=60
 		height=20
 	}
@@ -403,7 +403,7 @@ composite {
 		composite {
 			object {
 				x=4
-				y=63
+				y=48
 				width=60
 				height=20
 			}
@@ -412,7 +412,7 @@ composite {
 				composite {
 					object {
 						x=4
-						y=73
+						y=58
 						width=60
 						height=10
 					}
@@ -421,7 +421,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -439,7 +439,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -457,7 +457,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -475,7 +475,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -493,7 +493,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -511,7 +511,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -529,7 +529,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -547,7 +547,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -565,7 +565,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -583,7 +583,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -601,7 +601,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -619,7 +619,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -637,7 +637,7 @@ composite {
 						text {
 							object {
 								x=4
-								y=73
+								y=58
 								width=60
 								height=10
 							}
@@ -657,7 +657,7 @@ composite {
 				text {
 					object {
 						x=4
-						y=63
+						y=48
 						width=60
 						height=10
 					}
@@ -747,4 +747,50 @@ composite {
 	}
 	label="Stop"
 	press_msg="1"
+}
+text {
+	object {
+		x=10
+		y=186
+		width=50
+		height=14
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="DeadTime"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=10
+		y=203
+		width=50
+		height=13
+	}
+	monitor {
+		chan="$(P)$(M).IDTIM"
+		clr=54
+		bclr=0
+	}
+	align="horiz. centered"
+	limits {
+	}
+}
+bar {
+	object {
+		x=5
+		y=219
+		width=60
+		height=16
+	}
+	monitor {
+		chan="$(P)$(M).IDTIM"
+		clr=0
+		bclr=14
+	}
+	clrmod="alarm"
+	limits {
+	}
 }

@@ -1,6 +1,6 @@
 
 file {
-	name="C:\Program Files\EPICS\op\adl\mcaApp\mca.adl"
+	name="j:\epics\devel\mca\mcaApp\op\adl\mca.adl"
 	version=020306
 }
 display {
@@ -1092,9 +1092,24 @@ text {
 		height=20
 	}
 	display[0] {
-		label="Regions of interest"
+		label="ROIs 1-8"
 		name="mca_ROIs.adl"
-		args="P=$(P),M=$(M)"
+		args="P=$(P),M=$(M),1=1,2=2,3=3,4=4,5=5,6=6,7=7,8=8"
+	}
+	display[1] {
+		label="ROIs 9-16"
+		name="mca_ROIs.adl"
+		args="P=$(P),M=$(M),1=9,2=10,3=11,4=12,5=13,6=14,7=15,8=16"
+	}
+	display[2] {
+		label="ROIs 17-24"
+		name="mca_ROIs.adl"
+		args="P=$(P),M=$(M),1=17,2=18,3=19,4=20,5=21,6=22,7=23,8=24"
+	}
+	display[3] {
+		label="ROIs 25-32"
+		name="mca_ROIs.adl"
+		args="P=$(P),M=$(M),1=25,2=26,3=27,4=28,5=29,6=30,7=31,8=32"
 	}
 	clr=14
 	bclr=51
