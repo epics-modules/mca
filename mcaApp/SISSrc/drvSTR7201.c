@@ -79,6 +79,7 @@
 #include	<dbDefs.h>
 #include	<dbAccess.h>
 #include	<recSup.h>
+#include        <epicsExport.h>
 #include	<devSup.h>
 #include	<devLib.h>
 #include	<link.h>
@@ -179,6 +180,7 @@ int STR7201NumCards=1;
                             printf(FMT,## V);}}
 
 volatile int drvSTR7201Debug = 0;
+epicsExportAddress(int, drvSTR7201Debug);
 
 /* Default address of first card.  note, this is not factory default base
   address, since our vxWorks BSP does not provide access to those addresses */

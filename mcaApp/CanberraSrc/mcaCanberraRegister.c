@@ -7,13 +7,11 @@
 
 #include <iocsh.h>
 #include <epicsExport.h>
-#include <epicsTypes.h>
-
-#include "symTable.h"
 
 extern int aimDebug;
-extern int mcaAIMServerDebug;
 extern int icbDebug;
+epicsExportAddress(int, aimDebug);
+epicsExportAddress(int, icbDebug);
 
 int nmc_show_modules();
 int nmc_freemodule(int, int);
@@ -43,9 +41,6 @@ static void ICBShowModulesCallFunc(const iocshArgBuf *args)
 
 void mcaCanberraRegister(void)
 {
-    addSymbol("icbDebug", &icbDebug, epicsInt32T);
-    addSymbol("aimDebug", &aimDebug, epicsInt32T);
-    addSymbol("mcaAIMServerDebug", &mcaAIMServerDebug, epicsInt32T);
     iocshRegister(&AIMShowModulesFuncDef,AIMShowModulesCallFunc);
     iocshRegister(&AIMFreeModuleFuncDef,AIMFreeModuleCallFunc);
     iocshRegister(&ICBShowModulesFuncDef,ICBShowModulesCallFunc);

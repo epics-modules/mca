@@ -23,6 +23,7 @@
 #include <stdio.h>
 
 #include <epicsTime.h>
+#include <epicsExport.h>
 
 #include "Message.h"
 #include "Float64Message.h"
@@ -45,6 +46,7 @@ extern "C"
 #endif
 volatile int fastSweepDebug = 0;
 }
+epicsExportAddress(int, fastSweepDebug);
 
 
 fastSweep:: fastSweep(int firstChan, int lastChan, int maxPoints) : 

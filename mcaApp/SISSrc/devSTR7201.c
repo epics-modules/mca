@@ -47,6 +47,7 @@
                           { printf("%s(%d):",__FILE__,__LINE__); \
                             printf(FMT,## V);}}
 volatile int devSTR7201Debug = 0;
+epicsExportAddress(int, devSTR7201Debug);
 
 #define MAX(a, b) ((a) > (b) ? (a) : (b) )
 

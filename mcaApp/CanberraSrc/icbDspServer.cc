@@ -19,8 +19,6 @@
 #include <iocsh.h>
 #include <epicsExport.h>
 #include <gpHash.h>
-#include <epicsTypes.h>
-#include <symTable.h>
 
 #include "Message.h"
 #include "Int32Message.h"
@@ -44,6 +42,7 @@ extern "C"
 #endif
 volatile int icbDspDebug = 0;
 }
+epicsExportAddress(int, icbDspDebug);
 
 static void *icbDspHash;
 
@@ -596,7 +595,6 @@ static void icbDspConfigCallFunc(const iocshArgBuf *args)
 
 void icbDspServerRegister(void)
 {
-    addSymbol("icbDspDebug", (void *)&icbDspDebug, epicsInt32T);
     iocshRegister(&icbDspSetupFuncDef,icbDspSetupCallFunc);
     iocshRegister(&icbDspConfigFuncDef,icbDspConfigCallFunc);
 }

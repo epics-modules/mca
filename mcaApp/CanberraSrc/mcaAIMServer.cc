@@ -43,7 +43,7 @@ extern "C"
 #endif
 volatile int mcaAIMServerDebug = 0;
 }
-
+epicsExportAddress(int, mcaAIMServerDebug);
 
 class mcaAIMServer {
 public:

@@ -2,8 +2,6 @@
 
 #include "iocsh.h"
 #include "epicsExport.h"
-#include "epicsTypes.h"
-#include "symTable.h"
 
 #include "drvSTR7201.h"
 
@@ -44,8 +42,6 @@ void mcaSISRegister(void)
 {
     iocshRegister(&STR7201ConfigFuncDef,STR7201ConfigCallFunc);
     iocshRegister(&STR7201SetupFuncDef,STR7201SetupCallFunc);
-    addSymbol("drvSTR7201Debug", &drvSTR7201Debug, epicsInt32T);
-    addSymbol("devSTR7201Debug", &devSTR7201Debug, epicsInt32T);
 }
 
 epicsExportRegistrar(mcaSISRegister);

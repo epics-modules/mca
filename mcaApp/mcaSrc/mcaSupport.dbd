@@ -12,7 +12,6 @@ device(mca,VME_IO,devMcaMpf,"MPF MCA")
 # soft mca record
 device(mca,CONSTANT,devMCA_soft,"Soft Channel")
 
-################
-# Register global functions
-################
-registrar(mcaRegister)
+variable("mcaRecordDebug", int)
+variable("devMcaMpfDebug", int)
+variable("fastSweepDebug", int)

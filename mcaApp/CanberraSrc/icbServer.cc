@@ -48,6 +48,8 @@ extern "C"
 #endif
 volatile int icbServerDebug = 0;
 }
+epicsExportAddress(int, icbServerDebug);
+
 static void* icbHash=NULL;
 
 typedef struct {
