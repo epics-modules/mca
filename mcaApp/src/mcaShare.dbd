@@ -9,6 +9,8 @@ include "mcaRecord.dbd"
 # MPF MCA support, used by Canberra AIM multichannel analyzer and
 # Acromag IP-330 ADC as waveform recorder
 device(mca,VME_IO,devMcaMpf,"MPF MCA")
+# soft mca record
+device(mca,CONSTANT,devMCA_soft,"Soft Channel")
 
 # MPF ICB support, used by Canberra ICB modules
 device(ao,VME_IO,devAoIcbMpf,"MPF ICB")
