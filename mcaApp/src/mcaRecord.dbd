@@ -293,6 +293,16 @@ recordtype(mca) {
 		special(SPC_NOMOD)
 		interest(1)
 	}
+	field(DTIM,DBF_FLOAT) {
+		prompt("Average % dead time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(IDTIM,DBF_FLOAT) {
+		prompt("Instantaneous % dead time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
 	field(STIM,DBF_STRING) {
 		prompt("Acquisition start time")
 		promptgroup(GUI_DISPLAY)
@@ -326,6 +336,60 @@ recordtype(mca) {
 		promptgroup(GUI_INPUTS)
 		special(SPC_NOMOD)
 		interest(1)
+	}
+	field(HIHI,DBF_FLOAT) {
+		prompt("Hihi Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(LOLO,DBF_FLOAT) {
+		prompt("Lolo Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(HIGH,DBF_FLOAT) {
+		prompt("High Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(LOW,DBF_FLOAT) {
+		prompt("Low Deviation Limit")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(HHSV,DBF_MENU) {
+		prompt("Hihi Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(LLSV,DBF_MENU) {
+		prompt("Lolo Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(HSV,DBF_MENU) {
+		prompt("High Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(LSV,DBF_MENU) {
+		prompt("Low Severity")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+		menu(menuAlarmSevr)
+	}
+	field(HYST,DBF_FLOAT) {
+		prompt("Alarm Deadband")
+		promptgroup(GUI_ALARMS)
+		interest(1)
+	}
+	field(LALM,DBF_FLOAT) {
+		prompt("Last Value Alarmed")
+		special(SPC_NOMOD)
+		interest(3)
 	}
 	field(SIOL,DBF_INLINK) {
 		prompt("Sim Input Specifctn")

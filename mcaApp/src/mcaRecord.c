@@ -75,8 +75,12 @@
  *                          made possible in version MPF version 1-8 which
  *                          allows waiting for the MPF server to connect and
  *                          sending messages before iocInit is complete.
+ * .22  03-07-02  mlr  V5.3 Added DTIM and IDTIM fields for dead time calculation.
+ *                          Added alarm fields for high deadtime alarms.
+ *                          Modified get_precision() to return 6 digits for calibration
+ *                          fields.
  */
-#define VERSION 5.2
+#define VERSION 5.3
 
 #include    <vxWorks.h>
 #include    <types.h>
@@ -129,7 +133,7 @@ static long get_precision();
 #define put_enum_str NULL
 static long get_graphic_double();
 static long get_control_double();
-#define get_alarm_double NULL
+static long get_alarm_double();
 
 struct rset mcaRSET={
     RSETNUMBER,
@@ -164,6 +168,7 @@ struct mcaDSET { /* mca DSET */
 /*sizes of field types (see dbFldTypes.h) */
 static int sizeofTypes[] = {0,1,1,2,2,4,4,4,8};
 
+static void alarm();
 static void monitor();
 static long readValue();
 
@@ -226,6 +231,8 @@ field to all listeners.  monitor() does this.
 #define M_STIM      0x00000800
 #define M_RTIM      0x00001000
 #define M_RDNS      0x00002000
+#define M_DTIM      0x00004000
+#define M_IDTIM     0x00008000
 
 /* These bits are in the mmap and newv fields */
 #define M_ERAS      0x00004000
@@ -696,6 +703,21 @@ read_status:
     if (pmca->eltm != pmca->eltp) MARK(M_ELTM);
     if (pmca->act  != pmca->actp) MARK(M_ACT);
     if (pmca->dwel != pmca->dwlp) MARK(M_DWEL);
+    if (MARKED(M_ERTM) || MARKED(M_ELTM)) {
+       /* Compute average and instantaneous dead time */
+       pmca->dtim = 100. * (pmca->ertm - pmca->eltm) / MAX(pmca->ertm, .0001); 
+       pmca->dtim = MAX(MIN(pmca->dtim, 100.), 0.);
+       /* If acquiring then compute instantaneous dead time else use average */
+       if (pmca->acqg) {
+          pmca->idtim = 100. * ((pmca->ertm - pmca->ertp) - (pmca->eltm - pmca->eltp))
+                        / MAX((pmca->ertm - pmca->ertp), .0001);
+          pmca->idtim = MAX(MIN(pmca->idtim, 100.), 0.);
+       } else {
+          pmca->idtim = pmca->dtim;
+       }
+       MARK(M_DTIM);
+       MARK(M_IDTIM);
+    }
 
     Debug(5,"process: acqg=%d, acqp=%d\n", pmca->acqg, pmca->acqp);
     if (pmca->acqg != pmca->acqp) {
@@ -766,6 +788,7 @@ read_data:
 
     pmca->udf = FALSE;
 
+    alarm(pmca);
     monitor(pmca);
 
     /*
@@ -825,9 +848,17 @@ static long get_units(struct dbAddr *paddr, char *units)
 static long get_precision(struct dbAddr *paddr, long *precision)
 {
     mcaRecord *pmca=(mcaRecord *)paddr->precord;
+    int fieldIndex = dbGetFieldIndex(paddr);
 
     *precision = pmca->prec;
-    if (paddr->pfield==(void *)pmca->bptr) return(0);
+    if (fieldIndex == mcaRecordBPTR) return(0);
+    if ((fieldIndex == mcaRecordCALO) ||
+        (fieldIndex == mcaRecordCALS) ||
+        (fieldIndex == mcaRecordCALQ) ||
+        (fieldIndex == mcaRecordTTH)) {
+       *precision = 6;
+       return(0);
+    }
     recGblGetPrec(paddr,precision);
     return(0);
 }
@@ -837,10 +868,18 @@ static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd)
     mcaRecord *pmca=(mcaRecord *)paddr->precord;
     int fieldIndex = dbGetFieldIndex(paddr);
 
+    if ((fieldIndex == mcaRecordDTIM) ||
+        (fieldIndex == mcaRecordIDTIM)) {
+        pgd->upper_disp_limit = 100.;
+        pgd->lower_disp_limit = 0.;
+        return(0);
+    }
     if (fieldIndex == mcaRecordBPTR) {
         pgd->upper_disp_limit = pmca->hopr;
         pgd->lower_disp_limit = pmca->lopr;
-    } else recGblGetGraphicDouble(paddr,pgd);
+        return(0);
+    } 
+    recGblGetGraphicDouble(paddr,pgd);
     return(0);
 }
 static long get_control_double(paddr,pcd)
@@ -853,8 +892,70 @@ struct dbr_ctrlDouble *pcd;
     if (fieldIndex == mcaRecordBPTR) {
         pcd->upper_ctrl_limit = pmca->hopr;
         pcd->lower_ctrl_limit = pmca->lopr;
-    } else recGblGetControlDouble(paddr,pcd);
+        return(0);
+    }
+    recGblGetControlDouble(paddr,pcd);
     return(0);
+}
+
+static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad)
+{
+    struct mcaRecord   *pmca=(struct mcaRecord *)paddr->precord;
+    int fieldIndex = dbGetFieldIndex(paddr);
+
+    if ((fieldIndex == mcaRecordDTIM) ||
+        (fieldIndex == mcaRecordIDTIM)) {
+         pad->upper_alarm_limit = pmca->hihi;
+         pad->upper_warning_limit = pmca->high;
+         pad->lower_warning_limit = pmca->low;
+         pad->lower_alarm_limit = pmca->lolo;
+         return(0);
+    } 
+    recGblGetAlarmDouble(paddr,pad);
+    return(0);
+}
+
+static void alarm(mcaRecord *pmca)
+{
+    double idtim;
+    float  hyst, lalm, hihi, high, low, lolo;
+    unsigned short  hhsv, llsv, hsv, lsv;
+
+    if(pmca->udf == TRUE ){
+        recGblSetSevr(pmca,UDF_ALARM,INVALID_ALARM);
+        return;
+    }
+    hihi = pmca->hihi; lolo = pmca->lolo; high = pmca->high; low = pmca->low;
+    hhsv = pmca->hhsv; llsv = pmca->llsv; hsv = pmca->hsv; lsv = pmca->lsv;
+    idtim = pmca->idtim; hyst = pmca->hyst; lalm = pmca->lalm;
+
+    /* alarm condition hihi */
+    if (hhsv && (idtim >= hihi || ((lalm==hihi) && (idtim >= hihi-hyst)))){
+            if (recGblSetSevr(pmca,HIHI_ALARM,pmca->hhsv)) pmca->lalm = hihi;
+        return;
+    }
+
+    /* alarm condition lolo */
+    if (llsv && (idtim <= lolo || ((lalm==lolo) && (idtim <= lolo+hyst)))){
+            if (recGblSetSevr(pmca,LOLO_ALARM,pmca->llsv)) pmca->lalm = lolo;
+        return;
+    }
+
+    /* alarm condition high */
+    if (hsv && (idtim >= high || ((lalm==high) && (idtim >= high-hyst)))){
+            if (recGblSetSevr(pmca,HIGH_ALARM,pmca->hsv)) pmca->lalm = high;
+        return;
+    }
+
+    /* alarm condition low */
+    if (lsv && (idtim <= low || ((lalm==low) && (idtim <= low+hyst)))){
+            if (recGblSetSevr(pmca,LOW_ALARM,pmca->lsv)) pmca->lalm = low;
+        return;
+    }
+
+    /* we get here only if idtim is out of alarm by at least hyst */
+    pmca->lalm = idtim;
+    return;
 }
 
 static void monitor(mcaRecord *pmca)
@@ -879,6 +980,8 @@ static void monitor(mcaRecord *pmca)
     if (MARKED(M_STIM)) db_post_events(pmca,&pmca->stim,monitor_mask);
     if (MARKED(M_RTIM)) db_post_events(pmca,&pmca->rtim,monitor_mask);
     if (MARKED(M_DWEL)) db_post_events(pmca,&pmca->dwel,monitor_mask);
+    if (MARKED(M_DTIM)) db_post_events(pmca,&pmca->dtim,monitor_mask);
+    if (MARKED(M_IDTIM)) db_post_events(pmca,&pmca->idtim,monitor_mask);
     
     for (i=0; i<NUM_ROI; i++) {
        if (ROI_MARKED(M_R0 << i)) {
