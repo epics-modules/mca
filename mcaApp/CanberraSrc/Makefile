@@ -4,9 +4,11 @@ include $(TOP)/configure/CONFIG
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-# libnet needs this with linux
+# libnet needs this
 USR_CFLAGS_linux-x86 += -g `libnet-config --defines` 
 USR_CXXFLAGS_linux-x86 += -g `libnet-config --defines`
+USR_CFLAGS_darwin-ppc += -g `libnet-config --defines` 
+USR_CXXFLAGS_darwin-ppc += -g `libnet-config --defines`
 
 #=============================
 
@@ -17,6 +19,8 @@ DBD += mcaCanberraSupport.dbd
 #=============================
 LIBRARY_IOC_DEFAULT += mcaCanberra
 LIBRARY_IOC_solaris += -nil-
+# For now we don't build on darwin.  It's close to working with libnet, but a few errors still
+LIBRARY_IOC_Darwin += -nil-
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaCanberra_SRCS += nmc_comm_subs_1.c 
@@ -45,12 +49,14 @@ mcaCanberra_SYS_LIBS_vxWorks += -nil-
 #==================================
 PROD_IOC_DEFAULT += mcaAIM
 PROD_IOC_solaris += -nil-
+PROD_IOC_Darwin += -nil-
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAIM_SRCS += mcaCanberra_registerRecordDeviceDriver.cpp
 mcaAIM_SRCS_DEFAULT += mcaCanberraMain.cpp
 mcaAIM_SRCS_vxWorks += -nil-
 mcaAIM_LIBS += mca
 mcaAIM_LIBS += mcaCanberra
+mcaAIM_LIBS += mpf mpfEpics std
 mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 # should be mcaAIM_LIBS_linux-x86 which won't work
@@ -63,6 +69,7 @@ mcaAIM_LDOBJS_vxWorks += -nil-
 #=============================
 PROD_IOC_DEFAULT += nmcTest
 PROD_IOC_solaris += -nil-
+PROD_IOC_Darwin += -nil-
 
 nmcTest_LIBS += ca Com 
 nmcTest_SYS_LIBS_DEFAULT += net pcap
@@ -77,6 +84,7 @@ nmcTest_SRCS += nmc_test.c
 #=============================
 PROD_IOC_DEFAULT += nmcDemo
 PROD_IOC_solaris += -nil-
+PROD_IOC_Darwin += -nil-
 
 nmcDemo_LIBS += ca Com 
 nmcDemo_SYS_LIBS_DEFAULT += net pcap
