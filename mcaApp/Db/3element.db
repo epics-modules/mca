@@ -1,0 +1,204 @@
+# 3element.db
+# Author:  Mark Rivers
+# Date:    Dec. 5, 1999
+# Database for 3 element detector.  Note that this is a much simpler and
+# more reliable version of the database.
+
+grecord(fanout,"$(P)EraseStart") {
+        field(LNK1,"$(P)EraseAll.PROC  PP MS")
+        field(LNK2,"$(P)StartAll.PROC  PP MS")
+}
+
+grecord(ddfanout,"$(P)EraseAll") {
+        field(VAL, "1")
+	field(OUTA,"$(P)$(BASENAME)1.ERAS  PP NMS")
+	field(OUTB,"$(P)$(BASENAME)2.ERAS  PP NMS")
+	field(OUTC,"$(P)$(BASENAME)3.ERAS  PP NMS")
+}
+
+grecord(ddfanout,"$(P)StartAll") {
+        field(VAL, "1")
+	field(OUTA,"$(P)$(BASENAME)1.STRT  PP NMS")
+	field(OUTB,"$(P)$(BASENAME)2.STRT  PP NMS")
+	field(OUTC,"$(P)$(BASENAME)3.STRT  PP NMS")
+}
+
+grecord(ddfanout,"$(P)StopAll") {
+        field(VAL, "1")
+	field(OUTA,"$(P)$(BASENAME)1.STOP  CA NMS")
+	field(OUTB,"$(P)$(BASENAME)2.STOP  CA NMS")
+	field(OUTC,"$(P)$(BASENAME)3.STOP  CA NMS")
+}
+
+grecord(ddfanout,"$(P)PresetReal") {
+        field(DOL, "$(P)PresetReal.VAL")
+        field(OMSL, "closed_loop")
+	field(OUTA,"$(P)$(BASENAME)1.PRTM  CA NMS")
+	field(OUTB,"$(P)$(BASENAME)2.PRTM  CA NMS")
+	field(OUTC,"$(P)$(BASENAME)3.PRTM  CA NMS")
+        field(PREC, "2")
+}
+
+grecord(ddfanout,"$(P)PresetLive") {
+        field(DOL, "$(P)PresetLive.VAL")
+        field(OMSL, "closed_loop")
+	field(OUTA,"$(P)$(BASENAME)1.PLTM  CA NMS")
+	field(OUTB,"$(P)$(BASENAME)2.PLTM  CA NMS")
+	field(OUTC,"$(P)$(BASENAME)3.PLTM  CA NMS")
+        field(PREC, "2")
+}
+
+grecord(calcout,"$(P)Acquiring") {
+        field(CALC, "(A+B+C) > 0")
+	field(INPA,"$(P)$(BASENAME)1.ACQG  CP NMS")
+	field(INPB,"$(P)$(BASENAME)2.ACQG  CP NMS")
+	field(INPC,"$(P)$(BASENAME)3.ACQG  CP NMS")
+}
+
+grecord(calcout,"$(P)ElapsedReal") {
+        field(CALC, "MIN(MIN(A,B),C)")
+	field(INPA,"$(P)$(BASENAME)1.ERTM  CP NMS")
+	field(INPB,"$(P)$(BASENAME)2.ERTM  CP NMS")
+	field(INPC,"$(P)$(BASENAME)3.ERTM  CP NMS")
+        field(PREC, "2")
+}
+
+grecord(calcout,"$(P)ElapsedLive") {
+        field(CALC, "MIN(MIN(A,B),C)")
+	field(INPA,"$(P)$(BASENAME)1.ELTM  CP NMS")
+	field(INPB,"$(P)$(BASENAME)2.ELTM  CP NMS")
+	field(INPC,"$(P)$(BASENAME)3.ELTM  CP NMS")
+        field(PREC, "2")
+}
+
+grecord(ddfanout,"$(P)ReadAll") {
+        field(SCAN,"5 second")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
+	field(VAL, "1")
+	field(OUTA,"$(P)$(BASENAME)1.READ  CA NMS")
+	field(OUTB,"$(P)$(BASENAME)2.READ  CA NMS")
+	field(OUTC,"$(P)$(BASENAME)3.READ  CA NMS")
+	field(FLNK,"$(P)ROISUM_0.PROC PP NMS")
+}
+
+grecord(ddfanout,"$(P)StatusAll") {
+        field(SCAN,".5 second")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(VAL, "1")
+	field(OUTA,"$(P)$(BASENAME)1.PROC  CA NMS")
+	field(OUTB,"$(P)$(BASENAME)2.PROC  CA NMS")
+	field(OUTC,"$(P)$(BASENAME)3.PROC  CA NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_0") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R0  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R0  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R0  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_1.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_1") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R1  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R1  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R1  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_2.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_2") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R2  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R2  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R2  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_3.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_3") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R3  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R3  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R3  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_4.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_4") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R4  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R4  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R4  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_5.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_5") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R5  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R5  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R5  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_6.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_6") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R6  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R6  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R6  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_7.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_7") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R7  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R7  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R7  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_8.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_8") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R8  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R8  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R8  NPP NMS")
+	field(PREC, "2")
+	field(FLNK,"$(P)ROISUM_9.PROC PP NMS")
+}
+
+grecord(calcout,"$(P)ROISUM_9") {
+	field(CALC, "A+B+C")
+	field(INPA,"$(P)$(BASENAME)1.R9  NPP NMS")
+	field(INPB,"$(P)$(BASENAME)2.R9  NPP NMS")
+	field(INPC,"$(P)$(BASENAME)3.R9  NPP NMS")
+	field(PREC, "2")
+}
+
+# These records are for waiting for IDL or other clients
+grecord(bo,"$(P)EnableClientWait") {
+        field(ZNAM,"Disable")
+        field(ONAM,"Enable")
+}
+
+grecord(bo,"$(P)SetClientWait") {
+        field(DISV,"0")
+        field(SDIS,"$(P)EnableClientWait NPP NMS")
+        field(OMSL,"closed_loop")
+        field(DOL,"1")
+        field(OUT,"$(P)ClientWait PP MS")
+}
+
+grecord(busy,"$(P)ClientWait") {
+}
+
+# These records are not used, but they must exist for the IDL EPICS_MED class
+grecord(ao,"$(P)Dwell") {}
+grecord(bo,"$(P)ChannelAdvance") {}
+grecord(ao,"$(P)Prescale") {}

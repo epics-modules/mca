@@ -1,0 +1,621 @@
+# Struck32.db
+# Database for 32 channels of a Struck 7201 or SIS 380x multichannel scaler
+# Author:  Mark Rivers
+# Date:    October 23, 2000, based on Struck8.db
+# Date:    October 25, 2000, corrected by Sergey Stepanov
+# Date:    October 27, 2000, left in Sergey's corrections, but removed his change in
+#                            prefixes, since it incompatibly with IDL class library.
+
+grecord(fanout,"$(P)EraseStart") {
+      field(LNK1,"$(P)EraseAll.PROC  PP MS")
+      field(LNK2,"$(P)StartAll.PROC  PP MS")
+}
+
+grecord(ddfanout,"$(P)EraseAll") {
+      field(VAL, "1")
+      field(OUTA,"$(P)EraseAll1.VAL   PP MS")
+      field(OUTB,"$(P)EraseAll2.VAL   PP MS")
+      field(OUTC,"$(P)EraseAll3.VAL   PP MS")
+      field(OUTD,"$(P)EraseAll4.VAL   PP MS")
+}
+grecord(ddfanout,"$(P)EraseAll1") {
+      field(OUTA,"$(P)mca1.ERAS  PP MS")
+      field(OUTB,"$(P)mca2.ERAS  PP MS")
+      field(OUTC,"$(P)mca3.ERAS  PP MS")
+      field(OUTD,"$(P)mca4.ERAS  PP MS")
+      field(OUTE,"$(P)mca5.ERAS  PP MS")
+      field(OUTF,"$(P)mca6.ERAS  PP MS")
+      field(OUTG,"$(P)mca7.ERAS  PP MS")
+      field(OUTH,"$(P)mca8.ERAS  PP MS")
+}
+grecord(ddfanout,"$(P)EraseAll2") {
+      field(OUTA,"$(P)mca9.ERAS  PP MS")
+      field(OUTB,"$(P)mca10.ERAS  PP MS")
+      field(OUTC,"$(P)mca11.ERAS  PP MS")
+      field(OUTD,"$(P)mca12.ERAS  PP MS")
+      field(OUTE,"$(P)mca13.ERAS  PP MS")
+      field(OUTF,"$(P)mca14.ERAS  PP MS")
+      field(OUTG,"$(P)mca15.ERAS  PP MS")
+      field(OUTH,"$(P)mca16.ERAS  PP MS")
+}
+grecord(ddfanout,"$(P)EraseAll3") {
+      field(OUTA,"$(P)mca17.ERAS  PP MS")
+      field(OUTB,"$(P)mca18.ERAS  PP MS")
+      field(OUTC,"$(P)mca19.ERAS  PP MS")
+      field(OUTD,"$(P)mca20.ERAS  PP MS")
+      field(OUTE,"$(P)mca21.ERAS  PP MS")
+      field(OUTF,"$(P)mca22.ERAS  PP MS")
+      field(OUTG,"$(P)mca23.ERAS  PP MS")
+      field(OUTH,"$(P)mca24.ERAS  PP MS")
+}
+grecord(ddfanout,"$(P)EraseAll4") {
+      field(OUTA,"$(P)mca25.ERAS  PP MS")
+      field(OUTB,"$(P)mca26.ERAS  PP MS")
+      field(OUTC,"$(P)mca27.ERAS  PP MS")
+      field(OUTD,"$(P)mca28.ERAS  PP MS")
+      field(OUTE,"$(P)mca29.ERAS  PP MS")
+      field(OUTF,"$(P)mca30.ERAS  PP MS")
+      field(OUTG,"$(P)mca32.ERAS  PP MS")
+      field(OUTH,"$(P)mca32.ERAS  PP MS")
+}
+
+grecord(ddfanout,"$(P)StartAll") {
+      field(VAL, "1")
+      field(OUTA,"$(P)StartAll1.VAL   PP MS")
+      field(OUTB,"$(P)StartAll2.VAL   PP MS")
+      field(OUTC,"$(P)StartAll3.VAL   PP MS")
+      field(OUTD,"$(P)StartAll4.VAL   PP MS")
+      field(FLNK,"$(P)SetClientWait")
+}
+grecord(ddfanout,"$(P)StartAll1") {
+      field(OUTA,"$(P)mca1.STRT  PP MS")
+      field(OUTB,"$(P)mca2.STRT  PP MS")
+      field(OUTC,"$(P)mca3.STRT  PP MS")
+      field(OUTD,"$(P)mca4.STRT  PP MS")
+      field(OUTE,"$(P)mca5.STRT  PP MS")
+      field(OUTF,"$(P)mca6.STRT  PP MS")
+      field(OUTG,"$(P)mca7.STRT  PP MS")
+      field(OUTH,"$(P)mca8.STRT  PP MS")
+}
+grecord(ddfanout,"$(P)StartAll2") {
+      field(OUTA,"$(P)mca9.STRT  PP MS")
+      field(OUTB,"$(P)mca10.STRT  PP MS")
+      field(OUTC,"$(P)mca11.STRT  PP MS")
+      field(OUTD,"$(P)mca12.STRT  PP MS")
+      field(OUTE,"$(P)mca13.STRT  PP MS")
+      field(OUTF,"$(P)mca14.STRT  PP MS")
+      field(OUTG,"$(P)mca15.STRT  PP MS")
+      field(OUTH,"$(P)mca16.STRT  PP MS")
+}
+grecord(ddfanout,"$(P)StartAll3") {
+      field(OUTA,"$(P)mca17.STRT  PP MS")
+      field(OUTB,"$(P)mca18.STRT  PP MS")
+      field(OUTC,"$(P)mca19.STRT  PP MS")
+      field(OUTD,"$(P)mca20.STRT  PP MS")
+      field(OUTE,"$(P)mca21.STRT  PP MS")
+      field(OUTF,"$(P)mca22.STRT  PP MS")
+      field(OUTG,"$(P)mca23.STRT  PP MS")
+      field(OUTH,"$(P)mca24.STRT  PP MS")
+}
+grecord(ddfanout,"$(P)StartAll4") {
+      field(OUTA,"$(P)mca25.STRT  PP MS")
+      field(OUTB,"$(P)mca26.STRT  PP MS")
+      field(OUTC,"$(P)mca27.STRT  PP MS")
+      field(OUTD,"$(P)mca28.STRT  PP MS")
+      field(OUTE,"$(P)mca29.STRT  PP MS")
+      field(OUTF,"$(P)mca30.STRT  PP MS")
+      field(OUTG,"$(P)mca31.STRT  PP MS")
+      field(OUTH,"$(P)mca32.STRT  PP MS")
+}
+
+grecord(ddfanout,"$(P)StopAll") {
+      field(VAL, "1")
+      field(OUTA,"$(P)StopAll1.VAL   PP MS")
+      field(OUTB,"$(P)StopAll2.VAL   PP MS")
+      field(OUTC,"$(P)StopAll3.VAL   PP MS")
+      field(OUTD,"$(P)StopAll4.VAL   PP MS")
+}
+grecord(ddfanout,"$(P)StopAll1") {
+      field(OUTA,"$(P)mca1.STOP  PP MS")
+      field(OUTB,"$(P)mca2.STOP  PP MS")
+      field(OUTC,"$(P)mca3.STOP  PP MS")
+      field(OUTD,"$(P)mca4.STOP  PP MS")
+      field(OUTE,"$(P)mca5.STOP  PP MS")
+      field(OUTF,"$(P)mca6.STOP  PP MS")
+      field(OUTG,"$(P)mca7.STOP  PP MS")
+      field(OUTH,"$(P)mca8.STOP  PP MS")
+}
+grecord(ddfanout,"$(P)StopAll2") {
+      field(OUTA,"$(P)mca9.STOP  PP MS")
+      field(OUTB,"$(P)mca10.STOP  PP MS")
+      field(OUTC,"$(P)mca11.STOP  PP MS")
+      field(OUTD,"$(P)mca12.STOP  PP MS")
+      field(OUTE,"$(P)mca13.STOP  PP MS")
+      field(OUTF,"$(P)mca14.STOP  PP MS")
+      field(OUTG,"$(P)mca15.STOP  PP MS")
+      field(OUTH,"$(P)mca16.STOP  PP MS")
+}
+grecord(ddfanout,"$(P)StopAll3") {
+      field(OUTA,"$(P)mca17.STOP  PP MS")
+      field(OUTB,"$(P)mca18.STOP  PP MS")
+      field(OUTC,"$(P)mca19.STOP  PP MS")
+      field(OUTD,"$(P)mca20.STOP  PP MS")
+      field(OUTE,"$(P)mca21.STOP  PP MS")
+      field(OUTF,"$(P)mca22.STOP  PP MS")
+      field(OUTG,"$(P)mca23.STOP  PP MS")
+      field(OUTH,"$(P)mca24.STOP  PP MS")
+}
+
+grecord(ddfanout,"$(P)StopAll4") {
+      field(OUTA,"$(P)mca25.STOP  PP MS")
+      field(OUTB,"$(P)mca26.STOP  PP MS")
+      field(OUTC,"$(P)mca27.STOP  PP MS")
+      field(OUTD,"$(P)mca28.STOP  PP MS")
+      field(OUTE,"$(P)mca29.STOP  PP MS")
+      field(OUTF,"$(P)mca30.STOP  PP MS")
+      field(OUTG,"$(P)mca31.STOP  PP MS")
+      field(OUTH,"$(P)mca32.STOP  PP MS")
+}
+
+grecord(ao,"$(P)InitNuse") {
+      field(DOL, "$(P)mca1.NUSE NPP NMS")
+      field(OMSL,"closed_loop")
+      field(PINI,"YES")
+      field(OUT,"$(P)NuseAll.VAL NPP MS")
+}
+
+grecord(ddfanout,"$(P)NuseAll") {
+      field(VAL, "1")
+      field(OUTA,"$(P)NuseAll1.VAL   PP MS")
+      field(OUTB,"$(P)NuseAll2.VAL   PP MS")
+      field(OUTC,"$(P)NuseAll3.VAL   PP MS")
+      field(OUTD,"$(P)NuseAll4.VAL   PP MS")
+      field(FLNK,"$(P)SetClientWait")
+}
+grecord(ddfanout,"$(P)NuseAll1") {
+      field(OUTA,"$(P)mca1.NUSE  PP MS")
+      field(OUTB,"$(P)mca2.NUSE  PP MS")
+      field(OUTC,"$(P)mca3.NUSE  PP MS")
+      field(OUTD,"$(P)mca4.NUSE  PP MS")
+      field(OUTE,"$(P)mca5.NUSE  PP MS")
+      field(OUTF,"$(P)mca6.NUSE  PP MS")
+      field(OUTG,"$(P)mca7.NUSE  PP MS")
+      field(OUTH,"$(P)mca8.NUSE  PP MS")
+}
+grecord(ddfanout,"$(P)NuseAll2") {
+      field(OUTA,"$(P)mca9.NUSE  PP MS")
+      field(OUTB,"$(P)mca10.NUSE  PP MS")
+      field(OUTC,"$(P)mca11.NUSE  PP MS")
+      field(OUTD,"$(P)mca12.NUSE  PP MS")
+      field(OUTE,"$(P)mca13.NUSE  PP MS")
+      field(OUTF,"$(P)mca14.NUSE  PP MS")
+      field(OUTG,"$(P)mca15.NUSE  PP MS")
+      field(OUTH,"$(P)mca16.NUSE  PP MS")
+}
+grecord(ddfanout,"$(P)NuseAll3") {
+      field(OUTA,"$(P)mca17.NUSE  PP MS")
+      field(OUTB,"$(P)mca18.NUSE  PP MS")
+      field(OUTC,"$(P)mca19.NUSE  PP MS")
+      field(OUTD,"$(P)mca20.NUSE  PP MS")
+      field(OUTE,"$(P)mca21.NUSE  PP MS")
+      field(OUTF,"$(P)mca22.NUSE  PP MS")
+      field(OUTG,"$(P)mca23.NUSE  PP MS")
+      field(OUTH,"$(P)mca24.NUSE  PP MS")
+}
+
+grecord(ddfanout,"$(P)NuseAll4") {
+      field(OUTA,"$(P)mca25.NUSE  PP MS")
+      field(OUTB,"$(P)mca26.NUSE  PP MS")
+      field(OUTC,"$(P)mca27.NUSE  PP MS")
+      field(OUTD,"$(P)mca28.NUSE  PP MS")
+      field(OUTE,"$(P)mca29.NUSE  PP MS")
+      field(OUTF,"$(P)mca30.NUSE  PP MS")
+      field(OUTG,"$(P)mca31.NUSE  PP MS")
+      field(OUTH,"$(P)mca32.NUSE  PP MS")
+}
+
+grecord(ddfanout,"$(P)StatusAll") {
+      field(SCAN,".1 second")
+      field(DISV,"0")
+      field(SDIS,"$(P)mca1.ACQG NPP NMS")
+      field(VAL, "1")
+      field(OUTA,"$(P)StatusAll1.VAL   PP MS")
+      field(OUTB,"$(P)StatusAll2.VAL   PP MS")
+      field(OUTC,"$(P)StatusAll3.VAL   PP MS")
+      field(OUTD,"$(P)StatusAll4.VAL   PP MS")
+}
+grecord(ddfanout,"$(P)StatusAll1") {
+      field(OUTA,"$(P)mca1.PROC  PP MS")
+      field(OUTB,"$(P)mca2.PROC  PP MS")
+      field(OUTC,"$(P)mca3.PROC  PP MS")
+      field(OUTD,"$(P)mca4.PROC  PP MS")
+      field(OUTE,"$(P)mca5.PROC  PP MS")
+      field(OUTF,"$(P)mca6.PROC  PP MS")
+      field(OUTG,"$(P)mca7.PROC  PP MS")
+      field(OUTH,"$(P)mca8.PROC  PP MS")
+}
+grecord(ddfanout,"$(P)StatusAll2") {
+      field(OUTA,"$(P)mca9.PROC  PP MS")
+      field(OUTB,"$(P)mca10.PROC  PP MS")
+      field(OUTC,"$(P)mca11.PROC  PP MS")
+      field(OUTD,"$(P)mca12.PROC  PP MS")
+      field(OUTE,"$(P)mca13.PROC  PP MS")
+      field(OUTF,"$(P)mca14.PROC  PP MS")
+      field(OUTG,"$(P)mca15.PROC  PP MS")
+      field(OUTH,"$(P)mca16.PROC  PP MS")
+}
+grecord(ddfanout,"$(P)StatusAll3") {
+      field(OUTA,"$(P)mca17.PROC  PP MS")
+      field(OUTB,"$(P)mca18.PROC  PP MS")
+      field(OUTC,"$(P)mca19.PROC  PP MS")
+      field(OUTD,"$(P)mca20.PROC  PP MS")
+      field(OUTE,"$(P)mca21.PROC  PP MS")
+      field(OUTF,"$(P)mca22.PROC  PP MS")
+      field(OUTG,"$(P)mca23.PROC  PP MS")
+      field(OUTH,"$(P)mca24.PROC  PP MS")
+}
+
+grecord(ddfanout,"$(P)StatusAll4") {
+      field(OUTA,"$(P)mca25.PROC  PP MS")
+      field(OUTB,"$(P)mca26.PROC  PP MS")
+      field(OUTC,"$(P)mca27.PROC  PP MS")
+      field(OUTD,"$(P)mca28.PROC  PP MS")
+      field(OUTE,"$(P)mca29.PROC  PP MS")
+      field(OUTF,"$(P)mca30.PROC  PP MS")
+      field(OUTG,"$(P)mca31.PROC  PP MS")
+      field(OUTH,"$(P)mca32.PROC  PP MS")
+}
+
+grecord(ddfanout,"$(P)ReadAll") {
+      field(SCAN,"2 second")
+      field(DISV,"0")
+      field(SDIS,"$(P)mca1.ACQG NPP NMS")
+      field(VAL, "1")
+      field(OUTA,"$(P)ReadAll1.VAL   PP MS")
+      field(OUTB,"$(P)ReadAll2.VAL   PP MS")
+      field(OUTC,"$(P)ReadAll3.VAL   PP MS")
+      field(OUTD,"$(P)ReadAll4.VAL   PP MS")
+}
+grecord(ddfanout,"$(P)ReadAll1") {
+      field(OUTA,"$(P)mca1.READ  PP MS")
+      field(OUTB,"$(P)mca2.READ  PP MS")
+      field(OUTC,"$(P)mca3.READ  PP MS")
+      field(OUTD,"$(P)mca4.READ  PP MS")
+      field(OUTE,"$(P)mca5.READ  PP MS")
+      field(OUTF,"$(P)mca6.READ  PP MS")
+      field(OUTG,"$(P)mca7.READ  PP MS")
+      field(OUTH,"$(P)mca8.READ  PP MS")
+}
+grecord(ddfanout,"$(P)ReadAll2") {
+      field(OUTA,"$(P)mca9.READ  PP MS")
+      field(OUTB,"$(P)mca10.READ  PP MS")
+      field(OUTC,"$(P)mca11.READ  PP MS")
+      field(OUTD,"$(P)mca12.READ  PP MS")
+      field(OUTE,"$(P)mca13.READ  PP MS")
+      field(OUTF,"$(P)mca14.READ  PP MS")
+      field(OUTG,"$(P)mca15.READ  PP MS")
+      field(OUTH,"$(P)mca16.READ  PP MS")
+}
+grecord(ddfanout,"$(P)ReadAll3") {
+      field(OUTA,"$(P)mca17.READ  PP MS")
+      field(OUTB,"$(P)mca18.READ  PP MS")
+      field(OUTC,"$(P)mca19.READ  PP MS")
+      field(OUTD,"$(P)mca20.READ  PP MS")
+      field(OUTE,"$(P)mca21.READ  PP MS")
+      field(OUTF,"$(P)mca22.READ  PP MS")
+      field(OUTG,"$(P)mca23.READ  PP MS")
+      field(OUTH,"$(P)mca24.READ  PP MS")
+}
+
+grecord(ddfanout,"$(P)ReadAll4") {
+      field(OUTA,"$(P)mca25.READ  PP MS")
+      field(OUTB,"$(P)mca26.READ  PP MS")
+      field(OUTC,"$(P)mca27.READ  PP MS")
+      field(OUTD,"$(P)mca28.READ  PP MS")
+      field(OUTE,"$(P)mca29.READ  PP MS")
+      field(OUTF,"$(P)mca30.READ  PP MS")
+      field(OUTG,"$(P)mca31.READ  PP MS")
+      field(OUTH,"$(P)mca32.READ  PP MS")
+}
+
+grecord(bo,"$(P)EnableClientWait") {
+      field(ZNAM,"Disable")
+      field(ONAM,"Enable")
+}
+
+grecord(bo,"$(P)SetClientWait") {
+      field(DISV,"0")
+      field(SDIS,"$(P)EnableClientWait NPP NMS")
+      field(OMSL,"closed_loop")
+      field(DOL,"1")
+      field(OUT,"$(P)ClientWait PP MS")
+}
+
+grecord(busy,"$(P)ClientWait") {
+}
+
+# NOTE:  The following appear that they might not be necessary, since they
+# just use MCA1.  However, they are needed for the IDL EPICS_MED class, and for
+# generic MEDM screens.  Also, most are set to PINI so that things are put into
+# a known state, and the MEDM screens reflect reality.
+
+grecord(ao,"$(P)ElapsedReal") {
+      field(OMSL,"closed_loop")
+      field(DOL,"$(P)mca1.ERTM CP MS")
+      field(PREC,"2")
+}
+
+grecord(ao,"$(P)ElapsedLive") {
+      field(OMSL,"closed_loop")
+      field(DOL,"$(P)mca1.ELTM CP MS")
+      field(PREC,"2")
+}
+
+grecord(bo,"$(P)Acquiring") {
+      field(OMSL,"closed_loop")
+      field(DOL,"$(P)mca1.ACQG CP MS")
+      field(ZNAM,"Done")
+      field(ONAM,"Acquiring")
+}
+
+# NOTE:  In the past we just set the presets for MCA1.  However, all MCAs now send
+# their presets to the driver each time acquisition is started, so they must all agree.
+grecord(ddfanout,"$(P)PresetReal") {
+      field(VAL,"0")
+      field(PINI,"YES")
+      field(PREC,"3")
+      field(OUTA,"$(P)PresetReal1.VAL  PP MS")
+      field(OUTB,"$(P)PresetReal2.VAL  PP MS")
+      field(OUTC,"$(P)PresetReal3.VAL  PP MS")
+      field(OUTD,"$(P)PresetReal4.VAL  PP MS")
+}
+grecord(ddfanout,"$(P)PresetReal1") {
+      field(OUTA,"$(P)mca1.PRTM  PP MS")
+      field(OUTB,"$(P)mca2.PRTM  PP MS")
+      field(OUTC,"$(P)mca3.PRTM  PP MS")
+      field(OUTD,"$(P)mca4.PRTM  PP MS")
+      field(OUTE,"$(P)mca5.PRTM  PP MS")
+      field(OUTF,"$(P)mca6.PRTM  PP MS")
+      field(OUTG,"$(P)mca7.PRTM  PP MS")
+      field(OUTH,"$(P)mca8.PRTM  PP MS")
+}
+grecord(ddfanout,"$(P)PresetReal2") {
+      field(OUTA,"$(P)mca9.PRTM  PP MS")
+      field(OUTB,"$(P)mca10.PRTM  PP MS")
+      field(OUTC,"$(P)mca11.PRTM  PP MS")
+      field(OUTD,"$(P)mca12.PRTM  PP MS")
+      field(OUTE,"$(P)mca13.PRTM  PP MS")
+      field(OUTF,"$(P)mca14.PRTM  PP MS")
+      field(OUTG,"$(P)mca15.PRTM  PP MS")
+      field(OUTH,"$(P)mca16.PRTM  PP MS")
+}
+grecord(ddfanout,"$(P)PresetReal3") {
+      field(OUTA,"$(P)mca17.PRTM  PP MS")
+      field(OUTB,"$(P)mca18.PRTM  PP MS")
+      field(OUTC,"$(P)mca19.PRTM  PP MS")
+      field(OUTD,"$(P)mca20.PRTM  PP MS")
+      field(OUTE,"$(P)mca21.PRTM  PP MS")
+      field(OUTF,"$(P)mca22.PRTM  PP MS")
+      field(OUTG,"$(P)mca23.PRTM  PP MS")
+      field(OUTH,"$(P)mca24.PRTM  PP MS")
+}
+
+grecord(ddfanout,"$(P)PresetReal4") {
+      field(OUTA,"$(P)mca25.PRTM  PP MS")
+      field(OUTB,"$(P)mca26.PRTM  PP MS")
+      field(OUTC,"$(P)mca27.PRTM  PP MS")
+      field(OUTD,"$(P)mca28.PRTM  PP MS")
+      field(OUTE,"$(P)mca29.PRTM  PP MS")
+      field(OUTF,"$(P)mca30.PRTM  PP MS")
+      field(OUTG,"$(P)mca31.PRTM  PP MS")
+      field(OUTH,"$(P)mca32.PRTM  PP MS")
+}
+
+grecord(ddfanout,"$(P)PresetLive") {
+      field(VAL,"0")
+      field(PINI,"YES")
+      field(PREC,"3")
+      field(OUTA,"$(P)PresetLive1.VAL   PP MS")
+      field(OUTB,"$(P)PresetLive2.VAL   PP MS")
+      field(OUTC,"$(P)PresetLive3.VAL   PP MS")
+      field(OUTD,"$(P)PresetLive4.VAL   PP MS")
+}
+grecord(ddfanout,"$(P)PresetLive1") {
+      field(OUTA,"$(P)mca1.PLTM  PP MS")
+      field(OUTB,"$(P)mca2.PLTM  PP MS")
+      field(OUTC,"$(P)mca3.PLTM  PP MS")
+      field(OUTD,"$(P)mca4.PLTM  PP MS")
+      field(OUTE,"$(P)mca5.PLTM  PP MS")
+      field(OUTF,"$(P)mca6.PLTM  PP MS")
+      field(OUTG,"$(P)mca7.PLTM  PP MS")
+      field(OUTH,"$(P)mca8.PLTM  PP MS")
+}
+grecord(ddfanout,"$(P)PresetLive2") {
+      field(OUTA,"$(P)mca9.PLTM  PP MS")
+      field(OUTB,"$(P)mca10.PLTM  PP MS")
+      field(OUTC,"$(P)mca11.PLTM  PP MS")
+      field(OUTD,"$(P)mca12.PLTM  PP MS")
+      field(OUTE,"$(P)mca13.PLTM  PP MS")
+      field(OUTF,"$(P)mca14.PLTM  PP MS")
+      field(OUTG,"$(P)mca15.PLTM  PP MS")
+      field(OUTH,"$(P)mca16.PLTM  PP MS")
+}
+grecord(ddfanout,"$(P)PresetLive3") {
+      field(OUTA,"$(P)mca17.PLTM  PP MS")
+      field(OUTB,"$(P)mca18.PLTM  PP MS")
+      field(OUTC,"$(P)mca19.PLTM  PP MS")
+      field(OUTD,"$(P)mca20.PLTM  PP MS")
+      field(OUTE,"$(P)mca21.PLTM  PP MS")
+      field(OUTF,"$(P)mca22.PLTM  PP MS")
+      field(OUTG,"$(P)mca23.PLTM  PP MS")
+      field(OUTH,"$(P)mca24.PLTM  PP MS")
+}
+
+grecord(ddfanout,"$(P)PresetLive4") {
+      field(OUTA,"$(P)mca25.PLTM  PP MS")
+      field(OUTB,"$(P)mca26.PLTM  PP MS")
+      field(OUTC,"$(P)mca27.PLTM  PP MS")
+      field(OUTD,"$(P)mca28.PLTM  PP MS")
+      field(OUTE,"$(P)mca29.PLTM  PP MS")
+      field(OUTF,"$(P)mca30.PLTM  PP MS")
+      field(OUTG,"$(P)mca31.PLTM  PP MS")
+      field(OUTH,"$(P)mca32.PLTM  PP MS")
+}
+
+grecord(ddfanout,"$(P)Dwell") {
+      field(VAL,"0.1")
+      field(PINI,"YES")
+      field(PREC,"3")
+      field(OUTA,"$(P)Dwell1.VAL   PP MS")
+      field(OUTB,"$(P)Dwell2.VAL   PP MS")
+      field(OUTC,"$(P)Dwell3.VAL   PP MS")
+      field(OUTD,"$(P)Dwell4.VAL   PP MS")
+}
+grecord(ddfanout,"$(P)Dwell1") {
+      field(OUTA,"$(P)mca1.DWEL  PP MS")
+      field(OUTB,"$(P)mca2.DWEL  PP MS")
+      field(OUTC,"$(P)mca3.DWEL  PP MS")
+      field(OUTD,"$(P)mca4.DWEL  PP MS")
+      field(OUTE,"$(P)mca5.DWEL  PP MS")
+      field(OUTF,"$(P)mca6.DWEL  PP MS")
+      field(OUTG,"$(P)mca7.DWEL  PP MS")
+      field(OUTH,"$(P)mca8.DWEL  PP MS")
+}
+grecord(ddfanout,"$(P)Dwell2") {
+      field(OUTA,"$(P)mca9.DWEL  PP MS")
+      field(OUTB,"$(P)mca10.DWEL  PP MS")
+      field(OUTC,"$(P)mca11.DWEL  PP MS")
+      field(OUTD,"$(P)mca12.DWEL  PP MS")
+      field(OUTE,"$(P)mca13.DWEL  PP MS")
+      field(OUTF,"$(P)mca14.DWEL  PP MS")
+      field(OUTG,"$(P)mca15.DWEL  PP MS")
+      field(OUTH,"$(P)mca16.DWEL  PP MS")
+}
+grecord(ddfanout,"$(P)Dwell3") {
+      field(OUTA,"$(P)mca17.DWEL  PP MS")
+      field(OUTB,"$(P)mca18.DWEL  PP MS")
+      field(OUTC,"$(P)mca19.DWEL  PP MS")
+      field(OUTD,"$(P)mca20.DWEL  PP MS")
+      field(OUTE,"$(P)mca21.DWEL  PP MS")
+      field(OUTF,"$(P)mca22.DWEL  PP MS")
+      field(OUTG,"$(P)mca23.DWEL  PP MS")
+      field(OUTH,"$(P)mca24.DWEL  PP MS")
+}
+
+grecord(ddfanout,"$(P)Dwell4") {
+      field(OUTA,"$(P)mca25.DWEL  PP MS")
+      field(OUTB,"$(P)mca26.DWEL  PP MS")
+      field(OUTC,"$(P)mca27.DWEL  PP MS")
+      field(OUTD,"$(P)mca28.DWEL  PP MS")
+      field(OUTE,"$(P)mca29.DWEL  PP MS")
+      field(OUTF,"$(P)mca30.DWEL  PP MS")
+      field(OUTG,"$(P)mca31.DWEL  PP MS")
+      field(OUTH,"$(P)mca32.DWEL  PP MS")
+}
+
+grecord(bo,"$(P)ChannelAdvance") {
+      field(OUT,"$(P)ChannelAdvanceAll PP MS")
+      field(VAL,"0")
+      field(PINI,"YES")
+      field(ZNAM,"Internal")
+      field(ONAM,"External")
+}
+
+grecord(ddfanout,"$(P)ChannelAdvanceAll") {
+      field(OUTA,"$(P)ChannelAdvanceAll1.VAL  PP MS")
+      field(OUTB,"$(P)ChannelAdvanceAll2.VAL  PP MS")
+      field(OUTC,"$(P)ChannelAdvanceAll3.VAL  PP MS")
+      field(OUTD,"$(P)ChannelAdvanceAll4.VAL  PP MS")
+}
+grecord(ddfanout,"$(P)ChannelAdvanceAll1") {
+      field(OUTA,"$(P)mca1.CHAS  PP MS")
+      field(OUTB,"$(P)mca2.CHAS  PP MS")
+      field(OUTC,"$(P)mca3.CHAS  PP MS")
+      field(OUTD,"$(P)mca4.CHAS  PP MS")
+      field(OUTE,"$(P)mca5.CHAS  PP MS")
+      field(OUTF,"$(P)mca6.CHAS  PP MS")
+      field(OUTG,"$(P)mca7.CHAS  PP MS")
+      field(OUTH,"$(P)mca8.CHAS  PP MS")
+}
+grecord(ddfanout,"$(P)ChannelAdvanceAll2") {
+      field(OUTA,"$(P)mca9.CHAS  PP MS")
+      field(OUTB,"$(P)mca10.CHAS  PP MS")
+      field(OUTC,"$(P)mca11.CHAS  PP MS")
+      field(OUTD,"$(P)mca12.CHAS  PP MS")
+      field(OUTE,"$(P)mca13.CHAS  PP MS")
+      field(OUTF,"$(P)mca14.CHAS  PP MS")
+      field(OUTG,"$(P)mca15.CHAS  PP MS")
+      field(OUTH,"$(P)mca16.CHAS  PP MS")
+}
+grecord(ddfanout,"$(P)ChannelAdvanceAll3") {
+      field(OUTA,"$(P)mca17.CHAS  PP MS")
+      field(OUTB,"$(P)mca18.CHAS  PP MS")
+      field(OUTC,"$(P)mca19.CHAS  PP MS")
+      field(OUTD,"$(P)mca20.CHAS  PP MS")
+      field(OUTE,"$(P)mca21.CHAS  PP MS")
+      field(OUTF,"$(P)mca22.CHAS  PP MS")
+      field(OUTG,"$(P)mca23.CHAS  PP MS")
+      field(OUTH,"$(P)mca24.CHAS  PP MS")
+}
+
+grecord(ddfanout,"$(P)ChannelAdvanceAll4") {
+      field(OUTA,"$(P)mca25.CHAS  PP MS")
+      field(OUTB,"$(P)mca26.CHAS  PP MS")
+      field(OUTC,"$(P)mca27.CHAS  PP MS")
+      field(OUTD,"$(P)mca28.CHAS  PP MS")
+      field(OUTE,"$(P)mca29.CHAS  PP MS")
+      field(OUTF,"$(P)mca30.CHAS  PP MS")
+      field(OUTG,"$(P)mca31.CHAS  PP MS")
+      field(OUTH,"$(P)mca32.CHAS  PP MS")
+}
+
+grecord(ddfanout,"$(P)Prescale") {
+      field(VAL,"1")
+      field(PINI,"YES")
+      field(PREC,"0")
+      field(OUTA,"$(P)Prescale1.VAL  PP MS")
+      field(OUTB,"$(P)Prescale2.VAL  PP MS")
+      field(OUTC,"$(P)Prescale3.VAL  PP MS")
+      field(OUTD,"$(P)Prescale4.VAL  PP MS")
+}
+grecord(ddfanout,"$(P)Prescale1") {
+      field(OUTA,"$(P)mca1.PSCL  PP MS")
+      field(OUTB,"$(P)mca2.PSCL  PP MS")
+      field(OUTC,"$(P)mca3.PSCL  PP MS")
+      field(OUTD,"$(P)mca4.PSCL  PP MS")
+      field(OUTE,"$(P)mca5.PSCL  PP MS")
+      field(OUTF,"$(P)mca6.PSCL  PP MS")
+      field(OUTG,"$(P)mca7.PSCL  PP MS")
+      field(OUTH,"$(P)mca8.PSCL  PP MS")
+}
+grecord(ddfanout,"$(P)Prescale2") {
+      field(OUTA,"$(P)mca9.PSCL  PP MS")
+      field(OUTB,"$(P)mca10.PSCL  PP MS")
+      field(OUTC,"$(P)mca11.PSCL  PP MS")
+      field(OUTD,"$(P)mca12.PSCL  PP MS")
+      field(OUTE,"$(P)mca13.PSCL  PP MS")
+      field(OUTF,"$(P)mca14.PSCL  PP MS")
+      field(OUTG,"$(P)mca15.PSCL  PP MS")
+      field(OUTH,"$(P)mca16.PSCL  PP MS")
+}
+grecord(ddfanout,"$(P)Prescale3") {
+      field(OUTA,"$(P)mca17.PSCL  PP MS")
+      field(OUTB,"$(P)mca18.PSCL  PP MS")
+      field(OUTC,"$(P)mca19.PSCL  PP MS")
+      field(OUTD,"$(P)mca20.PSCL  PP MS")
+      field(OUTE,"$(P)mca21.PSCL  PP MS")
+      field(OUTF,"$(P)mca22.PSCL  PP MS")
+      field(OUTG,"$(P)mca23.PSCL  PP MS")
+      field(OUTH,"$(P)mca24.PSCL  PP MS")
+}
+
+grecord(ddfanout,"$(P)Prescale4") {
+      field(OUTA,"$(P)mca25.PSCL  PP MS")
+      field(OUTB,"$(P)mca26.PSCL  PP MS")
+      field(OUTC,"$(P)mca27.PSCL  PP MS")
+      field(OUTD,"$(P)mca28.PSCL  PP MS")
+      field(OUTE,"$(P)mca29.PSCL  PP MS")
+      field(OUTF,"$(P)mca30.PSCL  PP MS")
+      field(OUTG,"$(P)mca31.PSCL  PP MS")
+      field(OUTH,"$(P)mca32.PSCL  PP MS")
+}

@@ -1,0 +1,33 @@
+# MCA record
+MCALIBOBJS += $(MCA_BIN)/mcaRecord.o
+
+# AIM multichannel analyzer and IP330 ADC as a waveform digitizer
+MCALIBOBJS += $(MCA_BIN)/devMcaMpf.o
+
+# Struck multichannel scaler
+MCALIBOBJS += $(MCA_BIN)/devSTR7201.o
+MCALIBOBJS += $(MCA_BIN)/drvSTR7201.o
+MCALIBOBJS += $(MCA_BIN)/devScalerSTR7201.o
+
+# AIM ethernet code (device-driver)
+MCALIBOBJS += $(MCA_BIN)/nmc_comm_subs_1.o
+MCALIBOBJS += $(MCA_BIN)/nmc_comm_subs_2.o
+MCALIBOBJS += $(MCA_BIN)/nmc_user_subs_1.o
+MCALIBOBJS += $(MCA_BIN)/nmc_user_subs_2.o
+MCALIBOBJS += $(MCA_BIN)/nmc_test.o
+
+# AIM Instrument Control Bus code
+MCALIBOBJS += $(MCA_BIN)/icb_control_subs.o
+MCALIBOBJS += $(MCA_BIN)/icb_crmpsc.o
+MCALIBOBJS += $(MCA_BIN)/icb_control_subs2.o
+MCALIBOBJS += $(MCA_BIN)/icb_get_module_status.o
+MCALIBOBJS += $(MCA_BIN)/icb_handler_subs.o
+MCALIBOBJS += $(MCA_BIN)/icb_strings.o
+MCALIBOBJS += $(MCA_BIN)/icb_show_modules.o
+MCALIBOBJS += $(MCA_BIN)/icb_read_regs.o
+MCALIBOBJS += $(MCA_BIN)/icb_user_subs.o
+MCALIBOBJS += $(MCA_BIN)/icbAdcSub.o
+MCALIBOBJS += $(MCA_BIN)/icbAmpSub.o
+MCALIBOBJS += $(MCA_BIN)/icbHVPSSub.o
+MCALIBOBJS += $(MCA_BIN)/icbTCASub.o
+MCALIBOBJS += $(MCA_BIN)/devIcbMpf.o

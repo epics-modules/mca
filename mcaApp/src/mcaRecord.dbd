@@ -1,0 +1,880 @@
+menu(mcaSTRT) {
+	choice(mcaSTRT_Done,"Done")
+	choice(mcaSTRT_Acquire,"Acquire")
+}
+menu(mcaREAD) {
+	choice(mcaREAD_Done,"Done")
+	choice(mcaREAD_Read,"Read")
+}
+menu(mcaERAS) {
+	choice(mcaERAS_Done,"Done")
+	choice(mcaERAS_Erase,"Erase")
+}
+menu(mcaMODE) {
+	choice(mcaMODE_PHA,"PHA")
+	choice(mcaMODE_MCS,"MCS")
+	choice(mcaMODE_List,"List")
+}
+menu(mcaCHAS) {
+	choice(mcaCHAS_Internal,"Internal")
+	choice(mcaCHAS_External,"External")
+}
+menu(mcaR0IP) {
+	choice(mcaR0IP_N,"N")
+	choice(mcaR0IP_Y,"Y")
+}
+recordtype(mca) {
+	include "dbCommon.dbd" 
+	field(VERS,DBF_FLOAT) {
+		prompt("Code Version")
+		special(SPC_NOMOD)
+		initial("1")
+	}
+	field(VAL,DBF_NOACCESS) {
+		prompt("Value")
+		special(SPC_DBADDR)
+		pp(TRUE)
+		size(4)
+		extra("void *val")
+	}
+	field(BPTR,DBF_NOACCESS) {
+		prompt("Buffer Pointer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *bptr")
+	}
+	field(BG,DBF_NOACCESS) {
+		prompt("Background")
+		special(SPC_DBADDR)
+		pp(TRUE)
+		size(4)
+		extra("void *bg")
+	}
+	field(PBG,DBF_NOACCESS) {
+		prompt("Background buffer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *pbg")
+	}
+	field(HOPR,DBF_FLOAT) {
+		prompt("High Operating Range")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(LOPR,DBF_FLOAT) {
+		prompt("Low Operating Range")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(NMAX,DBF_LONG) {
+		prompt("Max number of channels")
+		promptgroup(GUI_COMMON)
+		special(SPC_NOMOD)
+		interest(1)
+		initial("1")
+	}
+	field(NORD,DBF_LONG) {
+		prompt("Number of channels read")
+		special(SPC_NOMOD)
+	}
+	field(PREC,DBF_SHORT) {
+		prompt("Display Precision")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+	}
+	field(FTVL,DBF_MENU) {
+		prompt("Field Type of Value")
+		promptgroup(GUI_COMMON)
+		special(SPC_NOMOD)
+		interest(1)
+		menu(menuFtype)
+		initial("5")
+	}
+	field(STRT,DBF_MENU) {
+		prompt("Start Acquire")
+		promptgroup(GUI_COMMON)
+		pp(TRUE)
+		interest(1)
+		menu(mcaSTRT)
+	}
+	field(ERST,DBF_MENU) {
+		prompt("Erase & Start Acquire")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		menu(mcaSTRT)
+	}
+	field(STOP,DBF_MENU) {
+		prompt("Stop Acquire")
+		promptgroup(GUI_COMMON)
+		pp(TRUE)
+		interest(1)
+		menu(mcaSTRT)
+	}
+	field(ACQG,DBF_MENU) {
+		prompt("Acquiring")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(mcaSTRT)
+	}
+	field(ACQP,DBF_MENU) {
+		prompt("Prev. acquiring")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(mcaSTRT)
+	}
+	field(READ,DBF_MENU) {
+		prompt("Read array")
+		promptgroup(GUI_COMMON)
+		pp(TRUE)
+		interest(1)
+		menu(mcaREAD)
+	}
+	field(RDNG,DBF_MENU) {
+		prompt("Reading array")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(mcaREAD)
+	}
+	field(RDNS,DBF_MENU) {
+		prompt("Reading status")
+		special(SPC_NOMOD)
+		interest(1)
+		menu(mcaREAD)
+	}
+	field(ERAS,DBF_MENU) {
+		prompt("Erase array")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		menu(mcaERAS)
+	}
+	field(CHAS,DBF_MENU) {
+		prompt("Channel-advance source")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		menu(mcaCHAS)
+	}
+	field(NUSE,DBF_LONG) {
+		prompt(" # of channels to use")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(SEQ,DBF_LONG) {
+		prompt("Time sequence #")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(DWEL,DBF_FLOAT) {
+		prompt("Dwell time per channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("1.0")
+	}
+	field(DWLP,DBF_FLOAT) {
+		prompt("Prev. dwell time")
+		promptgroup(GUI_COMMON)
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(PSCL,DBF_LONG) {
+		prompt("Channel advance prescale")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("1")
+	}
+	field(PRTM,DBF_FLOAT) {
+		prompt("Preset real time")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(PLTM,DBF_FLOAT) {
+		prompt("Preset live time")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(PCT,DBF_LONG) {
+		prompt("Preset counts")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(PCTL,DBF_LONG) {
+		prompt("Preset count low channe")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(PCTH,DBF_LONG) {
+		prompt("Preset count high chann")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(PSWP,DBF_LONG) {
+		prompt("Preset number of sweeps")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("1")
+	}
+	field(MODE,DBF_MENU) {
+		prompt("Mode PHA/MCS/LIST")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaMODE)
+	}
+	field(CALO,DBF_FLOAT) {
+		prompt("Calibration offset")
+		promptgroup(GUI_COMMON)
+		interest(1)
+	}
+	field(CALS,DBF_FLOAT) {
+		prompt("Calibration slope")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		initial("1")
+	}
+	field(CALQ,DBF_FLOAT) {
+		prompt("Calibration quadratic")
+		promptgroup(GUI_COMMON)
+		interest(1)
+	}
+	field(EGU,DBF_STRING) {
+		prompt("Calibration Units Name")
+		promptgroup(GUI_DISPLAY)
+		interest(1)
+		size(16)
+	}
+	field(TTH,DBF_FLOAT) {
+		prompt("Two-theta")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		initial("10")
+	}
+	field(ERTM,DBF_FLOAT) {
+		prompt("Elapsed real time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(ERTP,DBF_FLOAT) {
+		prompt("Previous real time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(ELTM,DBF_FLOAT) {
+		prompt("Elapsed live time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(ELTP,DBF_FLOAT) {
+		prompt("Prev. live time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(STIM,DBF_STRING) {
+		prompt("Acquisition start time")
+		promptgroup(GUI_DISPLAY)
+		special(SPC_NOMOD)
+		interest(1)
+		size(40)
+	}
+	field(RTIM,DBF_DOUBLE) {
+		prompt("Last read time")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(ACT,DBF_LONG) {
+		prompt("Actual counts in pregio")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(ACTP,DBF_LONG) {
+		prompt("Prev. actual counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(NACK,DBF_SHORT) {
+		prompt("Message not acknowledge")
+		special(SPC_NOMOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(INP,DBF_INLINK) {
+		prompt("Input Specification")
+		promptgroup(GUI_INPUTS)
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(SIOL,DBF_INLINK) {
+		prompt("Sim Input Specifctn")
+		promptgroup(GUI_INPUTS)
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(SIML,DBF_INLINK) {
+		prompt("Sim Mode Location")
+		promptgroup(GUI_INPUTS)
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(SIMM,DBF_MENU) {
+		prompt("Simulation Mode")
+		interest(1)
+		menu(menuYesNo)
+	}
+	field(SIMS,DBF_MENU) {
+		prompt("Sim mode Alarm Svrty")
+		promptgroup(GUI_INPUTS)
+		interest(2)
+		menu(menuAlarmSevr)
+	}
+	field(MMAP,DBF_ULONG) {
+		prompt("Monitor map")
+		special(SPC_NOMOD)
+		interest(4)
+	}
+	field(RMAP,DBF_ULONG) {
+		prompt("ROI monitor map")
+		special(SPC_NOMOD)
+		interest(4)
+	}
+	field(NEWV,DBF_ULONG) {
+		prompt("New Value map")
+		special(SPC_NOMOD)
+		interest(4)
+	}
+	field(R0LO,DBF_LONG) {
+		prompt("Region 0 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R0HI,DBF_LONG) {
+		prompt("Region 0 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R0BG,DBF_SHORT) {
+		prompt("Region 0 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R0IP,DBF_MENU) {
+		prompt("Region 0 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R1LO,DBF_LONG) {
+		prompt("Region 1 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R1HI,DBF_LONG) {
+		prompt("Region 1 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R1BG,DBF_SHORT) {
+		prompt("Region 1 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R1IP,DBF_MENU) {
+		prompt("Region 1 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R2LO,DBF_LONG) {
+		prompt("Region 2 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R2HI,DBF_LONG) {
+		prompt("Region 2 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R2BG,DBF_SHORT) {
+		prompt("Region 2 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R2IP,DBF_MENU) {
+		prompt("Region 2 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R3LO,DBF_LONG) {
+		prompt("Region 3 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R3HI,DBF_LONG) {
+		prompt("Region 3 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R3BG,DBF_SHORT) {
+		prompt("Region 3 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R3IP,DBF_MENU) {
+		prompt("Region 3 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R4LO,DBF_LONG) {
+		prompt("Region 4 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R4HI,DBF_LONG) {
+		prompt("Region 4 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R4BG,DBF_SHORT) {
+		prompt("Region 4 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R4IP,DBF_MENU) {
+		prompt("Region 4 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R5LO,DBF_LONG) {
+		prompt("Region 5 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R5HI,DBF_LONG) {
+		prompt("Region 5 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R5BG,DBF_SHORT) {
+		prompt("Region 5 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R5IP,DBF_MENU) {
+		prompt("Region 5 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R6LO,DBF_LONG) {
+		prompt("Region 6 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R6HI,DBF_LONG) {
+		prompt("Region 6 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R6BG,DBF_SHORT) {
+		prompt("Region 6 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R6IP,DBF_MENU) {
+		prompt("Region 6 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R7LO,DBF_LONG) {
+		prompt("Region 7 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R7HI,DBF_LONG) {
+		prompt("Region 7 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R7BG,DBF_SHORT) {
+		prompt("Region 7 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R7IP,DBF_MENU) {
+		prompt("Region 7 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R8LO,DBF_LONG) {
+		prompt("Region 8 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R8HI,DBF_LONG) {
+		prompt("Region 8 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R8BG,DBF_SHORT) {
+		prompt("Region 8 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R8IP,DBF_MENU) {
+		prompt("Region 8 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R9LO,DBF_LONG) {
+		prompt("Region 9 low channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R9HI,DBF_LONG) {
+		prompt("Region 9 high channel")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+		initial("-1")
+	}
+	field(R9BG,DBF_SHORT) {
+		prompt("Region 9 bkgrnd chans")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		interest(1)
+	}
+	field(R9IP,DBF_MENU) {
+		prompt("Region 9 is preset")
+		promptgroup(GUI_COMMON)
+		special(SPC_MOD)
+		pp(TRUE)
+		menu(mcaR0IP)
+	}
+	field(R0,DBF_DOUBLE) {
+		prompt("Region 0 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R0N,DBF_DOUBLE) {
+		prompt("Region 0 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R0P,DBF_DOUBLE) {
+		prompt("Region 0 preset count")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R1,DBF_DOUBLE) {
+		prompt("Region 1 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R1N,DBF_DOUBLE) {
+		prompt("Region 1 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R1P,DBF_DOUBLE) {
+		prompt("Region 1 preset count")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R2,DBF_DOUBLE) {
+		prompt("Region 2 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R2N,DBF_DOUBLE) {
+		prompt("Region 2 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R2P,DBF_DOUBLE) {
+		prompt("Region 2 preset count")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R3,DBF_DOUBLE) {
+		prompt("Region 3 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R3N,DBF_DOUBLE) {
+		prompt("Region 3 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R3P,DBF_DOUBLE) {
+		prompt("Region 3 preset count")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R4,DBF_DOUBLE) {
+		prompt("Region 4 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R4N,DBF_DOUBLE) {
+		prompt("Region 4 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R4P,DBF_DOUBLE) {
+		prompt("Region 4 preset count")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R5,DBF_DOUBLE) {
+		prompt("Region 5 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R5N,DBF_DOUBLE) {
+		prompt("Region 5 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R5P,DBF_DOUBLE) {
+		prompt("Region 5 preset count")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R6,DBF_DOUBLE) {
+		prompt("Region 6 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R6N,DBF_DOUBLE) {
+		prompt("Region 6 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R6P,DBF_DOUBLE) {
+		prompt("Region 6 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R7,DBF_DOUBLE) {
+		prompt("Region 7 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R7N,DBF_DOUBLE) {
+		prompt("Region 7 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R7P,DBF_DOUBLE) {
+		prompt("Region 7 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R8,DBF_DOUBLE) {
+		prompt("Region 8 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R8N,DBF_DOUBLE) {
+		prompt("Region 8 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R8P,DBF_DOUBLE) {
+		prompt("Region 8 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R9,DBF_DOUBLE) {
+		prompt("Region 9 counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R9N,DBF_DOUBLE) {
+		prompt("Region 9 net counts")
+		special(SPC_NOMOD)
+		interest(1)
+	}
+	field(R9P,DBF_DOUBLE) {
+		prompt("Region 9 preset")
+		special(SPC_MOD)
+		interest(1)
+	}
+	field(R0NM,DBF_STRING) {
+		prompt("Region 0 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R1NM,DBF_STRING) {
+		prompt("Region 1 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R2NM,DBF_STRING) {
+		prompt("Region 2 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R3NM,DBF_STRING) {
+		prompt("Region 3 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R4NM,DBF_STRING) {
+		prompt("Region 4 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R5NM,DBF_STRING) {
+		prompt("Region 5 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R6NM,DBF_STRING) {
+		prompt("Region 6 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R7NM,DBF_STRING) {
+		prompt("Region 7 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R8NM,DBF_STRING) {
+		prompt("Region 8 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+	field(R9NM,DBF_STRING) {
+		prompt("Region 9 name")
+		promptgroup(GUI_COMMON)
+		interest(1)
+		size(16)
+	}
+}

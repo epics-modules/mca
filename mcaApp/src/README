@@ -1,0 +1,40 @@
+This application selects code from base, overrides some code, adds new records
+and device support, and produces files for consumption by user trees.
+
+DBD
+================================================================================
+
+INPUT FILES
+-----------
+mcaShare.dbd   -- additions from local code
+                  (partially resolved .dbd file)
+mcaRecord.dbd  -- definition of record, etc. supported this application.
+                  mcaShare.dbd includes this file
+                  (incompletely resolved .dbd file)
+
+OUTPUT FILES
+------------
+mcaShare.dbd   -- this file should be included by user tree's *AppInclude.dbd
+mcaRecord.dbd
+================================================================================
+
+
+OBJ
+================================================================================
+INPUT FILES
+-----------
+mcaLIBOBJS     -- names of selected object files from this application
+mpfServerLIBOBJS -- names of object files from this application to be included in
+                  mpfServer library
+mcaRecord.h    -- derived by gnumake from mcaRecord.dbd
+*.h
+*.c
+
+OUTPUT FILES
+------------
+mcaLIBOBJS     -- referenced in user tree's Makefile.Vx
+mpfServerLIBOBJS  -- referenced in user tree's Makefile.Vx
+*.o            -- linked by user tree's Makefile.Vx
+mcaLib         -- not used
+mpfServLib     -- not used
+================================================================================

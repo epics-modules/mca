@@ -1,0 +1,27 @@
+# Makefile.Host
+TOP = ../../..
+include $(TOP)/config/CONFIG_APP
+#----------------------------------------
+#  ADD MACRO DEFINITIONS AFTER THIS LINE
+
+USER_DBDFLAGS += -I .. -I $(TOP)/dbd -I $(EPICS_BASE)/dbd 
+#DBDEXPAND = mcaInclude.dbd
+#DBDNAME = mcaApp.dbd
+DBDINSTALL += ../mcaShare.dbd
+
+RECTYPES += mcaRecord.h
+
+#USR_CFLAGS += 
+PROD_LIBS	+= ca
+PROD_LIBS	+= Db
+PROD_LIBS	+= Com
+ca_DIR  = $(EPICS_BASE_LIB)
+Db_DIR  = $(EPICS_BASE_LIB)
+Com_DIR = $(EPICS_BASE_LIB)
+
+INC += mca.h
+INC += DevMcaMpf.h
+
+include $(TOP)/config/RULES.Host
+#----------------------------------------
+#  ADD RULES AFTER THIS LINE

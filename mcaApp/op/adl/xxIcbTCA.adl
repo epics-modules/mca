@@ -1,0 +1,1022 @@
+
+file {
+	name="j:\epics\R3.13.1\share\mcaApp\op\adl\xxIcbTCA.adl"
+	version=020306
+}
+display {
+	object {
+		x=583
+		y=255
+		width=575
+		height=335
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=10
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=3
+		y=4
+		width=400
+		height=25
+	}
+	"basic attribute" {
+		clr=62
+	}
+}
+text {
+	object {
+		x=13
+		y=4
+		width=84
+		height=25
+	}
+	"basic attribute" {
+		clr=14
+	}
+	"dynamic attribute" {
+		chan="$(P)$(ADC)"
+	}
+	textix="ICB TCA"
+}
+text {
+	object {
+		x=218
+		y=8
+		width=170
+		height=20
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)$(TCA)STATUS.SEVR"
+	}
+	textix="Can't Communicate"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=103
+		y=7
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=55
+	}
+	textix="$(P)$(TCA)"
+}
+composite {
+	object {
+		x=10
+		y=45
+		width=135
+		height=92
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=10
+				y=45
+				width=135
+				height=38
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=10
+						y=45
+						width=135
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Output Polarity"
+					align="horiz. centered"
+				}
+				menu {
+					object {
+						x=37
+						y=63
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)POLARITY"
+						clr=14
+						bclr=51
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=32
+				y=99
+				width=90
+				height=38
+			}
+			"composite name"=""
+			children {
+				menu {
+					object {
+						x=36
+						y=117
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)PUR_ENABLE"
+						clr=14
+						bclr=51
+					}
+				}
+				text {
+					object {
+						x=32
+						y=99
+						width=90
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="PUR Enable"
+					align="horiz. centered"
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=155
+		y=45
+		width=117
+		height=92
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=155
+				y=45
+				width=117
+				height=38
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=155
+						y=45
+						width=117
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="ICR Threshold"
+					align="horiz. centered"
+				}
+				menu {
+					object {
+						x=173
+						y=63
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)THRESHOLD"
+						clr=14
+						bclr=51
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=173
+				y=99
+				width=80
+				height=38
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=182
+						y=99
+						width=63
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="PUR AMP"
+					align="horiz. centered"
+				}
+				menu {
+					object {
+						x=173
+						y=117
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)PUR_AMP"
+						clr=14
+						bclr=51
+					}
+				}
+			}
+		}
+	}
+}
+text {
+	object {
+		x=9
+		y=182
+		width=53
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SCA 1"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=81
+		y=165
+		width=63
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gate"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=72
+		y=182
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA1_GATE"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=171
+		y=165
+		width=63
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PUR"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=162
+		y=182
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA1_PUR"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=266
+		y=165
+		width=63
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Low"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=252
+		y=182
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA1_LOW"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=333
+		y=185
+		width=9
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="%"
+}
+valuator {
+	object {
+		x=252
+		y=203
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA1_LOW"
+		clr=14
+		bclr=4
+	}
+	dPrecision=1.000000
+	limits {
+	}
+}
+text {
+	object {
+		x=362
+		y=165
+		width=70
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="High"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=352
+		y=182
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA1_HI"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=433
+		y=185
+		width=9
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="%"
+}
+valuator {
+	object {
+		x=352
+		y=203
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA1_HI"
+		clr=14
+		bclr=4
+	}
+	dPrecision=1.000000
+	limits {
+	}
+}
+text {
+	object {
+		x=9
+		y=233
+		width=53
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SCA 2"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=72
+		y=233
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA2_GATE"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=162
+		y=233
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA2_PUR"
+		clr=14
+		bclr=51
+	}
+}
+valuator {
+	object {
+		x=252
+		y=254
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA2_LOW"
+		clr=14
+		bclr=4
+	}
+	dPrecision=1.000000
+	limits {
+	}
+}
+valuator {
+	object {
+		x=352
+		y=254
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA2_HI"
+		clr=14
+		bclr=4
+	}
+	dPrecision=1.000000
+	limits {
+	}
+}
+text {
+	object {
+		x=9
+		y=284
+		width=53
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="SCA 3"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=72
+		y=284
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA3_GATE"
+		clr=14
+		bclr=51
+	}
+}
+menu {
+	object {
+		x=162
+		y=284
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA3_PUR"
+		clr=14
+		bclr=51
+	}
+}
+composite {
+	object {
+		x=252
+		y=284
+		width=90
+		height=41
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=252
+				y=284
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(TCA)SCA3_LOW"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=333
+				y=287
+				width=9
+				height=15
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="%"
+		}
+		valuator {
+			object {
+				x=252
+				y=305
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(TCA)SCA3_LOW"
+				clr=14
+				bclr=4
+			}
+			dPrecision=1.000000
+			limits {
+			}
+		}
+	}
+}
+"text entry" {
+	object {
+		x=352
+		y=284
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA3_HI"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=433
+		y=287
+		width=9
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="%"
+}
+valuator {
+	object {
+		x=352
+		y=305
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA3_HI"
+		clr=14
+		bclr=4
+	}
+	dPrecision=1.000000
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=252
+		y=233
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA2_LOW"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=333
+		y=236
+		width=9
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="%"
+}
+"text entry" {
+	object {
+		x=352
+		y=233
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA2_HI"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=433
+		y=236
+		width=9
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="%"
+}
+text {
+	object {
+		x=461
+		y=184
+		width=96
+		height=18
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="ROIs to SCAs"
+}
+text {
+	object {
+		x=478
+		y=215
+		width=62
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Enable"
+	align="horiz. centered"
+}
+menu {
+	object {
+		x=469
+		y=233
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)ROI_SCA_ENABLE"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=469
+		y=284
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA_CAL"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+valuator {
+	object {
+		x=469
+		y=305
+		width=80
+		height=20
+	}
+	control {
+		chan="$(P)$(TCA)SCA_CAL"
+		clr=14
+		bclr=4
+	}
+	dPrecision=0.001000
+	limits {
+	}
+}
+text {
+	object {
+		x=460
+		y=266
+		width=99
+		height=15
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Calibration"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=454
+		y=172
+		width=110
+		height=155
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	"dynamic attribute" {
+		chan="$(P)$(TCA)TCA_SELECT"
+	}
+}
+composite {
+	object {
+		x=400
+		y=45
+		width=120
+		height=90
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=411
+				y=45
+				width=99
+				height=38
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=411
+						y=45
+						width=99
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Status Rate"
+					align="horiz. centered"
+				}
+				menu {
+					object {
+						x=420
+						y=63
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)READBACK.SCAN"
+						clr=14
+						bclr=51
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=400
+				y=99
+				width=120
+				height=36
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=433
+						y=99
+						width=54
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Status"
+					align="horiz. centered"
+				}
+				"text update" {
+					object {
+						x=400
+						y=120
+						width=120
+						height=15
+					}
+					monitor {
+						chan="$(P)$(TCA)STATUS"
+						clr=14
+						bclr=55
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=282
+		y=45
+		width=108
+		height=94
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=291
+				y=99
+				width=90
+				height=40
+			}
+			"composite name"=""
+			children {
+				menu {
+					object {
+						x=295
+						y=119
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)TCA_SELECT"
+						clr=14
+						bclr=51
+					}
+				}
+				text {
+					object {
+						x=291
+						y=99
+						width=90
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Select TCA"
+					align="horiz. centered"
+				}
+			}
+		}
+		composite {
+			object {
+				x=282
+				y=45
+				width=108
+				height=38
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=282
+						y=45
+						width=108
+						height=15
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Enable SCA's"
+					align="horiz. centered"
+				}
+				menu {
+					object {
+						x=295
+						y=63
+						width=80
+						height=20
+					}
+					control {
+						chan="$(P)$(TCA)SCA_ENABLE"
+						clr=14
+						bclr=51
+					}
+				}
+			}
+		}
+	}
+}

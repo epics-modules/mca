@@ -1,0 +1,179 @@
+# Database for Canberra 9615 amplifier
+#   Mark Rivers
+#   October 5, 2000
+
+grecord(mbbo,"$(P)$(AMP)CGAIN") {
+    field(DESC,"Coarse gain")
+    field(PINI,"YES")
+    field(ZRVL,"2")
+    field(ZRST,"2.5")
+    field(ONVL,"5")
+    field(ONST,"5")
+    field(TWVL,"10")
+    field(TWST,"10")
+    field(THVL,"25")
+    field(THST,"25")
+    field(FRVL,"50")
+    field(FRST,"50")
+    field(FVVL,"100")
+    field(FVST,"100")
+    field(SXVL,"250")
+    field(SXST,"250")
+    field(SVVL,"500")
+    field(SVST,"500")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S513 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(AMP)FGAIN") {
+    field(DESC,"Fine gain")
+    field(PINI,"YES")
+    field(DRVL,"1")
+    field(LOPR,"1")
+    field(DRVH,"3")
+    field(HOPR,"3")
+    field(PREC,"3")
+    field(VAL,"1")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S514 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(AMP)SFGAIN") {
+    field(DESC,"Super-fine gain")
+    field(PINI,"YES")
+    field(DRVL,".998")
+    field(LOPR,".998")
+    field(DRVH,"1.002")
+    field(HOPR,"1.002")
+    field(PREC,"5")
+    field(VAL,"1")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S515 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)INPP") {
+    field(DESC,"Input polarity")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Positive")
+    field(ONVL,"1")
+    field(ONST,"Negative")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S516 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)INHP") {
+    field(DESC,"Inhibit polarity")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Positive")
+    field(ONVL,"1")
+    field(ONST,"Negative")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S517 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)DMOD") {
+    field(DESC,"Differential mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Single-ended")
+    field(ONVL,"1")
+    field(ONST,"Differential")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S518 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)SMOD") {
+    field(DESC,"Shaping mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Gaussian")
+    field(ONVL,"1")
+    field(ONST,"Triangular")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S519 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)PTYP") {
+    field(DESC,"Pre-amp type")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"RC")
+    field(ONVL,"1")
+    field(ONST,"TRP")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S520 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)PURMOD") {
+    field(DESC,"Pileup reject mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Off")
+    field(ONVL,"1")
+    field(ONST,"On")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S521 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)BLMOD") {
+    field(DESC,"Baseline restore mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Symmetric")
+    field(ONVL,"1")
+    field(ONST,"Asymmetric")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S522 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)DTMOD") {
+    field(DESC,"Deatime control mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Normal")
+    field(ONVL,"1")
+    field(ONST,"Loss-free cntg")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S523 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
+    field(DESC,"Start auto-PZ")
+    field(PINI,"NO")
+    field(ZRVL,"0")
+    field(ZRST,"Done")
+    field(ONVL,"1")
+    field(ONST,"Start")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S524 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(AMP)PZ") {
+    field(DESC,"Requested pole-zero")
+    field(PINI,"YES")
+    field(DRVL,"1")
+    field(LOPR,"1")
+    field(DRVH,"4095")
+    field(HOPR,"4095")
+    field(PREC,"0")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S525 @$(SERVER),$(ADDR)")
+}
+
+grecord(bo,"$(P)$(AMP)READBACK") {
+    field(DESC,"Readback scan")
+    field(PINI,"NO")
+    field(SCAN,"10 second")
+    field(FLNK,"$(P)$(AMP)SHAPING")
+}
+
+grecord(ai,"$(P)$(AMP)SHAPING") {
+    field(DESC,"Shaping time")
+    field(PINI,"NO")
+    field(LOPR,"0")
+    field(HOPR,"20")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S526 @$(SERVER),$(ADDR)")
+    field(FLNK,"$(P)$(AMP)PZRBV")
+}
+
+grecord(ai,"$(P)$(AMP)PZRBV") {
+    field(DESC,"Pole-zero readback")
+    field(PINI,"NO")
+    field(LOPR,"1")
+    field(HOPR,"4095")
+    field(PREC,"0")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S527 @$(SERVER),$(ADDR)")
+}

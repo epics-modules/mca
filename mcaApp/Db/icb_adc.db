@@ -1,0 +1,155 @@
+# Database for Canberra 9635 ADC
+#   Mark Rivers
+#   September 16, 2000
+
+grecord(mbbo,"$(P)$(ADC)GAIN") {
+    field(DESC,"ADC conversion gain")
+    field(PINI,"YES")
+    field(ZRVL,"256")
+    field(ZRST,"256")
+    field(ONVL,"512")
+    field(ONST,"512")
+    field(TWVL,"1024")
+    field(TWST,"1024")
+    field(THVL,"2048")
+    field(THST,"2048")
+    field(FRVL,"4096")
+    field(FRST,"4096")
+    field(FVVL,"8192")
+    field(FVST,"8192")
+    field(SXVL,"16384")
+    field(SXST,"16384")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S257 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(ADC)RANGE") {
+    field(DESC,"ADC conversion range")
+    field(PINI,"NO")
+    field(ZRVL,"256")
+    field(ZRST,"256")
+    field(ONVL,"512")
+    field(ONST,"512")
+    field(TWVL,"1024")
+    field(TWST,"1024")
+    field(THVL,"2048")
+    field(THST,"2048")
+    field(FRVL,"4096")
+    field(FRST,"4096")
+    field(FVVL,"8192")
+    field(FVST,"8192")
+    field(SXVL,"16384")
+    field(SXST,"16384")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S258 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(ADC)OFFSET") {
+    field(DESC,"ADC digital offset")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"16128")
+    field(HOPR,"16128")
+    field(PREC,"0")
+    field(VAL,"0")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S259 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(ADC)LLD") {
+    field(DESC,"ADC lower level discr.")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"3")
+    field(VAL,"1")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S260 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(ADC)ULD") {
+    field(DESC,"ADC upper level discr.")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"3")
+    field(VAL,"100")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S261 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(ADC)ZERO") {
+    field(DESC,"Zero offset")
+    field(PINI,"YES")
+    field(DRVL,"-3.0")
+    field(LOPR,"-3.0")
+    field(DRVH,"3.0")
+    field(HOPR,"3.0")
+    field(PREC,"3")
+    field(VAL,"0.")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S262 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(ADC)GMOD") {
+    field(DESC,"Gate mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Coincidence")
+    field(ONVL,"1")
+    field(ONST,"Anti-coinc.")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S263 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(ADC)CMOD") {
+    field(DESC,"Coincidence mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Early")
+    field(ONVL,"1")
+    field(ONST,"Late")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S264 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(ADC)PMOD") {
+    field(DESC,"Peak detect mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Auto")
+    field(ONVL,"1")
+    field(ONST,"Delayed")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S265 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(ADC)AMOD") {
+    field(DESC,"Acquisition mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"PHA")
+    field(ONVL,"1")
+    field(ONST,"SVA")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S266 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(ADC)TMOD") {
+    field(DESC,"Data transfer mode")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Overlapped")
+    field(ONVL,"1")
+    field(ONST,"Non-overlapped")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S267 @$(SERVER),$(ADDR)")
+}
+grecord(bo,"$(P)$(ADC)READBACK") {
+    field(DESC,"Readback scan")
+    field(SCAN,"10 second")
+    field(FLNK,"$(P)$(ADC)ZERORBV")
+}
+grecord(ai,"$(P)$(ADC)ZERORBV") {
+    field(DESC,"Zero offset readback")
+    field(LOPR,"-3.0")
+    field(HOPR,"3.0")
+    field(PREC,"3")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S268 @$(SERVER),$(ADDR)")
+}

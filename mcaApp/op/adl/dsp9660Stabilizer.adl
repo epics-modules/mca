@@ -1,0 +1,1143 @@
+
+file {
+	name="C:\Program Files\EPICS\op\adl\CARSApp\dsp9660Stabilizer.adl"
+	version=020306
+}
+display {
+	object {
+		x=272
+		y=129
+		width=645
+		height=420
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+rectangle {
+	object {
+		x=285
+		y=243
+		width=75
+		height=35
+	}
+	"basic attribute" {
+		clr=52
+	}
+}
+rectangle {
+	object {
+		x=285
+		y=63
+		width=75
+		height=35
+	}
+	"basic attribute" {
+		clr=52
+	}
+}
+rectangle {
+	object {
+		x=147
+		y=4
+		width=350
+		height=39
+	}
+	"basic attribute" {
+		clr=52
+	}
+}
+text {
+	object {
+		x=160
+		y=11
+		width=324
+		height=25
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="DSP 9660 Stabilizer Control"
+}
+composite {
+	object {
+		x=10
+		y=280
+		width=621
+		height=63
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=511
+				y=280
+				width=120
+				height=41
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=521
+						y=301
+						width=100
+						height=20
+					}
+					monitor {
+						chan="$(P)$(DSP)SZER"
+						clr=14
+						bclr=55
+					}
+					align="horiz. centered"
+					limits {
+					}
+				}
+				text {
+					object {
+						x=511
+						y=280
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Value"
+					align="horiz. centered"
+				}
+			}
+		}
+		composite {
+			object {
+				x=386
+				y=280
+				width=120
+				height=63
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=386
+						y=280
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Ratio"
+					align="horiz. centered"
+				}
+				"text entry" {
+					object {
+						x=396
+						y=301
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZRAT"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				valuator {
+					object {
+						x=396
+						y=323
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZRAT"
+						clr=14
+						bclr=51
+					}
+					dPrecision=0.100000
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=261
+				y=280
+				width=120
+				height=63
+			}
+			"composite name"=""
+			children {
+				valuator {
+					object {
+						x=271
+						y=323
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZSPC"
+						clr=14
+						bclr=51
+					}
+					dPrecision=1.000000
+					limits {
+					}
+				}
+				text {
+					object {
+						x=261
+						y=280
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Spacing"
+					align="horiz. centered"
+				}
+				"text entry" {
+					object {
+						x=271
+						y=301
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZSPC"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=136
+				y=280
+				width=120
+				height=63
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=136
+						y=280
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Window"
+					align="horiz. centered"
+				}
+				"text entry" {
+					object {
+						x=146
+						y=301
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZWND"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				valuator {
+					object {
+						x=146
+						y=323
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZWND"
+						clr=14
+						bclr=51
+					}
+					dPrecision=1.000000
+					limits {
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=10
+				y=280
+				width=121
+				height=63
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=10
+						y=280
+						width=121
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Centroid"
+					align="horiz. centered"
+				}
+				"text entry" {
+					object {
+						x=20
+						y=301
+						width=101
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZCNT"
+						clr=14
+						bclr=51
+					}
+					limits {
+					}
+				}
+				valuator {
+					object {
+						x=20
+						y=323
+						width=101
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZCNT"
+						clr=14
+						bclr=51
+					}
+					dPrecision=128.000000
+					limits {
+					}
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=10
+		y=350
+		width=620
+		height=41
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=10
+				y=350
+				width=120
+				height=41
+			}
+			"composite name"=""
+			children {
+				menu {
+					object {
+						x=20
+						y=371
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZMOD"
+						clr=14
+						bclr=51
+					}
+				}
+				text {
+					object {
+						x=10
+						y=350
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Mode"
+					align="horiz. centered"
+				}
+			}
+		}
+		composite {
+			object {
+				x=135
+				y=350
+				width=120
+				height=41
+			}
+			"composite name"=""
+			children {
+				menu {
+					object {
+						x=145
+						y=371
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZCOR"
+						clr=14
+						bclr=51
+					}
+				}
+				text {
+					object {
+						x=135
+						y=350
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Range"
+					align="horiz. centered"
+				}
+			}
+		}
+		composite {
+			object {
+				x=260
+				y=350
+				width=120
+				height=41
+			}
+			"composite name"=""
+			children {
+				menu {
+					object {
+						x=270
+						y=371
+						width=100
+						height=20
+					}
+					control {
+						chan="$(P)$(DSP)ZDIV"
+						clr=14
+						bclr=51
+					}
+				}
+				text {
+					object {
+						x=260
+						y=350
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Corr. div."
+					align="horiz. centered"
+				}
+			}
+		}
+		composite {
+			object {
+				x=385
+				y=350
+				width=120
+				height=41
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=395
+						y=371
+						width=100
+						height=20
+					}
+					monitor {
+						chan="$(P)$(DSP)ZOVF"
+						clr=15
+						bclr=14
+					}
+					clrmod="alarm"
+					align="horiz. centered"
+					limits {
+					}
+				}
+				text {
+					object {
+						x=385
+						y=350
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Overflow"
+					align="horiz. centered"
+				}
+			}
+		}
+		composite {
+			object {
+				x=510
+				y=350
+				width=120
+				height=41
+			}
+			"composite name"=""
+			children {
+				"text update" {
+					object {
+						x=520
+						y=371
+						width=100
+						height=20
+					}
+					monitor {
+						chan="$(P)$(DSP)ZOVR"
+						clr=15
+						bclr=14
+					}
+					clrmod="alarm"
+					align="horiz. centered"
+					limits {
+					}
+				}
+				text {
+					object {
+						x=510
+						y=350
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Overrange"
+					align="horiz. centered"
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=10
+		y=100
+		width=620
+		height=111
+	}
+	"composite name"=""
+	children {
+		composite {
+			object {
+				x=10
+				y=170
+				width=620
+				height=41
+			}
+			"composite name"=""
+			children {
+				composite {
+					object {
+						x=10
+						y=170
+						width=120
+						height=41
+					}
+					"composite name"=""
+					children {
+						text {
+							object {
+								x=10
+								y=170
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Mode"
+							align="horiz. centered"
+						}
+						menu {
+							object {
+								x=20
+								y=191
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GMOD"
+								clr=14
+								bclr=51
+							}
+						}
+					}
+				}
+				composite {
+					object {
+						x=135
+						y=170
+						width=120
+						height=41
+					}
+					"composite name"=""
+					children {
+						menu {
+							object {
+								x=145
+								y=191
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GCOR"
+								clr=14
+								bclr=51
+							}
+						}
+						text {
+							object {
+								x=135
+								y=170
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Range"
+							align="horiz. centered"
+						}
+					}
+				}
+				composite {
+					object {
+						x=260
+						y=170
+						width=120
+						height=41
+					}
+					"composite name"=""
+					children {
+						menu {
+							object {
+								x=270
+								y=191
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GDIV"
+								clr=14
+								bclr=51
+							}
+						}
+						text {
+							object {
+								x=260
+								y=170
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Corr. div."
+							align="horiz. centered"
+						}
+					}
+				}
+				composite {
+					object {
+						x=385
+						y=170
+						width=120
+						height=41
+					}
+					"composite name"=""
+					children {
+						text {
+							object {
+								x=385
+								y=170
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Overflow"
+							align="horiz. centered"
+						}
+						"text update" {
+							object {
+								x=395
+								y=191
+								width=100
+								height=20
+							}
+							monitor {
+								chan="$(P)$(DSP)GOVF"
+								clr=15
+								bclr=14
+							}
+							clrmod="alarm"
+							align="horiz. centered"
+							limits {
+							}
+						}
+					}
+				}
+				composite {
+					object {
+						x=510
+						y=170
+						width=120
+						height=41
+					}
+					"composite name"=""
+					children {
+						"text update" {
+							object {
+								x=520
+								y=191
+								width=100
+								height=20
+							}
+							monitor {
+								chan="$(P)$(DSP)GOVR"
+								clr=15
+								bclr=14
+							}
+							clrmod="alarm"
+							align="horiz. centered"
+							limits {
+							}
+						}
+						text {
+							object {
+								x=510
+								y=170
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Overrange"
+							align="horiz. centered"
+						}
+					}
+				}
+			}
+		}
+		composite {
+			object {
+				x=10
+				y=100
+				width=620
+				height=63
+			}
+			"composite name"=""
+			children {
+				composite {
+					object {
+						x=510
+						y=100
+						width=120
+						height=41
+					}
+					"composite name"=""
+					children {
+						"text update" {
+							object {
+								x=520
+								y=121
+								width=100
+								height=20
+							}
+							monitor {
+								chan="$(P)$(DSP)SGN"
+								clr=14
+								bclr=55
+							}
+							align="horiz. centered"
+							limits {
+							}
+						}
+						text {
+							object {
+								x=510
+								y=100
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Value"
+							align="horiz. centered"
+						}
+					}
+				}
+				composite {
+					object {
+						x=385
+						y=100
+						width=120
+						height=63
+					}
+					"composite name"=""
+					children {
+						valuator {
+							object {
+								x=395
+								y=143
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GRAT"
+								clr=14
+								bclr=51
+							}
+							dPrecision=0.100000
+							limits {
+							}
+						}
+						"text entry" {
+							object {
+								x=395
+								y=121
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GRAT"
+								clr=14
+								bclr=51
+							}
+							limits {
+							}
+						}
+						text {
+							object {
+								x=385
+								y=100
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Ratio"
+							align="horiz. centered"
+						}
+					}
+				}
+				composite {
+					object {
+						x=260
+						y=100
+						width=120
+						height=63
+					}
+					"composite name"=""
+					children {
+						valuator {
+							object {
+								x=270
+								y=143
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GSPC"
+								clr=14
+								bclr=51
+							}
+							dPrecision=1.000000
+							limits {
+							}
+						}
+						text {
+							object {
+								x=260
+								y=100
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Spacing"
+							align="horiz. centered"
+						}
+						"text entry" {
+							object {
+								x=270
+								y=121
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GSPC"
+								clr=14
+								bclr=51
+							}
+							limits {
+							}
+						}
+					}
+				}
+				composite {
+					object {
+						x=135
+						y=100
+						width=120
+						height=63
+					}
+					"composite name"=""
+					children {
+						text {
+							object {
+								x=135
+								y=100
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Window"
+							align="horiz. centered"
+						}
+						"text entry" {
+							object {
+								x=145
+								y=121
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GWND"
+								clr=14
+								bclr=51
+							}
+							limits {
+							}
+						}
+						valuator {
+							object {
+								x=145
+								y=143
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GWND"
+								clr=14
+								bclr=51
+							}
+							dPrecision=1.000000
+							limits {
+							}
+						}
+					}
+				}
+				composite {
+					object {
+						x=10
+						y=100
+						width=120
+						height=63
+					}
+					"composite name"=""
+					children {
+						text {
+							object {
+								x=10
+								y=100
+								width=120
+								height=20
+							}
+							"basic attribute" {
+								clr=14
+							}
+							textix="Centroid"
+							align="horiz. centered"
+						}
+						"text entry" {
+							object {
+								x=20
+								y=121
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GCNT"
+								clr=14
+								bclr=51
+							}
+							limits {
+							}
+						}
+						valuator {
+							object {
+								x=20
+								y=143
+								width=100
+								height=20
+							}
+							control {
+								chan="$(P)$(DSP)GCNT"
+								clr=14
+								bclr=51
+							}
+							dPrecision=128.000000
+							limits {
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+text {
+	object {
+		x=298
+		y=68
+		width=48
+		height=25
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gain"
+}
+rectangle {
+	object {
+		x=5
+		y=60
+		width=630
+		height=170
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+rectangle {
+	object {
+		x=4
+		y=240
+		width=630
+		height=170
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+}
+text {
+	object {
+		x=298
+		y=248
+		width=48
+		height=25
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Zero"
+}

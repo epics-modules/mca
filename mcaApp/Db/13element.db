@@ -1,0 +1,174 @@
+# 13element.db
+# Author:  Mark Rivers
+# Date:    Dec. 3, 1999
+# 07-SEP-2000  MLR  Changed to have links be CA links to allow parallel
+#                   processing.  Use new ERST field for efficient Erase/Start.
+#                   Add BUSY record so scans will wait with CA links.
+
+# Database for 13 element detector with AIMs and multiplexors
+
+grecord(ddfanout,"$(P)EraseAll") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca1.ERAS  PP MS")
+        field(OUTB,"$(P)mca2.ERAS  PP MS")
+        field(OUTC,"$(P)mca3.ERAS  PP MS")
+        field(OUTD,"$(P)mca4.ERAS  PP MS")
+        field(OUTE,"$(P)mca5.ERAS  PP MS")
+        field(OUTF,"$(P)mca6.ERAS  PP MS")
+        field(OUTG,"$(P)mca7.ERAS  PP MS")
+        field(OUTH,"$(P)mca8.ERAS  PP MS")
+        field(FLNK,"$(P)EraseAll1.PROC")
+}
+
+grecord(ddfanout,"$(P)EraseAll1") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca9.ERAS  PP MS")
+        field(OUTB,"$(P)mca10.ERAS  PP MS")
+        field(OUTC,"$(P)mca11.ERAS  PP MS")
+        field(OUTD,"$(P)mca12.ERAS  PP MS")
+        field(OUTE,"$(P)mca13.ERAS  PP MS")
+}
+
+grecord(ddfanout,"$(P)EraseStart") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca1.ERST  CA MS")
+        field(OUTB,"$(P)mca5.ERST  CA MS")
+        field(OUTC,"$(P)mca9.ERST  CA MS")
+        field(OUTD,"$(P)mca13.ERST  CA MS")
+        field(OUTE,"$(P)StartScaler PP MS")
+        field(OUTF,"$(P)AcquireBusy PP MS")
+        field(FLNK,"$(P)SetClientWait")
+}
+
+grecord(ddfanout,"$(P)StartAll") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca1.STRT  PP MS")
+        field(OUTB,"$(P)mca5.STRT  PP MS")
+        field(OUTC,"$(P)mca9.STRT  PP MS")
+        field(OUTD,"$(P)mca13.STRT  PP MS")
+        field(FLNK,"$(P)SetClientWait")
+}
+
+grecord(ddfanout,"$(P)StopAll") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca1.STOP  PP MS")
+        field(OUTB,"$(P)mca5.STOP  PP MS")
+        field(OUTC,"$(P)mca9.STOP  PP MS")
+        field(OUTD,"$(P)mca13.STOP  PP MS")
+}
+
+grecord(ddfanout,"$(P)PresetReal") {
+        field(DOL, "$(P)PresetReal.VAL")
+        field(OMSL, "closed_loop")
+        field(OUTA,"$(P)mca1.PRTM  PP MS")
+        field(OUTB,"$(P)mca5.PRTM  PP MS")
+        field(OUTC,"$(P)mca9.PRTM  PP MS")
+        field(OUTD,"$(P)mca13.PRTM  PP MS")
+        field(PREC, "2")
+}
+
+grecord(ddfanout,"$(P)PresetLive") {
+        field(DOL, "$(P)PresetLive.VAL")
+        field(OMSL, "closed_loop")
+        field(OUTA,"$(P)mca1.PLTM  PP MS")
+        field(OUTB,"$(P)mca5.PLTM  PP MS")
+        field(OUTC,"$(P)mca9.PLTM  PP MS")
+        field(OUTD,"$(P)mca13.PLTM  PP MS")
+        field(PREC, "2")
+}
+grecord(calcout,"$(P)Acquiring") {
+        field(CALC, "(A+B+C+D) > 0")
+        field(INPA,"$(P)mca1.ACQG  CP MS")
+        field(INPB,"$(P)mca5.ACQG  CP MS")
+        field(INPC,"$(P)mca9.ACQG  CP MS")
+        field(INPD,"$(P)mca13.ACQG CP MS")
+}
+
+grecord(calcout,"$(P)ElapsedReal") {
+        field(CALC, "MIN(MIN(MIN(A,B),C),D)")
+        field(INPA,"$(P)mca1.ERTM  CP MS")
+        field(INPB,"$(P)mca5.ERTM  CP MS")
+        field(INPC,"$(P)mca9.ERTM  CP MS")
+        field(INPD,"$(P)mca13.ERTM CP MS")
+        field(PREC, "2")
+}
+
+grecord(calcout,"$(P)ElapsedLive") {
+        field(CALC, "MIN(MIN(MIN(A,B),C),D)")
+        field(INPA,"$(P)mca1.ELTM  CP MS")
+        field(INPB,"$(P)mca5.ELTM  CP MS")
+        field(INPC,"$(P)mca9.ELTM  CP MS")
+        field(INPD,"$(P)mca13.ELTM CP MS")
+        field(PREC, "2")
+}
+
+grecord(ddfanout,"$(P)ReadAll") {
+        field(SCAN,"5 second")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(VAL, "1")
+        field(OUTA,"$(P)mca1.READ  PP MS")
+        field(OUTB,"$(P)mca2.READ  PP MS")
+        field(OUTC,"$(P)mca3.READ  PP MS")
+        field(OUTD,"$(P)mca4.READ  PP MS")
+        field(OUTE,"$(P)mca5.READ  PP MS")
+        field(OUTF,"$(P)mca6.READ  PP MS")
+        field(OUTG,"$(P)mca7.READ  PP MS")
+        field(OUTH,"$(P)mca8.READ  PP MS")
+        field(FLNK,"$(P)ReadAll1.PROC")
+}
+grecord(ddfanout,"$(P)ReadAll1") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca9.READ  PP MS")
+        field(OUTB,"$(P)mca10.READ  PP MS")
+        field(OUTC,"$(P)mca11.READ  PP MS")
+        field(OUTD,"$(P)mca12.READ  PP MS")
+        field(OUTE,"$(P)mca13.READ  PP MS")
+}
+
+grecord(ddfanout,"$(P)StatusAll") {
+        field(SCAN,".5 second")
+        field(DISV,"0")
+        field(SDIS,"$(P)Acquiring NPP NMS")
+        field(VAL, "1")
+        field(OUTA,"$(P)mca1.PROC  PP MS")
+        field(OUTB,"$(P)mca2.PROC  PP MS")
+        field(OUTC,"$(P)mca3.PROC  PP MS")
+        field(OUTD,"$(P)mca4.PROC  PP MS")
+        field(OUTE,"$(P)mca5.PROC  PP MS")
+        field(OUTF,"$(P)mca6.PROC  PP MS")
+        field(OUTG,"$(P)mca7.PROC  PP MS")
+        field(OUTH,"$(P)mca8.PROC  PP MS")
+        field(FLNK,"$(P)StatusAll1.PROC")
+}
+grecord(ddfanout,"$(P)StatusAll1") {
+        field(VAL, "1")
+        field(OUTA,"$(P)mca9.PROC  PP MS")
+        field(OUTB,"$(P)mca10.PROC  PP MS")
+        field(OUTC,"$(P)mca11.PROC  PP MS")
+        field(OUTD,"$(P)mca12.PROC  PP MS")
+        field(OUTE,"$(P)mca13.PROC  PP MS")
+}
+
+
+# These records are for waiting for IDL or other clients
+grecord(bo,"$(P)EnableClientWait") {
+        field(ZNAM,"Disable")
+        field(ONAM,"Enable")
+}
+
+grecord(bo,"$(P)SetClientWait") {
+        field(DISV,"0")
+        field(SDIS,"$(P)EnableClientWait NPP NMS")
+        field(OMSL,"closed_loop")
+        field(DOL,"1")
+        field(OUT,"$(P)ClientWait PP MS")
+}
+
+grecord(busy,"$(P)ClientWait") {
+}
+
+# These records are not used, but they must exist for the IDL EPICS_MED class
+grecord(ao,"$(P)Dwell") {}
+grecord(bo,"$(P)ChannelAdvance") {}
+grecord(ao,"$(P)Prescale") {}

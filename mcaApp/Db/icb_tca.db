@@ -1,0 +1,255 @@
+# Database for Canberra 2016 AMP/TCA
+#   Mark Rivers
+#   October 12, 2000
+
+grecord(mbbo,"$(P)$(TCA)POLARITY") {
+    field(DESC,"Output polarity")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Normal")
+    field(ONVL,"1")
+    field(ONST,"Inverted")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)THRESHOLD") {
+    field(DESC,"ICR threshold")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Auto")
+    field(ONVL,"1")
+    field(ONST,"Manual")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S2 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA_ENABLE") {
+    field(DESC,"SCA enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S3 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA1_GATE") {
+    field(DESC,"SCA 1 gate enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Disable")
+    field(ONVL,"1")
+    field(ONST,"Enable")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S4 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA2_GATE") {
+    field(DESC,"SCA 2 gate enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Disable")
+    field(ONVL,"1")
+    field(ONST,"Enable")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S5 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA3_GATE") {
+    field(DESC,"SCA 3 gate enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Disable")
+    field(ONVL,"1")
+    field(ONST,"Enable")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S6 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)TCA_SELECT") {
+    field(DESC,"Select TCA")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S7 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)PUR_ENABLE") {
+    field(DESC,"PUR enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S8 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA1_PUR") {
+    field(DESC,"SCA 1 PUR enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S9 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA2_PUR") {
+    field(DESC,"SCA 2 PUR enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S10 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)SCA3_PUR") {
+    field(DESC,"SCA 3 PUR enable")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S11 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(TCA)PUR_AMP") {
+    field(DESC,"PUR AMP")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S12 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(TCA)SCA1_LOW") {
+    field(DESC,"SCA 1 low limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S13 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(TCA)SCA1_HI") {
+    field(DESC,"SCA 1 high limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S14 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(TCA)SCA2_LOW") {
+    field(DESC,"SCA 2 low limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S15 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(TCA)SCA2_HI") {
+    field(DESC,"SCA 2 high limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S16 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(TCA)SCA3_LOW") {
+    field(DESC,"SCA 3 low limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S17 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(TCA)SCA3_HI") {
+    field(DESC,"SCA 3 high limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"100")
+    field(HOPR,"100")
+    field(PREC,"2")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S18 @$(SERVER),$(ADDR)")
+}
+
+grecord(bo,"$(P)$(TCA)READBACK") {
+    field(DESC,"Readback scan")
+    field(PINI,"NO")
+    field(SCAN,"10 second")
+    field(FLNK,"$(P)$(TCA)STATUS")
+}
+
+grecord(mbbi,"$(P)$(TCA)STATUS") {
+    field(DESC,"TCA status")
+    field(ZRVL,"0")
+    field(ZRST,"Online")
+    field(ONVL,"1")
+    field(ONST,"Self-test error")
+    field(TWVL,"2")
+    field(TWST,"Module reset")
+    field(THVL,"3")
+    field(THST,"Can't commun.")
+    field(THSV,"MAJOR")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S19 @$(SERVER),$(ADDR)")
+}
+
+grecord(ao,"$(P)$(TCA)SCA_CAL") {
+    field(DESC,"ROI to SCA calibration")
+    field(DRVL,".5")
+    field(LOPR,".5")
+    field(DRVH,"1.5")
+    field(HOPR,"1.5")
+    field(PREC,"4")
+    field(VAL,"1.0")
+}
+
+grecord(bo,"$(P)$(TCA)ROI_SCA_ENABLE") {
+    field(DESC,"ROI to SCA enable")
+    field(ZNAM,"Disable")
+    field(ONAM,"Enable")
+    field(VAL,"1")
+}
+
+grecord(transform,"$(P)$(TCA)ROI_SCA") {
+    field(DESC,"Set SCAs from ROIs")
+    field(SDIS,"$(P)$(TCA)ROI_SCA_ENABLE NPP NMS")
+    field(DISV, "0")
+    field(INPA,"$(P)$(MCA).NUSE CPP MS")
+    field(INPB,"$(P)$(TCA)SCA_CAL CPP MS")
+    field(INPC,"$(P)$(MCA).R0LO CPP MS")
+    field(INPD,"$(P)$(MCA).R0HI CPP MS")
+    field(INPE,"$(P)$(MCA).R1LO CPP MS")
+    field(INPF,"$(P)$(MCA).R1HI CPP MS")
+    field(INPG,"$(P)$(MCA).R2LO CPP MS")
+    field(INPH,"$(P)$(MCA).R2HI CPP MS")
+    field(CLCI,"C*B*100./A")
+    field(OUTI,"$(P)$(TCA)SCA1_LOW CA MS")
+    field(CLCJ,"D*B*100./A")
+    field(OUTJ,"$(P)$(TCA)SCA1_HI CA MS")
+    field(CLCK,"E*B*100./A")
+    field(OUTK,"$(P)$(TCA)SCA2_LOW CA MS")
+    field(CLCL,"F*B*100./A")
+    field(OUTL,"$(P)$(TCA)SCA2_HI CA MS")
+    field(CLCM,"G*B*100./A")
+    field(OUTM,"$(P)$(TCA)SCA3_LOW CA MS")
+    field(CLCN,"H*B*100./A")
+    field(OUTN,"$(P)$(TCA)SCA3_HI CA MS")
+}

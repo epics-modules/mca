@@ -1,0 +1,161 @@
+grecord(calc,"$(P)$(M)CheckACQG") {
+    field(INPA,"$(P)$(M).ACQG NPP MS")
+    field(CALC,"a?1:2")
+}
+
+grecord(bo,"$(P)$(M)Erase") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).ERAS  PP MS")
+}
+
+grecord(bo,"$(P)$(M)EraseStart") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).ERST  PP MS")
+    field(FLNK,"$(P)$(M)SetClientWait")
+}
+grecord(bo,"$(P)$(M)Start") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).STRT  PP MS")
+    field(FLNK,"$(P)$(M)SetClientWait")
+}
+
+grecord(bo,"$(P)$(M)Stop") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).STOP  CA MS")
+}
+
+
+grecord(bo,"$(P)$(M)Read") {
+    field(SCAN,"1 second")
+    field(DISV,"0")
+    field(SDIS,"$(P)$(M).ACQG  NPP NMS")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).READ  CA NMS")
+}
+
+grecord(bo,"$(P)$(M)Status") {
+    field(SCAN,".1 second")
+    field(DISV,"0")
+    field(SDIS,"$(P)$(M).ACQG  NPP NMS")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).PROC  CA NMS")
+}
+
+grecord(transform,"$(P)$(M)Why1") {
+    field(DESC,"Why did MCA stop?")
+    field(FLNK,"$(P)$(M)Why2.VAL  PP MS")
+    field(CLCM,"a&&(b>=c)")
+    field(CLCN,"d&&(e>=f)")
+    field(CLCO,"g&&(h>=i)")
+    field(CLCP,"j&&(k>=l)")
+    field(INPA,"$(P)$(M).R0IP NPP NMS")
+    field(INPB,"$(P)$(M).R0N NPP NMS")
+    field(INPC,"$(P)$(M).R0P NPP NMS")
+    field(INPD,"$(P)$(M).R1IP NPP NMS")
+    field(INPE,"$(P)$(M).R1N NPP NMS")
+    field(INPF,"$(P)$(M).R1P NPP NMS")
+    field(INPG,"$(P)$(M).R2IP NPP NMS")
+    field(INPH,"$(P)$(M).R2N NPP NMS")
+    field(INPI,"$(P)$(M).R2P NPP NMS")
+    field(INPJ,"$(P)$(M).R3IP NPP NMS")
+    field(INPK,"$(P)$(M).R3N NPP NMS")
+    field(INPL,"$(P)$(M).R3P NPP NMS")
+}
+
+grecord(transform,"$(P)$(M)Why2") {
+    field(DESC,"Why did MCA stop?")
+    field(FLNK,"$(P)$(M)Why3.VAL  PP MS")
+    field(CLCM,"a&&(b>=c)")
+    field(CLCN,"d&&(e>=f)")
+    field(CLCO,"g&&(h>=i)")
+    field(CLCP,"j&&(k>=l)")
+    field(INPA,"$(P)$(M).R4IP NPP NMS")
+    field(INPB,"$(P)$(M).R4N NPP NMS")
+    field(INPC,"$(P)$(M).R4P NPP NMS")
+    field(INPD,"$(P)$(M).R5IP NPP NMS")
+    field(INPE,"$(P)$(M).R5N NPP NMS")
+    field(INPF,"$(P)$(M).R5P NPP NMS")
+    field(INPG,"$(P)$(M).R6IP NPP NMS")
+    field(INPH,"$(P)$(M).R6N NPP NMS")
+    field(INPI,"$(P)$(M).R6P NPP NMS")
+    field(INPJ,"$(P)$(M).R7IP NPP NMS")
+    field(INPK,"$(P)$(M).R7N NPP NMS")
+    field(INPL,"$(P)$(M).R7P NPP NMS")
+}
+
+grecord(transform,"$(P)$(M)Why3") {
+    field(DESC,"Why did MCA stop?")
+    field(FLNK,"$(P)$(M)Why4.VAL  PP MS")
+    field(CLCM,"a&&(b>=c)")
+    field(CLCN,"d&&(e>=f)")
+    field(CLCO,"(G>0)&&(H>=G)")
+    field(CLCP,"(I>0)&&(J>=I)")
+    field(INPA,"$(P)$(M).R8IP NPP NMS")
+    field(INPB,"$(P)$(M).R8N NPP NMS")
+    field(INPC,"$(P)$(M).R8P NPP NMS")
+    field(INPD,"$(P)$(M).R9IP NPP NMS")
+    field(INPE,"$(P)$(M).R9N NPP NMS")
+    field(INPF,"$(P)$(M).R9P NPP NMS")
+    field(INPG,"$(P)$(M).PLTM NPP NMS")
+    field(INPH,"$(P)$(M).ELTM NPP NMS")
+    field(INPI,"$(P)$(M).PRTM NPP NMS")
+    field(INPJ,"$(P)$(M).ERTM NPP NMS")
+}
+
+grecord(calc,"$(P)$(M)Why4") {
+    field(CALC,"(a|b|c|d|e|f|g|h|i|j|k|l)=0")
+    field(INPA,"$(P)$(M)Why1.M NPP NMS")
+    field(INPB,"$(P)$(M)Why1.N NPP NMS")
+    field(INPC,"$(P)$(M)Why1.O NPP NMS")
+    field(INPD,"$(P)$(M)Why1.P NPP NMS")
+    field(INPE,"$(P)$(M)Why2.M NPP NMS")
+    field(INPF,"$(P)$(M)Why2.N NPP NMS")
+    field(INPG,"$(P)$(M)Why2.O NPP NMS")
+    field(INPH,"$(P)$(M)Why2.P NPP NMS")
+    field(INPI,"$(P)$(M)Why3.M NPP NMS")
+    field(INPJ,"$(P)$(M)Why3.N NPP NMS")
+    field(INPK,"$(P)$(M)Why3.O NPP NMS")
+    field(INPL,"$(P)$(M)Why3.P NPP NMS")
+}
+
+grecord(swait,"$(P)$(M)WhenAcqStops") {
+    field(SCAN,"I/O Intr")
+    field(INAN,"$(P)$(M).ACQG")
+    field(OUTN,"$(P)$(M)Why1.PROC")
+    field(CALC,"A")
+    field(OOPT,"Transition To Zero")
+}
+
+# These records are to synchronize with IDL or another client
+grecord(bo,"$(P)$(M)EnableWait") {
+    field(ZNAM,"Disable")
+    field(ONAM,"Enable")
+}
+
+grecord(bo,"$(P)$(M)SetClientWait") {
+    field(DISV,"0")
+    field(SDIS,"$(P)$(M)EnableWait NPP NMS")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M)ClientWait PP MS")
+}
+
+grecord(busy,"$(P)$(M)ClientWait") {
+}
+
+# This is the MCA record itself
+grecord(mca,"$(P)$(M)") {
+    field(DTYP,"$(DTYPE)")
+    field(FLNK,"0")
+#    field(PINI,"YES")
+    field(NMAX,"$(NCHAN)")
+    field(PREC,"2")
+    field(NUSE,"$(NCHAN)")
+    field(INP,"$(INP)")
+}

@@ -1,0 +1,152 @@
+# Database for Canberra 9621 HVPS
+#   Mark Rivers
+#   October 11, 2000
+
+grecord(ao,"$(P)$(HVPS)VOLT_OUT") {
+    field(DESC,"HVPS output voltage")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"$(LIMIT)")
+    field(HOPR,"$(LIMIT)")
+    field(PREC,"0")
+    field(VAL,"0")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1025 @$(SERVER),$(ADDR)")
+}
+grecord(ao,"$(P)$(HVPS)VOLT_LIM") {
+    field(DESC,"HVPS voltage limit")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"$(LIMIT)")
+    field(HOPR,"$(LIMIT)")
+    field(PREC,"0")
+    field(VAL,"$(LIMIT)")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1026 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(HVPS)INH_LEVEL") {
+    field(DESC,"Inhibit voltage level")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"+5V")
+    field(ONVL,"1")
+    field(ONST,"+12V")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1027 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(HVPS)LATCH_INH") {
+    field(DESC,"Latch inhibit?")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1028 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(HVPS)LATCH_OVL") {
+    field(DESC,"Latch overload?")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"No")
+    field(ONVL,"1")
+    field(ONST,"Yes")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1029 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(HVPS)RESET") {
+    field(DESC,"Reset inihibit/overload")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Done")
+    field(ONVL,"1")
+    field(ONST,"Reset")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1030 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(HVPS)STATUS") {
+    field(DESC,"Status (off/on)")
+    field(PINI,"NO")
+    field(ZRVL,"0")
+    field(ZRST,"Off")
+    field(ONVL,"1")
+    field(ONST,"On")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1031 @$(SERVER),$(ADDR)")
+}
+grecord(mbbo,"$(P)$(HVPS)FRAMP") {
+    field(DESC,"Fast ramp")
+    field(PINI,"YES")
+    field(ZRVL,"0")
+    field(ZRST,"Disable")
+    field(ONVL,"1")
+    field(ONST,"Enable")
+    field(DTYP, "MPF ICB")
+    field(OUT,"#C$(CARD) S1032 @$(SERVER),$(ADDR)")
+}
+grecord(bo,"$(P)$(HVPS)READBACK") {
+    field(DESC,"Readback scan")
+    field(PINI,"NO")
+    field(SCAN,"10 second")
+    field(FLNK,"$(P)$(HVPS)POLARITY")
+}
+grecord(mbbi,"$(P)$(HVPS)POLARITY") {
+    field(DESC,"Output voltage polarity")
+    field(ZRVL,"0")
+    field(ZRST,"Positive")
+    field(ONVL,"1")
+    field(ONST,"Negative")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S1033 @$(SERVER),$(ADDR)")
+    field(FLNK,"$(P)$(HVPS)INHIBIT")
+}
+grecord(mbbi,"$(P)$(HVPS)INHIBIT") {
+    field(DESC,"Inhibit status")
+    field(ZRVL,"0")
+    field(ZRST,"Off")
+    field(ONVL,"1")
+    field(ONST,"On")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S1034 @$(SERVER),$(ADDR)")
+    field(FLNK,"$(P)$(HVPS)OVERLOAD")
+}
+grecord(mbbi,"$(P)$(HVPS)OVERLOAD") {
+    field(DESC,"Overload status")
+    field(ZRVL,"0")
+    field(ZRST,"Off")
+    field(ONVL,"1")
+    field(ONST,"On")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S1035 @$(SERVER),$(ADDR)")
+    field(FLNK,"$(P)$(HVPS)STATRBV")
+}
+grecord(mbbi,"$(P)$(HVPS)STATRBV") {
+    field(DESC,"Status")
+    field(ZRVL,"0")
+    field(ZRST,"Off")
+    field(ONVL,"1")
+    field(ONST,"On")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S1036 @$(SERVER),$(ADDR)")
+    field(FLNK,"$(P)$(HVPS)BUSY")
+}
+grecord(mbbi,"$(P)$(HVPS)BUSY") {
+    field(DESC,"Busy status")
+    field(ZRVL,"0")
+    field(ZRST,"Done")
+    field(ONVL,"1")
+    field(ONST,"Busy")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S1037 @$(SERVER),$(ADDR)")
+    field(FLNK,"$(P)$(HVPS)VOLTRBV")
+}
+grecord(ai,"$(P)$(HVPS)VOLTRBV") {
+    field(DESC,"Voltage readback")
+    field(LOPR,"0")
+    field(HOPR,"$(LIMIT)")
+    field(PREC,"0")
+    field(DTYP, "MPF ICB")
+    field(INP,"#C$(CARD) S1038 @$(SERVER),$(ADDR)")
+}

@@ -1,0 +1,22 @@
+################
+# RECORD SUPPORT
+################
+include "mcaRecord.dbd"
+
+################
+# DEVICE SUPPORT
+################
+# MPF MCA support, used by Canberra AIM multichannel analyzer and
+# Acromag IP-330 ADC as waveform recorder
+device(mca,VME_IO,devMcaMpf,"MPF MCA")
+
+# MPF ICB support, used by Canberra ICB modules
+device(ao,VME_IO,devAoIcbMpf,"MPF ICB")
+device(mbbo,VME_IO,devMbboIcbMpf,"MPF ICB")
+device(ai,VME_IO,devAiIcbMpf,"MPF ICB")
+device(mbbi,VME_IO,devMbbiIcbMpf,"MPF ICB")
+
+# Struck STR7201 or SIS 380x multi-channel scaler
+device(mca,VME_IO,devSTR7201,"Struck STR7201 MCS")
+device(scaler,VME_IO,devScalerSTR7201,"Struck STR7201 Scaler")
+################
