@@ -40,7 +40,8 @@ mcaCanberra_SRCS += devIcbMpf.cc
 mcaCanberra_SRCS += icbTcaServer.cc
 mcaCanberra_SRCS += icbDspServer.cc
 mcaCanberra_SRCS += mcaCanberraRegister.c
-mcaCanberra_LIBS += mpf mpfEpics std
+mcaCanberra_LIBS += calc sscan autosave std gpib
+mcaCanberra_LIBS += mpf mpfEpics
 mcaCanberra_LIBS += $(EPICS_BASE_IOC_LIBS)
 # should be mcaAIM_LIBS_linux-x86 which won't work
 mcaCanberra_SYS_LIBS_DEFAULT += net pcap
@@ -56,7 +57,8 @@ mcaAIM_SRCS_DEFAULT += mcaCanberraMain.cpp
 mcaAIM_SRCS_vxWorks += -nil-
 mcaAIM_LIBS += mca
 mcaAIM_LIBS += mcaCanberra
-mcaAIM_LIBS += mpf mpfEpics std
+mcaAIM_LIBS += calc sscan autosave std gpib
+mcaAIM_LIBS += mpf mpfEpics
 mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 # should be mcaAIM_LIBS_linux-x86 which won't work
