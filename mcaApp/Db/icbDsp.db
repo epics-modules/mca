@@ -18,8 +18,8 @@ grecord(mbbo,"$(P)$(DSP)CG") {
     field(FRST,"x330")
     field(FVVL,"5")
     field(FVST,"x960")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S1 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 1)")
 }
 grecord(ao,"$(P)$(DSP)FG") {
     field(DESC,"Fine gain")
@@ -30,8 +30,8 @@ grecord(ao,"$(P)$(DSP)FG") {
     field(HOPR,"1.6")
     field(PREC,"4")
     field(VAL,"1.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S42 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 42)")
 }
 grecord(ao,"$(P)$(DSP)SFG") {
     field(DESC,"Super fine gain")
@@ -42,8 +42,8 @@ grecord(ao,"$(P)$(DSP)SFG") {
     field(HOPR,"0.03")
     field(PREC,"6")
     field(VAL,"0.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S43 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 43)")
 }
 
 # ADC setup
@@ -64,8 +64,8 @@ grecord(mbbo,"$(P)$(DSP)ADCG") {
     field(FVST,"8192")
     field(SXVL,"6")
     field(SXST,"16384")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S49 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 49)")
 }
 grecord(mbbo,"$(P)$(DSP)ADCR") {
     field(DESC,"ADC conversion range")
@@ -84,8 +84,8 @@ grecord(mbbo,"$(P)$(DSP)ADCR") {
     field(FVST,"8192")
     field(SXVL,"6")
     field(SXST,"16384")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S50 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 50)")
 }
 grecord(mbbo,"$(P)$(DSP)MCA") {
     field(DESC,"MCA type")
@@ -96,8 +96,8 @@ grecord(mbbo,"$(P)$(DSP)MCA") {
     field(ONST,"S100/S35")
     field(TWVL,"2")
     field(TWST,"SILENA")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S23 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 23)")
 }
 grecord(ao,"$(P)$(DSP)ADCO") {
     field(DESC,"ADC digital offset")
@@ -108,8 +108,8 @@ grecord(ao,"$(P)$(DSP)ADCO") {
     field(HOPR,"16128")
     field(PREC,"0")
     field(VAL,"0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S51 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 51)")
 }
 grecord(ao,"$(P)$(DSP)LLD") {
     field(DESC,"ADC lower level discr.")
@@ -120,8 +120,8 @@ grecord(ao,"$(P)$(DSP)LLD") {
     field(HOPR,"100")
     field(PREC,"3")
     field(VAL,"1")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S48 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 48)")
 }
 grecord(ao,"$(P)$(DSP)ZERO") {
     field(DESC,"Zero DAC")
@@ -132,8 +132,8 @@ grecord(ao,"$(P)$(DSP)ZERO") {
     field(HOPR,"3.125")
     field(PREC,"3")
     field(VAL,"0.")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S44 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 44)")
 }
 
 
@@ -147,8 +147,8 @@ grecord(ao,"$(P)$(DSP)RT") {
     field(HOPR,"28.0")
     field(PREC,"1")
     field(VAL,"2.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S53 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 53)")
 }
 grecord(ao,"$(P)$(DSP)FT") {
     field(DESC,"Flat top time")
@@ -159,8 +159,8 @@ grecord(ao,"$(P)$(DSP)FT") {
     field(HOPR,"3.0")
     field(PREC,"1")
     field(VAL,"1.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S54 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 54)")
 }
 grecord(mbbo,"$(P)$(DSP)BLR") {
     field(DESC,"Baseline restore")
@@ -173,8 +173,8 @@ grecord(mbbo,"$(P)$(DSP)BLR") {
     field(TWST,"Medium")
     field(THVL,"3")
     field(THST,"Hard")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S6 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 6)")
 }
 grecord(mbbo,"$(P)$(DSP)MI") {
     field(DESC,"M-term Index")
@@ -185,8 +185,8 @@ grecord(mbbo,"$(P)$(DSP)MI") {
     field(ONST,"M=Term #2")
     field(TWVL,"2")
     field(TWST,"M=Term #3")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S60 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 60)")
 }
 grecord(ao,"$(P)$(DSP)MT") {
     field(DESC,"M-Term value")
@@ -197,8 +197,8 @@ grecord(ao,"$(P)$(DSP)MT") {
     field(HOPR,"1000")
     field(PREC,"3")
     field(VAL,"1.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S47 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 47)")
 }
 grecord(mbbo,"$(P)$(DSP)PZM") {
     field(DESC,"Pole zero mode")
@@ -209,8 +209,8 @@ grecord(mbbo,"$(P)$(DSP)PZM") {
     field(ONST,"Manual")
     field(TWVL,"2")
     field(TWST,"Reset")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S8 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 8)")
 }
 grecord(ao,"$(P)$(DSP)PZ") {
     field(DESC,"Pole zero")
@@ -221,8 +221,8 @@ grecord(ao,"$(P)$(DSP)PZ") {
     field(HOPR,"4095")
     field(PREC,"0")
     field(VAL,"1000")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S7 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 7)")
 }
 grecord(ao,"$(P)$(DSP)THR") {
     field(DESC,"Threshold register")
@@ -233,8 +233,8 @@ grecord(ao,"$(P)$(DSP)THR") {
     field(HOPR,"65535")
     field(PREC,"0")
     field(VAL,"0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S57 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 57)")
 }
 # Note: the DSP supports 20 values for cutoff frequency but MBBO record only
 # has 16 possible values, so we omit 4 choices: 400, 600, 800 and 2500 Hz.
@@ -273,8 +273,8 @@ grecord(mbbo,"$(P)$(DSP)FRQ") {
     field(FTST,"30000 Hz")
     field(FFVL,"20")
     field(FFST,"50000 Hz")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S58 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 58)")
 }
 
 # Stabilizer setup
@@ -285,8 +285,8 @@ grecord(mbbo,"$(P)$(DSP)GCOR") {
     field(ZRST,"Ge  (+/- 1%)")
     field(ONVL,"1")
     field(ONST,"NaI (+/- 10%)")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S34 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 34)")
 }
 grecord(mbbo,"$(P)$(DSP)ZCOR") {
     field(DESC,"Zero range")
@@ -295,8 +295,8 @@ grecord(mbbo,"$(P)$(DSP)ZCOR") {
     field(ZRST,"Ge  (+/- 1%)")
     field(ONVL,"1")
     field(ONST,"NaI (+/- 10%)")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S45 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 45)")
 }
 grecord(mbbo,"$(P)$(DSP)GMOD") {
     field(DESC,"Gain mode")
@@ -307,8 +307,8 @@ grecord(mbbo,"$(P)$(DSP)GMOD") {
     field(ONST,"On")
     field(TWVL,"2")
     field(TWST,"Hold")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S32 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 32)")
 }
 grecord(mbbo,"$(P)$(DSP)ZMOD") {
     field(DESC,"Zero mode")
@@ -319,8 +319,8 @@ grecord(mbbo,"$(P)$(DSP)ZMOD") {
     field(ONST,"On")
     field(TWVL,"2")
     field(TWST,"Hold")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S33 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 33)")
 }
 grecord(mbbo,"$(P)$(DSP)GDIV") {
     field(DESC,"Gain correction divider")
@@ -345,8 +345,8 @@ grecord(mbbo,"$(P)$(DSP)GDIV") {
     field(EIST,"256")
     field(NIVL,"9")
     field(NIST,"512")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S55 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 55)")
 }
 grecord(mbbo,"$(P)$(DSP)ZDIV") {
     field(DESC,"Zero correction divider")
@@ -371,8 +371,8 @@ grecord(mbbo,"$(P)$(DSP)ZDIV") {
     field(EIST,"256")
     field(NIVL,"9")
     field(NIST,"512")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S56 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 56)")
 }
 grecord(ao,"$(P)$(DSP)GSPC") {
     field(DESC,"Gain spacing")
@@ -383,8 +383,8 @@ grecord(ao,"$(P)$(DSP)GSPC") {
     field(HOPR,"512")
     field(PREC,"0")
     field(VAL,"256")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S28 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 28)")
 }
 grecord(ao,"$(P)$(DSP)ZSPC") {
     field(DESC,"Zero spacing")
@@ -395,8 +395,8 @@ grecord(ao,"$(P)$(DSP)ZSPC") {
     field(HOPR,"512")
     field(PREC,"0")
     field(VAL,"256")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S29 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 29)")
 }
 grecord(ao,"$(P)$(DSP)GWND") {
     field(DESC,"Gain window")
@@ -407,8 +407,8 @@ grecord(ao,"$(P)$(DSP)GWND") {
     field(HOPR,"128")
     field(PREC,"0")
     field(VAL,"64")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S26 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 26)")
 }
 grecord(ao,"$(P)$(DSP)ZWND") {
     field(DESC,"Zero window")
@@ -419,8 +419,8 @@ grecord(ao,"$(P)$(DSP)ZWND") {
     field(HOPR,"128")
     field(PREC,"0")
     field(VAL,"64")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S27 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 27)")
 }
 grecord(ao,"$(P)$(DSP)GCNT") {
     field(DESC,"Gain centroid")
@@ -431,8 +431,8 @@ grecord(ao,"$(P)$(DSP)GCNT") {
     field(HOPR,"16376")
     field(PREC,"0")
     field(VAL,"64")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S24 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 24)")
 }
 grecord(ao,"$(P)$(DSP)ZCNT") {
     field(DESC,"Zero centroid")
@@ -443,8 +443,8 @@ grecord(ao,"$(P)$(DSP)ZCNT") {
     field(HOPR,"16376")
     field(PREC,"0")
     field(VAL,"64")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S25 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 25)")
 }
 grecord(ao,"$(P)$(DSP)GRAT") {
     field(DESC,"Gain ratio")
@@ -455,8 +455,8 @@ grecord(ao,"$(P)$(DSP)GRAT") {
     field(HOPR,"100.")
     field(PREC,"2")
     field(VAL,"1.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S40 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 40)")
 }
 grecord(ao,"$(P)$(DSP)ZRAT") {
     field(PINI,"YES")
@@ -467,8 +467,8 @@ grecord(ao,"$(P)$(DSP)ZRAT") {
     field(HOPR,"100.")
     field(PREC,"2")
     field(VAL,"1.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S41 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 41)")
 }
 grecord(mbbo,"$(P)$(DSP)RES") {
     field(DESC,"Stabilizer reset")
@@ -477,8 +477,8 @@ grecord(mbbo,"$(P)$(DSP)RES") {
     field(ZRST,"Done")
     field(ONVL,"1")
     field(ONST,"Reset")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S35 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 35)")
 }
 # Miscellaneous setup
 grecord(mbbo,"$(P)$(DSP)INPP") {
@@ -488,8 +488,8 @@ grecord(mbbo,"$(P)$(DSP)INPP") {
     field(ZRST,"Positive")
     field(ONVL,"1")
     field(ONST,"Negative")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S14 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 14)")
 }
 grecord(mbbo,"$(P)$(DSP)INHP") {
     field(DESC,"Inhibit polarity")
@@ -498,8 +498,8 @@ grecord(mbbo,"$(P)$(DSP)INHP") {
     field(ZRST,"Positive")
     field(ONVL,"1")
     field(ONST,"Negative")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S15 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 15)")
 }
 grecord(mbbo,"$(P)$(DSP)TINH") {
     field(DESC,"TRP Inhibit mode")
@@ -508,8 +508,8 @@ grecord(mbbo,"$(P)$(DSP)TINH") {
     field(ZRST,"Normal")
     field(ONVL,"1")
     field(ONST,"Reset")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S61 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 61)")
 }
 grecord(mbbo,"$(P)$(DSP)FDM") {
     field(DESC,"Fast discr. mode")
@@ -518,8 +518,8 @@ grecord(mbbo,"$(P)$(DSP)FDM") {
     field(ZRST,"Auto")
     field(ONVL,"1")
     field(ONST,"Manual")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S19 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 19)")
 }
 grecord(ao,"$(P)$(DSP)FD") {
     field(DESC,"Fast discriminator")
@@ -530,8 +530,8 @@ grecord(ao,"$(P)$(DSP)FD") {
     field(HOPR,"100.")
     field(PREC,"1")
     field(VAL,"1.0")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S52 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 52)")
 }
 grecord(mbbo,"$(P)$(DSP)PURM") {
     field(DESC,"Pileup reject mode")
@@ -542,8 +542,8 @@ grecord(mbbo,"$(P)$(DSP)PURM") {
     field(ONST,"On")
     field(TWVL,"2")
     field(TWST,"LFC")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S16 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 16)")
 }
 grecord(mbbo,"$(P)$(DSP)GATM") {
     field(DESC,"Gate mode")
@@ -552,8 +552,8 @@ grecord(mbbo,"$(P)$(DSP)GATM") {
     field(ZRST,"Anti-coinc.")
     field(ONVL,"1")
     field(ONST,"Coincidence")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S17 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 17)")
 }
 grecord(mbbo,"$(P)$(DSP)OUTM") {
     field(DESC,"Output mode")
@@ -562,8 +562,8 @@ grecord(mbbo,"$(P)$(DSP)OUTM") {
     field(ZRST,"Trapezoid")
     field(ONVL,"1")
     field(ONST,"Tail")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S18 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 18)")
 }
 grecord(mbbo,"$(P)$(DSP)GD") {
     field(DESC,"Guard setting")
@@ -599,8 +599,8 @@ grecord(mbbo,"$(P)$(DSP)GD") {
     field(FTVL,"25")
     field(FTST,"2.5")
     field(RVAL,"11")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S22 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 22)")
 }
 grecord(mbbo,"$(P)$(DSP)TDC") {
     field(DESC,"Test DAC mode")
@@ -613,8 +613,8 @@ grecord(mbbo,"$(P)$(DSP)TDC") {
     field(TWST,"LLD")
     field(THVL,"3")
     field(THST,"Off")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S59 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 59)")
 }
 grecord(mbbo,"$(P)$(DSP)THRI") {
     field(DESC,"Throughput index")
@@ -627,8 +627,8 @@ grecord(mbbo,"$(P)$(DSP)THRI") {
     field(TWST,"DSP rate")
     field(THVL,"3")
     field(THST,"MCA rate")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S37 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 37)")
 }
 grecord(ao,"$(P)$(DSP)LTRM") {
     field(DESC,"Live time trim")
@@ -639,8 +639,8 @@ grecord(ao,"$(P)$(DSP)LTRM") {
     field(HOPR,"1000")
     field(PREC,"0")
     field(VAL,"250.")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S20 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 20)")
 }
 grecord(mbbo,"$(P)$(DSP)BBRN") {
     field(DESC,"Burr-Brown delay")
@@ -649,8 +649,8 @@ grecord(mbbo,"$(P)$(DSP)BBRN") {
     field(ZRST,"Off")
     field(ONVL,"1")
     field(ONST,"On")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S21 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 21)")
 }
 grecord(mbbo,"$(P)$(DSP)AUTO_PZ") {
     field(DESC,"Start auto-PZ")
@@ -659,8 +659,8 @@ grecord(mbbo,"$(P)$(DSP)AUTO_PZ") {
     field(ZRST,"Done")
     field(ONVL,"1")
     field(ONST,"Start")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S240 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 240)")
 }
 grecord(mbbo,"$(P)$(DSP)AUTO_BDC") {
     field(DESC,"Start auto-BDC")
@@ -669,8 +669,8 @@ grecord(mbbo,"$(P)$(DSP)AUTO_BDC") {
     field(ZRST,"Done")
     field(ONVL,"1")
     field(ONST,"Start")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S241 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 241)")
 }
 grecord(mbbo,"$(P)$(DSP)CLEAR") {
     field(DESC,"Clear errors, abort BDC/PZ")
@@ -679,8 +679,8 @@ grecord(mbbo,"$(P)$(DSP)CLEAR") {
     field(ZRST,"Done")
     field(ONVL,"1")
     field(ONST,"Clear")
-    field(DTYP, "MPF ICB")
-    field(OUT,"#C$(CARD) S242 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 242)")
 }
 
 # This is where all of the readback records begin
@@ -708,10 +708,9 @@ grecord(mbbi,"$(P)$(DSP)READ_GMOD") {
     field(ONST,"On")
     field(TWVL,"2")
     field(TWST,"Hold")
-    field(DTYP, "MPF ICB")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 32)")
     field(FLNK, "$(P)$(DSP)GOVR PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S32 @$(SERVER),$(ADDR)")
 }
 grecord(mbbi,"$(P)$(DSP)GOVR") {
     field(DESC,"Gain overrange")
@@ -722,9 +721,9 @@ grecord(mbbi,"$(P)$(DSP)GOVR") {
     field(ONVL,"1")
     field(ONST,"Overrange")
     field(ONSV, "MAJOR")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 244)")
     field(FLNK, "$(P)$(DSP)GOVF PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S244 @$(SERVER),$(ADDR)")
 }
 grecord(mbbi,"$(P)$(DSP)GOVF") {
     field(DESC,"Gain overflow")
@@ -735,9 +734,9 @@ grecord(mbbi,"$(P)$(DSP)GOVF") {
     field(ONVL,"1")
     field(ONST,"Overflow")
     field(ONSV, "MAJOR")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 245)")
     field(FLNK, "$(P)$(DSP)SGN PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S245 @$(SERVER),$(ADDR)")
 }
 grecord(ai,"$(P)$(DSP)SGN") {
     field(DESC,"Stabilizer gain")
@@ -745,8 +744,8 @@ grecord(ai,"$(P)$(DSP)SGN") {
     field(LOPR,"0")
     field(HOPR,"8191")
     field(PREC,"0")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S62 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 62)")
 }
 grecord(mbbi,"$(P)$(DSP)READ_ZMOD") {
     field(DESC,"Zero mode")
@@ -758,8 +757,8 @@ grecord(mbbi,"$(P)$(DSP)READ_ZMOD") {
     field(TWVL,"2")
     field(TWST,"Hold")
     field(FLNK, "$(P)$(DSP)ZOVR PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S33 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 33)")
 }
 grecord(mbbi,"$(P)$(DSP)ZOVR") {
     field(DESC,"Zero overrange")
@@ -771,8 +770,8 @@ grecord(mbbi,"$(P)$(DSP)ZOVR") {
     field(ONST,"Overrange")
     field(ONSV, "MAJOR")
     field(FLNK, "$(P)$(DSP)ZOVF PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S246 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 246)")
 }
 grecord(mbbi,"$(P)$(DSP)ZOVF") {
     field(DESC,"Zero overflow")
@@ -784,8 +783,8 @@ grecord(mbbi,"$(P)$(DSP)ZOVF") {
     field(ONST,"Overflow")
     field(ONSV, "MAJOR")
     field(FLNK, "$(P)$(DSP)SZER PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S247 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 247)")
 }
 grecord(ai,"$(P)$(DSP)SZER") {
     field(DESC,"Stabilizer zero")
@@ -793,8 +792,8 @@ grecord(ai,"$(P)$(DSP)SZER") {
     field(LOPR,"0")
     field(HOPR,"4095")
     field(PREC,"0")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S63 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 63)")
 }
 
 # Filter readback
@@ -811,8 +810,8 @@ grecord(ai,"$(P)$(DSP)READ_PZ") {
     field(LOPR,"0")
     field(HOPR,"4095.")
     field(PREC,"0")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S7 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 7)")
 }
 grecord(ai,"$(P)$(DSP)PZ_INFO") {
     field(DESC,"Auto PZ value")
@@ -821,8 +820,8 @@ grecord(ai,"$(P)$(DSP)PZ_INFO") {
     field(HOPR,"4095.")
     field(PREC,"0")
     field(FLNK, "$(P)$(DSP)PZAER PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S38 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 38)")
 }
 grecord(mbbi,"$(P)$(DSP)PZAER") {
     field(DESC,"PZ error")
@@ -842,8 +841,8 @@ grecord(mbbi,"$(P)$(DSP)PZAER") {
     field(FRVL,"4")
     field(FRST,"Aborted")
     field(FRSV, "MINOR")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S248 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 248)")
 }
 grecord(ai,"$(P)$(DSP)READ_FT") {
     field(DESC,"Actual flat top")
@@ -851,8 +850,8 @@ grecord(ai,"$(P)$(DSP)READ_FT") {
     field(LOPR,"0")
     field(HOPR,"30.")
     field(PREC,"1")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S54 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 54)")
 }
 grecord(ai,"$(P)$(DSP)BDC_INFO") {
     field(DESC,"Optimum flat top")
@@ -861,8 +860,8 @@ grecord(ai,"$(P)$(DSP)BDC_INFO") {
     field(HOPR,"30.")
     field(PREC,"1")
     field(FLNK, "$(P)$(DSP)BDCAER PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S39 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 39)")
 }
 grecord(mbbi,"$(P)$(DSP)BDCAER") {
     field(DESC,"BDC error")
@@ -882,8 +881,8 @@ grecord(mbbi,"$(P)$(DSP)BDCAER") {
     field(FRVL,"4")
     field(FRST,"Aborted")
     field(FRSV, "MINOR")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S249 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 249)")
 }
 
 # Status readback
@@ -893,8 +892,8 @@ grecord(ai,"$(P)$(DSP)READ_STAT") {
     field(HOPR,"65535")
     field(PREC,"0")
     field(FLNK,"$(P)$(DSP)PZBZ PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S70 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 70)")
 }
 grecord(mbbi,"$(P)$(DSP)PZBZ") {
     field(DESC,"Pole-zero busy")
@@ -906,8 +905,8 @@ grecord(mbbi,"$(P)$(DSP)PZBZ") {
     field(ONST,"Busy")
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)BDBZ PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S250 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 250)")
 }
 grecord(mbbi,"$(P)$(DSP)BDBZ") {
     field(DESC,"BDC busy")
@@ -919,8 +918,8 @@ grecord(mbbi,"$(P)$(DSP)BDBZ") {
     field(ONST,"Busy")
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)MINT PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S251 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 251)")
 }
 grecord(mbbi,"$(P)$(DSP)MINT") {
     field(DESC,"Module reset")
@@ -932,8 +931,8 @@ grecord(mbbi,"$(P)$(DSP)MINT") {
     field(ONST,"Reset")
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)DGBZ PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S252 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 252)")
 }
 grecord(mbbi,"$(P)$(DSP)DGBZ") {
     field(DESC,"Diagnostics busy")
@@ -945,8 +944,8 @@ grecord(mbbi,"$(P)$(DSP)DGBZ") {
     field(ONST,"Busy")
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)MERR PP MS")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S253 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 253)")
 }
 grecord(mbbi,"$(P)$(DSP)MERR") {
     field(DESC,"Module error")
@@ -957,8 +956,8 @@ grecord(mbbi,"$(P)$(DSP)MERR") {
     field(ONVL,"1")
     field(ONST,"Error")
     field(ONSV, "MAJOR")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S254 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 254)")
 }
 
 # Throughput readback
@@ -968,6 +967,6 @@ grecord(ai,"$(P)$(DSP)READ_RATES") {
     field(LOPR,"0")
     field(HOPR,"1048575")
     field(PREC,"1")
-    field(DTYP, "MPF ICB")
-    field(INP,"#C$(CARD) S36 @$(SERVER),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT) 36)")
 }

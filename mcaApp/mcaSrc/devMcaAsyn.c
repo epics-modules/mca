@@ -28,15 +28,19 @@
 #include <epicsExport.h>
 
 #include "asynDriver.h"
+#include "asynInt32.h"
 #include "asynInt32Array.h"
+#include "asynFloat64.h"
 #include "asynEpicsUtils.h"
 
 #include "mcaRecord.h"
 #include "mca.h"
-#include "asynMca.h"
+
+typedef enum {int32Type, float64Type, int32ArrayType} interfaceType;
 
 typedef struct {
     mcaCommand command;
+    interfaceType interface;
     int ivalue;
     double dvalue;
 } mcaAsynMessage;
@@ -44,13 +48,19 @@ typedef struct {
 typedef struct {
     mcaRecord *pmca;
     asynUser *pasynUser;
-    asynMca *pasynMca;
-    void *asynMcaPvt;
+    asynInt32 *pasynInt32;
+    void *asynInt32Pvt;
+    asynFloat64 *pasynFloat64;
+    void *asynFloat64Pvt;
     asynInt32Array *pasynInt32Array;
     void *asynInt32ArrayPvt;
-    mcaAsynAcquireStatus acquireStatus;
     int nread;
     int *data;
+    double elapsedLive;
+    double elapsedReal;
+    double dwellTime;
+    double totalCounts;
+    int acquiring;
 } mcaAsynPvt;
 
 static long init_record(mcaRecord *pmca);
@@ -117,16 +127,27 @@ static long init_record(mcaRecord *pmca)
         goto bad;
     }
 
-    /* Get the asynMca interface */
-    pasynInterface = pasynManager->findInterface(pasynUser, asynMcaType, 1);
+    /* Get the asynInt32 interface */
+    pasynInterface = pasynManager->findInterface(pasynUser, asynInt32Type, 1);
     if (!pasynInterface) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devMcaAsyn::init_record, %s find mca interface failed\n",
+                  "devMcaAsyn::init_record, %s find int32 interface failed\n",
                   pmca->name);
         goto bad;
     }
-    pPvt->pasynMca = (asynMca *)pasynInterface->pinterface;
-    pPvt->asynMcaPvt = pasynInterface->drvPvt;
+    pPvt->pasynInt32 = (asynInt32 *)pasynInterface->pinterface;
+    pPvt->asynInt32Pvt = pasynInterface->drvPvt;
+
+    /* Get the asynFloat64 interface */
+    pasynInterface = pasynManager->findInterface(pasynUser, asynFloat64Type, 1);
+    if (!pasynInterface) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "devMcaAsyn::init_record, %s find float64 interface failed\n",
+                  pmca->name);
+        goto bad;
+    }
+    pPvt->pasynFloat64 = (asynFloat64 *)pasynInterface->pinterface;
+    pPvt->asynFloat64Pvt = pasynInterface->drvPvt;
 
     /* Get the asynInt32Array interface */
     pasynInterface = pasynManager->findInterface(pasynUser, 
@@ -162,16 +183,16 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
      * return */
     if ((pmca->nsta == COMM_ALARM) || (pmca->stat == COMM_ALARM)) return(-1);
 
-    /* If rdns is true and command=MSG_GET_ACQ_STATUS then this is a second 
+    /* If rdns is true and command=mcaReadStatus then this is a second 
      * call from the record to complete */
-    if (pmca->rdns && (command == MSG_GET_ACQ_STATUS)) {
+    if (pmca->rdns && (command == mcaReadStatus)) {
         /* This is a second call from record after I/O is complete. 
          * Copy information from private to record */
-        pmca->ertm = pPvt->acquireStatus.realTime;
-        pmca->eltm = pPvt->acquireStatus.liveTime;
-        pmca->dwel = pPvt->acquireStatus.dwellTime;
-        pmca->act =  pPvt->acquireStatus.totalCounts;
-        pmca->acqg = pPvt->acquireStatus.acquiring;
+        pmca->ertm = pPvt->elapsedReal;
+        pmca->eltm = pPvt->elapsedLive;
+        pmca->dwel = pPvt->dwellTime;
+        pmca->act =  pPvt->totalCounts;
+        pmca->acqg = pPvt->acquiring;
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
                   "devMcaAsyn::send_msg, record=%s, elapsed time=%f,"
                   " dwell time=%f, acqg=%d\n", 
@@ -186,86 +207,76 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     pmsg->command = command;
     pmsg->ivalue=0;
     pmsg->dvalue=0.;
+    pmsg->interface = int32Type;
     pasynUser->userData = pmsg;
 
     switch (command) {
-    case MSG_ACQUIRE:
-        /* start acquisition */
+    case mcaStartAcquire:
         break;
-    case MSG_READ:
+    case mcaStopAcquire:
+        break;
+    case mcaErase:
+        break;
+    case mcaData:
         /* start read operation */
         /* Set the flag which tells the record that the read is not complete */
         pmca->rdng = 1;
         pmca->pact = 1;
         break;
-    case MSG_SET_CHAS_INT:
-        /* set channel advance source to internal (timed) */
-        break;
-    case MSG_SET_CHAS_EXT:
-        /* set channel advance source to external */
-        break;
-    case MSG_SET_NCHAN:
-        /* set number of channels */
-        pmsg->ivalue = pmca->nuse;
-        break;
-    case MSG_SET_DWELL:
-        /* set dwell time per channel. */
-        pmsg->dvalue = pmca->dwel;
-        break;
-    case MSG_SET_REAL_TIME:
-        /* set preset real time. */
-        pmsg->dvalue = pmca->prtm;
-        break;
-    case MSG_SET_LIVE_TIME:
-        /* set preset live time */
-        pmsg->dvalue = pmca->pltm;
-        break;
-    case MSG_SET_COUNTS:
-        /* set preset counts */
-        pmsg->dvalue = pmca->pct;
-        break;
-    case MSG_SET_LO_CHAN:
-        /* set preset count low channel */
-        pmsg->ivalue = pmca->pct;
-        break;
-    case MSG_SET_HI_CHAN:
-        /* set preset count high channel */
-        pmsg->ivalue = pmca->pcth;
-        break;
-    case MSG_SET_NSWEEPS:
-        /* set number of sweeps (for MCS mode) */
-        pmsg->ivalue = pmca->pswp;
-        break;
-    case MSG_SET_MODE_PHA:
-        /* set mode to pulse height analysis */
-        break;
-    case MSG_SET_MODE_MCS:
-        /* set mode to MultiChannel Scaler */
-        break;
-    case MSG_SET_MODE_LIST:
-        /* set mode to LIST (record each incoming event) */
-        break;
-    case MSG_GET_ACQ_STATUS:
+    case mcaReadStatus:
         /* Read the current status of the device */
         /* Set the flag which tells the record that the read status is not
            complete */
         pmca->rdns = 1;
         pmca->pact = 1;
         break;
-    case MSG_STOP_ACQUISITION:
-        /* stop data acquisition */
+    case mcaChannelAdvanceInternal:
         break;
-    case MSG_ERASE:
-        /* erase */
+    case mcaChannelAdvanceExternal:
         break;
-    case MSG_SET_SEQ:
-        /* set sequence number */
+    case mcaNumChannels:
+        pmsg->ivalue = pmca->nuse;
+        break;
+    case mcaDwellTime:
+        pmsg->interface = float64Type;
+        pmsg->dvalue = pmca->dwel;
+        break;
+    case mcaPresetLiveTime:
+        pmsg->interface = float64Type;
+        pmsg->dvalue = pmca->pltm;
+        break;
+    case mcaPresetRealTime:
+        pmsg->interface = float64Type;
+        pmsg->dvalue = pmca->prtm;
+        break;
+    case mcaPresetCounts:
+        pmsg->interface = float64Type;
+        pmsg->dvalue = pmca->pct;
+        break;
+    case mcaPresetLowChannel:
+        pmsg->ivalue = pmca->pct;
+        break;
+    case mcaPresetHighChannel:
+        pmsg->ivalue = pmca->pcth;
+        break;
+    case mcaPresetSweeps:
+        pmsg->ivalue = pmca->pswp;
+        break;
+    case mcaModePHA:
+        break;
+    case mcaModeMCS:
+        break;
+    case mcaModeList:
+        break;
+    case mcaSequence:
         pmsg->ivalue = pmca->seq;
         break;
-    case MSG_SET_PSCL:
-        /* set channel advance prescaler. */
+    case mcaPrescale:
         pmsg->ivalue = pmca->pscl;
         break;
+    default:
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "devMcaAsyn::send_msg, invalid command=%d\n", command);
     }
     /* Queue asyn request, so we get a callback when driver is ready */
     status = pasynManager->queueRequest(pasynUser, 0, 0);
@@ -286,34 +297,53 @@ void asynCallback(asynUser *pasynUser)
     mcaAsynMessage *pmsg = pasynUser->userData;
     rset *prset = (rset *)pmca->rset;
     int status;
+    mcaCommand command;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "devMcaAsyn::asynCallback: command=%d, ivalue=%d, dvalue=%f\n",
               pmsg->command, pmsg->ivalue, pmsg->dvalue);
+    pasynUser->drvUser = &pmsg->command;
 
     switch (pmsg->command) {
-    case MSG_READ:
+    case mcaData:
         /* Read data */
-       pPvt->pasynInt32Array->read(pPvt->asynMcaPvt, pPvt->pasynUser, 
+       pPvt->pasynInt32Array->read(pPvt->asynInt32ArrayPvt, pasynUser, 
                                    pPvt->data, pmca->nuse, &pPvt->nread);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);
        break;
 
-    case MSG_GET_ACQ_STATUS:
+    case mcaReadStatus:
         /* Read the current status of the device */
-       pPvt->pasynMca->readStatus(pPvt->asynMcaPvt, pPvt->pasynUser, 
-                                        &pPvt->acquireStatus);
+       pPvt->pasynInt32->write(pPvt->asynInt32Pvt, pasynUser, 0);
+       command = mcaAcquiring; pasynUser->drvUser = &command;
+       pPvt->pasynInt32->read(pPvt->asynInt32Pvt, pasynUser, &pPvt->acquiring);
+       command = mcaElapsedLiveTime; pasynUser->drvUser = &command;
+       pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
+                                &pPvt->elapsedLive);
+       command = mcaElapsedRealTime; pasynUser->drvUser = &command;
+       pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
+                                &pPvt->elapsedReal);
+       command = mcaElapsedCounts; pasynUser->drvUser = &command;
+       pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
+                                &pPvt->totalCounts);
+       command = mcaDwellTime; pasynUser->drvUser = &command;
+       pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
+                                &pPvt->dwellTime);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);     
        break;
 
     default:
-        /* All other commands just call drivers command() function */
-        pPvt->pasynMca->command(pPvt->asynMcaPvt, pPvt->pasynUser,
-                                pmsg->command, pmsg->ivalue, pmsg->dvalue);
+        if (pmsg->interface == int32Type) {
+            pPvt->pasynInt32->write(pPvt->asynInt32Pvt, pasynUser,
+                                    pmsg->ivalue);
+        } else {
+            pPvt->pasynFloat64->write(pPvt->asynFloat64Pvt, pasynUser,
+                                      pmsg->dvalue);
+        }
         break;
     }
     pasynManager->memFree(pmsg, sizeof(*pmsg));

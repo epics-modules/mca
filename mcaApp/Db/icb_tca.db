@@ -9,8 +9,8 @@ grecord(mbbo,"$(P)$(TCA)POLARITY") {
     field(ZRST,"Normal")
     field(ONVL,"1")
     field(ONST,"Inverted")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S0 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 0)")
 }
 grecord(mbbo,"$(P)$(TCA)THRESHOLD") {
     field(DESC,"ICR threshold")
@@ -19,8 +19,8 @@ grecord(mbbo,"$(P)$(TCA)THRESHOLD") {
     field(ZRST,"Auto")
     field(ONVL,"1")
     field(ONST,"Manual")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S1 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 1)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA_ENABLE") {
     field(DESC,"SCA enable")
@@ -29,8 +29,8 @@ grecord(mbbo,"$(P)$(TCA)SCA_ENABLE") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S2 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 2)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA1_GATE") {
     field(DESC,"SCA 1 gate enable")
@@ -39,8 +39,8 @@ grecord(mbbo,"$(P)$(TCA)SCA1_GATE") {
     field(ZRST,"Disable")
     field(ONVL,"1")
     field(ONST,"Enable")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S3 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 3)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA2_GATE") {
     field(DESC,"SCA 2 gate enable")
@@ -49,8 +49,8 @@ grecord(mbbo,"$(P)$(TCA)SCA2_GATE") {
     field(ZRST,"Disable")
     field(ONVL,"1")
     field(ONST,"Enable")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S4 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 4)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA3_GATE") {
     field(DESC,"SCA 3 gate enable")
@@ -59,8 +59,8 @@ grecord(mbbo,"$(P)$(TCA)SCA3_GATE") {
     field(ZRST,"Disable")
     field(ONVL,"1")
     field(ONST,"Enable")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S5 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 5)")
 }
 grecord(mbbo,"$(P)$(TCA)TCA_SELECT") {
     field(DESC,"Select TCA")
@@ -69,8 +69,8 @@ grecord(mbbo,"$(P)$(TCA)TCA_SELECT") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S6 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 6)")
 }
 grecord(mbbo,"$(P)$(TCA)PUR_ENABLE") {
     field(DESC,"PUR enable")
@@ -79,8 +79,8 @@ grecord(mbbo,"$(P)$(TCA)PUR_ENABLE") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S7 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 7)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA1_PUR") {
     field(DESC,"SCA 1 PUR enable")
@@ -89,8 +89,8 @@ grecord(mbbo,"$(P)$(TCA)SCA1_PUR") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S8 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 8)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA2_PUR") {
     field(DESC,"SCA 2 PUR enable")
@@ -99,8 +99,8 @@ grecord(mbbo,"$(P)$(TCA)SCA2_PUR") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S9 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 9)")
 }
 grecord(mbbo,"$(P)$(TCA)SCA3_PUR") {
     field(DESC,"SCA 3 PUR enable")
@@ -109,8 +109,8 @@ grecord(mbbo,"$(P)$(TCA)SCA3_PUR") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S10 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 10)")
 }
 grecord(mbbo,"$(P)$(TCA)PUR_AMP") {
     field(DESC,"PUR AMP")
@@ -119,8 +119,8 @@ grecord(mbbo,"$(P)$(TCA)PUR_AMP") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S11 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asyn($(PORT) 11)")
 }
 grecord(ao,"$(P)$(TCA)SCA1_LOW") {
     field(DESC,"SCA 1 low limit")
@@ -130,8 +130,8 @@ grecord(ao,"$(P)$(TCA)SCA1_LOW") {
     field(DRVH,"100")
     field(HOPR,"100")
     field(PREC,"2")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S12 @$(PORT),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 12)")
 }
 grecord(ao,"$(P)$(TCA)SCA1_HI") {
     field(DESC,"SCA 1 high limit")
@@ -141,8 +141,8 @@ grecord(ao,"$(P)$(TCA)SCA1_HI") {
     field(DRVH,"100")
     field(HOPR,"100")
     field(PREC,"2")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S13 @$(PORT),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 13)")
 }
 grecord(ao,"$(P)$(TCA)SCA2_LOW") {
     field(DESC,"SCA 2 low limit")
@@ -152,8 +152,8 @@ grecord(ao,"$(P)$(TCA)SCA2_LOW") {
     field(DRVH,"100")
     field(HOPR,"100")
     field(PREC,"2")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S14 @$(PORT),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 14)")
 }
 grecord(ao,"$(P)$(TCA)SCA2_HI") {
     field(DESC,"SCA 2 high limit")
@@ -163,8 +163,8 @@ grecord(ao,"$(P)$(TCA)SCA2_HI") {
     field(DRVH,"100")
     field(HOPR,"100")
     field(PREC,"2")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S15 @$(PORT),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 15)")
 }
 grecord(ao,"$(P)$(TCA)SCA3_LOW") {
     field(DESC,"SCA 3 low limit")
@@ -174,8 +174,8 @@ grecord(ao,"$(P)$(TCA)SCA3_LOW") {
     field(DRVH,"100")
     field(HOPR,"100")
     field(PREC,"2")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S16 @$(PORT),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 16)")
 }
 grecord(ao,"$(P)$(TCA)SCA3_HI") {
     field(DESC,"SCA 3 high limit")
@@ -185,8 +185,8 @@ grecord(ao,"$(P)$(TCA)SCA3_HI") {
     field(DRVH,"100")
     field(HOPR,"100")
     field(PREC,"2")
-    field(DTYP, "asyn ICB")
-    field(OUT,"#C3 S17 @$(PORT),$(ADDR)")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT) 17)")
 }
 
 grecord(bo,"$(P)$(TCA)READBACK") {
@@ -207,8 +207,8 @@ grecord(mbbi,"$(P)$(TCA)STATUS") {
     field(THVL,"3")
     field(THST,"Can't commun.")
     field(THSV,"MAJOR")
-    field(DTYP, "asyn ICB")
-    field(INP,"#C3 S18 @$(PORT),$(ADDR)")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asyn($(PORT) 18)")
 }
 
 grecord(ao,"$(P)$(TCA)SCA_CAL") {
