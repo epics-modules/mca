@@ -78,7 +78,7 @@ STR7201_DSET devSTR7201 = {
         send_msg,
         read_array
 };
-epicsExportAddress(STR7201_DSET, devSTR7201);
+epicsExportAddress(dset, devSTR7201);
 
 static long init_record(mcaRecord *pmca)
 {

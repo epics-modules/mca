@@ -80,7 +80,7 @@ SCALERDSET devScalerSTR7201 = {
     scaler_arm,
     scaler_done
 };
-epicsExportAddress(SCALERDSET, devScalerSTR7201);
+epicsExportAddress(dset, devScalerSTR7201);
 
 STATIC int scaler_total_cards;
 struct scaler_state {
