@@ -298,12 +298,11 @@ void asynCallback(asynUser *pasynUser)
     mcaAsynMessage *pmsg = pasynUser->userData;
     rset *prset = (rset *)pmca->rset;
     int status;
-    mcaCommand command;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "devMcaAsyn::asynCallback: %s command=%d, ivalue=%d, dvalue=%f\n",
               pmca->name, pmsg->command, pmsg->ivalue, pmsg->dvalue);
-    pasynUser->drvUser = &pmsg->command;
+    pasynUser->reason = pmsg->command;
 
     switch (pmsg->command) {
     case mcaData:
@@ -318,18 +317,18 @@ void asynCallback(asynUser *pasynUser)
     case mcaReadStatus:
         /* Read the current status of the device */
        pPvt->pasynInt32->write(pPvt->asynInt32Pvt, pasynUser, 0);
-       command = mcaAcquiring; pasynUser->drvUser = &command;
+       pasynUser->reason = mcaAcquiring;
        pPvt->pasynInt32->read(pPvt->asynInt32Pvt, pasynUser, &pPvt->acquiring);
-       command = mcaElapsedLiveTime; pasynUser->drvUser = &command;
+       pasynUser->reason = mcaElapsedLiveTime;
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->elapsedLive);
-       command = mcaElapsedRealTime; pasynUser->drvUser = &command;
+       pasynUser->reason = mcaElapsedRealTime;;
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->elapsedReal);
-       command = mcaElapsedCounts; pasynUser->drvUser = &command;
+       pasynUser->reason = mcaElapsedCounts;
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->totalCounts);
-       command = mcaDwellTime; pasynUser->drvUser = &command;
+       pasynUser->reason = mcaDwellTime;
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->dwellTime);
        dbScanLock((dbCommon *)pmca);
