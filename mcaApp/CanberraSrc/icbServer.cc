@@ -54,7 +54,7 @@ static void* icbHash=NULL;
 
 typedef struct {
    char address[80];
-   int  defined;
+   int  defined;  // 0=undefined; 1=defined but not found; 2=defined and found
    int  index;
 } ICB_MODULE;
 
@@ -117,9 +117,9 @@ extern "C" int icbConfig(const char *serverName, int module, int enetAddress, in
       return(-1);
    }
    m = &p->icbModule[module];
-   if (m->defined) {
+   if (m->defined != 0) {
       printf("icbAddModule: module %d already defined!\n", module);
-      return(-1);
+      return(ERROR);
    }
    m->defined = 1;
    sprintf(m->address, "NI%X:%X", enetAddress, icbAddress);
@@ -128,6 +128,7 @@ extern "C" int icbConfig(const char *serverName, int module, int enetAddress, in
       errlogPrintf("(icbConfig): Error looking up ICB module %s\n", m->address);
       return(ERROR);
    }
+   m->defined = 2;
    return(OK);
 }
 
@@ -167,8 +168,8 @@ void icbServer::processMessages()
             continue;
          }
          m = &icbModule[index];
-         if (!m->defined) {
-            DEBUG(1, "(processMessages): module %d is not defined\n", index);
+         if (m->defined != 2) {
+            DEBUG(1, "(processMessages): module %d is not defined or not found\n", index);
             psm->status = ERROR;
             pMessageServer->reply(psm);
             continue;
