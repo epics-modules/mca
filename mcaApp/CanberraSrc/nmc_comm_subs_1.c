@@ -543,7 +543,7 @@ int nmcStatusDispatch(struct nmc_comm_info_struct *i)
    struct ncp_comm_header *p;
 
    while (1) {
-      len = epicsMessageQueueReceive(i->statusQ, &pkt);
+      len = epicsMessageQueueReceive(i->statusQ, &pkt, sizeof(pkt));
       if (len < 0)
          s=ERROR;
       else
@@ -796,7 +796,7 @@ int nmc_getmsg(int module, struct response_packet *pkt, int size, int *actual)
        */
 read:
       /* The timeout_time is in milliseconds, convert to seconds */
-      len = epicsMessageQueueReceiveWithTimeout(m->responseQ, pkt, (double)(i->timeout_time/1000.));
+      len = epicsMessageQueueReceiveWithTimeout(m->responseQ, pkt, sizeof(*pkt), (double)(i->timeout_time/1000.));
          AIM_DEBUG(6, "(nmc_getmsg): message length:%d (%d)\n", len,m->responseQ);
       if (len < 0) {
          AIM_DEBUG(1, "(nmc_getmsg): timeout while waiting for message\n");
@@ -898,7 +898,7 @@ int nmc_flush_input(int module)
       /*
        * ETHERNET: Read messages from the queue until none remain.
        */
-      do len = epicsMessageQueueReceiveWithTimeout(nmc_module_info[module].responseQ, temp, 0.);
+      do len = epicsMessageQueueReceiveWithTimeout(nmc_module_info[module].responseQ, temp, sizeof(temp), 0.);
       while (len != ERROR);
       return OK;
    }
