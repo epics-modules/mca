@@ -22,6 +22,7 @@
 #include <errlog.h>
 #include <iocsh.h>
 #include <epicsExport.h>
+#include <epicsThread.h>
 
 #include "Message.h"
 #include "Int32Message.h"
@@ -84,7 +85,6 @@ extern "C" int AIMConfig(
     int maxSignals, int maxSequences, char *ethernetDevice, int queueSize)
 {
     unsigned char enet_address[6];
-    char taskname[80];
     int s;
 
     DEBUG(8,"(AIMConfig): ethernetDevice=%s\n", ethernetDevice);
@@ -151,13 +151,12 @@ extern "C" int AIMConfig(
     p->seq_address = p->base_address;
     DEBUG(5, "(AIMConfig): nmc_allocate_memory=%d\n", s);
 
-    strcpy(taskname, "t");
-    strcat(taskname, serverName);
-     epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000, 
-		 	 (EPICSTHREADFUNC)mcaAIMServer::mcaAIMServerTask, (void*) p);
-    if(threadId == NULL)
-        errlogPrintf("%s mcaAIMServer ThreadCreate Failure\n",
-            p->pMessageServer->getName());
+    if (epicsThreadCreate(serverName, epicsThreadPriorityMedium, 10000, 
+		 	 (EPICSTHREADFUNC)mcaAIMServer::mcaAIMServerTask, 
+                         (void*) p) == NULL) {
+       errlogPrintf("%s mcaAIMServer ThreadCreate Failure\n", serverName);
+       return(-1);
+    }
     return(0);
 }
 
