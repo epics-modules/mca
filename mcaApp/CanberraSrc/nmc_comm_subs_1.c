@@ -288,7 +288,8 @@ found:
           * the status and event handler routines
           */
          i->status_pid = epicsThreadCreate("nmcMessages", epicsThreadPriorityHigh, 
-               10000, (EPICSTHREADFUNC)nmcStatusDispatch, (void*) i);
+               epicsThreadGetStackSize(epicsThreadStackMedium),
+               (EPICSTHREADFUNC)nmcStatusDispatch, (void*) i);
 
          /*
           * Start the routine which intercepts incoming Ethernet messages and
@@ -302,13 +303,15 @@ found:
 #else
          /* start a thread to check incoming ethernet packets */
          i->capture_pid = epicsThreadCreate("nmcEthCap", epicsThreadPriorityHigh, 
-            10000, (EPICSTHREADFUNC)nmcEthCapture, (void*) i);
+            epicsThreadGetStackSize(epicsThreadStackMedium),
+            (EPICSTHREADFUNC)nmcEthCapture, (void*) i);
 #endif
 
          /*
           *  Start the task which periodically multicasts inquiry messages
           */
-         i->broadcast_pid = epicsThreadCreate("nmcInquiry", epicsThreadPriorityMedium, 10000, 
+         i->broadcast_pid = epicsThreadCreate("nmcInquiry", epicsThreadPriorityMedium,
+                                               epicsThreadGetStackSize(epicsThreadStackMedium), 
                                               (EPICSTHREADFUNC)nmc_broadcast_inq_task, (void*) i);
 
          /*
