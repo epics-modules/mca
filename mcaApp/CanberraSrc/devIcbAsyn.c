@@ -52,6 +52,7 @@
 #include <epicsExport.h>
 #include <cantProceed.h>
 #include <asynDriver.h>
+#include <asynUtils.h>
 
 #include "devIcbAsyn.h"
 
@@ -110,36 +111,31 @@ epicsExportAddress(dset, devMbboIcbAsyn);
 
 static long initCommon(dbCommon *pr, DBLINK *plink, recType rt)
 {
-    int i;
-    char port[100];
-    struct vmeio *pio = (struct vmeio *)plink; 
+    int card;
+    char *port, *userParam;
     devIcbPvt *pPvt;
     asynUser *pasynUser=NULL;
     asynInterface *pasynInterface;
     asynStatus status;
 
-    /* Fetch the port field */
-    if (plink->type != VME_IO) {
-        errlogPrintf("%s link is not VME link\n", pr->name);
-        goto bad;
-    }
-    /* First field of parm is the port name */
-    for (i=0; pio->parm[i] && pio->parm[i]!=',' && pio->parm[i]!=' '
-                           && i<100; i++)
-       port[i]=pio->parm[i];
-    port[i]='\0';
-    
-
     pPvt = callocMustSucceed(1, sizeof(devIcbPvt), "devIcbAsyn::init_common");
     pr->dpvt = pPvt;
     pPvt->recType = rt;
-    pPvt->address = atoi(&pio->parm[i+1]);
-    pPvt->icbModuleType = pio->card;
-    pPvt->icbCommand = pio->signal;
     
     pasynUser = pasynManager->createAsynUser(devIcbCallback, 0);
     pPvt->pasynUser = pasynUser;
     pasynUser->userPvt = pr;
+
+    status = pasynUtils->parseVmeIo(pasynUser, plink, 
+                                    &card, &pPvt->icbCommand,
+                                    &port, &userParam);
+    if (status != asynSuccess) {
+        errlogPrintf("devIcbAsyn::initCommon %s bad link %s\n", 
+                     pr->name, pasynUser->errorMessage);
+        goto bad;
+    }
+    pPvt->icbModuleType = card;
+    pPvt->address = atoi(userParam);
     status = pasynManager->connectDevice(pasynUser, port, pPvt->address);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
