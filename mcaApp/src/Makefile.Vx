@@ -6,6 +6,8 @@ include $(TOP)/config/CONFIG_APP
 
 SRCS.c += ../mcaRecord.c
 SRCS.c += ../devMCA_soft.c
+SRCS.cc += ../devMcaMpf.cc
+SRCS.cc += ../fastSweep.cc
 SRCS.c += ../devSTR7201.c ../devScalerSTR7201.c ../drvSTR7201.c
 SRCS.c += ../nmc_comm_subs_1.c ../nmc_comm_subs_2.c ../nmc_user_subs_1.c
 SRCS.c += ../nmc_user_subs_2.c ../nmc_test.c
@@ -15,7 +17,6 @@ SRCS.c += ../icb_control_subs.c ../icb_crmpsc.c ../icb_control_subs2.c
 SRCS.c += ../icb_get_module_status.c ../icb_handler_subs.c ../icb_strings.c
 SRCS.c += ../icb_show_modules.c 
 SRCS.c += ../icb_read_regs.c ../icb_user_subs.c
-SRCS.cc += ../devMcaMpf.cc
 SRCS.cc += ../devIcbMpf.cc
 SRCS.cc += ../mcaAIMServer.cc
 SRCS.cc += ../icbDspServer.cc
@@ -27,6 +28,7 @@ SRCS.cc += ../icbTcaServer.cc
 MCA_BIN = .
 include ../mcaLIBOBJS		#defines MCALIBOBJS
 include ../mcaMpfServerLIBOBJS	#defines MCAMPFSERVERLIBOBJS
+
 PROD += mcaLib
 
 

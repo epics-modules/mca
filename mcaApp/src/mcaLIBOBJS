@@ -4,6 +4,9 @@ MCALIBOBJS += $(MCA_BIN)/mcaRecord.o
 # Soft Channel device support
 MCALIBOBJS += $(MCA_BIN)/devMCA_soft.o
 
+# Abstract base class, fastSweep, used by ip330Sweep and quadEMSweep
+MCALIBOBJS += $(MCA_BIN)/fastSweep.o
+
 # AIM multichannel analyzer and IP330 ADC as a waveform digitizer
 MCALIBOBJS += $(MCA_BIN)/devMcaMpf.o
 
