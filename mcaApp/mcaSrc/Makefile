@@ -27,7 +27,7 @@ mca_LIBS += asyn
 mca_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 INC += mca.h
-INC += drvMcaAsyn.h
+INC += asynMca.h
 #===========================
 
 include $(TOP)/configure/RULES
