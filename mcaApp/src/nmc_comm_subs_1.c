@@ -48,7 +48,11 @@
 *                        to more than 1 module, wait for responses in parallel.
 *   05-Sept-2000   mlr   Improved debugging, added debugging levels
 *   25-Sept-2000   mlr   Changed priority of nmcMessages and nmcInquiry tasks.
-*
+*   28-Nov-2000    mlr   Removed calls to take and release global interlock
+*                        from nmc_findmod_by_addr.  It was causing vxWorks
+*                        network to hang.
+*   13-Feb-2001    mlr   Documented 28-Nov change, which was provisional until
+*                        proven to work.
 *******************************************************************************/
 
 #include "nmc_sys_defs.h"
@@ -390,7 +394,8 @@ BOOL nmcEtherGrab(struct ifnet *pIf, char *buffer, int length)
          (strcmp((*net).pIf->if_name, pIf->if_name) == 0) &&
          ((*net).pIf->if_unit == pIf->if_unit)) goto writeMsg;
       AIM_DEBUG(1, "(nmcEtherGrab): ...network pointer doesn't match:\n");
-      AIM_DEBUG(1, "(nmcEtherGrab): ...%p != %p\n", (*net).pIf, pIf);
+      AIM_DEBUG(1, "(nmcEtherGrab): ... %s != %s\n", (*net).pIf->if_name, pIf->if_name);
+      AIM_DEBUG(1, "     or %d != %d\n", (*net).pIf->if_unit, pIf->if_unit);
    }
    return FALSE;
 
@@ -1132,6 +1137,16 @@ int nmc_findmod_by_addr(int *module, unsigned char *address)
    if(nmc_module_info == NULL) return NMC__NOSUCHMODULE;
 
    /* GLOBAL_INTERLOCK_ON; */
+   /* Above call commented out, since this function is called from 
+    * nmcEtherGrab, which is the callback registered with etherInputHookAdd.
+    * It is not clear if the callback is called at interrupt level (in which
+    * case semTake(), done by GLOBAL_INTERLOCK_ON, is definitely illegal. In
+    * any case, using GLOBAL_INTERLOCK_ON in this function causes the vxWorks
+    * network to lock up from time to time.  We live with the low-risk chance
+    * that a new AIM module was added to the database while this routine is
+    * being called.
+    */
+    
    /*
     * Just look through the module database for the specified module
     */
@@ -1148,6 +1163,7 @@ int nmc_findmod_by_addr(int *module, unsigned char *address)
    s = ERROR;
 done:
    /* GLOBAL_INTERLOCK_OFF; */
+   /* Not needed, see comment under GLOBAL_INTERLOCK_ON */
    return s;       /* We don't signal errors, since sometimes we just
                     *  want to check and see if a module is currently
                     *  in the database.
