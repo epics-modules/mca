@@ -139,9 +139,10 @@ struct nmc_module_info_struct {
 #else
 /* ifnet: linux version is different from VxWorks */
 struct ifnet {
-        char    *if_name;               /* interface name, e.g. eth0 */
-		short   if_unit;				/* not used, always 0 */
-		struct  libnet_link_int *netlnk;	/* netlnk struct for packet injection */
+        char    *if_name;              /* interface name, e.g. eth0 */
+		short   if_unit;       /* not used, always 0 */
+		libnet_t *libnet;      /* libnet_t struct for packet injection */
+                char errbuf[LIBNET_ERRBUF_SIZE];
 		struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
 };
 /* vxWorks has this defined, Linux also

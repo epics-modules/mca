@@ -126,7 +126,7 @@ int nmc_buymodule(int module, int override)
 
    if(nmc_check_module(module, &s, &netinfo) != NMC_K_MCS_REACHABLE) {
       MODULE_INTERLOCK_OFF(module);
-	  goto done;
+      goto done;
    }
    p = &nmc_module_info[module];
    /*
@@ -297,7 +297,7 @@ int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i)
    int addr=0;
    while (1) {
       nmc_broadcast_inq(i, inqtype, addr);
-	  epicsThreadSleep((double)NCP_BROADCAST_PERIOD);
+      epicsThreadSleep((double)NCP_BROADCAST_PERIOD);
    }
    return(0);  /* Never get here */
 }
@@ -400,21 +400,25 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
       /* Change byte order */
       nmc_byte_order_out(&ipkt);
       AIM_DEBUG(2, "nmc_broadcast_inq, sending inquiry\n");
-	  length=sizeof(ipkt);
+      length=sizeof(ipkt);
 #ifdef vxWorks
       s=etherOutput((*i).pIf, &ether_header,
                (char *) &ipkt.enet_header.dsap, sizeof(ipkt)-14);
-	  if (s==OK) s=length;
+      if (s==OK) s=length;
 #else
-	  /* fill the ethernet header of ipkt */
-	  /* copy only addresses */
-	  if ( libnet_build_ethernet(ether_header.ether_dhost, i->pIf->hw_address->ether_addr_octet,
-	     	      ether_header.ether_type, &(e->dsap), 0, (unsigned char *)e) < 0) {
-	  	 printf("\n error building ethernet packet");
-	  }
-	  if ((s=libnet_write_link_layer(i->pIf->netlnk, i->pIf->if_name, (unsigned char *) &ipkt, length)) != length) {
-	  	 printf("\n error writing ethernet broadcasting packet");
-	  }
+      /* fill the ethernet header of ipkt */
+      /* copy only addresses */
+      libnet_clear_packet(i->pIf->libnet);
+      if ( libnet_build_ethernet(ether_header.ether_dhost, i->pIf->hw_address->ether_addr_octet,
+                                 ether_header.ether_type, &ipkt.enet_header.dsap, sizeof(ipkt)-14, 
+                                 i->pIf->libnet, 0) == -1) {
+         printf("Error building ethernet packet, error=%s\n", 
+                 libnet_geterror(i->pIf->libnet));
+      }
+      if ((s=libnet_write(i->pIf->libnet)) != length) {
+         printf("Error writing ethernet broadcasting packet, error=%s\n",
+                        libnet_geterror(i->pIf->libnet));
+      }
 #endif
       AIM_DEBUG(1, "(nmc_broadcast_inq): wrote %d bytes of %d\n",s,length);
 
@@ -499,8 +503,8 @@ int nmc_freemodule(int module, int oflag)
     */
 
    if (nmc_check_module(module, &s, &netinfo) != NMC_K_MCS_REACHABLE) {
-   	  MODULE_INTERLOCK_OFF(module);
-   	  goto done;
+      MODULE_INTERLOCK_OFF(module);
+      goto done;
    }
    p = &nmc_module_info[module];
 
@@ -509,7 +513,7 @@ int nmc_freemodule(int module, int oflag)
     */
    if (!oflag && (*p).module_ownership_state != NMC_K_MOS_OWNEDBYUS) {
       s = OK;
-   	  MODULE_INTERLOCK_OFF(module);
+      MODULE_INTERLOCK_OFF(module);
       goto done;
    }
    /*
