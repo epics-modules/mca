@@ -22,7 +22,7 @@
 #include <iocsh.h>
 #include <epicsExport.h>
 #include <asynDriver.h>
-#include <asynUInt32Digital.h>
+#include <asynInt32.h>
 #include <asynFloat64.h>
 #include <asynDrvUser.h>
 #include <cantProceed.h>
@@ -253,17 +253,19 @@ typedef struct {
     icbModuleType  icbModuleType;
     icbModule      icbModule;
     asynInterface  common;
-    asynInterface  uint32Digital;
+    asynInterface  int32;
     asynInterface  float64;
     asynInterface  drvUser;
 } drvIcbAsynPvt;
 
 
 /* These functions are in the public interfaces */    
-static asynStatus uint32DigitalWrite(void *drvPvt, asynUser *pasynUser,
-                                     epicsUInt32 value, epicsUInt32 mask); 
-static asynStatus uint32DigitalRead( void *drvPvt, asynUser *pasynUser,
-                                     epicsUInt32 *value, epicsUInt32 mask); 
+static asynStatus int32Write(        void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 value); 
+static asynStatus int32Read(         void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 *value); 
+static asynStatus getBounds(         void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 *low, epicsInt32 *high);
 static asynStatus float64Write(      void *drvPvt, asynUser *pasynUser,
                                      epicsFloat64 value); 
 static asynStatus float64Read(       void *drvPvt, asynUser *pasynUser,
@@ -343,10 +345,11 @@ static const struct asynCommon icbCommon = {
     icbDisconnect
 };
 
-/* asynUInt32Digital interface */
-static const asynUInt32Digital icbUInt32Digital = {
-    uint32DigitalWrite,
-    uint32DigitalRead
+/* asynInt32 interface */
+static const asynInt32 icbInt32 = {
+    int32Write,
+    int32Read,
+    getBounds
 };
 
 /* asynFloat64 interface */
@@ -378,9 +381,9 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
     pPvt->common.interfaceType = asynCommonType;
     pPvt->common.pinterface  = (void *)&icbCommon;
     pPvt->common.drvPvt = pPvt;
-    pPvt->uint32Digital.interfaceType = asynUInt32DigitalType;
-    pPvt->uint32Digital.pinterface  = (void *)&icbUInt32Digital;
-    pPvt->uint32Digital.drvPvt = pPvt;
+    pPvt->int32.interfaceType = asynInt32Type;
+    pPvt->int32.pinterface  = (void *)&icbInt32;
+    pPvt->int32.drvPvt = pPvt;
     pPvt->float64.interfaceType = asynFloat64Type;
     pPvt->float64.pinterface  = (void *)&icbFloat64;
     pPvt->float64.drvPvt = pPvt;
@@ -401,9 +404,9 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
         errlogPrintf("icbConfig ERROR: Can't register common.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->uint32Digital);
+    status = pasynManager->registerInterface(pPvt->portName,&pPvt->int32);
     if (status != asynSuccess) {
-        errlogPrintf("icbConfig ERROR: Can't register uint32Digital\n");
+        errlogPrintf("icbConfig ERROR: Can't register int32\n");
         return -1;
     }
  
@@ -471,8 +474,18 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
 
 
 
-static asynStatus uint32DigitalWrite(void *drvPvt, asynUser *pasynUser,
-                                     epicsUInt32 value, epicsUInt32 mask)
+static asynStatus getBounds(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *low, epicsInt32 *high)
+{
+    /* This function should not be called, since no device support
+     * should be using LINEAR conversion */
+    *low = 0;
+    *high = 65535;
+    return(0);
+}
+
+static asynStatus int32Write(void *drvPvt, asynUser *pasynUser,
+                             epicsInt32 value)
 {
     int icbCommand=*(int *)pasynUser->drvUser;
 
@@ -933,8 +946,8 @@ static asynStatus icbWriteDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
 
 
 
-static asynStatus uint32DigitalRead(void *drvPvt, asynUser *pasynUser,
-                                    epicsUInt32 *value, epicsUInt32 mask)
+static asynStatus int32Read(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *value)
 {
     int icbCommand=*(int *)pasynUser->drvUser;
 

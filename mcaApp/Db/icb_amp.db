@@ -22,7 +22,7 @@ grecord(mbbo,"$(P)$(AMP)CGAIN") {
     field(SVVL,"500")
     field(SVST,"500")
     field(RVAL,"100")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))COARSE_GAIN")
 }
 grecord(ao,"$(P)$(AMP)FGAIN") {
@@ -56,7 +56,7 @@ grecord(mbbo,"$(P)$(AMP)INPP") {
     field(ZRST,"Positive")
     field(ONVL,"1")
     field(ONST,"Negative")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))INPUT_POLARITY")
 }
 grecord(mbbo,"$(P)$(AMP)INHP") {
@@ -66,7 +66,7 @@ grecord(mbbo,"$(P)$(AMP)INHP") {
     field(ZRST,"Positive")
     field(ONVL,"1")
     field(ONST,"Negative")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))INHIBIT_POLARITY")
 }
 grecord(mbbo,"$(P)$(AMP)DMOD") {
@@ -76,7 +76,7 @@ grecord(mbbo,"$(P)$(AMP)DMOD") {
     field(ZRST,"Single-ended")
     field(ONVL,"1")
     field(ONST,"Differential")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))DIFFERENTIAL_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)SMOD") {
@@ -86,7 +86,7 @@ grecord(mbbo,"$(P)$(AMP)SMOD") {
     field(ZRST,"Gaussian")
     field(ONVL,"1")
     field(ONST,"Triangular")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))SHAPING_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)PTYP") {
@@ -97,7 +97,7 @@ grecord(mbbo,"$(P)$(AMP)PTYP") {
     field(ONVL,"1")
     field(ONST,"TRP")
     field(RVAL,"1")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PREAMP_TYPE")
 }
 grecord(mbbo,"$(P)$(AMP)PURMOD") {
@@ -107,7 +107,7 @@ grecord(mbbo,"$(P)$(AMP)PURMOD") {
     field(ZRST,"Off")
     field(ONVL,"1")
     field(ONST,"On")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PUR_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)BLMOD") {
@@ -117,7 +117,7 @@ grecord(mbbo,"$(P)$(AMP)BLMOD") {
     field(ZRST,"Symmetric")
     field(ONVL,"1")
     field(ONST,"Asymmetric")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))BASELINE_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)DTMOD") {
@@ -127,7 +127,7 @@ grecord(mbbo,"$(P)$(AMP)DTMOD") {
     field(ZRST,"Normal")
     field(ONVL,"1")
     field(ONST,"Loss-free cntg")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))DEADTIME_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
@@ -137,7 +137,7 @@ grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
     field(ZRST,"Done")
     field(ONVL,"1")
     field(ONST,"Start")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))START_PZ")
 }
 grecord(ao,"$(P)$(AMP)PZ") {

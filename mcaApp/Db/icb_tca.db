@@ -9,7 +9,7 @@ grecord(mbbo,"$(P)$(TCA)POLARITY") {
     field(ZRST,"Normal")
     field(ONVL,"1")
     field(ONST,"Inverted")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))POLARITY")
 }
 grecord(mbbo,"$(P)$(TCA)THRESHOLD") {
@@ -19,7 +19,7 @@ grecord(mbbo,"$(P)$(TCA)THRESHOLD") {
     field(ZRST,"Auto")
     field(ONVL,"1")
     field(ONST,"Manual")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))THRESHOLD")
 }
 grecord(mbbo,"$(P)$(TCA)SCA_ENABLE") {
@@ -29,7 +29,7 @@ grecord(mbbo,"$(P)$(TCA)SCA_ENABLE") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))SCA_ENABLE")
 }
 grecord(mbbo,"$(P)$(TCA)SCA1_GATE") {
@@ -39,7 +39,7 @@ grecord(mbbo,"$(P)$(TCA)SCA1_GATE") {
     field(ZRST,"Disable")
     field(ONVL,"1")
     field(ONST,"Enable")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))GATE1")
 }
 grecord(mbbo,"$(P)$(TCA)SCA2_GATE") {
@@ -49,7 +49,7 @@ grecord(mbbo,"$(P)$(TCA)SCA2_GATE") {
     field(ZRST,"Disable")
     field(ONVL,"1")
     field(ONST,"Enable")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))GATE2")
 }
 grecord(mbbo,"$(P)$(TCA)SCA3_GATE") {
@@ -59,7 +59,7 @@ grecord(mbbo,"$(P)$(TCA)SCA3_GATE") {
     field(ZRST,"Disable")
     field(ONVL,"1")
     field(ONST,"Enable")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))GATE3")
 }
 grecord(mbbo,"$(P)$(TCA)TCA_SELECT") {
@@ -69,7 +69,7 @@ grecord(mbbo,"$(P)$(TCA)TCA_SELECT") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))TCA_SELECT")
 }
 grecord(mbbo,"$(P)$(TCA)PUR_ENABLE") {
@@ -79,7 +79,7 @@ grecord(mbbo,"$(P)$(TCA)PUR_ENABLE") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PUR_ENABLE")
 }
 grecord(mbbo,"$(P)$(TCA)SCA1_PUR") {
@@ -89,7 +89,7 @@ grecord(mbbo,"$(P)$(TCA)SCA1_PUR") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PUR1")
 }
 grecord(mbbo,"$(P)$(TCA)SCA2_PUR") {
@@ -99,7 +99,7 @@ grecord(mbbo,"$(P)$(TCA)SCA2_PUR") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PUR2")
 }
 grecord(mbbo,"$(P)$(TCA)SCA3_PUR") {
@@ -109,7 +109,7 @@ grecord(mbbo,"$(P)$(TCA)SCA3_PUR") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PUR3")
 }
 grecord(mbbo,"$(P)$(TCA)PUR_AMP") {
@@ -119,7 +119,7 @@ grecord(mbbo,"$(P)$(TCA)PUR_AMP") {
     field(ZRST,"No")
     field(ONVL,"1")
     field(ONST,"Yes")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PUR_AMP")
 }
 grecord(ao,"$(P)$(TCA)SCA1_LOW") {
@@ -207,7 +207,7 @@ grecord(mbbi,"$(P)$(TCA)STATUS") {
     field(THVL,"3")
     field(THST,"Can't commun.")
     field(THSV,"MAJOR")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(INP,"@asyn($(PORT))STATUS")
 }
 

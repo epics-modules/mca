@@ -20,7 +20,7 @@ grecord(mbbo,"$(P)$(ADC)GAIN") {
     field(FVST,"8192")
     field(SXVL,"16384")
     field(SXST,"16384")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))GAIN")
 }
 grecord(mbbo,"$(P)$(ADC)RANGE") {
@@ -41,7 +41,7 @@ grecord(mbbo,"$(P)$(ADC)RANGE") {
     field(FVST,"8192")
     field(SXVL,"16384")
     field(SXST,"16384")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))RANGE")
 }
 grecord(ao,"$(P)$(ADC)OFFSET") {
@@ -99,7 +99,7 @@ grecord(mbbo,"$(P)$(ADC)GMOD") {
     field(ZRST,"Coincidence")
     field(ONVL,"1")
     field(ONST,"Anti-coinc.")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))GATE_MODE")
 }
 grecord(mbbo,"$(P)$(ADC)CMOD") {
@@ -109,7 +109,7 @@ grecord(mbbo,"$(P)$(ADC)CMOD") {
     field(ZRST,"Early")
     field(ONVL,"1")
     field(ONST,"Late")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))COINCIDENCE_MODE")
 }
 grecord(mbbo,"$(P)$(ADC)PMOD") {
@@ -119,7 +119,7 @@ grecord(mbbo,"$(P)$(ADC)PMOD") {
     field(ZRST,"Auto")
     field(ONVL,"1")
     field(ONST,"Delayed")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))PEAK_MODE")
 }
 grecord(mbbo,"$(P)$(ADC)AMOD") {
@@ -129,7 +129,7 @@ grecord(mbbo,"$(P)$(ADC)AMOD") {
     field(ZRST,"PHA")
     field(ONVL,"1")
     field(ONST,"SVA")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))ACQUISITION_MODE")
 }
 grecord(mbbo,"$(P)$(ADC)TMOD") {
@@ -139,7 +139,7 @@ grecord(mbbo,"$(P)$(ADC)TMOD") {
     field(ZRST,"Overlapped")
     field(ONVL,"1")
     field(ONST,"Non-overlapped")
-    field(DTYP, "asynUInt32Digital")
+    field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT))TRANSFER_MODE")
 }
 grecord(bo,"$(P)$(ADC)READBACK") {
