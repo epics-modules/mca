@@ -15,14 +15,8 @@
     ICB device being used, although multiple servers could be used to improve 
     performance.
   
-    The connectIO functions for the ao and mbbo records pass the values to the server
-    only if the PINI field in the record is TRUE or if the record has ever been
-    processed, i.e. startIO has even been called.  Values which should be 
-    downloaded to the module when the IOC boots should have PINI="YES".
-    Note that the values probably won't actually be sent when the record
-    processes the first time, because the MPF server may not have yet
-    connected.  However, the current values will be sent whenever the MPF
-    server connects.
+    The init_record functions for the ao and mbbo records pass the values to 
+    the server only if the PINI field in the record is TRUE.
   
     The INP or OUT field of the record must be type VMEIO with the following
     syntax #Cc Ss @serverName module
@@ -34,6 +28,8 @@
   
     Modifications:
     .01  24-Oct-2000 MLR   Set severity for error return on ai and mbbi
+    .02  12-Feb-2002 MLR   Eliminate connectIO functions, put logic in 
+                           ::init_record to download parameters initially.
 */
 
 
@@ -80,7 +76,6 @@ public:
    DevAoIcbMpf(dbCommon*,DBLINK*);
    long startIO(dbCommon* pr);
    long completeIO(dbCommon* pr,Message* m);
-   virtual void connectIO(dbCommon *pr, Message *message);
    virtual void receiveReply(dbCommon* pr, Message* m);
    static long init_record(void*);
 private:
@@ -132,26 +127,6 @@ long DevAoIcbMpf::completeIO(dbCommon* pr,Message* m)
     return (pm->status);
 }
 
-void DevAoIcbMpf::connectIO(dbCommon *pr, Message* message)
-{
-    Float64Message *pm = new Float64Message;
-    aoRecord* pao = (aoRecord*)pr;
-    // Send the value when the server connects
-    ConnectMessage *pConnectMessage = (ConnectMessage *)message;
-    if ((pConnectMessage->status == connectYes) && (pao->pini || processed)) {
-       DEBUG(5,
-          "DevAoIcbMpf::connectIO record=%s, command=%d, address=%d\n", 
-                     pr->name, icbCommand, address);
-       pm->address = address;
-       pm->cmd = icbCommand;
-       pm->value = pao->val;
-       pm->extra = ICB_WRITE;
-       send(pm, replyTypeReceiveReply);
-    }
-    // Call the base class method
-    DevMpf::connectIO(pr, message);
-}
-
 void DevAoIcbMpf::receiveReply(dbCommon* pr, Message* m)
 {
     pr->udf = 0;
@@ -163,6 +138,15 @@ long DevAoIcbMpf::init_record(void* v)
 {
     aoRecord* pao = (aoRecord*)v;
     new DevAoIcbMpf((dbCommon*)pao,&(pao->out));
+    DevAoIcbMpf* pobj = (DevAoIcbMpf *)pao->dpvt;
+    Float64Message *pm = new Float64Message;
+    if (pao->pini) {
+       pm->address = pobj->address;
+       pm->cmd = pobj->icbCommand;
+       pm->value = pao->val;
+       pm->extra = ICB_WRITE;
+       pobj->send(pm, replyTypeReceiveReply);
+    }
     return(0);
 }
 
@@ -236,7 +220,6 @@ public:
    DevMbboIcbMpf(dbCommon*,DBLINK*);
    long startIO(dbCommon* pr);
    long completeIO(dbCommon* pr,Message* m);
-   virtual void connectIO(dbCommon *pr, Message *message);
    virtual void receiveReply(dbCommon* pr, Message* m);
    static long init_record(void*);
 private:
@@ -288,26 +271,6 @@ long DevMbboIcbMpf::completeIO(dbCommon* pr,Message* m)
     return (pm->status);
 }
 
-void DevMbboIcbMpf::connectIO(dbCommon *pr, Message* message)
-{
-    Int32Message *pm = new Int32Message;
-    mbboRecord* pmbbo = (mbboRecord*)pr;
-    // Send the value when the server connects
-    ConnectMessage *pConnectMessage = (ConnectMessage *)message;
-    if ((pConnectMessage->status == connectYes) && (pmbbo->pini || processed)) {
-       DEBUG(5,
-          "DevMbboIcbMpf::connectIO record=%s, command=%d, address=%d\n", 
-                     pr->name, icbCommand, address);
-       pm->address = address;
-       pm->cmd = icbCommand;
-       pm->value = pmbbo->rval;
-       pm->extra = ICB_WRITE;
-       send(pm, replyTypeReceiveReply);
-    }
-    // Call the base class method
-    DevMpf::connectIO(pr, message);
-}
-
 void DevMbboIcbMpf::receiveReply(dbCommon* pr, Message* m)
 {
     pr->udf = 0;
@@ -318,12 +281,21 @@ long DevMbboIcbMpf::init_record(void* v)
 {
     mbboRecord* pmbbo = (mbboRecord*)v;
     new DevMbboIcbMpf((dbCommon*)pmbbo,&(pmbbo->out));
+    DevMbboIcbMpf* pobj = (DevMbboIcbMpf *)pmbbo->dpvt;
+    Int32Message *pm = new Int32Message;
+    if (pmbbo->pini) {
+       pm->address = pobj->address;
+       pm->cmd = pobj->icbCommand;
+       pm->value = pmbbo->rval;
+       pm->extra = ICB_WRITE;
+       pobj->send(pm, replyTypeReceiveReply);
+    }
     return(0);
 }
 
 
 
-// Multi-bit binary  input record
+// Multi-bit binary input record
 
 class DevMbbiIcbMpf : public DevMpf
 {
