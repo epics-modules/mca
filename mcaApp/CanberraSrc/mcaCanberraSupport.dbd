@@ -1,0 +1,15 @@
+################
+# DEVICE SUPPORT
+################
+# MPF ICB support, used by Canberra ICB modules
+device(ao,VME_IO,devAoIcbMpf,"MPF ICB")
+device(mbbo,VME_IO,devMbboIcbMpf,"MPF ICB")
+device(ai,VME_IO,devAiIcbMpf,"MPF ICB")
+device(mbbi,VME_IO,devMbbiIcbMpf,"MPF ICB")
+###############
+
+
+################
+# Register global functions
+################
+registrar(mcaCanberraRegister)
