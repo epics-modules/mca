@@ -997,6 +997,7 @@ static asynStatus icbReadAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
     switch (icbCommand) {
         case icbAdcZeroRbv:
             status = readAdc(module, CAM_F_ZERO, 0, &fvalue);
+            *dvalue = fvalue;
             break;
         default:
             epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
@@ -1005,7 +1006,6 @@ static asynStatus icbReadAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = asynError;
             break;
     }
-    *dvalue = fvalue;
     return(status);
 }
 
@@ -1019,6 +1019,7 @@ static asynStatus icbReadAmp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
     switch (icbCommand) {
         case icbAmpShaping:
             status = readAmp(module, CAM_F_AMPTC, 0, &fvalue);
+            *dvalue = fvalue;
             break;
         case icbAmpPzRbv:
             status = readAmp(module, CAM_L_AMPPZ, 0, ivalue);
@@ -1030,7 +1031,6 @@ static asynStatus icbReadAmp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = asynError;
             break;
     }
-    *dvalue = fvalue;
     return(status);
 }
 
@@ -1060,6 +1060,7 @@ static asynStatus icbReadHvps(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             break;
         case icbHvpsVoltRbv:
             status = readHvps(module, CAM_F_VOLTAGE, 0, &fvalue);
+            *dvalue = fvalue;
             break;
         default:
             epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
@@ -1068,7 +1069,6 @@ static asynStatus icbReadHvps(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = asynError;
             break;
     }
-    *dvalue = fvalue;
     return(status);
 }
 
@@ -1586,8 +1586,8 @@ static const iocshArg * const icbConfigArgs[4] = {&icbConfigArg0,
 static const iocshFuncDef icbConfigFuncDef = {"icbConfig",4,icbConfigArgs};
 static void icbConfigCallFunc(const iocshArgBuf *args)
 {
-    icbConfig(args[0].sval, args[2].ival, 
-              args[3].ival, args[4].ival);
+    icbConfig(args[0].sval, args[1].ival, 
+              args[2].ival, args[3].ival);
 }
 
 void icbAsynRegister(void)
