@@ -67,7 +67,6 @@
 #include "nmc_sys_defs.h"
 
 #ifdef vxWorks
-#include <vme.h>
 #include <sysLib.h>
 #include <taskLib.h>
 #include <hostLib.h>
