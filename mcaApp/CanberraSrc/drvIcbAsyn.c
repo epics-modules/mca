@@ -3,8 +3,8 @@
     Author: Mark Rivers
     Date: 23-June-2004 Modified from icbMpfServer.cc
   
-    This module is an asyn driver which is called from from devIcbAsyn.c and
-    commmunicates with the following Canberra ICB modules:
+    This module is an asyn driver which is called from from asyn generic
+    device support and commmunicates with the following Canberra ICB modules:
       9633/9635 ADC
       9615      Amplifier
       9641/9621 HVPS
@@ -21,12 +21,13 @@
 
 #include <iocsh.h>
 #include <epicsExport.h>
-#include <gpHash.h>
 #include <asynDriver.h>
+#include <asynUInt32Digital.h>
+#include <asynFloat64.h>
 #include <cantProceed.h>
 #include <epicsString.h>
 
-#include "devIcbAsyn.h"
+#include "drvIcbAsyn.h"
 #include "icbDsp.h"
 
 #include "ndtypes.h"
@@ -35,8 +36,6 @@
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
 #include "campardef.h"
-
-static void* icbHash=NULL;
 
 #define LLD     0
 #define ULD     0x20
@@ -94,15 +93,29 @@ typedef struct {
 
 typedef struct {
     char           *portName;
-    int            maxModules;
-    icbModule      *icbModule;
+    icbModuleType  icbModuleType;
+    icbModule      icbModule;
     asynInterface  common;
-    asynInterface  icb;
+    asynInterface  uint32Digital;
+    asynInterface  float64;
 } drvIcbAsynPvt;
 
-    
-static asynStatus icbRead(void *drvPvt, asynUser *pasynUser,
-                          icbModuleType icbModuleType, int icbCommand, 
+
+/* These functions are in the public interfaces */    
+static asynStatus uint32DigitalWrite(void *drvPvt, asynUser *pasynUser,
+                                     epicsUInt32 value, epicsUInt32 mask); 
+static asynStatus uint32DigitalRead( void *drvPvt, asynUser *pasynUser,
+                                     epicsUInt32 *value, epicsUInt32 mask); 
+static asynStatus float64Write(      void *drvPvt, asynUser *pasynUser,
+                                     epicsFloat64 value); 
+static asynStatus float64Read(       void *drvPvt, asynUser *pasynUser,
+                                     epicsFloat64 *value);
+static void icbReport(               void *drvPvt, FILE *fp, int details);
+static asynStatus icbConnect(        void *drvPvt, asynUser *pasynUser);
+static asynStatus icbDisconnect(     void *drvPvt, asynUser *pasynUser);
+
+/* These functions are private, not in any interface */ 
+static asynStatus icbRead(void *drvPvt, asynUser *pasynUser, int icbCommand, 
                           int *ivalue, double *dvalue);
 static asynStatus icbReadAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                              int icbCommand, icbModule *module, 
@@ -119,8 +132,7 @@ static asynStatus icbReadTca(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
 static asynStatus icbReadDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                              int icbCommand, icbModule *module, 
                              int *ivalue, double *dvalue);
-static asynStatus icbWrite(void *drvPvt, asynUser *pasynUser,
-                           icbModuleType icbModuleType, int icbCommand, 
+static asynStatus icbWrite(void *drvPvt, asynUser *pasynUser, int icbCommand, 
                            int ivalue, double dvalue);
 static asynStatus icbWriteAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                               int icbCommand, icbModule *module, 
@@ -137,7 +149,6 @@ static asynStatus icbWriteTca(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
 static asynStatus icbWriteDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                               int icbCommand, icbModule *module, 
                               int ivalue, double dvalue);
-static drvIcbAsynPvt *findModule(const char *serverName);
 static int writeAdc(icbModule *m, long command, char c, void *addr);
 static int writeAmp(icbModule *m, long command, char c, void *addr);
 static int writeHvps(icbModule *m, long command, char c, void *addr);
@@ -158,9 +169,6 @@ static double dspShortToDouble(unsigned short ival, double dmin, double dmax,
                                unsigned short imin, unsigned short imax);
 static double dspUnpackThroughput(unsigned short ival);
 
-static void icbReport(void *drvPvt, FILE *fp, int details);
-static asynStatus icbConnect(void *drvPvt, asynUser *pasynUser);
-static asynStatus icbDisconnect(void *drvPvt, asynUser *pasynUser);
 static asynStatus verifyModule(drvIcbAsynPvt *pPvt, asynUser *pasynUser, 
                                icbModule **m);
 
@@ -171,34 +179,40 @@ static const struct asynCommon icbCommon = {
     icbDisconnect
 };
 
-/* asynIcb interface */
-static const asynIcb icbIcb = {
-    icbRead,
-    icbWrite
+/* asynUInt32Digital interface */
+static const asynUInt32Digital icbUInt32Digital = {
+    uint32DigitalWrite,
+    uint32DigitalRead
+};
+
+/* asynFloat64 interface */
+static const asynFloat64 icbFloat64 = {
+    float64Write,
+    float64Read
 };
 
 
-int icbSetup(const char *portName, int maxModules, int queueSize)
+int icbConfig(const char *portName, int enetAddress, int icbAddress, 
+              icbModuleType icbModuleType)
 {
     int status;
     drvIcbAsynPvt *pPvt;
-    GPHENTRY *hashEntry;
+    icbModule *m;
+    unsigned char csr;
 
     pPvt = callocMustSucceed(1, sizeof(drvIcbAsynPvt), "icbSetup"); 
-    if (icbHash == NULL) gphInitPvt(&icbHash, 256);
-    hashEntry = gphAdd(icbHash, epicsStrDup(portName), NULL);
-    hashEntry->userPvt = pPvt;
-    pPvt->maxModules = maxModules;
     pPvt->portName = epicsStrDup(portName);
-    pPvt->icbModule = (icbModule *) callocMustSucceed(maxModules, 
-                                                      sizeof(icbModule), 
-                                                      "icbSetup");
+    pPvt->icbModuleType = icbModuleType;
+    m = &pPvt->icbModule;
     pPvt->common.interfaceType = asynCommonType;
     pPvt->common.pinterface  = (void *)&icbCommon;
     pPvt->common.drvPvt = pPvt;
-    pPvt->icb.interfaceType = asynIcbType;
-    pPvt->icb.pinterface  = (void *)&icbIcb;
-    pPvt->icb.drvPvt = pPvt;
+    pPvt->uint32Digital.interfaceType = asynUInt32DigitalType;
+    pPvt->uint32Digital.pinterface  = (void *)&icbUInt32Digital;
+    pPvt->uint32Digital.drvPvt = pPvt;
+    pPvt->float64.interfaceType = asynFloat64Type;
+    pPvt->float64.pinterface  = (void *)&icbFloat64;
+    pPvt->float64.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
                                         ASYN_MULTIDEVICE | ASYN_CANBLOCK,
                                         1,  /* autoconnect */
@@ -213,9 +227,15 @@ int icbSetup(const char *portName, int maxModules, int queueSize)
         errlogPrintf("icbConfig ERROR: Can't register common.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->icb);
+    status = pasynManager->registerInterface(pPvt->portName,&pPvt->uint32Digital);
     if (status != asynSuccess) {
-        errlogPrintf("icbConfig ERROR: Can't register icb\n");
+        errlogPrintf("icbConfig ERROR: Can't register uint32Digital\n");
+        return -1;
+    }
+ 
+    status = pasynManager->registerInterface(pPvt->portName,&pPvt->float64);
+    if (status != asynSuccess) {
+        errlogPrintf("icbConfig ERROR: Can't register float64\n");
         return -1;
     }
  
@@ -223,37 +243,11 @@ int icbSetup(const char *portName, int maxModules, int queueSize)
     status=icb_initialize();
     if (status != 0) return(-1);
     
-    return(0);
-}
-
-
-int icbConfig(const char *portName, int module, 
-              int enetAddress, int icbAddress, icbModuleType icbModuleType)
-{
-    icbModule *m;
-    int status;
-    drvIcbAsynPvt *pPvt;
-    unsigned char csr;
- 
-    pPvt = findModule(portName);
-    if (pPvt == NULL) {
-        printf("icbConfig: can't find port %s\n", portName);
-        return(-1);
-    }
-    if ((module < 0) || (module >= pPvt->maxModules)) {
-        errlogPrintf("icbAddModule: invalid module\n");
-        return(-1);
-    }
-    m = &pPvt->icbModule[module];
-    if (m->defined != icbUndefined) {
-        printf("icbConfig: module %d already defined!\n", module);
-        return(-1);
-    }
     m->defined = icbNotFound;
     sprintf(m->address, "NI%X:%X", enetAddress, icbAddress);
 
     /* This part is different for different module types */
-    switch (icbModuleType) {
+    switch (pPvt->icbModuleType) {
     case icbAdcType:
     case icbAmpType:
     case icbHvpsType:
@@ -288,23 +282,34 @@ int icbConfig(const char *portName, int module,
         write_icb(m->dsp.module, m->dsp.icbAddress, 0, 1, &csr);
         break;
     default:
-        errlogPrintf("icbConfig: unknown module type %d\n", icbModuleType);
+        errlogPrintf("icbConfig: unknown module type %d\n", pPvt->icbModuleType);
         return(-1);
     }
     m->defined = icbFound;
     return(0);
 }
 
-static drvIcbAsynPvt* findModule(const char *name)
+
+
+static asynStatus uint32DigitalWrite(void *drvPvt, asynUser *pasynUser,
+                                     epicsUInt32 value, epicsUInt32 mask)
 {
-    GPHENTRY *hashEntry = gphFind(icbHash, name, NULL);
-    if (hashEntry == NULL) return (NULL);
-    return((drvIcbAsynPvt *)hashEntry->userPvt);
+    int icbCommand;
+
+    pasynManager->getAddr(pasynUser, &icbCommand);
+    return(icbWrite(drvPvt, pasynUser, icbCommand, value, 0.));
 }
 
-
-static asynStatus icbWrite(void *drvPvt, asynUser *pasynUser,
-                           icbModuleType icbModuleType, int icbCommand, 
+static asynStatus float64Write(void *drvPvt, asynUser *pasynUser,
+                               epicsFloat64 value)
+{
+    int icbCommand;
+
+    pasynManager->getAddr(pasynUser, &icbCommand);
+    return(icbWrite(drvPvt, pasynUser, icbCommand, 0, value));
+}
+
+static asynStatus icbWrite(void *drvPvt, asynUser *pasynUser, int icbCommand, 
                            int ivalue, double dvalue)
 {
     drvIcbAsynPvt *pPvt = (drvIcbAsynPvt *)drvPvt;
@@ -314,7 +319,7 @@ static asynStatus icbWrite(void *drvPvt, asynUser *pasynUser,
     status = verifyModule(pPvt, pasynUser, &module);
     if (status != asynSuccess) return(status);
 
-    switch (icbModuleType) {
+    switch (pPvt->icbModuleType) {
     case icbAdcType:
         status=icbWriteAdc(pPvt, pasynUser, icbCommand, module, ivalue, dvalue);
         break;
@@ -749,8 +754,26 @@ static asynStatus icbWriteDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
 }
 
 
-static asynStatus icbRead(void *drvPvt, asynUser *pasynUser,
-                          icbModuleType icbModuleType, int icbCommand, 
+
+static asynStatus uint32DigitalRead(void *drvPvt, asynUser *pasynUser,
+                                    epicsUInt32 *value, epicsUInt32 mask)
+{
+    int icbCommand;
+
+    pasynManager->getAddr(pasynUser, &icbCommand); 
+    return(icbRead(drvPvt, pasynUser, icbCommand, value, NULL));
+}
+
+static asynStatus float64Read(void *drvPvt, asynUser *pasynUser,
+                              epicsFloat64 *value)
+{
+    int icbCommand;
+
+    pasynManager->getAddr(pasynUser, &icbCommand); 
+    return(icbRead(drvPvt, pasynUser, icbCommand, NULL, value));
+}
+
+static asynStatus icbRead(void *drvPvt, asynUser *pasynUser, int icbCommand, 
                           int *ivalue, double *dvalue)
 {
     drvIcbAsynPvt *pPvt = (drvIcbAsynPvt *)drvPvt;
@@ -760,7 +783,7 @@ static asynStatus icbRead(void *drvPvt, asynUser *pasynUser,
     status = verifyModule(pPvt, pasynUser, &module);
     if (status != asynSuccess) return(status);
 
-    switch (icbModuleType) {
+    switch (pPvt->icbModuleType) {
     case icbAdcType:
         status=icbReadAdc(pPvt, pasynUser, icbCommand, module, ivalue, dvalue);
         break;
@@ -1034,19 +1057,15 @@ static void icbReport(void *drvPvt, FILE *fp, int details)
 {
     drvIcbAsynPvt *pPvt = (drvIcbAsynPvt *)drvPvt;
     icbModule *module;
-    int i;
 
     assert(pPvt);
     fprintf(fp, "ICB port %s:\n", pPvt->portName);
     if (details >= 1) {
-        for(i=0; i<pPvt->maxModules; i++) {
-            module = &pPvt->icbModule[i];
-            if (module->defined == icbFound) 
-                fprintf(fp, "  module %d address: %s OK\n", i, module->address);
-            else if (module->defined == icbNotFound) 
-                fprintf(fp, "  module %d address: %s NOT FOUND\n", 
-                        i, module->address);
-        }
+        module = &pPvt->icbModule;
+        if (module->defined == icbFound) 
+            fprintf(fp, "  module address: %s OK\n", module->address);
+        else if (module->defined == icbNotFound) 
+            fprintf(fp, "  module address: %s NOT FOUND\n", module->address);
     }
 }
 
@@ -1068,27 +1087,10 @@ static asynStatus icbDisconnect(void *drvPvt, asynUser *pasynUser)
 static asynStatus verifyModule(drvIcbAsynPvt *pPvt, asynUser *pasynUser, 
                                icbModule **m)
 {
-    asynStatus status;
-    int index;
-
-    /* Find out what address this is */
-    status = pasynManager->getAddr(pasynUser, &index);
-    if (status != asynSuccess) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvIcbAsyn::verifyModule: error calling getAddr %s\n",
-                  pasynUser->errorMessage);
-        return(asynError);
-    }
-    if ((index < 0) || (index >= pPvt->maxModules)) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvIcbAsyn::verifyModule: invalid module %d\n", index);
-        return(asynError);
-    }
-    *m = &pPvt->icbModule[index];
+    *m = &pPvt->icbModule;
     if ((*m)->defined != icbFound) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvIcbAsyn::verifyModule module %d not defined or not found\n",
-                  index);
+                  "drvIcbAsyn::verifyModule module not defined or not found\n");
         return(asynError);
     }
     return(asynSuccess);
@@ -1329,39 +1331,23 @@ static double dspUnpackThroughput(unsigned short ival)
 
 /* iocsh functions */
 
-static const iocshArg icbSetupArg0 = { "Port name",iocshArgString};
-static const iocshArg icbSetupArg1 = { "MaxModules",iocshArgInt};
-static const iocshArg icbSetupArg2 = { "QueueSize",iocshArgInt};
-static const iocshArg * const icbSetupArgs[3] = {&icbSetupArg0,
-                                                 &icbSetupArg1,
-                                                 &icbSetupArg2};
-static const iocshFuncDef icbSetupFuncDef = {"icbSetup",3,icbSetupArgs};
-static void icbSetupCallFunc(const iocshArgBuf *args)
-{
-    icbSetup(args[0].sval, args[1].ival, args[2].ival);
-}
-
-
 static const iocshArg icbConfigArg0 = { "Port name",iocshArgString};
-static const iocshArg icbConfigArg1 = { "Module",iocshArgInt};
-static const iocshArg icbConfigArg2 = { "Ethernet address",iocshArgInt};
-static const iocshArg icbConfigArg3 = { "ICB address",iocshArgInt};
-static const iocshArg icbConfigArg4 = { "ICB module type",iocshArgInt};
-static const iocshArg * const icbConfigArgs[5] = {&icbConfigArg0,
+static const iocshArg icbConfigArg1 = { "Ethernet address",iocshArgInt};
+static const iocshArg icbConfigArg2 = { "ICB address",iocshArgInt};
+static const iocshArg icbConfigArg3 = { "ICB module type",iocshArgInt};
+static const iocshArg * const icbConfigArgs[4] = {&icbConfigArg0,
                                                   &icbConfigArg1,
                                                   &icbConfigArg2,
-                                                  &icbConfigArg3,
-                                                  &icbConfigArg4};
+                                                  &icbConfigArg3};
 static const iocshFuncDef icbConfigFuncDef = {"icbConfig",4,icbConfigArgs};
 static void icbConfigCallFunc(const iocshArgBuf *args)
 {
-    icbConfig(args[0].sval, args[1].ival, args[2].ival, 
+    icbConfig(args[0].sval, args[2].ival, 
               args[3].ival, args[4].ival);
 }
 
 void icbAsynRegister(void)
 {
-    iocshRegister(&icbSetupFuncDef,icbSetupCallFunc);
     iocshRegister(&icbConfigFuncDef,icbConfigCallFunc);
 }
 
