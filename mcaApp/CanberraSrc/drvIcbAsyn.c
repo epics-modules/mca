@@ -527,16 +527,7 @@ static asynStatus icbWrite(void *drvPvt, asynUser *pasynUser, int icbCommand,
         status=icbWriteDsp(pPvt, pasynUser, icbCommand, module, ivalue, dvalue);
         break;
     }
-    if (status != 0) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvIcbAsyn::icbWrite ERROR [%s]): command=%d\n",
-                  pPvt->portName, icbCommand);
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "      dvalue=%f, ivalue=%d, status=%d\n",
-                  dvalue, ivalue, status);
-        return(asynError);
-    }
-    return(asynSuccess);
+    return(status);
 }
 
 
@@ -585,9 +576,9 @@ static asynStatus icbWriteAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = writeAdc(module, CAM_L_ADCFNONOV, 0, &ivalue);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbWrite unknown ADC command=%d\n",
-                      icbCommand);
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbWrite unknown ADC command=%d",
+                          icbCommand);
             status = asynError;
     }
     return(status);
@@ -655,9 +646,9 @@ static asynStatus icbWriteAmp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = writeAmp(module, CAM_L_AMPFPZSTART, 0, &ivalue);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbWrite unknown AMP command=%d\n",
-                      icbCommand);
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                         "icbWrite unknown AMP command=%d",
+                          icbCommand);
             status = asynError;
     }
     return(status);
@@ -697,9 +688,9 @@ static asynStatus icbWriteHvps(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = writeHvps(module, CAM_L_HVPSFASTRAMP, 0, &ivalue);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbWrite unknown HVPS command=%d\n",
-                      icbCommand);
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbWrite unknown HVPS command=%d",
+                          icbCommand);
             status = asynError;
             break;
     }
@@ -797,9 +788,9 @@ static asynStatus icbWriteTca(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             tcaWriteDiscrim(tca, tca->uld[2], SCA_3 | ULD);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbWrite unknown TCA command=%d\n",
-                      icbCommand);
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbWrite unknown TCA command=%d",
+                          icbCommand);
             status = asynError;
             break;
     }
@@ -931,9 +922,9 @@ static asynStatus icbWriteDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
         case ID_MISC_TINH:
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbWrite unknown DSP command=%d\n",
-                      icbCommand);
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbWrite unknown DSP command=%d",
+                          icbCommand);
             status = asynError;
             sendCommand = 0;
             break;
@@ -989,23 +980,14 @@ static asynStatus icbRead(void *drvPvt, asynUser *pasynUser, int icbCommand,
         status=icbReadDsp(pPvt, pasynUser, icbCommand, module, ivalue, dvalue);
         break;
     }
-    if (status != 0) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvIcbAsyn::icbRead ERROR [%s]): command=%d\n",
-                  pPvt->portName, icbCommand);
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "      dvalue=%f, ivalue=%d, status=%d\n", 
-                  *dvalue, *ivalue, status);
-        return(asynError);
-    }
-    return(asynSuccess);
+    return(status);
 }
 
 static asynStatus icbReadAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                              int icbCommand, icbModule *module, 
                              int *ivalue, double *dvalue)
 {
-    float fvalue;
+    float fvalue=0.;
     int status;
 
     switch (icbCommand) {
@@ -1013,10 +995,10 @@ static asynStatus icbReadAdc(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = readAdc(module, CAM_F_ZERO, 0, &fvalue);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbRead, unknown ADC command=%d\n",
-                      icbCommand);
-            status = -1;
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbRead, unknown ADC command=%d",
+                          icbCommand);
+            status = asynError;
             break;
     }
     *dvalue = fvalue;
@@ -1038,10 +1020,10 @@ static asynStatus icbReadAmp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = readAmp(module, CAM_L_AMPPZ, 0, ivalue);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbRead, unknown AMP command=%d\n",
-                      icbCommand);
-            status = -1;
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbRead, unknown AMP command=%d",
+                          icbCommand);
+            status = asynError;
             break;
     }
     *dvalue = fvalue;
@@ -1076,10 +1058,10 @@ static asynStatus icbReadHvps(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             status = readHvps(module, CAM_F_VOLTAGE, 0, &fvalue);
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbRead, unknown HVPS command=%d\n",
-                      icbCommand);
-            status = -1;
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbRead, unknown HVPS command=%d",
+                          icbCommand);
+            status = asynError;
             break;
     }
     *dvalue = fvalue;
@@ -1113,10 +1095,10 @@ static asynStatus icbReadTca(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
                 *ivalue = 0;
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbRead, unknown TCA command=%d\n",
-                      icbCommand);
-            status = -1;
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbRead, unknown TCA command=%d",
+                          icbCommand);
+            status = asynError;
             break;
     }
     return(status);
@@ -1229,10 +1211,10 @@ static asynStatus icbReadDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             if (dsp->info_thri == 0) *dvalue = *dvalue / 10.;
             break;
         default:
-            asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                      "drvIcbAsyn::icbRead, unknown DSP command=%d\n",
-                      icbCommand);
-            status = -1;
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                          "icbRead, unknown DSP command=%d",
+                          icbCommand);
+            status = asynError;
             break;
     }
     return(status);
