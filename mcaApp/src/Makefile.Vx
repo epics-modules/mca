@@ -15,7 +15,6 @@ SRCS.c += ../icb_control_subs.c ../icb_crmpsc.c ../icb_control_subs2.c
 SRCS.c += ../icb_get_module_status.c ../icb_handler_subs.c ../icb_strings.c
 SRCS.c += ../icb_show_modules.c 
 SRCS.c += ../icb_read_regs.c ../icb_user_subs.c
-SRCS.c += ../icbAdcSub.c ../icbAmpSub.c ../icbHVPSSub.c ../icbTCASub.c
 SRCS.cc += ../devMcaMpf.cc
 SRCS.cc += ../devIcbMpf.cc
 SRCS.cc += ../mcaAIMServer.cc
@@ -30,7 +29,6 @@ include ../mcaLIBOBJS		#defines MCALIBOBJS
 include ../mcaMpfServerLIBOBJS	#defines MCAMPFSERVERLIBOBJS
 PROD += mcaLib
 
-#PROD += icbAdcSub.o icbAmpSub.o icbHVPSSub.o
 
 PROD += $(MCALIBOBJS)
 PROD += $(MCAMPFSERVERLIBOBJS)
