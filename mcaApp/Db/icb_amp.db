@@ -23,7 +23,7 @@ grecord(mbbo,"$(P)$(AMP)CGAIN") {
     field(SVST,"500")
     field(RVAL,"100")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 0)")
+    field(OUT,"@asyn($(PORT))COARSE_GAIN")
 }
 grecord(ao,"$(P)$(AMP)FGAIN") {
     field(DESC,"Fine gain")
@@ -35,7 +35,7 @@ grecord(ao,"$(P)$(AMP)FGAIN") {
     field(PREC,"3")
     field(VAL,"1")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 1)")
+    field(OUT,"@asyn($(PORT))FINE_GAIN")
 }
 grecord(ao,"$(P)$(AMP)SFGAIN") {
     field(DESC,"Super-fine gain")
@@ -47,7 +47,7 @@ grecord(ao,"$(P)$(AMP)SFGAIN") {
     field(PREC,"5")
     field(VAL,"1")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 2)")
+    field(OUT,"@asyn($(PORT))SUPERFINE_GAIN")
 }
 grecord(mbbo,"$(P)$(AMP)INPP") {
     field(DESC,"Input polarity")
@@ -57,7 +57,7 @@ grecord(mbbo,"$(P)$(AMP)INPP") {
     field(ONVL,"1")
     field(ONST,"Negative")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 3)")
+    field(OUT,"@asyn($(PORT))INPUT_POLARITY")
 }
 grecord(mbbo,"$(P)$(AMP)INHP") {
     field(DESC,"Inhibit polarity")
@@ -67,7 +67,7 @@ grecord(mbbo,"$(P)$(AMP)INHP") {
     field(ONVL,"1")
     field(ONST,"Negative")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 4)")
+    field(OUT,"@asyn($(PORT))INHIBIT_POLARITY")
 }
 grecord(mbbo,"$(P)$(AMP)DMOD") {
     field(DESC,"Differential mode")
@@ -77,7 +77,7 @@ grecord(mbbo,"$(P)$(AMP)DMOD") {
     field(ONVL,"1")
     field(ONST,"Differential")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 5)")
+    field(OUT,"@asyn($(PORT))DIFFERENTIAL_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)SMOD") {
     field(DESC,"Shaping mode")
@@ -87,7 +87,7 @@ grecord(mbbo,"$(P)$(AMP)SMOD") {
     field(ONVL,"1")
     field(ONST,"Triangular")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 6)")
+    field(OUT,"@asyn($(PORT))SHAPING_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)PTYP") {
     field(DESC,"Pre-amp type")
@@ -98,7 +98,7 @@ grecord(mbbo,"$(P)$(AMP)PTYP") {
     field(ONST,"TRP")
     field(RVAL,"1")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 7)")
+    field(OUT,"@asyn($(PORT))PREAMP_TYPE")
 }
 grecord(mbbo,"$(P)$(AMP)PURMOD") {
     field(DESC,"Pileup reject mode")
@@ -108,7 +108,7 @@ grecord(mbbo,"$(P)$(AMP)PURMOD") {
     field(ONVL,"1")
     field(ONST,"On")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 8)")
+    field(OUT,"@asyn($(PORT))PUR_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)BLMOD") {
     field(DESC,"Baseline restore mode")
@@ -118,7 +118,7 @@ grecord(mbbo,"$(P)$(AMP)BLMOD") {
     field(ONVL,"1")
     field(ONST,"Asymmetric")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 9)")
+    field(OUT,"@asyn($(PORT))BASELINE_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)DTMOD") {
     field(DESC,"Deatime control mode")
@@ -128,7 +128,7 @@ grecord(mbbo,"$(P)$(AMP)DTMOD") {
     field(ONVL,"1")
     field(ONST,"Loss-free cntg")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 10)")
+    field(OUT,"@asyn($(PORT))DEADTIME_MODE")
 }
 grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
     field(DESC,"Start auto-PZ")
@@ -138,7 +138,7 @@ grecord(mbbo,"$(P)$(AMP)AUTO_PZ") {
     field(ONVL,"1")
     field(ONST,"Start")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 11)")
+    field(OUT,"@asyn($(PORT))START_PZ")
 }
 grecord(ao,"$(P)$(AMP)PZ") {
     field(DESC,"Requested pole-zero")
@@ -149,7 +149,7 @@ grecord(ao,"$(P)$(AMP)PZ") {
     field(HOPR,"4095")
     field(PREC,"0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 12)")
+    field(OUT,"@asyn($(PORT))REQUESTED_PZ")
 }
 
 grecord(bo,"$(P)$(AMP)READBACK") {
@@ -166,7 +166,7 @@ grecord(ai,"$(P)$(AMP)SHAPING") {
     field(HOPR,"20")
     field(PREC,"2")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 13)")
+    field(INP,"@asyn($(PORT))SHAPING")
     field(FLNK,"$(P)$(AMP)PZRBV")
 }
 
@@ -177,5 +177,5 @@ grecord(ai,"$(P)$(AMP)PZRBV") {
     field(HOPR,"4095")
     field(PREC,"0")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 14)")
+    field(INP,"@asyn($(PORT))PZ_READBACK")
 }

@@ -12,7 +12,7 @@ grecord(ao,"$(P)$(HVPS)VOLT_OUT") {
     field(PREC,"0")
     field(VAL,"0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 0)")
+    field(OUT,"@asyn($(PORT))VOLT")
 }
 grecord(ao,"$(P)$(HVPS)VOLT_LIM") {
     field(DESC,"HVPS voltage limit")
@@ -24,7 +24,7 @@ grecord(ao,"$(P)$(HVPS)VOLT_LIM") {
     field(PREC,"0")
     field(VAL,"$(LIMIT)")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 1)")
+    field(OUT,"@asyn($(PORT))LIMIT")
 }
 grecord(mbbo,"$(P)$(HVPS)INH_LEVEL") {
     field(DESC,"Inhibit voltage level")
@@ -34,7 +34,7 @@ grecord(mbbo,"$(P)$(HVPS)INH_LEVEL") {
     field(ONVL,"1")
     field(ONST,"+12V")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 2)")
+    field(OUT,"@asyn($(PORT))INHIBIT_LEVEL")
 }
 grecord(mbbo,"$(P)$(HVPS)LATCH_INH") {
     field(DESC,"Latch inhibit?")
@@ -44,7 +44,7 @@ grecord(mbbo,"$(P)$(HVPS)LATCH_INH") {
     field(ONVL,"1")
     field(ONST,"Yes")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 3)")
+    field(OUT,"@asyn($(PORT))LATCH_INHIBIT")
 }
 grecord(mbbo,"$(P)$(HVPS)LATCH_OVL") {
     field(DESC,"Latch overload?")
@@ -54,7 +54,7 @@ grecord(mbbo,"$(P)$(HVPS)LATCH_OVL") {
     field(ONVL,"1")
     field(ONST,"Yes")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 4)")
+    field(OUT,"@asyn($(PORT))LATCH_OVERLOAD")
 }
 grecord(mbbo,"$(P)$(HVPS)RESET") {
     field(DESC,"Reset inihibit/overload")
@@ -64,7 +64,7 @@ grecord(mbbo,"$(P)$(HVPS)RESET") {
     field(ONVL,"1")
     field(ONST,"Reset")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 5)")
+    field(OUT,"@asyn($(PORT))RESET")
 }
 grecord(mbbo,"$(P)$(HVPS)STATUS") {
     field(DESC,"Status (off/on)")
@@ -74,7 +74,7 @@ grecord(mbbo,"$(P)$(HVPS)STATUS") {
     field(ONVL,"1")
     field(ONST,"On")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 6)")
+    field(OUT,"@asyn($(PORT))STATUS")
 }
 grecord(mbbo,"$(P)$(HVPS)FRAMP") {
     field(DESC,"Fast ramp")
@@ -84,7 +84,7 @@ grecord(mbbo,"$(P)$(HVPS)FRAMP") {
     field(ONVL,"1")
     field(ONST,"Enable")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 7)")
+    field(OUT,"@asyn($(PORT))FAST_RAMP")
 }
 grecord(bo,"$(P)$(HVPS)READBACK") {
     field(DESC,"Readback scan")
@@ -99,7 +99,7 @@ grecord(mbbi,"$(P)$(HVPS)POLARITY") {
     field(ONVL,"1")
     field(ONST,"Negative")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 8)")
+    field(INP,"@asyn($(PORT))POLARITY")
     field(FLNK,"$(P)$(HVPS)INHIBIT")
 }
 grecord(mbbi,"$(P)$(HVPS)INHIBIT") {
@@ -109,7 +109,7 @@ grecord(mbbi,"$(P)$(HVPS)INHIBIT") {
     field(ONVL,"1")
     field(ONST,"On")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 9)")
+    field(INP,"@asyn($(PORT))INHIBIT")
     field(FLNK,"$(P)$(HVPS)OVERLOAD")
 }
 grecord(mbbi,"$(P)$(HVPS)OVERLOAD") {
@@ -119,7 +119,7 @@ grecord(mbbi,"$(P)$(HVPS)OVERLOAD") {
     field(ONVL,"1")
     field(ONST,"On")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 10)")
+    field(INP,"@asyn($(PORT))OVERLOAD")
     field(FLNK,"$(P)$(HVPS)STATRBV")
 }
 grecord(mbbi,"$(P)$(HVPS)STATRBV") {
@@ -129,7 +129,7 @@ grecord(mbbi,"$(P)$(HVPS)STATRBV") {
     field(ONVL,"1")
     field(ONST,"On")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 11)")
+    field(INP,"@asyn($(PORT))STATUS_READBACK")
     field(FLNK,"$(P)$(HVPS)BUSY")
 }
 grecord(mbbi,"$(P)$(HVPS)BUSY") {
@@ -139,7 +139,7 @@ grecord(mbbi,"$(P)$(HVPS)BUSY") {
     field(ONVL,"1")
     field(ONST,"Busy")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 12)")
+    field(INP,"@asyn($(PORT))BUSY")
     field(FLNK,"$(P)$(HVPS)VOLTRBV")
 }
 grecord(ai,"$(P)$(HVPS)VOLTRBV") {
@@ -148,5 +148,5 @@ grecord(ai,"$(P)$(HVPS)VOLTRBV") {
     field(HOPR,"$(LIMIT)")
     field(PREC,"0")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 13)")
+    field(INP,"@asyn($(PORT))VOLT_READBACK")
 }

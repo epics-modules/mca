@@ -24,6 +24,7 @@
 #include <asynDriver.h>
 #include <asynUInt32Digital.h>
 #include <asynFloat64.h>
+#include <asynDrvUser.h>
 #include <cantProceed.h>
 #include <epicsString.h>
 
@@ -36,6 +37,162 @@
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
 #include "campardef.h"
+
+typedef struct {
+    int command;
+    char *commandString;
+} icbCommandStruct;
+
+static icbCommandStruct icbAdcCommands[MAX_ICB_ADC_COMMANDS] = {
+    {icbAdcGain,     "GAIN"},
+    {icbAdcRange,    "RANGE"},
+    {icbAdcOffset,   "OFFSET"},
+    {icbAdcLld,      "LLD"},
+    {icbAdcUld,      "ULD"},
+    {icbAdcZero,     "ZERO"},
+    {icbAdcGmod,     "GATE_MODE"},
+    {icbAdcCmod,     "COINCIDENCE_MODE"},
+    {icbAdcPmod,     "PEAK_MODE"},
+    {icbAdcAmod,     "ACQUISITION_MODE"},
+    {icbAdcTmod,     "TRANSFER_MODE"},
+    {icbAdcZeroRbv,  "ZERO_READBACK"}
+};
+ 
+static icbCommandStruct icbAmpCommands[MAX_ICB_AMP_COMMANDS] = {
+    {icbAmpCgain,    "COARSE_GAIN"},
+    {icbAmpFgain,    "FINE_GAIN"},
+    {icbAmpSfgain,   "SUPERFINE_GAIN"},
+    {icbAmpInpp,     "INPUT_POLARITY"},
+    {icbAmpInhp,     "INHIBIT_POLARITY"},
+    {icbAmpDmod,     "DIFFERENTIAL_MODE"},
+    {icbAmpSmod,     "SHAPING_MODE"},
+    {icbAmpPtyp,     "PREAMP_TYPE"},
+    {icbAmpPurmod,   "PUR_MODE"},
+    {icbAmpBlmod,    "BASELINE_MODE"},
+    {icbAmpDtmod,    "DEADTIME_MODE"},
+    {icbAmpAutoPz,   "START_PZ"},
+    {icbAmpPz,       "REQUESTED_PZ"},
+    {icbAmpShaping,  "SHAPING"},
+    {icbAmpPzRbv,    "PZ_READBACK"}
+};
+
+static icbCommandStruct icbHvpsCommands[MAX_ICB_HVPS_COMMANDS] = {
+    {icbHvpsVolt,    "VOLT"},
+    {icbHvpsVlim,    "LIMIT"},
+    {icbHvpsInhl,    "INHIBIT_LEVEL"},
+    {icbHvpsLati,    "LATCH_INHIBIT"},
+    {icbHvpsLato,    "LATCH_OVERLOAD"},
+    {icbHvpsReset,   "RESET"},
+    {icbHvpsStatus,  "STATUS"},
+    {icbHvpsFramp,   "FAST_RAMP"},
+    {icbHvpsVpol,    "POLARITY"},
+    {icbHvpsInh,     "INHIBIT"},
+    {icbHvpsOvl,     "OVERLOAD"},
+    {icbHvpsStatRbv, "STATUS_READBACK"},
+    {icbHvpsBusy,    "BUSY"},
+    {icbHvpsVoltRbv, "VOLT_READBACK"}
+};
+
+static icbCommandStruct icbTcaCommands[MAX_ICB_TCA_COMMANDS] = {
+    {icbTcaPolarity, "POLARITY"},
+    {icbTcaThresh,   "THRESHOLD"},
+    {icbTcaScaEn,    "SCA_ENABLE"},
+    {icbTcaGate1,    "GATE1"},
+    {icbTcaGate2,    "GATE2"},
+    {icbTcaGate3,    "GATE3"},
+    {icbTcaSelect,   "TCA_SELECT"},
+    {icbTcaPurEn,    "PUR_ENABLE"},
+    {icbTcaPur1,     "PUR1"},
+    {icbTcaPur2,     "PUR2"},
+    {icbTcaPur3,     "PUR3"},
+    {icbTcaPurAmp,   "PUR_AMP"},
+    {icbTcaLow1,     "LOW1"},
+    {icbTcaHi1,      "HI1"},
+    {icbTcaLow2,     "LOW2"},
+    {icbTcaHi2,      "HI2"},
+    {icbTcaLow3,     "LOW3"},
+    {icbTcaHi3,      "HIGH3"},
+    {icbTcaStatus,   "STATUS"}
+};
+
+#define MAX_ICB_DSP_COMMANDS 75
+static icbCommandStruct icbDspCommands[MAX_ICB_DSP_COMMANDS] = {
+    {ID_AMP_CGAIN,    "AMP_CGAIN"},
+    {ID_AMP_FGAIN,    "AMP_FGAIN"},
+    {ID_AMP_SFGAIN,   "AMP_SFGAIN"},
+    {ID_ADC_CGAIN,    "ADC_CGAIN"},
+    {ID_ADC_CRANGE,   "ADC_CRANGE"},
+    {ID_ADC_OFFS,     "ADC_OFFS"},
+    {ID_ADC_TYPE,     "ADC_TYPE"},
+    {ID_ADC_LLD,      "ADC_LLD"},
+    {ID_ADC_ZERO,     "ADC_ZERO"},
+    {ID_FILTER_RT,    "FILTER_RT"},
+    {ID_FILTER_FT,    "FILTER_FT"},
+    {ID_FILTER_MDEX,  "FILTER_MDEX"},
+    {ID_FILTER_MFACT, "FILTER_MFACT"},
+    {ID_FILTER_BLRM,  "FILTER_BLRM"},
+    {ID_FILTER_PZM,   "FILTER_PZM"},
+    {ID_FILTER_PZ,    "FILTER_PZ"},
+    {ID_FILTER_THR,   "FILTER_THR"},
+    {ID_FILTER_FRQ,   "FILTER_FRQ"},
+    {ID_STABLZ_GCOR,  "STABLZ_GCOR"},
+    {ID_STABLZ_ZCOR,  "STABLZ_ZCOR"},
+    {ID_STABLZ_GMOD,  "STABLZ_GMOD"},
+    {ID_STABLZ_ZMOD,  "STABLZ_ZMOD"},
+    {ID_STABLZ_GDIV,  "STABLZ_GDIV"},
+    {ID_STABLZ_ZDIV,  "STABLZ_ZDIV"},
+    {ID_STABLZ_GSPAC, "STABLZ_GSPAC"},
+    {ID_STABLZ_ZSPAC, "STABLZ_ZSPAC"},
+    {ID_STABLZ_GWIN,  "STABLZ_GWIN"},
+    {ID_STABLZ_ZWIN,  "STABLZ_ZWIN"},
+    {ID_STABLZ_GCENT, "STABLZ_GCENT"},
+    {ID_STABLZ_ZCENT, "STABLZ_ZCENT"},
+    {ID_STABLZ_GRAT,  "STABLZ_GRAT"},
+    {ID_STABLZ_ZRAT,  "STABLZ_ZRAT"},
+    {ID_STABLZ_RESET, "STABLZ_RESET"},
+    {ID_STABLZ_GAIN,  "STABLZ_GAIN"},
+    {ID_STABLZ_ZERO,  "STABLZ_ZERO"},
+    {ID_MISC_FDM,     "MISC_FDM"},
+    {ID_MISC_FD,      "MISC_FD"},
+    {ID_MISC_INPP,    "MISC_INPP"},
+    {ID_MISC_INHP,    "MISC_INHP"},
+    {ID_MISC_PURM,    "MISC_PURM"},
+    {ID_MISC_GATM,    "MISC_GATM"},
+    {ID_MISC_OUTM,    "MISC_OUTM"},
+    {ID_MISC_GD,      "MISC_GD"},
+    {ID_MISC_TINH,    "MISC_TINH"},
+    {ID_MISC_LTRIM,   "MISC_LTRIM"},
+    {ID_MISC_BBRN,    "MISC_BBRN"},
+    {ID_INFO_TDAC,    "INFO_TDAC"},
+    {ID_INFO_THRP,    "INFO_THRP"},
+    {ID_INFO_THRI,    "INFO_THRI"},
+    {ID_INFO_PZ,      "INFO_PZ"},
+    {ID_INFO_BDC,     "INFO_BDC"},
+    {ID_STATUS_FLGS,  "STATUS_FLGS"},
+    {ID_SYSOP_CMD,    "SYSOP_CMD"},
+    {ID_SYSOP_RDATL,  "SYSOP_RDATL"},
+    {ID_SYSOP_RDATH,  "SYSOP_RDATH"},
+    {ID_SYSOP_LCD,    "SYSOP_LCD"},
+    {ID_SYSOP_DAC,    "SYSOP_DAC"},
+    {ID_START_PZ,     "START_PZ"},
+    {ID_START_BDC,    "START_BDC"},
+    {ID_CLEAR_ERRORS, "CLEAR_ERRORS"},
+    {ID_STABLZ_GOVR,  "STABLZ_GOVR"},
+    {ID_STABLZ_GOVF,  "STABLZ_GOVF"},
+    {ID_STABLZ_ZOVR,  "STABLZ_ZOVR"},
+    {ID_STABLZ_ZOVF,  "STABLZ_ZOVF"},
+    {ID_INFO_PZAER,   "INFO_PZAER"},
+    {ID_INFO_BDCAER,  "INFO_BDCAER"},
+    {ID_STATUS_PZBSY, "STATUS_PZBSY"},
+    {ID_STATUS_BDBSY,  "STATUS_BDBSY"},
+    {ID_STATUS_MINT,   "STATUS_MINT"},
+    {ID_STATUS_DGBSY,  "STATUS_DGBSY"},
+    {ID_STATUS_MERR,   "STATUS_MERR"},
+    {ID_INFO_DT,       "INFO_DT"},
+    {ID_INFO_ICR,      "INFO_ICR"},
+    {ID_INFO_DSPRATE,  "INFO_DSPRATE"},
+    {ID_INFO_MCARATE,  "INFO_MCARATE"}
+};
 
 #define LLD     0
 #define ULD     0x20
@@ -98,6 +255,7 @@ typedef struct {
     asynInterface  common;
     asynInterface  uint32Digital;
     asynInterface  float64;
+    asynInterface  drvUser;
 } drvIcbAsynPvt;
 
 
@@ -110,6 +268,12 @@ static asynStatus float64Write(      void *drvPvt, asynUser *pasynUser,
                                      epicsFloat64 value); 
 static asynStatus float64Read(       void *drvPvt, asynUser *pasynUser,
                                      epicsFloat64 *value);
+static asynStatus drvUserCreate(     void *drvPvt, asynUser *pasynUser,
+                                     const char *drvInfo,
+                                     const char **pptypeName, size_t *psize);
+static asynStatus drvUserGetType(    void *drvPvt, asynUser *pasynUser,
+                                     const char **pptypeName, size_t *psize);
+static asynStatus drvUserDestroy(    void *drvPvt, asynUser *pasynUser);
 static void icbReport(               void *drvPvt, FILE *fp, int details);
 static asynStatus icbConnect(        void *drvPvt, asynUser *pasynUser);
 static asynStatus icbDisconnect(     void *drvPvt, asynUser *pasynUser);
@@ -191,6 +355,13 @@ static const asynFloat64 icbFloat64 = {
     float64Read
 };
 
+/* asynDrvUser interface */
+static const asynDrvUser icbDrvUser = {
+    drvUserCreate,
+    drvUserGetType,
+    drvUserDestroy
+};
+
 
 int icbConfig(const char *portName, int enetAddress, int icbAddress, 
               icbModuleType icbModuleType)
@@ -213,8 +384,11 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
     pPvt->float64.interfaceType = asynFloat64Type;
     pPvt->float64.pinterface  = (void *)&icbFloat64;
     pPvt->float64.drvPvt = pPvt;
+    pPvt->drvUser.interfaceType = asynDrvUserType;
+    pPvt->drvUser.pinterface  = (void *)&icbDrvUser;
+    pPvt->drvUser.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
-                                        ASYN_MULTIDEVICE | ASYN_CANBLOCK,
+                                        ASYN_CANBLOCK,  /* Not MULTIDEVICE */
                                         1,  /* autoconnect */
                                         0,  /* medium priority */
                                         0); /* default stack size */
@@ -236,6 +410,12 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
     status = pasynManager->registerInterface(pPvt->portName,&pPvt->float64);
     if (status != asynSuccess) {
         errlogPrintf("icbConfig ERROR: Can't register float64\n");
+        return -1;
+    }
+
+    status = pasynManager->registerInterface(pPvt->portName,&pPvt->drvUser);
+    if (status != asynSuccess) {
+        errlogPrintf("icbConfig ERROR: Can't register drvUser\n");
         return -1;
     }
  
@@ -294,18 +474,16 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
 static asynStatus uint32DigitalWrite(void *drvPvt, asynUser *pasynUser,
                                      epicsUInt32 value, epicsUInt32 mask)
 {
-    int icbCommand;
+    int icbCommand=*(int *)pasynUser->drvUser;
 
-    pasynManager->getAddr(pasynUser, &icbCommand);
     return(icbWrite(drvPvt, pasynUser, icbCommand, value, 0.));
 }
 
 static asynStatus float64Write(void *drvPvt, asynUser *pasynUser,
                                epicsFloat64 value)
 {
-    int icbCommand;
+    int icbCommand=*(int *)pasynUser->drvUser;
 
-    pasynManager->getAddr(pasynUser, &icbCommand);
     return(icbWrite(drvPvt, pasynUser, icbCommand, 0, value));
 }
 
@@ -758,18 +936,16 @@ static asynStatus icbWriteDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
 static asynStatus uint32DigitalRead(void *drvPvt, asynUser *pasynUser,
                                     epicsUInt32 *value, epicsUInt32 mask)
 {
-    int icbCommand;
+    int icbCommand=*(int *)pasynUser->drvUser;
 
-    pasynManager->getAddr(pasynUser, &icbCommand); 
     return(icbRead(drvPvt, pasynUser, icbCommand, value, NULL));
 }
 
 static asynStatus float64Read(void *drvPvt, asynUser *pasynUser,
                               epicsFloat64 *value)
 {
-    int icbCommand;
+    int icbCommand=*(int *)pasynUser->drvUser;
 
-    pasynManager->getAddr(pasynUser, &icbCommand); 
     return(icbRead(drvPvt, pasynUser, icbCommand, NULL, value));
 }
 
@@ -1047,6 +1223,77 @@ static asynStatus icbReadDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
             break;
     }
     return(status);
+}
+
+
+/* asynDrvUser routines */
+static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
+                                const char *drvInfo,
+                                const char **pptypeName, size_t *psize)
+{
+    drvIcbAsynPvt *pPvt = (drvIcbAsynPvt *)drvPvt;
+    int i;
+    int maxCommands=0;
+    icbCommandStruct *pcommands=NULL;
+    char *pstring;
+
+    switch (pPvt->icbModuleType) {
+    case icbAdcType:
+        maxCommands = MAX_ICB_ADC_COMMANDS;
+        pcommands = icbAdcCommands;
+        break;
+    case icbAmpType:
+        maxCommands = MAX_ICB_AMP_COMMANDS;
+        pcommands = icbAmpCommands;
+        break;
+    case icbHvpsType:
+        maxCommands = MAX_ICB_HVPS_COMMANDS;
+        pcommands = icbHvpsCommands;
+        break;
+    case icbTcaType:
+        maxCommands = MAX_ICB_TCA_COMMANDS;
+        pcommands = icbTcaCommands;
+        break;
+    case icbDspType:
+        maxCommands = MAX_ICB_DSP_COMMANDS;
+        pcommands = icbDspCommands;
+        break;
+    }
+ 
+    for (i=0; i<maxCommands; i++) {
+        pstring = pcommands[i].commandString;
+        if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
+            pasynUser->drvUser = &pcommands[i].command;
+            if (pptypeName) *pptypeName = epicsStrDup(pstring);
+            if (psize) *psize = sizeof(pcommands[i].command);
+            asynPrint(pasynUser, ASYN_TRACE_FLOW,
+                      "drvIcbAsyn:drvUserCreate::drvUserCreate, command=%s\n", pstring);
+            return(asynSuccess);
+        }
+    }
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "drvIcbAsyn::drvUserCreate, unknown command=%s\n", drvInfo);
+    return(asynError);
+}
+
+static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
+                                 const char **pptypeName, size_t *psize)
+{
+    int *pcommand = pasynUser->drvUser;
+
+    *pptypeName = NULL;
+    *psize = 0;
+    if (pcommand) {
+        if (pptypeName)
+            *pptypeName = epicsStrDup("icbCommands");
+        if (psize) *psize = sizeof(*pcommand);
+    }
+    return(asynSuccess);
+}
+
+static asynStatus drvUserDestroy(void *drvPvt, asynUser *pasynUser)
+{
+    return(asynSuccess);
 }
 
 

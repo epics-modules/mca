@@ -28,6 +28,8 @@ typedef enum {
     icbAdcZeroRbv /* Zero offset readback */
 } icbAdcCommand;
 
+#define MAX_ICB_ADC_COMMANDS 12
+
 typedef enum {
     icbAmpCgain,  /* Coarse gain */
     icbAmpFgain,  /* Fine gain */
@@ -46,6 +48,8 @@ typedef enum {
     icbAmpPzRbv   /* Actual PZ */
 } icbAmpCommand;
 
+#define MAX_ICB_AMP_COMMANDS 15
+
 typedef enum {
     icbHvpsVolt,   /* Output voltage */
     icbHvpsVlim,   /* Output voltage limit */
@@ -62,6 +66,8 @@ typedef enum {
     icbHvpsBusy,   /* Busy with ramp */
     icbHvpsVoltRbv /* Voltage readback */
 } icbHvpsCommand;
+
+#define MAX_ICB_HVPS_COMMANDS 14
 
 typedef enum {
     icbTcaPolarity, /* Output polarity */
@@ -84,6 +90,8 @@ typedef enum {
     icbTcaHi3,      /* SCA 3 hi */
     icbTcaStatus    /* Status readback */
 } icbTcaCommand;
+
+#define MAX_ICB_TCA_COMMANDS 19
 
 #endif /* drvMcaAsynH */
 

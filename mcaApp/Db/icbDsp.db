@@ -19,7 +19,7 @@ grecord(mbbo,"$(P)$(DSP)CG") {
     field(FVVL,"5")
     field(FVST,"x960")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 1)")
+    field(OUT,"@asyn($(PORT))AMP_CGAIN")
 }
 grecord(ao,"$(P)$(DSP)FG") {
     field(DESC,"Fine gain")
@@ -31,7 +31,7 @@ grecord(ao,"$(P)$(DSP)FG") {
     field(PREC,"4")
     field(VAL,"1.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 42)")
+    field(OUT,"@asyn($(PORT))AMP_FGAIN")
 }
 grecord(ao,"$(P)$(DSP)SFG") {
     field(DESC,"Super fine gain")
@@ -43,7 +43,7 @@ grecord(ao,"$(P)$(DSP)SFG") {
     field(PREC,"6")
     field(VAL,"0.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 43)")
+    field(OUT,"@asyn($(PORT))AMP_SFGAIN")
 }
 
 # ADC setup
@@ -65,7 +65,7 @@ grecord(mbbo,"$(P)$(DSP)ADCG") {
     field(SXVL,"6")
     field(SXST,"16384")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 49)")
+    field(OUT,"@asyn($(PORT))ADC_CGAIN")
 }
 grecord(mbbo,"$(P)$(DSP)ADCR") {
     field(DESC,"ADC conversion range")
@@ -85,7 +85,7 @@ grecord(mbbo,"$(P)$(DSP)ADCR") {
     field(SXVL,"6")
     field(SXST,"16384")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 50)")
+    field(OUT,"@asyn($(PORT))ADC_CRANGE")
 }
 grecord(mbbo,"$(P)$(DSP)MCA") {
     field(DESC,"MCA type")
@@ -97,7 +97,7 @@ grecord(mbbo,"$(P)$(DSP)MCA") {
     field(TWVL,"2")
     field(TWST,"SILENA")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 23)")
+    field(OUT,"@asyn($(PORT))ADC_TYPE")
 }
 grecord(ao,"$(P)$(DSP)ADCO") {
     field(DESC,"ADC digital offset")
@@ -109,7 +109,7 @@ grecord(ao,"$(P)$(DSP)ADCO") {
     field(PREC,"0")
     field(VAL,"0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 51)")
+    field(OUT,"@asyn($(PORT))ADC_OFFS")
 }
 grecord(ao,"$(P)$(DSP)LLD") {
     field(DESC,"ADC lower level discr.")
@@ -121,7 +121,7 @@ grecord(ao,"$(P)$(DSP)LLD") {
     field(PREC,"3")
     field(VAL,"1")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 48)")
+    field(OUT,"@asyn($(PORT))ADC_LLD")
 }
 grecord(ao,"$(P)$(DSP)ZERO") {
     field(DESC,"Zero DAC")
@@ -133,7 +133,7 @@ grecord(ao,"$(P)$(DSP)ZERO") {
     field(PREC,"3")
     field(VAL,"0.")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 44)")
+    field(OUT,"@asyn($(PORT))ADC_ZERO")
 }
 
 
@@ -148,7 +148,7 @@ grecord(ao,"$(P)$(DSP)RT") {
     field(PREC,"1")
     field(VAL,"2.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 53)")
+    field(OUT,"@asyn($(PORT))FILTER_RT")
 }
 grecord(ao,"$(P)$(DSP)FT") {
     field(DESC,"Flat top time")
@@ -160,7 +160,7 @@ grecord(ao,"$(P)$(DSP)FT") {
     field(PREC,"1")
     field(VAL,"1.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 54)")
+    field(OUT,"@asyn($(PORT))FILTER_FT")
 }
 grecord(mbbo,"$(P)$(DSP)BLR") {
     field(DESC,"Baseline restore")
@@ -174,7 +174,7 @@ grecord(mbbo,"$(P)$(DSP)BLR") {
     field(THVL,"3")
     field(THST,"Hard")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 6)")
+    field(OUT,"@asyn($(PORT))FILTER_BLRM")
 }
 grecord(mbbo,"$(P)$(DSP)MI") {
     field(DESC,"M-term Index")
@@ -186,7 +186,7 @@ grecord(mbbo,"$(P)$(DSP)MI") {
     field(TWVL,"2")
     field(TWST,"M=Term #3")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 60)")
+    field(OUT,"@asyn($(PORT))FILTER_MDEX")
 }
 grecord(ao,"$(P)$(DSP)MT") {
     field(DESC,"M-Term value")
@@ -198,7 +198,7 @@ grecord(ao,"$(P)$(DSP)MT") {
     field(PREC,"3")
     field(VAL,"1.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 47)")
+    field(OUT,"@asyn($(PORT))FILTER_MFACT")
 }
 grecord(mbbo,"$(P)$(DSP)PZM") {
     field(DESC,"Pole zero mode")
@@ -210,7 +210,7 @@ grecord(mbbo,"$(P)$(DSP)PZM") {
     field(TWVL,"2")
     field(TWST,"Reset")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 8)")
+    field(OUT,"@asyn($(PORT))FILTER_PZM")
 }
 grecord(ao,"$(P)$(DSP)PZ") {
     field(DESC,"Pole zero")
@@ -222,7 +222,7 @@ grecord(ao,"$(P)$(DSP)PZ") {
     field(PREC,"0")
     field(VAL,"1000")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 7)")
+    field(OUT,"@asyn($(PORT))FILTER_PZ")
 }
 grecord(ao,"$(P)$(DSP)THR") {
     field(DESC,"Threshold register")
@@ -234,7 +234,7 @@ grecord(ao,"$(P)$(DSP)THR") {
     field(PREC,"0")
     field(VAL,"0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 57)")
+    field(OUT,"@asyn($(PORT))FILTER_THR")
 }
 # Note: the DSP supports 20 values for cutoff frequency but MBBO record only
 # has 16 possible values, so we omit 4 choices: 400, 600, 800 and 2500 Hz.
@@ -274,7 +274,7 @@ grecord(mbbo,"$(P)$(DSP)FRQ") {
     field(FFVL,"20")
     field(FFST,"50000 Hz")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 58)")
+    field(OUT,"@asyn($(PORT))FILTER_FRQ")
 }
 
 # Stabilizer setup
@@ -286,7 +286,7 @@ grecord(mbbo,"$(P)$(DSP)GCOR") {
     field(ONVL,"1")
     field(ONST,"NaI (+/- 10%)")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 34)")
+    field(OUT,"@asyn($(PORT))STABLZ_GCOR")
 }
 grecord(mbbo,"$(P)$(DSP)ZCOR") {
     field(DESC,"Zero range")
@@ -296,7 +296,7 @@ grecord(mbbo,"$(P)$(DSP)ZCOR") {
     field(ONVL,"1")
     field(ONST,"NaI (+/- 10%)")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 45)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZCOR")
 }
 grecord(mbbo,"$(P)$(DSP)GMOD") {
     field(DESC,"Gain mode")
@@ -308,7 +308,7 @@ grecord(mbbo,"$(P)$(DSP)GMOD") {
     field(TWVL,"2")
     field(TWST,"Hold")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 32)")
+    field(OUT,"@asyn($(PORT))STABLZ_GMOD")
 }
 grecord(mbbo,"$(P)$(DSP)ZMOD") {
     field(DESC,"Zero mode")
@@ -320,7 +320,7 @@ grecord(mbbo,"$(P)$(DSP)ZMOD") {
     field(TWVL,"2")
     field(TWST,"Hold")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 33)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZMOD")
 }
 grecord(mbbo,"$(P)$(DSP)GDIV") {
     field(DESC,"Gain correction divider")
@@ -346,7 +346,7 @@ grecord(mbbo,"$(P)$(DSP)GDIV") {
     field(NIVL,"9")
     field(NIST,"512")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 55)")
+    field(OUT,"@asyn($(PORT))STABLZ_GDIV")
 }
 grecord(mbbo,"$(P)$(DSP)ZDIV") {
     field(DESC,"Zero correction divider")
@@ -372,7 +372,7 @@ grecord(mbbo,"$(P)$(DSP)ZDIV") {
     field(NIVL,"9")
     field(NIST,"512")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 56)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZDIV")
 }
 grecord(ao,"$(P)$(DSP)GSPC") {
     field(DESC,"Gain spacing")
@@ -384,7 +384,7 @@ grecord(ao,"$(P)$(DSP)GSPC") {
     field(PREC,"0")
     field(VAL,"256")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 28)")
+    field(OUT,"@asyn($(PORT))STABLZ_GSPAC")
 }
 grecord(ao,"$(P)$(DSP)ZSPC") {
     field(DESC,"Zero spacing")
@@ -396,7 +396,7 @@ grecord(ao,"$(P)$(DSP)ZSPC") {
     field(PREC,"0")
     field(VAL,"256")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 29)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZSPAC")
 }
 grecord(ao,"$(P)$(DSP)GWND") {
     field(DESC,"Gain window")
@@ -408,7 +408,7 @@ grecord(ao,"$(P)$(DSP)GWND") {
     field(PREC,"0")
     field(VAL,"64")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 26)")
+    field(OUT,"@asyn($(PORT))STABLZ_GWIN")
 }
 grecord(ao,"$(P)$(DSP)ZWND") {
     field(DESC,"Zero window")
@@ -420,7 +420,7 @@ grecord(ao,"$(P)$(DSP)ZWND") {
     field(PREC,"0")
     field(VAL,"64")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 27)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZWIN")
 }
 grecord(ao,"$(P)$(DSP)GCNT") {
     field(DESC,"Gain centroid")
@@ -432,7 +432,7 @@ grecord(ao,"$(P)$(DSP)GCNT") {
     field(PREC,"0")
     field(VAL,"64")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 24)")
+    field(OUT,"@asyn($(PORT))STABLZ_GCENT")
 }
 grecord(ao,"$(P)$(DSP)ZCNT") {
     field(DESC,"Zero centroid")
@@ -444,7 +444,7 @@ grecord(ao,"$(P)$(DSP)ZCNT") {
     field(PREC,"0")
     field(VAL,"64")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 25)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZCENT")
 }
 grecord(ao,"$(P)$(DSP)GRAT") {
     field(DESC,"Gain ratio")
@@ -456,7 +456,7 @@ grecord(ao,"$(P)$(DSP)GRAT") {
     field(PREC,"2")
     field(VAL,"1.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 40)")
+    field(OUT,"@asyn($(PORT))STABLZ_GRAT")
 }
 grecord(ao,"$(P)$(DSP)ZRAT") {
     field(PINI,"YES")
@@ -468,7 +468,7 @@ grecord(ao,"$(P)$(DSP)ZRAT") {
     field(PREC,"2")
     field(VAL,"1.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 41)")
+    field(OUT,"@asyn($(PORT))STABLZ_ZRAT")
 }
 grecord(mbbo,"$(P)$(DSP)RES") {
     field(DESC,"Stabilizer reset")
@@ -478,7 +478,7 @@ grecord(mbbo,"$(P)$(DSP)RES") {
     field(ONVL,"1")
     field(ONST,"Reset")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 35)")
+    field(OUT,"@asyn($(PORT))STABLZ_RESET")
 }
 # Miscellaneous setup
 grecord(mbbo,"$(P)$(DSP)INPP") {
@@ -489,7 +489,7 @@ grecord(mbbo,"$(P)$(DSP)INPP") {
     field(ONVL,"1")
     field(ONST,"Negative")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 14)")
+    field(OUT,"@asyn($(PORT))MISC_INPP")
 }
 grecord(mbbo,"$(P)$(DSP)INHP") {
     field(DESC,"Inhibit polarity")
@@ -499,7 +499,7 @@ grecord(mbbo,"$(P)$(DSP)INHP") {
     field(ONVL,"1")
     field(ONST,"Negative")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 15)")
+    field(OUT,"@asyn($(PORT))MISC_INHP")
 }
 grecord(mbbo,"$(P)$(DSP)TINH") {
     field(DESC,"TRP Inhibit mode")
@@ -509,7 +509,7 @@ grecord(mbbo,"$(P)$(DSP)TINH") {
     field(ONVL,"1")
     field(ONST,"Reset")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 61)")
+    field(OUT,"@asyn($(PORT))MISC_TINH")
 }
 grecord(mbbo,"$(P)$(DSP)FDM") {
     field(DESC,"Fast discr. mode")
@@ -519,7 +519,7 @@ grecord(mbbo,"$(P)$(DSP)FDM") {
     field(ONVL,"1")
     field(ONST,"Manual")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 19)")
+    field(OUT,"@asyn($(PORT))MISC_FDM")
 }
 grecord(ao,"$(P)$(DSP)FD") {
     field(DESC,"Fast discriminator")
@@ -531,7 +531,7 @@ grecord(ao,"$(P)$(DSP)FD") {
     field(PREC,"1")
     field(VAL,"1.0")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 52)")
+    field(OUT,"@asyn($(PORT))MISC_FD")
 }
 grecord(mbbo,"$(P)$(DSP)PURM") {
     field(DESC,"Pileup reject mode")
@@ -543,7 +543,7 @@ grecord(mbbo,"$(P)$(DSP)PURM") {
     field(TWVL,"2")
     field(TWST,"LFC")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 16)")
+    field(OUT,"@asyn($(PORT))MISC_PURM")
 }
 grecord(mbbo,"$(P)$(DSP)GATM") {
     field(DESC,"Gate mode")
@@ -553,7 +553,7 @@ grecord(mbbo,"$(P)$(DSP)GATM") {
     field(ONVL,"1")
     field(ONST,"Coincidence")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 17)")
+    field(OUT,"@asyn($(PORT))MISC_GATM")
 }
 grecord(mbbo,"$(P)$(DSP)OUTM") {
     field(DESC,"Output mode")
@@ -563,7 +563,7 @@ grecord(mbbo,"$(P)$(DSP)OUTM") {
     field(ONVL,"1")
     field(ONST,"Tail")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 18)")
+    field(OUT,"@asyn($(PORT))MISC_OUTM")
 }
 grecord(mbbo,"$(P)$(DSP)GD") {
     field(DESC,"Guard setting")
@@ -600,7 +600,7 @@ grecord(mbbo,"$(P)$(DSP)GD") {
     field(FTST,"2.5")
     field(RVAL,"11")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 22)")
+    field(OUT,"@asyn($(PORT))MISC_GD")
 }
 grecord(mbbo,"$(P)$(DSP)TDC") {
     field(DESC,"Test DAC mode")
@@ -614,7 +614,7 @@ grecord(mbbo,"$(P)$(DSP)TDC") {
     field(THVL,"3")
     field(THST,"Off")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 59)")
+    field(OUT,"@asyn($(PORT))INFO_TDAC")
 }
 grecord(mbbo,"$(P)$(DSP)THRI") {
     field(DESC,"Throughput index")
@@ -628,7 +628,7 @@ grecord(mbbo,"$(P)$(DSP)THRI") {
     field(THVL,"3")
     field(THST,"MCA rate")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 37)")
+    field(OUT,"@asyn($(PORT))INFO_THRI")
 }
 grecord(ao,"$(P)$(DSP)LTRM") {
     field(DESC,"Live time trim")
@@ -640,7 +640,7 @@ grecord(ao,"$(P)$(DSP)LTRM") {
     field(PREC,"0")
     field(VAL,"250.")
     field(DTYP, "asynFloat64")
-    field(OUT,"@asyn($(PORT) 20)")
+    field(OUT,"@asyn($(PORT))MISC_LTRIM")
 }
 grecord(mbbo,"$(P)$(DSP)BBRN") {
     field(DESC,"Burr-Brown delay")
@@ -650,7 +650,7 @@ grecord(mbbo,"$(P)$(DSP)BBRN") {
     field(ONVL,"1")
     field(ONST,"On")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 21)")
+    field(OUT,"@asyn($(PORT))MISC_BBRN")
 }
 grecord(mbbo,"$(P)$(DSP)AUTO_PZ") {
     field(DESC,"Start auto-PZ")
@@ -660,7 +660,7 @@ grecord(mbbo,"$(P)$(DSP)AUTO_PZ") {
     field(ONVL,"1")
     field(ONST,"Start")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 240)")
+    field(OUT,"@asyn($(PORT))START_PZ")
 }
 grecord(mbbo,"$(P)$(DSP)AUTO_BDC") {
     field(DESC,"Start auto-BDC")
@@ -670,7 +670,7 @@ grecord(mbbo,"$(P)$(DSP)AUTO_BDC") {
     field(ONVL,"1")
     field(ONST,"Start")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 241)")
+    field(OUT,"@asyn($(PORT))START_BDC")
 }
 grecord(mbbo,"$(P)$(DSP)CLEAR") {
     field(DESC,"Clear errors, abort BDC/PZ")
@@ -680,7 +680,7 @@ grecord(mbbo,"$(P)$(DSP)CLEAR") {
     field(ONVL,"1")
     field(ONST,"Clear")
     field(DTYP, "asynUInt32Digital")
-    field(OUT,"@asyn($(PORT) 242)")
+    field(OUT,"@asyn($(PORT))CLEAR_ERRORS")
 }
 
 # This is where all of the readback records begin
@@ -709,7 +709,7 @@ grecord(mbbi,"$(P)$(DSP)READ_GMOD") {
     field(TWVL,"2")
     field(TWST,"Hold")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 32)")
+    field(INP,"@asyn($(PORT))STABLZ_GMOD")
     field(FLNK, "$(P)$(DSP)GOVR PP MS")
 }
 grecord(mbbi,"$(P)$(DSP)GOVR") {
@@ -722,7 +722,7 @@ grecord(mbbi,"$(P)$(DSP)GOVR") {
     field(ONST,"Overrange")
     field(ONSV, "MAJOR")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 244)")
+    field(INP,"@asyn($(PORT))STABLZ_GOVR")
     field(FLNK, "$(P)$(DSP)GOVF PP MS")
 }
 grecord(mbbi,"$(P)$(DSP)GOVF") {
@@ -735,7 +735,7 @@ grecord(mbbi,"$(P)$(DSP)GOVF") {
     field(ONST,"Overflow")
     field(ONSV, "MAJOR")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 245)")
+    field(INP,"@asyn($(PORT))STABLZ_GOVF")
     field(FLNK, "$(P)$(DSP)SGN PP MS")
 }
 grecord(ai,"$(P)$(DSP)SGN") {
@@ -745,7 +745,7 @@ grecord(ai,"$(P)$(DSP)SGN") {
     field(HOPR,"8191")
     field(PREC,"0")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 62)")
+    field(INP,"@asyn($(PORT))STABLZ_GAIN")
 }
 grecord(mbbi,"$(P)$(DSP)READ_ZMOD") {
     field(DESC,"Zero mode")
@@ -758,7 +758,7 @@ grecord(mbbi,"$(P)$(DSP)READ_ZMOD") {
     field(TWST,"Hold")
     field(FLNK, "$(P)$(DSP)ZOVR PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 33)")
+    field(INP,"@asyn($(PORT))STABLZ_ZMOD")
 }
 grecord(mbbi,"$(P)$(DSP)ZOVR") {
     field(DESC,"Zero overrange")
@@ -771,7 +771,7 @@ grecord(mbbi,"$(P)$(DSP)ZOVR") {
     field(ONSV, "MAJOR")
     field(FLNK, "$(P)$(DSP)ZOVF PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 246)")
+    field(INP,"@asyn($(PORT))STABLZ_ZOVR")
 }
 grecord(mbbi,"$(P)$(DSP)ZOVF") {
     field(DESC,"Zero overflow")
@@ -784,7 +784,7 @@ grecord(mbbi,"$(P)$(DSP)ZOVF") {
     field(ONSV, "MAJOR")
     field(FLNK, "$(P)$(DSP)SZER PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 247)")
+    field(INP,"@asyn($(PORT))STABLZ_ZOVF")
 }
 grecord(ai,"$(P)$(DSP)SZER") {
     field(DESC,"Stabilizer zero")
@@ -793,7 +793,7 @@ grecord(ai,"$(P)$(DSP)SZER") {
     field(HOPR,"4095")
     field(PREC,"0")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 63)")
+    field(INP,"@asyn($(PORT))STABLZ_ZERO")
 }
 
 # Filter readback
@@ -811,7 +811,7 @@ grecord(ai,"$(P)$(DSP)READ_PZ") {
     field(HOPR,"4095.")
     field(PREC,"0")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 7)")
+    field(INP,"@asyn($(PORT))FILTER_PZ")
 }
 grecord(ai,"$(P)$(DSP)PZ_INFO") {
     field(DESC,"Auto PZ value")
@@ -821,7 +821,7 @@ grecord(ai,"$(P)$(DSP)PZ_INFO") {
     field(PREC,"0")
     field(FLNK, "$(P)$(DSP)PZAER PP MS")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 38)")
+    field(INP,"@asyn($(PORT))INFO_PZ")
 }
 grecord(mbbi,"$(P)$(DSP)PZAER") {
     field(DESC,"PZ error")
@@ -842,7 +842,7 @@ grecord(mbbi,"$(P)$(DSP)PZAER") {
     field(FRST,"Aborted")
     field(FRSV, "MINOR")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 248)")
+    field(INP,"@asyn($(PORT))INFO_PZAER")
 }
 grecord(ai,"$(P)$(DSP)READ_FT") {
     field(DESC,"Actual flat top")
@@ -851,7 +851,7 @@ grecord(ai,"$(P)$(DSP)READ_FT") {
     field(HOPR,"30.")
     field(PREC,"1")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 54)")
+    field(INP,"@asyn($(PORT))FILTER_FT")
 }
 grecord(ai,"$(P)$(DSP)BDC_INFO") {
     field(DESC,"Optimum flat top")
@@ -861,7 +861,7 @@ grecord(ai,"$(P)$(DSP)BDC_INFO") {
     field(PREC,"1")
     field(FLNK, "$(P)$(DSP)BDCAER PP MS")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 39)")
+    field(INP,"@asyn($(PORT))INFO_BDC")
 }
 grecord(mbbi,"$(P)$(DSP)BDCAER") {
     field(DESC,"BDC error")
@@ -882,7 +882,7 @@ grecord(mbbi,"$(P)$(DSP)BDCAER") {
     field(FRST,"Aborted")
     field(FRSV, "MINOR")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 249)")
+    field(INP,"@asyn($(PORT))INFO_BDCAER")
 }
 
 # Status readback
@@ -893,7 +893,7 @@ grecord(ai,"$(P)$(DSP)READ_STAT") {
     field(PREC,"0")
     field(FLNK,"$(P)$(DSP)PZBZ PP MS")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 70)")
+    field(INP,"@asyn($(PORT))STATUS_FLGS")
 }
 grecord(mbbi,"$(P)$(DSP)PZBZ") {
     field(DESC,"Pole-zero busy")
@@ -906,7 +906,7 @@ grecord(mbbi,"$(P)$(DSP)PZBZ") {
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)BDBZ PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 250)")
+    field(INP,"@asyn($(PORT))STATUS_PZBSY")
 }
 grecord(mbbi,"$(P)$(DSP)BDBZ") {
     field(DESC,"BDC busy")
@@ -919,7 +919,7 @@ grecord(mbbi,"$(P)$(DSP)BDBZ") {
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)MINT PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 251)")
+    field(INP,"@asyn($(PORT))STATUS_BDBSY")
 }
 grecord(mbbi,"$(P)$(DSP)MINT") {
     field(DESC,"Module reset")
@@ -932,7 +932,7 @@ grecord(mbbi,"$(P)$(DSP)MINT") {
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)DGBZ PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 252)")
+    field(INP,"@asyn($(PORT))STATUS_MINT")
 }
 grecord(mbbi,"$(P)$(DSP)DGBZ") {
     field(DESC,"Diagnostics busy")
@@ -945,7 +945,7 @@ grecord(mbbi,"$(P)$(DSP)DGBZ") {
     field(ONSV, "MINOR")
     field(FLNK,"$(P)$(DSP)MERR PP MS")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 253)")
+    field(INP,"@asyn($(PORT))STATUS_DGBSY")
 }
 grecord(mbbi,"$(P)$(DSP)MERR") {
     field(DESC,"Module error")
@@ -957,7 +957,7 @@ grecord(mbbi,"$(P)$(DSP)MERR") {
     field(ONST,"Error")
     field(ONSV, "MAJOR")
     field(DTYP, "asynUInt32Digital")
-    field(INP,"@asyn($(PORT) 254)")
+    field(INP,"@asyn($(PORT))STATUS_MERR")
 }
 
 # Throughput readback
@@ -968,5 +968,5 @@ grecord(ai,"$(P)$(DSP)READ_RATES") {
     field(HOPR,"1048575")
     field(PREC,"1")
     field(DTYP, "asynFloat64")
-    field(INP,"@asyn($(PORT) 36)")
+    field(INP,"@asyn($(PORT))INFO_THRP")
 }
