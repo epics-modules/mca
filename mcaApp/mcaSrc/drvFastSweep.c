@@ -25,8 +25,6 @@
 #include <asynInt32.h>
 #include <asynInt32Array.h>
 #include <asynFloat64.h>
-#include <asynFloat64Callback.h>
-#include <asynInt32ArrayCallback.h>
 #include <asynDrvUser.h>
 
 #include "mca.h"
@@ -139,16 +137,15 @@ int initFastSweep(const char *portName, const char *inputName,
     asynStatus status;
     asynInterface *pasynInterface;
     asynUser *pasynUser;
-    asynFloat64Callback *pfloat64Callback;
-    void *float64CallbackPvt;
-    asynInt32ArrayCallback *pint32ArrayCallback;
-    void *int32ArrayCallbackPvt;
     asynFloat64 *pfloat64;
     void *float64Pvt;
+    asynInt32Array *pint32Array;
+    void *int32ArrayPvt;
     asynDrvUser *pdrvUser;
     void *drvUserPvt;
     const char *ptypeName;
     size_t psize;
+    void *registrarPvt;
 
     pPvt = callocMustSucceed(1, sizeof(*pPvt), "initFastSweep");
     pPvt->maxSignals = maxSignals;
@@ -194,19 +191,19 @@ int initFastSweep(const char *portName, const char *inputName,
         errlogPrintf("initFastSweep: Can't register common.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32);
+    status = pasynInt32Base->initialize(pPvt->portName, &pPvt->int32);
     if (status != asynSuccess) {
         errlogPrintf("initFastSweep: Can't register int32.\n");
         return -1;
     }
 
-    status = pasynManager->registerInterface(pPvt->portName, &pPvt->float64);
+    status = pasynInt32Base->initialize(pPvt->portName, &pPvt->float64);
     if (status != asynSuccess) {
         errlogPrintf("initFastSweep: Can't register float64.\n");
         return -1;
     }
 
-    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32Array);
+    status = pasynInt32ArrayBase->initialize(pPvt->portName, &pPvt->int32Array);
     if (status != asynSuccess) {
         errlogPrintf("initFastSweep: Can't register int32Array.\n");
         return -1;
@@ -219,7 +216,6 @@ int initFastSweep(const char *portName, const char *inputName,
     }
 
     pasynUser = pasynManager->createAsynUser(0,0);
-    pasynUser = pasynUser;
     status = pasynManager->connectDevice(pasynUser, inputName, 0);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
@@ -239,18 +235,19 @@ int initFastSweep(const char *portName, const char *inputName,
     pdrvUser = (asynDrvUser *)pasynInterface->pinterface;
     drvUserPvt = pasynInterface->drvPvt;
 
-    /* Get the asynInt32ArrayCallback interface */
+    /* Get the asynInt32Array interface */
     pasynInterface = pasynManager->findInterface(pasynUser, 
-                                                 asynInt32ArrayCallbackType, 1);
+                                                 asynInt32ArrayType, 1);
     if (!pasynInterface) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "initFastSweep, find asynInt32ArrayCallback"
-                  " interface failed for input %s\n",
+                  "initFastSweep, find asynInt32Array interface failed"
+                  " for input %s\n",
                   inputName);
         return -1;
     }
-    pint32ArrayCallback = (asynInt32ArrayCallback *)pasynInterface->pinterface;
-    int32ArrayCallbackPvt = pasynInterface->drvPvt;
+    pint32Array = (asynInt32Array *)pasynInterface->pinterface;
+    int32ArrayPvt = pasynInterface->drvPvt;
+
     /* Configure the asynUser for data command */
     pdrvUser->create(drvUserPvt, pasynUser, "DATA", &ptypeName, &psize);
     if (strcmp(ptypeName, "DATA") != 0) {
@@ -258,32 +255,11 @@ int initFastSweep(const char *portName, const char *inputName,
                   "initFastSweep, error in drvUser for DATA\n");
         return(-1);
     }
-    pint32ArrayCallback->registerCallback(int32ArrayCallbackPvt, pasynUser, 
-                                          dataCallback, pPvt);
-
-    /* Get the asynFloat64Callback interface */
-    pasynInterface = pasynManager->findInterface(pasynUser,
-                                                 asynFloat64CallbackType, 1);
-    if (!pasynInterface) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "initFastSweep, find asynFloat64Callback"
-                  " interface failed for input %s\n",
-                  inputName);
-        return -1;
-    }
-    pfloat64Callback = (asynFloat64Callback *)pasynInterface->pinterface;
-    float64CallbackPvt = pasynInterface->drvPvt;
-    /* Configure the asynUser for SCAN_PERIOD command */
-    pdrvUser->create(drvUserPvt, pasynUser, "SCAN_PERIOD", &ptypeName, &psize);
-    if (strcmp(ptypeName, "SCAN_PERIOD") != 0) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "initFastSweep, error in drvUser for SCAN_PERIOD\n");
-        return(-1);
-    }
-    pfloat64Callback->registerCallback(float64CallbackPvt, pasynUser, 
-                                       intervalCallback, pPvt);
+    pint32Array->registerInterruptUser(int32ArrayPvt, pasynUser, 
+                                       dataCallback, pPvt, &registrarPvt);
 
     /* Get the asynFloat64 interface */
+    pasynUser = pasynManager->duplicateAsynUser(pasynUser,0,0);
     pasynInterface = pasynManager->findInterface(pasynUser,
                                                  asynFloat64Type, 1);
     if (!pasynInterface) {
@@ -295,6 +271,15 @@ int initFastSweep(const char *portName, const char *inputName,
     }
     pfloat64 = (asynFloat64 *)pasynInterface->pinterface;
     float64Pvt = pasynInterface->drvPvt;
+    /* Configure the asynUser for SCAN_PERIOD command */
+    pdrvUser->create(drvUserPvt, pasynUser, "SCAN_PERIOD", &ptypeName, &psize);
+    if (strcmp(ptypeName, "SCAN_PERIOD") != 0) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "initFastSweep, error in drvUser for SCAN_PERIOD\n");
+        return(-1);
+    }
+    pfloat64->registerInterruptUser(float64Pvt, pasynUser, 
+                                    intervalCallback, pPvt, &registrarPvt);
     status = pfloat64->read(float64Pvt, pasynUser, &pPvt->callbackInterval);
     return(0);
 }
@@ -386,15 +371,8 @@ static asynStatus fastSweepWrite(void *drvPvt, asynUser *pasynUser,
                                       epicsInt32 ivalue, epicsFloat64 dvalue)
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
-    mcaCommand command, *pcommand=pasynUser->drvUser;
+    mcaCommand command = pasynUser->reason;
     asynStatus status=asynSuccess;
-
-    if (!pcommand) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvFastSweep::fastSweepWrite:: null command pointer\n");
-        return(asynError);
-    }
-    command = *pcommand;
 
     epicsMutexLock(pPvt->mutexId);
     switch (command) {
@@ -494,15 +472,9 @@ static asynStatus fastSweepRead(void *drvPvt, asynUser *pasynUser,
                                 epicsInt32 *pivalue, epicsFloat64 *pfvalue)
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
-    mcaCommand command, *pcommand=pasynUser->drvUser;
+    mcaCommand command = pasynUser->reason;
     asynStatus status=asynSuccess;
 
-    if (!pcommand) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvFastSweep::fastSweepRead:: null command pointer\n");
-        return(asynError);
-    }
-    command = *pcommand;
     epicsMutexLock(pPvt->mutexId);
     switch (command) {
         case mcaAcquiring:
@@ -583,7 +555,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
         if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
-            pasynUser->drvUser = &mcaCommands[i].command;
+            pasynUser->reason = mcaCommands[i].command;
             if (pptypeName) *pptypeName = epicsStrDup(pstring);
             if (psize) *psize = sizeof(mcaCommands[i].command);
             asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -599,15 +571,13 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
 static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
                                  const char **pptypeName, size_t *psize)
 {
-    mcaCommand *pcommand = pasynUser->drvUser;
+    mcaCommand command = pasynUser->reason;
 
     *pptypeName = NULL;
     *psize = 0;
-    if (pcommand) {
-        if (pptypeName) 
-            *pptypeName = epicsStrDup(mcaCommands[*pcommand].commandString);
-        if (psize) *psize = sizeof(*pcommand);
-    }
+    if (pptypeName) 
+        *pptypeName = epicsStrDup(mcaCommands[command].commandString);
+    if (psize) *psize = sizeof(command);
     return(asynSuccess);
 }
 
