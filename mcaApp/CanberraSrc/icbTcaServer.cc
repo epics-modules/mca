@@ -19,8 +19,6 @@
 #include <iocsh.h>
 #include <epicsExport.h>
 #include <gpHash.h>
-#include <epicsTypes.h>
-#include <symTable.h>
 
 #include "Message.h"
 #include "Int32Message.h"
@@ -50,6 +48,7 @@ extern "C"
 #endif
 volatile int icbTcaDebug = 0;
 }
+epicsExportAddress(int, icbTcaDebug);
 
 static void *icbTcaHash;
 
@@ -144,6 +143,7 @@ extern "C" int icbTcaConfig(const char *serverName, int module, int enetAddress,
    if (parse_ICB_address(address, &m->module, &m->icbAddress) != OK) {
        errlogPrintf("icbTcaModule: failed to initialize this address: %s\n",
                            address);
+       m->module = -1;
        return(ERROR);
    }
    // Initialize the module. Can't turn on green light on this module, that is
@@ -199,6 +199,12 @@ void icbTcaServer::processMessages()
             continue;
          }
          module = m->module;
+         if (module < 0) {
+            DEBUG(1, "(processMessages): module does not exist\n");
+            psm->status = ERROR;
+            pMessageServer->reply(psm);
+            continue;
+         }
          icbAddress = m->icbAddress;
          if (psm->extra == ICB_WRITE) {  /* This is a write (output) command */
             if (psm->getType() == messageTypeInt32) {
@@ -423,7 +429,6 @@ static void icbTcaConfigCallFunc(const iocshArgBuf *args)
 
 void icbTcaServerRegister(void)
 {
-    addSymbol("icbTcaDebug", (void *)&icbTcaDebug, epicsInt32T);
     iocshRegister(&icbTcaSetupFuncDef,icbTcaSetupCallFunc);
     iocshRegister(&icbTcaConfigFuncDef,icbTcaConfigCallFunc);
 }
