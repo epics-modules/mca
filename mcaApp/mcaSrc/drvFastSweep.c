@@ -24,7 +24,7 @@
 #include <asynInt32ArrayCallback.h>
 
 #include "mca.h"
-#include "drvMcaAsyn.h"
+#include "asynMca.h"
 
 typedef struct {
     char *portName;
@@ -52,11 +52,11 @@ typedef struct {
 static void callback(void *drvPvt, epicsInt32 *data);
 static void nextPoint(fastSweepPvt *drvPvt, int *newData);
 static asynStatus command(void *drvPvt, asynUser *pasynUser,
-                          int signal, mcaCommand command,
+                          mcaCommand command,
                           int ivalue, double dvalue);
 static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
-                             int signal, mcaAsynAcquireStatus *pstat);
-static asynStatus readData(void *drvPvt, asynUser *pasynUser, int signal,
+                             mcaAsynAcquireStatus *pstat);
+static asynStatus readData(void *drvPvt, asynUser *pasynUser,
                            int maxChans, int *nactual, int *data);
 static void report(void *drvPvt, FILE *fp, int details);
 static asynStatus connect(void *drvPvt, asynUser *pasynUser);
@@ -202,7 +202,7 @@ static void nextPoint(fastSweepPvt *pPvt, epicsInt32 *newData)
 
 
 static asynStatus command(void *drvPvt, asynUser *pasynUser,
-                          int signal, mcaCommand command,
+                          mcaCommand command,
                           int ivalue, double dvalue)
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
@@ -288,7 +288,7 @@ static asynStatus command(void *drvPvt, asynUser *pasynUser,
 
    
 static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
-                             int signal, mcaAsynAcquireStatus *pstat)
+                             mcaAsynAcquireStatus *pstat)
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
 
@@ -303,11 +303,13 @@ static asynStatus readStatus(void *drvPvt, asynUser *pasynUser,
     return(asynSuccess);
 }
 
-static asynStatus readData(void *drvPvt, asynUser *pasynUser, int signal,
+static asynStatus readData(void *drvPvt, asynUser *pasynUser,
                            int maxChans, int *nactual, int *data)
 {
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
+    int signal;
 
+    pasynManager->getAddr(pasynUser, &signal);
     memcpy(data, &pPvt->pData[pPvt->maxPoints*signal], 
            pPvt->numPoints*sizeof(int));
     *nactual = pPvt->numPoints;

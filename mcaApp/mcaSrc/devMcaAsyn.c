@@ -32,7 +32,7 @@
 
 #include "mcaRecord.h"
 #include "mca.h"
-#include "drvMcaAsyn.h"
+#include "asynMca.h"
 
 /* For now we use a fixed-size message queue.  This will be fixed later */
 
@@ -47,7 +47,6 @@ typedef struct {
     mcaRecord *pmca;
     asynUser *pasynUser;
     epicsMessageQueueId msgQueueId;
-    int signal;
     asynMca *pasynMcaInterface;
     void *asynMcaInterfacePvt;
     mcaAsynAcquireStatus acquireStatus;
@@ -87,7 +86,7 @@ static long init_record(mcaRecord *pmca)
     struct vmeio *pvmeio;
     asynUser *pasynUser;
     char *port;
-    int addr=0;
+    int signal;
     asynStatus status;
     asynInterface *pasynInterface;
     mcaAsynPvt *pPvt;
@@ -106,12 +105,12 @@ static long init_record(mcaRecord *pmca)
     /* Get the VME link field */
     /* Get the signal from the VME signal */
     pvmeio = (struct vmeio*)&(pmca->inp.value);
-    pPvt->signal = pvmeio->signal;
+    signal = pvmeio->signal;
     /* Get the port name from the parm field */
     port = pvmeio->parm;             
 
     /* Connect to device */
-    status = pasynManager->connectDevice(pasynUser, port, addr);
+    status = pasynManager->connectDevice(pasynUser, port, signal);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                   "devMcaAsyn::init_record, %s connectDevice failed to %s\n",
@@ -303,7 +302,7 @@ void asynCallback(asynUser *pasynUser)
     case MSG_READ:
         /* Read data */
        pPvt->pasynMcaInterface->readData(pPvt->asynMcaInterfacePvt, 
-                                         pPvt->pasynUser, pPvt->signal, 
+                                         pPvt->pasynUser, 
                                          pmca->nuse, &pPvt->nread, pPvt->data);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
@@ -313,7 +312,7 @@ void asynCallback(asynUser *pasynUser)
     case MSG_GET_ACQ_STATUS:
         /* Read the current status of the device */
        pPvt->pasynMcaInterface->readStatus(pPvt->asynMcaInterfacePvt, 
-                                           pPvt->pasynUser, pPvt->signal, 
+                                           pPvt->pasynUser, 
                                            &pPvt->acquireStatus);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
@@ -323,7 +322,7 @@ void asynCallback(asynUser *pasynUser)
     default:
         /* All other commands just call drivers command() function */
         pPvt->pasynMcaInterface->command(pPvt->asynMcaInterfacePvt, 
-                                         pPvt->pasynUser, pPvt->signal,
+                                         pPvt->pasynUser,
                                          msg.command, msg.ivalue, msg.dvalue);
         break;
     }

@@ -19,7 +19,7 @@
 #include <asynDriver.h>
 
 #include "mca.h"
-#include "drvMcaAsyn.h"
+#include "asynMca.h"
 #include "nmc_sys_defs.h"
 
 typedef struct {
@@ -52,12 +52,12 @@ typedef struct {
 
 static int sendAIMSetup(mcaAIMPvt *drvPvt);
 static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser, 
-                             int signal, mcaCommand command, 
+                             mcaCommand command, 
                              int ivalue, double dvalue);
 static asynStatus AIMReadStatus(void *drvPvt, asynUser *pasynUser,
-                             int signal, mcaAsynAcquireStatus *pstat);
-static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser, int signal, 
-                           int maxChans, int *nactual, int *data);
+                                mcaAsynAcquireStatus *pstat);
+static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser, 
+                              int maxChans, int *nactual, int *data);
 static void AIMReport(void *drvPvt, FILE *fp, int details);
 static asynStatus AIMConnect(void *drvPvt, asynUser *pasynUser);
 static asynStatus AIMDisconnect(void *drvPvt, asynUser *pasynUser);
@@ -181,13 +181,16 @@ int AIMConfig(
 
 
 static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser, 
-                             int signal, mcaCommand command, 
+                             mcaCommand command, 
                              int ivalue, double dvalue)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
     int len;
     int address, seq;
     int status;
+    int signal;
+
+    pasynManager->getAddr(pasynUser, &signal);
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "mcaAIMAsynDriver::AIMCommand entry, command=%d, signal=%d, "
@@ -321,12 +324,15 @@ static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser,
 }
 
 
-static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser, int signal, 
+static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser,
                               int maxChans, int *nactual, int *data)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
     int status;
     int address;
+    int signal;
+
+    pasynManager->getAddr(pasynUser, &signal);
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "mcaAIMAsynDriver::AIMReadData entry, signal=%d, maxChans=%d\n", 
@@ -345,11 +351,14 @@ static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser, int signal,
 
 
 static asynStatus AIMReadStatus(void *drvPvt, asynUser *pasynUser,
-                                int signal, mcaAsynAcquireStatus *pstat)
+                                mcaAsynAcquireStatus *pstat)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
     int status;
     epicsTimeStamp now;
+    int signal;
+
+    pasynManager->getAddr(pasynUser, &signal);
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "mcaAIMAsynDriver::AIMReadStatus entry, signal=%d\n", signal);
