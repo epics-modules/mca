@@ -32,14 +32,6 @@
 #include	"mca.h"
 #include        "epicsExport.h"
 
-/* Debug support */
-#if 0
-#define Debug(l,FMT,V) ;
-#else
-#define Debug(l,FMT,V...) {if (l <= devMCA_softDebug) \
-			  { printf("%s(%d):",__FILE__,__LINE__); \
-                            printf(FMT,## V);}}
-#endif
 volatile int devMCA_softDebug = 0;
 
 /* Create DSET */
@@ -71,7 +63,7 @@ epicsExportAddress(dset, devMCA_soft);
 static long init_record(mcaRecord *pmca)
 {
 
-	Debug(5, "(init_record): entry for '%s'\n", pmca->name);
+	if (devMCA_softDebug > 5) errlogPrintf("(init_record): entry for '%s'\n", pmca->name);
 
 
 	pmca->nord = 0;
@@ -85,7 +77,7 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 	switch (msg) {
 	case mcaStartAcquire:
 		/* start acquisition */
-		Debug(5, "(send_msg): start acquisition %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): start acquisition %d\n", s);
 		break;
 	case mcaData:
 		/* start read operation */
@@ -102,12 +94,12 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 	case mcaNumChannels:
 		/* set number of channels */
 		nchans = *(long *)parg;
-		Debug(5, "(send_msg): acqu setup %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaSequence:
 		/* set sequence number */
 		seq = *(long *)parg;
-		Debug(5, "(send_msg): acqu setup %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaDwellTime:
 		/* set dwell time */
@@ -115,23 +107,23 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		break;
 	case mcaPresetRealTime:
 		/* set preset real time. Convert to centiseconds */
-		Debug(5, "(send_msg): acqu setpresets %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setpresets %d\n", s);
 		break;
 	case mcaPresetLiveTime:
 		/* set preset live time. Convert to centiseconds */
-		Debug(5, "(send_msg): acqu setpresets %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setpresets %d\n", s);
 		break;
 	case mcaPresetCounts:
 		/* set preset counts */
-		Debug(5, "(send_msg): acqu setpresets %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setpresets %d\n", s);
 		break;
 	case mcaPresetLowChannel:
 		/* set lower side of region integrated for preset counts */
-		Debug(5, "(send_msg): acqu setpresets %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setpresets %d\n", s);
 		break;
 	case mcaPresetHighChannel:
 		/* set high side of region integrated for preset counts */
-		Debug(5, "(send_msg): acqu setpresets %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setpresets %d\n", s);
 		break;
 	case mcaPresetSweeps:
 		/* set number of sweeps (for MCS mode) */
@@ -139,19 +131,19 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		break;
 	case mcaModePHA:
 		/* set mode to Pulse Height Analysis */
-		Debug(5, "(send_msg): acqu setup %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaModeMCS:
 		/* set mode to MultiChannel Scaler */
-		Debug(5, "(send_msg): acqu setup %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaModeList:
 		/* set mode to LIST (record each incoming event) */
-		Debug(5, "(send_msg): acqu setup %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaReadStatus:
 		/* Read the current status of the device */
-		Debug(5, "(send_msg): status update %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): status update %d\n", s);
 		/* pmca->ertm = ereal/100.0; */
 		/* pmca->eltm = elive/100.0; */
 		/* pmca->act = etotals; */
@@ -159,13 +151,13 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		break;
 	case mcaStopAcquire:
 		/* stop data acquisition */
-		Debug(5, "(send_msg): stop acquisition %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): stop acquisition %d\n", s);
 		break;
 	case mcaErase:
 		/* erase */
-		Debug(5, "(send_msg): erase %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): erase %d\n", s);
 		/* Set the elapsed live and real time back to zero. */
-		Debug(5, "(send_msg): set elapsed %d\n", s);
+		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): set elapsed %d\n", s);
 		break;
 	}
 	return(0);
@@ -175,7 +167,7 @@ static long read_array(mcaRecord *pmca)
 {
 	int nuse = pmca->nuse;
 
-	Debug(5, "(read_array): doing nothing\n");
+	if (devMCA_softDebug > 5) errlogPrintf("(read_array): doing nothing\n");
 	pmca->nord = nuse;
 	return(0);
 }

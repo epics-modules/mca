@@ -114,14 +114,6 @@
 #include    "mca.h"
 #include    "epicsExport.h"
 
-/* Debug support */
-#if 0
-#define Debug(l,FMT,V) ;
-#else
-#define Debug(l,FMT,V...) {if (l <= mcaRecordDebug) \
-              { errlogPrintf("%s(%d)(%s):",__FILE__,__LINE__,pmca->name); \
-                            errlogPrintf(FMT,##V);}}
-#endif
 volatile int mcaRecordDebug = 0;
 epicsExportAddress(int, mcaRecordDebug);
 
@@ -515,7 +507,7 @@ static long process(mcaRecord *pmca)
 
     /* init Not ACKnowledged flag */
     if (pmca->nack) {
-       Debug(1,"process: clearing NACK field\n")
+       if (mcaRecordDebug > 1) errlogPrintf("process: clearing NACK field\n");
        pmca->nack = 0; 
        MARK(M_NACK);
     }
@@ -525,7 +517,7 @@ static long process(mcaRecord *pmca)
     * if acquisition is in progress. It is up to device support to
     * prohibit this if necessary.
     */
-    Debug(2,"process: entry, rdng=%d, rdns=%d, read=%d\n", 
+    if (mcaRecordDebug > 2) errlogPrintf("process: entry, rdng=%d, rdns=%d, read=%d\n", 
                   pmca->rdng, pmca->rdns, pmca->read);
     if (pmca->rdns) goto read_status;
     if (pmca->rdng) goto read_data;
@@ -653,7 +645,7 @@ static long process(mcaRecord *pmca)
 
     /* Turn acquisition on or off.  Do this before reading device status */
     if (pmca->strt || NEWV_MARKED(M_ERST)) {
-       Debug(5,"process: start acquisition.\n");
+       if (mcaRecordDebug > 5) errlogPrintf("process: start acquisition.\n");
        status = (*pdset->send_msg) (pmca, mcaStartAcquire, NULL);
        if (pmca->strt) {
           pmca->strt=0; 
@@ -675,7 +667,7 @@ static long process(mcaRecord *pmca)
        }
     }
     if (pmca->stop) {
-       Debug(5,"process: stop acquisition.\n");
+       if (mcaRecordDebug > 5) errlogPrintf("process: stop acquisition.\n");
        status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
        pmca->stop=0; MARK(M_STOP);
     }
@@ -694,10 +686,10 @@ read_status:
     pmca->dwlp = pmca->dwel;
     rdns = pmca->rdns;  /* Save current state of rdns */
 
-    Debug(5,"process: reading elapsed time, etc.\n");
+    if (mcaRecordDebug > 5) errlogPrintf("process: reading elapsed time, etc.\n");
     status = (*pdset->send_msg)(pmca, mcaReadStatus, NULL);
     if (status) {
-       Debug(1,"process: error sending mcaReadStatus\n");
+       if (mcaRecordDebug > 1) errlogPrintf("process: error sending mcaReadStatus\n");
        pmca->nack = 1; MARK(M_NACK);
        pmca->acqg = 0;
     } else {
@@ -707,7 +699,7 @@ read_status:
         * data immediately.
         */
        if (!rdns && pmca->rdns) {
-          Debug(5,"process: waiting for read status callback.\n");
+          if (mcaRecordDebug > 5) errlogPrintf("process: waiting for read status callback.\n");
           MARK(M_RDNS);
           return(0);   /* Exit and wait for callback */
        }
@@ -742,7 +734,7 @@ read_status:
        MARK(M_IDTIM);
     }
 
-    Debug(5,"process: acqg=%d, acqp=%d\n", pmca->acqg, pmca->acqp);
+    if (mcaRecordDebug > 5) errlogPrintf("process: acqg=%d, acqp=%d\n", pmca->acqg, pmca->acqp);
     if (pmca->acqg != pmca->acqp) {
        MARK(M_ACQG);
        /* Force a read when acquire turns off */
@@ -756,10 +748,10 @@ read_data:
      * If pmca->rdng == 1 then this is a callback from device support, 
      * get data */
     if (pmca->rdng) {
-       Debug(5,"process: get data\n");
+       if (mcaRecordDebug > 5) errlogPrintf("process: get data\n");
        status = readValue(pmca); /* read the new value */
        if (status) {
-          Debug(1,"process: error reading data\n");
+          if (mcaRecordDebug > 1) errlogPrintf("process: error reading data\n");
           pmca->nack = 1; MARK(M_NACK);
        } else {
           MARK(M_VAL);
@@ -767,7 +759,7 @@ read_data:
        pmca->rdng = 0; MARK(M_RDNG);
     } else if (pmca->read) {
         /* Start a read */
-       Debug(5,"process: initiate read.\n");
+       if (mcaRecordDebug > 5) errlogPrintf("process: initiate read.\n");
        /* Record the time when read was begun */
        recGblGetTimeStamp(pmca);
        pmca->rtim = pmca->time.secPastEpoch + pmca->time.nsec*1.e-9;
@@ -784,12 +776,12 @@ read_data:
         * processed again.  Otherwise, we can get the data.
         */
         if (pmca->rdng) {
-            Debug(5,"process: waiting for read data callback.\n");
+            if (mcaRecordDebug > 5) errlogPrintf("process: waiting for read data callback.\n");
             MARK(M_RDNG);
             return(0);   /* Exit and wait for callback */
         } else {
             /* Data available immediately, get it */
-            Debug(5,"process: get data\n");
+            if (mcaRecordDebug > 5) errlogPrintf("process: get data\n");
             status = readValue(pmca); /* read the new value */
             if (status) {
                 pmca->nack = 1; MARK(M_NACK);
@@ -805,7 +797,7 @@ read_data:
     }
 
     if (preset_reached) {
-        Debug(5,"process: stop acquisition.\n");
+        if (mcaRecordDebug > 5) errlogPrintf("process: stop acquisition.\n");
         status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
     }
 
@@ -1111,7 +1103,7 @@ static long sum_ROIs(mcaRecord *pmca, short *preset_reached)
     struct roi *proi = (struct roi *)&pmca->r0lo;
     struct roiSum *psum = (struct roiSum *)&pmca->r0;
 
-    Debug(5,"sum_ROIs: entry\n");
+    if (mcaRecordDebug > 5) errlogPrintf("sum_ROIs: entry\n");
     (void)memset(pmca->pbg, 0, pmca->nmax*sizeofTypes[pmca->ftvl]);
     *preset_reached = 0;
     max = pmca->nord-1;
