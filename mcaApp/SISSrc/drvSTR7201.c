@@ -446,8 +446,8 @@ static int readFIFO(int card)
     struct strCard *p = &strCard[card];
     long *last = p->buffer + (p->maxSignals * p->nChans);
 
-    Debug(1, "readFIFO: csr=%lx\n", p->address->csr_reg);
-    Debug(1, "readFIFO: irq=%lx\n", p->address->irq_reg);
+    Debug(10, "readFIFO: csr=%lx\n", p->address->csr_reg);
+    Debug(10, "readFIFO: irq=%lx\n", p->address->irq_reg);
 
     /* First check if FIFO is empty and return immediately if it is */
     if (p->address->csr_reg & CSR_M_FIFO_FLAG_EMPTY) return (OK);
@@ -466,7 +466,7 @@ static int readFIFO(int card)
         break;
     case SIMPLE_SCALER_MODE:
         while (!(p->address->csr_reg & CSR_M_FIFO_FLAG_EMPTY)) {
-            Debug(1, "readFIFO: nextSignal=%d\n", p->nextSignal);
+            Debug(10, "readFIFO: nextSignal=%d\n", p->nextSignal);
             *(p->buffer + p->nextSignal) += p->address->fifo_reg;
             p->nextSignal++;
             if (p->nextSignal == p->maxSignals) {
@@ -688,11 +688,13 @@ int drvSTR7201AcqOn(int card)
     p->address->csr_reg = p->csr_write;
 
 
-    /* 
-     * Do one software next_clock. This starts the module counting without 
+    /* Do one software next_clock. This starts the module counting without 
      * waiting for the first external next clock. 
-     */
-    p->address->soft_next_reg = 1; 
+     * Only do this if we are using internal channel advance and
+     * MCS mode on new firmware */
+    if ((p->firmwareVersion < 5) ||
+        ((p->mode == MULTICHANNEL_SCALER_MODE) && 
+         (p->lneSource == LNE_INTERNAL))) p->address->soft_next_reg = 1; 
 
     /* Set software acquiring flag */
     p->acquiring = 1;
