@@ -18,8 +18,10 @@ DBD += mcaCanberraSupport.dbd
 
 #=============================
 # Right now we only build this on vxWorks and Linux
-LIBRARY_IOC_Linux += mcaCanberra
 LIBRARY_IOC_vxWorks += mcaCanberra
+# If libnet IS installed on your HOST Linux system;
+# uncomment the following line.
+#LIBRARY_IOC_Linux += mcaCanberra
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaCanberra_SRCS += nmc_comm_subs_1.c 
@@ -45,7 +47,10 @@ mcaCanberra_SYS_LIBS_vxWorks += -nil-
 
 #==================================
 PROD_IOC_vxWorks += mcaAIM
-PROD_IOC_Linux += mcaAIM
+# If libnet IS installed on your HOST Linux system;
+#  uncomment the following line.
+#PROD_IOC_Linux += mcaAIM
+
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAIM_SRCS += mcaCanberra_registerRecordDeviceDriver.cpp
 mcaAIM_SRCS_DEFAULT += mcaCanberraMain.cpp
@@ -65,7 +70,9 @@ mcaAIM_LDOBJS_vxWorks += -nil-
 
 #=============================
 PROD_IOC_vxWorks += nmcTest
-PROD_IOC_Linux += nmcTest
+# If libnet IS installed on your HOST Linux system;
+# uncomment the following line.
+#PROD_IOC_Linux += nmcTest
 
 nmcTest_LIBS += ca Com 
 nmcTest_SYS_LIBS_DEFAULT += net pcap
@@ -79,7 +86,9 @@ nmcTest_SRCS += nmc_test.c
 
 #=============================
 PROD_IOC_vxWorks += nmcDemo
-PROD_IOC_Linux += nmcDemo
+# If libnet IS installed on your HOST Linux system;
+# uncomment the following line.
+#PROD_IOC_Linux += nmcDemo
 
 nmcDemo_LIBS += ca Com 
 nmcDemo_SYS_LIBS_DEFAULT += net pcap
