@@ -176,7 +176,7 @@ void mcaAIMServer::processMessages()
         struct devMcaMpfStatus *pstat;
         int signal, address, seq;
         int s;
-		epicsTime *pnow = new epicsTime;
+	epicsTime now;
 
         while((inmsg = pMessageServer->receive())) {
             Float64Message *pim = (Float64Message *)inmsg;
@@ -297,7 +297,7 @@ void mcaAIMServer::processMessages()
                  /* Read the current status of the device if signal 0 or
                    * if the existing status info is too old */
                   if ((signal == 0) || 
-                      ((pnow->getCurrent() - maxStatusTime) > *statusTime)) {
+                      ((now.getCurrent() - maxStatusTime) > *statusTime)) {
                      s = nmc_acqu_statusupdate(module, adc, 0, 0, 0,
                               &elive, &ereal, &etotals, &acquiring);
                      DEBUG(2, 
