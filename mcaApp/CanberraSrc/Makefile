@@ -35,7 +35,6 @@ mcaCanberra_SRCS += icb_control_subs2.c
 mcaCanberra_SRCS += icb_user_subs.c
 mcaCanberra_SRCS += icb_show_modules.c
 mcaCanberra_SRCS += drvIcbAsyn.c
-mcaCanberra_SRCS += devIcbAsyn.c
 mcaCanberra_SRCS += mcaCanberraRegister.c
 mcaCanberra_LIBS += calc sscan autosave
 mcaCanberra_LIBS += asyn 
