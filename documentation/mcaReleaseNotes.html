@@ -1,175 +1,171 @@
 <html>
 
 <head>
-<meta http-equiv="Content-Type"
-content="text/html; charset=iso-8859-1">
-<meta name="GENERATOR" content="Microsoft FrontPage 4.0">
-<title>ReleaseNotes.html</title>
+<title>mcaReleaseNotes</title>
 </head>
 
 <body>
 
 <h1 align="center">mca Release Notes</h1>
 
-<h2 align="center">Mark Rivers</h2>
-
-<p align="center">&nbsp;</p>
-
-<h2 align="center">Contents</h2>
-
-<p align="left"><a href="#Release 6-2">Release 6-2 - March 4, 2004</a></p>
-
-<p align="left"><a href="#Release 6-1">Release 6-1 - November 5,
-2003</a></p>
-
-<p align="left"><a href="#Release 5-4">Release 5-4 - May 26,
-2003</a></p>
-
-<p align="left"><a href="#Release 5.03 - April3, 2003">Release 5-3 - April 3,
-2003</a></p>
-
-<p align="left"><a href="#Release 5.02 - January 11, 2001">Release 5-2 - July
-29, 2002</a></p>
-
-<p align="left"><a href="#Release 5.02 - January 11, 2001">Release 5.02 -
-January 11, 2001</a></p>
-
-<p align="left"><a href="#Release 5.01 - October 3, 2000">Release
-5.01 - October 3, 2000</a></p>
-
-<p align="left"><a href="#Release 5.0 - September 9, 2000">Release
-5.0 - September 9, 2000</a></p>
-
-<p align="left"><a href="#August 22, 2000">August 22, 2000</a></p>
-
-<p align="left"><a href="#December 6, 1999">December 6, 1999</a></p>
-
-<h2 align="center"><a name="Release 6-2">Release 6-2 - March 4, 2004</a></h2>
-
-<p align="left">Now depends on mpf, calc (transform record), sscan (busy record), std (scaler record),
-and autosave (only for mca/iocBoot) modules</p>
-<p align="left">Reordered device support entries in mcaSupport.dbd so that soft support is the default</p>
-<p align="left">Added genSub-based support for summing spectra.  (Not built by default.)</p>
-<p align="left">Initial enum values for icb amp, adc, dsp no longer cause medm error</p>
-<p align="left">Fixed handling of non-existent ICB modules.</p>
-<p align="left">devIcbMpf.cc no longer directs ao record to convert RVAL to VAL.</p>
-<p align="left">CanberraSrc now builds on Darwin</p>
-<p align="left">Fixed memory leak in mcaAIMServer.cc</p>
-
-
-<h2 align="center"><a name="Release 6-1">Release 6-1 - November 5,
-2003</a></h2>
-
-<p align="left">First official release for EPICS 3.14.</p>
-
-<p align="left">THIS DOCUMENTATION NEEDS WORK</p>
-
-<h2 align="center"><a name="Release 5-4">Release 5-4 - May 26,
-2003</a></h2>
-
-<p align="left">THIS DOCUMENTATION NEEDS WORK</p>
-
-<h2 align="center"><a name="Release 5.03 - April3, 2003">Release 5-3 - April 3,
-2003</a></h2>
-
-<p align="left">This release requires at least MPF 1-10.</p>
-
-<p align="left">Modified devMcaMpf.cc and devIcbMpf.cc to work with MPF 1-10 by
-adding &quot;bind&quot; call.</p>
-
-<p align="left">Fixed bug with 25MHz reference pulses in drvSTR7201.c</p>
-
-<p align="left">Added 9element .adl files and 4element_time.adl.</p>
-
-<p align="left">&nbsp;</p>
-
-<h2 align="center"><a name="Release 5.02 - January 11, 2001">Release 5-2 - July
-29, 2002</a></h2>
-
-<p align="left">This new release has the following enhancements:</p>
+<h2 align="center">Release 6-4 (March 24, 2005)</h2>
 <ul>
-  <li>
-    <p align="left">Increased number of ROIs from 10 to 32.</li>
-  <li>
-    <p align="left">Added DTIM (dead-time) and IDTIM&nbsp; (instantaneous
-    dead-time) fields for dead time calculation.</li>
-  <li>
-    <p align="left">                          Added alarm fields for high deadtime alarms.</li>
-  <li>
-    <p align="left">                          Modified mcaRecord.c get_precision() to return 6 digits for calibration                          fields.</li>
-  <li>
-    <p align="left">Added soft-channel device support</li>
-  <li>
-    <p align="left">Made the elapsed live-time and real-time fields (ERTM and ELTM) writeable (removed
-    SPC_NOMOD) for soft record support</li>
-  <li>
-    <p align="left">Changed MCA record and ICB device support to pass messages
-    at init_record time to initialize hardware, rather than doing it in
-    connectIO in device support. This was                          made possible in version MPF version 1-8 which                          allows waiting for the MPF server to connect and                          sending messages before iocInit is complete.&nbsp;
-    This is much cleaner, since device support no longer needs to know details
-    about the records.</li>
+  <li>Converted from mpf to asyn for device and driver support. This was a major re-write
+      of the mca device support, as well as all drivers.</li>
+  <li>Changed debugging to use asynTrace facility except for mcaRecord.</li>
+  <li>Converted device support from C++ to C.</li>
+  <li>Changed thread creation to use generic stack sizes, not absolute.</li>
+  <li>Canberra AIM support on Linux is no longer built by default, for those who
+      do not have libnet and libpcap.  Must edit CanberraSrc/Makefile to build it.</li>
+  <li>Changed device support for Canberra ICB modules to use generic asyn device support.</li>
+  <li>Fixed problems on the SIS (Struck) MCS with software_next.  
+      In the previous version we always did
+      a software_next when starting acquire.  This had the following problems:
+      <ul>
+        <li>In external channel advance mode the first dwell period was always a single
+            pulse, even if prescale was > 1.
+        <li>When using the EPICS scaler record it counted for .01 seconds longer than requested.
+        <li>The scaler started counting immediately in external channel advance mode, leading
+            to "hot" first pixels.
+      </ul>
+      Now we only do software_next for old firmware, or for internal channel advance
+      mode in MCS (not scaler) mode.
+      The new side-effect is that it takes one extra external pulse to arm the system.
+      The unit does not count at all until the first external pulse arrives, and it
+      takes N+1 pulses before it gets to channel 2.
+      We still give software_next in internal channel advance MCS mode, because
+      otherwise it misses one entire dwell period at the beginning.
 </ul>
+<p></p>
 
-<p align="left">&nbsp;</p>
-
-<h2 align="center"><a name="Release 5.02 - January 11, 2001">Release 5.02 -
-January 11, 2001</a></h2>
-
-<p align="left">This new release has the following enhancements:</p>
+<h2 align="center">Release 6-3 (May 12, 2004)</h2>
 <ul>
-  <li>
-    <p align="left">This release completes the conversion to MPF of all software
-which communicates with the AIM.&nbsp; All of the Instrument Control Bus (ICB)
-modules now communicate via MPF.&nbsp; The ICB software includes the following
-enhancements:
+  <li>Converted from using libnet 1.0.2a to 1.1.2.1 on non-vxWorks systems.
+      This release of libnet has a different API.</li>
+  <li>Fixed problems with dset definitions that did not work with EPICS 3.14.5.
+</ul>
+<p></p>
+
+<h2 align="center">Release 6-2 (March 4, 2004)</h2>
+<ul>
+  <li>Now depends on mpf, calc (transform record), sscan (busy record), std (scaler record),
+      and autosave (only for mca/iocBoot) modules</li>
+  <li>Reordered device support entries in mcaSupport.dbd so that soft support is the default</li>
+  <li>Added genSub-based support for summing spectra.  (Not built by default.)</li>
+  <li>Initial enum values for icb amp, adc, dsp no longer cause medm error</li>
+  <li>Fixed handling of non-existent ICB modules.</li>
+  <li>devIcbMpf.cc no longer directs ao record to convert RVAL to VAL.</li>
+  <li>CanberraSrc now builds on Darwin</li>
+  <li>Fixed memory leak in mcaAIMServer.cc</li>
+</ul>
+<p></p>
+
+<h2 align="center">Release 6-1 (November 5, 2003)</h2>
+<ul>
+  <li>First official release for EPICS 3.14.</li>
+  <li>Converted from vxWorks specific calls to OSI calls.
+  <li>Moved source files from src/ to new directories mcaSrc/, CanberraSrc/, SISSrc/.</li>
+  <li>Switched databases from ddfanout record to standard dfanout record now that data type is double.</li>
+</ul>
+<p></p>
+
+<h2 align="center">Release 5-5 (July 23, 2003)</h2>
+<ul>
+  <li>Force NUSE to be <= NMAX in mcaRecord.c</li>
+</ul>
+<p></p>
+
+<h2 align="center">Release 5-4 (May 26, 2003)</h2>
+<ul>
+  <li>Created abstract base class fastSweep.cc to simplify drivers like the Ip330 and quadEM.</li>
+  <li>Added .req files for save_restore.</li>
+</ul>
+<p></p>
+
+<h2 align="center">Release 5-3 (April 3, 2003</a></h2>
+<ul>
+  <li>This release requires at least MPF 1-10.</li>
+  <li>Modified devMcaMpf.cc and devIcbMpf.cc to work with MPF 1-10 by
+      adding &quot;bind&quot; call.</li>
+  <li>Fixed bug with 25MHz reference pulses in drvSTR7201.c</li>
+  <li>Added 9element .adl files and 4element_time.adl.</li>
+</ul>
+<p></p>
+
+<h2 align="center">Release 5-2 (July 29, 2002)</h2>
+
+<p>This new release has the following enhancements:</p>
+<ul>
+  <li>Increased number of ROIs from 10 to 32.</li>
+  <li>Added DTIM (dead-time) and IDTIM&nbsp; (instantaneous
+    dead-time) fields for dead time calculation.</li>
+  <li>Added alarm fields for high deadtime alarms.</li>
+  <li>Modified mcaRecord.c get_precision() to return 6 digits for calibration fields.</li>
+  <li>Added soft-channel device support</li>
+  <li>Made the elapsed live-time and real-time fields (ERTM and ELTM) writeable (removed
+      SPC_NOMOD) for soft record support</li>
+  <li>Changed MCA record and ICB device support to pass messages
+      at init_record time to initialize hardware, rather than doing it in
+      connectIO in device support. This was made possible in version MPF version 1-8 which
+      allows waiting for the MPF server to connect and sending messages before iocInit is complete.
+      This is much cleaner, since device support no longer needs to know details
+      about the records.</li>
+</ul>
+<p></p>
+
+<h2 align="center">Release 5.02 (January 11, 2001)</h2>
+
+<p>This new release has the following enhancements:</p>
+<ul>
+  <li>This release completes the conversion to MPF of all software
+      which communicates with the AIM.&nbsp; All of the Instrument Control Bus (ICB)
+      modules now communicate via MPF.&nbsp; The ICB software includes the following
+      enhancements:
     <ul>
-      <li>
-        <p align="left">Improved support is provided for the ADC (9633 and 9635),&nbsp; amplifier (9615),
-    high-voltage power-supply (HVPS) (9641, 9645) and the amp/three-channel
-    analyzer (TCA) (2016) modules.&nbsp; Previously the support for these
-        modules used the EPICS subroutine record.&nbsp; This was very restrictive, since it limited the number of
-    parameters which could be controlled, and more importantly prevented the use
-    of normal EPICS menus and graphical limits on analog values.&nbsp; The new support uses standard EPICS records (ao,
-    mbbo, ai, mbbi), removing these restrictions.&nbsp; All of the software for
-    the ICB devices has been replaced (source code, databases and medm display
-    files).&nbsp; The database and medm files have the same names to simplify
-    the transition, but significant changes are required to the vxWorks startup
-    files.&nbsp; The changes are described below.</li>
-      <li>
-        <p align="left">The previous support was synchronous, which meant that EPICS
-    scan tasks waited while sometimes lengthy communicates took place between
-    the IOC and the AIM.&nbsp; This was not good EPICS programming
-    practice.&nbsp; The new device support is asynchronous, as it should be.</li>
-      <li>
-        <p align="left">Bugs in the TCA device support have been fixed.&nbsp; The
-    TCA device support now works with the MCA record to automatically program
-    the TCA windows to the energies of the first three ROIs, which is very
-    simple and convenient.</li>
+      <li>Improved support is provided for the ADC (9633 and 9635),&nbsp; amplifier (9615),
+          high-voltage power-supply (HVPS) (9641, 9645) and the amp/three-channel
+          analyzer (TCA) (2016) modules.&nbsp; Previously the support for these
+          modules used the EPICS subroutine record. This was very restrictive, 
+          since it limited the number of parameters which could be controlled, 
+          and more importantly prevented the use
+          of normal EPICS menus and graphical limits on analog values.
+          The new support uses standard EPICS records (ao,
+          mbbo, ai, mbbi), removing these restrictions. All of the software for
+          the ICB devices has been replaced (source code, databases and medm display
+          files). The database and medm files have the same names to simplify
+          the transition, but significant changes are required to the vxWorks startup
+          files. The changes are described below.</li>
+      <li>The previous support was synchronous, which meant that EPICS
+          scan tasks waited while sometimes lengthy communications took place between
+          the IOC and the AIM.&nbsp; This was not good EPICS programming
+          practice. The new device support is asynchronous, as it should be.</li>
+      <li>Bugs in the TCA device support have been fixed.&nbsp; The
+          TCA device support now works with the MCA record to automatically program
+          the TCA windows to the energies of the first three ROIs, which is very
+          simple and convenient.</li>
     </ul>
   </li>
-  <li>
-    <p align="left">Device support is now provided to use the SIS 380x
-    multiscaler with the EPICS scaler record, in addition to the previous
-    support for the EPICS MCA record.&nbsp; This means that it is no longer
-    necessary to install a Joerger scaler in an IOCs which has an SIS scaler
-    installed.&nbsp; The only limitation of this device support is that the SIS
-    cannot actually count for a preset time or a preset number of counts on a
-    channel.&nbsp; Thus, the presets are handled in software, and the actual
-    count time will be &lt;=0.01 second greater than requested.&nbsp; The actual
-    count time is very accurate, it is just not exactly what was
-    requested.&nbsp; As part of this support it is now possible to enable the 25
-    MHz internal clock on the first scaler input channel.&nbsp; This is done by adding an
-    additional parameter to STR7201Config().&nbsp; This internal clock can be
-    used to count for a preset time without need for an external clock.&nbsp; It is
-    possible to use the SIS 380x as both an MCA and as a simple scaler without
-    rebooting the IOC.&nbsp; The only restriction is that it cannot be acquiring
-    in both modes simultaneously, i.e. scaler counting must complete before
-    starting MCA acquisition and visa-versa.</li>
-  <li>
-    <p align="left">Databases and medm screens are now provided for 8-channel
-    and 32-channel versions of the SIS 380x multiscaler with the MCA
-    record.&nbsp; These screens control all channels of the SIS simultaneously,
-    but allow for displaying combined or individual spectra.</li>
+  <li>Device support is now provided to use the SIS 380x
+      multiscaler with the EPICS scaler record, in addition to the previous
+      support for the EPICS MCA record.&nbsp; This means that it is no longer
+      necessary to install a Joerger scaler in an IOCs which has an SIS scaler
+      installed.&nbsp; The only limitation of this device support is that the SIS
+      cannot actually count for a preset time or a preset number of counts on a
+      channel.&nbsp; Thus, the presets are handled in software, and the actual
+      count time will be &lt;=0.01 second greater than requested.&nbsp; The actual
+      count time is very accurate, it is just not exactly what was
+      requested.&nbsp; As part of this support it is now possible to enable the 25
+      MHz internal clock on the first scaler input channel.&nbsp; This is done by adding an
+      additional parameter to STR7201Config().&nbsp; This internal clock can be
+      used to count for a preset time without need for an external clock.&nbsp; It is
+      possible to use the SIS 380x as both an MCA and as a simple scaler without
+      rebooting the IOC.&nbsp; The only restriction is that it cannot be acquiring
+      in both modes simultaneously, i.e. scaler counting must complete before
+      starting MCA acquisition and visa-versa.</li>
+  <li>Databases and medm screens are now provided for 8-channel
+      and 32-channel versions of the SIS 380x multiscaler with the MCA
+      record.&nbsp; These screens control all channels of the SIS simultaneously,
+      but allow for displaying combined or individual spectra.</li>
 </ul>
 <h3 align="left">ICB source code organization</h3>
 <p align="left">The device support for the ICB modules is provided in four main
@@ -1245,23 +1241,5 @@ nmc_comm_subs_2.c, nmc_test.c, icb_sys_defs.h</h3>
         rather than <font face="Times New Roman"><tt>char</tt></font>.</li>
 </ul>
 
-<p align="left"><strong>Things to do in mcaApp and IDL&nbsp;</strong></p>
-
-<ul>
-    <li><p align="left">Update 13element and 3element files</p>
-    </li>
-</ul>
-
-<ul>
-    <li><p align="left">Document changes to IDL code</p>
-    </li>
-    <li><p align="left">Fix IDL code for get_environment - make
-        it actually read current environment with EPICS_MCA and
-        EPICS_MED</p>
-    </li>
-    <li><p align="left">Make spectra_scan a class in EPICS_MCA
-        and EPICS_MED</p>
-    </li>
-</ul>
 </body>
 </html>
