@@ -111,7 +111,7 @@ static icbCommandStruct icbTcaCommands[MAX_ICB_TCA_COMMANDS] = {
     {icbTcaLow2,     "LOW2"},
     {icbTcaHi2,      "HI2"},
     {icbTcaLow3,     "LOW3"},
-    {icbTcaHi3,      "HIGH3"},
+    {icbTcaHi3,      "HI3"},
     {icbTcaStatus,   "STATUS"}
 };
 
@@ -404,13 +404,13 @@ int icbConfig(const char *portName, int enetAddress, int icbAddress,
         errlogPrintf("icbConfig ERROR: Can't register common.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->int32);
+    status = pasynInt32Base->initialize(pPvt->portName,&pPvt->int32);
     if (status != asynSuccess) {
         errlogPrintf("icbConfig ERROR: Can't register int32\n");
         return -1;
     }
  
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->float64);
+    status = pasynFloat64Base->initialize(pPvt->portName,&pPvt->float64);
     if (status != asynSuccess) {
         errlogPrintf("icbConfig ERROR: Can't register float64\n");
         return -1;
@@ -487,7 +487,7 @@ static asynStatus getBounds(void *drvPvt, asynUser *pasynUser,
 static asynStatus int32Write(void *drvPvt, asynUser *pasynUser,
                              epicsInt32 value)
 {
-    int icbCommand=*(int *)pasynUser->drvUser;
+    int icbCommand=pasynUser->reason;
 
     return(icbWrite(drvPvt, pasynUser, icbCommand, value, 0.));
 }
@@ -495,7 +495,7 @@ static asynStatus int32Write(void *drvPvt, asynUser *pasynUser,
 static asynStatus float64Write(void *drvPvt, asynUser *pasynUser,
                                epicsFloat64 value)
 {
-    int icbCommand=*(int *)pasynUser->drvUser;
+    int icbCommand=pasynUser->reason;
 
     return(icbWrite(drvPvt, pasynUser, icbCommand, 0, value));
 }
@@ -949,7 +949,7 @@ static asynStatus icbWriteDsp(drvIcbAsynPvt *pPvt, asynUser *pasynUser,
 static asynStatus int32Read(void *drvPvt, asynUser *pasynUser,
                             epicsInt32 *value)
 {
-    int icbCommand=*(int *)pasynUser->drvUser;
+    int icbCommand=pasynUser->reason;
 
     return(icbRead(drvPvt, pasynUser, icbCommand, value, NULL));
 }
@@ -957,7 +957,7 @@ static asynStatus int32Read(void *drvPvt, asynUser *pasynUser,
 static asynStatus float64Read(void *drvPvt, asynUser *pasynUser,
                               epicsFloat64 *value)
 {
-    int icbCommand=*(int *)pasynUser->drvUser;
+    int icbCommand=pasynUser->reason;
 
     return(icbRead(drvPvt, pasynUser, icbCommand, NULL, value));
 }
@@ -1276,7 +1276,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
     for (i=0; i<maxCommands; i++) {
         pstring = pcommands[i].commandString;
         if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
-            pasynUser->drvUser = &pcommands[i].command;
+            pasynUser->reason = pcommands[i].command;
             if (pptypeName) *pptypeName = epicsStrDup(pstring);
             if (psize) *psize = sizeof(pcommands[i].command);
             asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -1292,15 +1292,13 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
 static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
                                  const char **pptypeName, size_t *psize)
 {
-    int *pcommand = pasynUser->drvUser;
+    int command = pasynUser->reason;
 
     *pptypeName = NULL;
     *psize = 0;
-    if (pcommand) {
-        if (pptypeName)
-            *pptypeName = epicsStrDup("icbCommands");
-        if (psize) *psize = sizeof(*pcommand);
-    }
+    if (pptypeName)
+        *pptypeName = epicsStrDup("icbCommands");
+    if (psize) *psize = sizeof(command);
     return(asynSuccess);
 }
 

@@ -225,19 +225,19 @@ int AIMConfig(
         errlogPrintf("AIMConfig: Can't register common.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32);
+    status = pasynInt32Base->initialize(pPvt->portName, &pPvt->int32);
     if (status != asynSuccess) {
         errlogPrintf("AIMConfig: Can't register int32.\n");
         return -1;
     }
 
-    status = pasynManager->registerInterface(pPvt->portName, &pPvt->float64);
+    status = pasynFloat64Base->initialize(pPvt->portName, &pPvt->float64);
     if (status != asynSuccess) {
         errlogPrintf("AIMConfig: Can't register float64.\n");
         return -1;
     }
 
-    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32Array);
+    status = pasynInt32ArrayBase->initialize(pPvt->portName, &pPvt->int32Array);
     if (status != asynSuccess) {
         errlogPrintf("AIMConfig: Can't register int32Array.\n");
         return -1;
@@ -268,20 +268,12 @@ static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
                            epicsInt32 ivalue, epicsFloat64 dvalue)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
-    mcaCommand command, *pcommand=pasynUser->drvUser;
+    mcaCommand command=pasynUser->reason;
     asynStatus status=asynSuccess;
     int len;
     int address, seq;
     int signal;
     epicsTimeStamp now;
-
-
-    if (!pcommand) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvMcaAIMAsyn::AIMWrite:: null command pointer\n");
-        return(asynError);
-    }
-    command = *pcommand;
 
     pasynManager->getAddr(pasynUser, &signal);
 
@@ -451,15 +443,9 @@ static asynStatus AIMRead(void *drvPvt, asynUser *pasynUser,
                           epicsInt32 *pivalue, epicsFloat64 *pfvalue)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
-    mcaCommand command, *pcommand=pasynUser->drvUser;
+    mcaCommand command = pasynUser->reason;
     asynStatus status=asynSuccess;
 
-    if (!pcommand) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "drvMcaAIM::AIMRead:: null command pointer\n");
-        return(asynError);
-    }
-    command = *pcommand;
     switch (command) {
         case mcaAcquiring:
             *pivalue = pPvt->acquiring;
@@ -557,7 +543,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
         if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
-            pasynUser->drvUser = &mcaCommands[i].command;
+            pasynUser->reason = mcaCommands[i].command;
             if (pptypeName) *pptypeName = epicsStrDup(pstring);
             if (psize) *psize = sizeof(mcaCommands[i].command);
             asynPrint(pasynUser, ASYN_TRACE_FLOW,
@@ -573,15 +559,13 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
 static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
                                  const char **pptypeName, size_t *psize)
 {
-    mcaCommand *pcommand = pasynUser->drvUser;
+    mcaCommand command = pasynUser->reason;
 
     *pptypeName = NULL;
     *psize = 0;
-    if (pcommand) {
-        if (pptypeName)
-            *pptypeName = epicsStrDup(mcaCommands[*pcommand].commandString);
-        if (psize) *psize = sizeof(*pcommand);
-    }
+    if (pptypeName)
+        *pptypeName = epicsStrDup(mcaCommands[command].commandString);
+    if (psize) *psize = sizeof(command);
     return(asynSuccess);
 }
 
