@@ -34,5 +34,8 @@ icbTcaSetup("icbTca/1", 10, 100)
 icbTcaConfig("icbTca/1", 0, 0x59e, 8)
 dbLoadRecords("../../../mca/mcaApp/Db/icb_tca.db", "P=13LAB:,TCA=tca1,MCA=aim_adc2,CARD=0,SERVER=icbTca/1,ADDR=0")
 
+set_pass0_restoreFile "auto_settings.sav"
+set_pass1_restoreFile "auto_settings.sav"
+
 iocInit()
 
