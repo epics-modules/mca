@@ -53,6 +53,8 @@
 *                        network to hang.
 *   13-Feb-2001    mlr   Documented 28-Nov change, which was provisional until
 *                        proven to work.
+*   27-Aug-2001    mlr   Removed test for valid network in nmcEtherGrab to work
+*                        around a bug in Tornado 2.02
 *******************************************************************************/
 
 #include "nmc_sys_defs.h"
@@ -389,7 +391,12 @@ BOOL nmcEtherGrab(struct ifnet *pIf, char *buffer, int length)
          In vxWorks 5.4 the pIf which is passed to this routine is
          apparently to a copy of the ifnet structure, so we need to
          compare the if_name and if_unit fields.
+
+         NOTE: There was a bug introduced in a vxWorks patch with 5.4.2 that made
+         the following test fail, since pIf is no longer a valid pointer.  Skip
+         this test for now. Assume the message came from the first net.
        */
+      goto writeMsg;
       if ((*net).valid &&
          (strcmp((*net).pIf->if_name, pIf->if_name) == 0) &&
          ((*net).pIf->if_unit == pIf->if_unit)) goto writeMsg;
