@@ -29,6 +29,7 @@
 #include <epicsMessageQueue.h>
 
 #include "asynDriver.h"
+#include "asynUtils.h"
 
 #include "mcaRecord.h"
 #include "mca.h"
@@ -46,7 +47,6 @@ typedef struct {
 typedef struct {
     mcaRecord *pmca;
     asynUser *pasynUser;
-    epicsMessageQueueId msgQueueId;
     asynMca *pasynMcaInterface;
     void *asynMcaInterfacePvt;
     mcaAsynAcquireStatus acquireStatus;
@@ -83,10 +83,9 @@ epicsExportAddress(dset, devMcaAsyn);
 
 static long init_record(mcaRecord *pmca)
 {
-    struct vmeio *pvmeio;
     asynUser *pasynUser;
-    char *port;
-    int signal;
+    char *port, *userParam;
+    int card, signal;
     asynStatus status;
     asynInterface *pasynInterface;
     mcaAsynPvt *pPvt;
@@ -102,12 +101,13 @@ static long init_record(mcaRecord *pmca)
     pPvt->pmca = pmca;
     pmca->dpvt = pPvt;
 
-    /* Get the VME link field */
-    /* Get the signal from the VME signal */
-    pvmeio = (struct vmeio*)&(pmca->inp.value);
-    signal = pvmeio->signal;
-    /* Get the port name from the parm field */
-    port = pvmeio->parm;             
+    status = pasynUtils->parseVmeIo(pasynUser, &pmca->inp, &card, &signal,
+                                    &port, &userParam);
+    if (status != asynSuccess) {
+        errlogPrintf("devMcaAsyn::init_record %s bad link %s\n",
+                     pmca->name, pasynUser->errorMessage);
+        goto bad;
+    }
 
     /* Connect to device */
     status = pasynManager->connectDevice(pasynUser, port, signal);
@@ -129,15 +129,6 @@ static long init_record(mcaRecord *pmca)
     pPvt->pasynMcaInterface = (asynMca *)pasynInterface->pinterface;
     pPvt->asynMcaInterfacePvt = pasynInterface->drvPvt;
 
-    /* Create EPICS message queue */
-    pPvt->msgQueueId = epicsMessageQueueCreate(MSG_QUEUE_SIZE, 
-                                               sizeof(mcaAsynMessage));
-    if (pPvt->msgQueueId == 0) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "devMcaAsyn::init_record, %s message queue create failed\n",
-                  pmca->name);
-        goto bad;
-    }
     return(0);
 bad:
     pmca->pact=1;
@@ -149,13 +140,8 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
 {
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pmca->dpvt;
     asynUser *pasynUser = pPvt->pasynUser;
-    asynUser *pasynUserCopy;
-    mcaAsynMessage msg;
+    mcaAsynMessage *pmsg;
     int status;
-
-    msg.command = command;
-    msg.ivalue=0;
-    msg.dvalue=0.;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "devMcaAsyn::send_msg: command=%d, pact=%d, rdns=%d, rdng=%d\n", 
@@ -184,7 +170,12 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
 
     /* Make a copy of asynUser.  This is needed because we can have multiple
      * requests queued.  It will be freed in the callback */
-    pasynUserCopy = pasynManager->duplicateAsynUser(pasynUser, asynCallback, 0);
+    pasynUser = pasynManager->duplicateAsynUser(pasynUser, asynCallback, 0);
+    pmsg = pasynManager->memMalloc(sizeof *pmsg);
+    pmsg->command = command;
+    pmsg->ivalue=0;
+    pmsg->dvalue=0.;
+    pasynUser->userData = pmsg;
 
     switch (command) {
     case MSG_ACQUIRE:
@@ -204,35 +195,35 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         break;
     case MSG_SET_NCHAN:
         /* set number of channels */
-        msg.ivalue = pmca->nuse;
+        pmsg->ivalue = pmca->nuse;
         break;
     case MSG_SET_DWELL:
         /* set dwell time per channel. */
-        msg.dvalue = pmca->dwel;
+        pmsg->dvalue = pmca->dwel;
         break;
     case MSG_SET_REAL_TIME:
         /* set preset real time. */
-        msg.dvalue = pmca->prtm;
+        pmsg->dvalue = pmca->prtm;
         break;
     case MSG_SET_LIVE_TIME:
         /* set preset live time */
-        msg.dvalue = pmca->pltm;
+        pmsg->dvalue = pmca->pltm;
         break;
     case MSG_SET_COUNTS:
         /* set preset counts */
-        msg.dvalue = pmca->pct;
+        pmsg->dvalue = pmca->pct;
         break;
     case MSG_SET_LO_CHAN:
         /* set preset count low channel */
-        msg.ivalue = pmca->pct;
+        pmsg->ivalue = pmca->pct;
         break;
     case MSG_SET_HI_CHAN:
         /* set preset count high channel */
-        msg.ivalue = pmca->pcth;
+        pmsg->ivalue = pmca->pcth;
         break;
     case MSG_SET_NSWEEPS:
         /* set number of sweeps (for MCS mode) */
-        msg.ivalue = pmca->pswp;
+        pmsg->ivalue = pmca->pswp;
         break;
     case MSG_SET_MODE_PHA:
         /* set mode to pulse height analysis */
@@ -258,17 +249,15 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         break;
     case MSG_SET_SEQ:
         /* set sequence number */
-        msg.ivalue = pmca->seq;
+        pmsg->ivalue = pmca->seq;
         break;
     case MSG_SET_PSCL:
         /* set channel advance prescaler. */
-        msg.ivalue = pmca->pscl;
+        pmsg->ivalue = pmca->pscl;
         break;
     }
-    /* Put the message on the message queue */
-    epicsMessageQueueSend(pPvt->msgQueueId, (void *)&msg, sizeof(msg));
     /* Queue asyn request, so we get a callback when driver is ready */
-    status = pasynManager->queueRequest(pasynUserCopy, 0, 0);
+    status = pasynManager->queueRequest(pasynUser, 0, 0);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
                   "devMcaAsyn::send_msg: error calling queueRequest, %s\n", 
@@ -283,22 +272,15 @@ void asynCallback(asynUser *pasynUser)
 {
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pasynUser->userPvt;
     mcaRecord *pmca = pPvt->pmca;
-    mcaAsynMessage msg;
+    mcaAsynMessage *pmsg = pasynUser->userData;
     rset *prset = (rset *)pmca->rset;
     int status;
 
-    /* Read message from queue */
-    status = epicsMessageQueueReceive(pPvt->msgQueueId, &msg, sizeof(msg));
-
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "devMcaAsyn::asynCallback: command=%d, ivalue=%d, dvalue=%f\n",
-              msg.command, msg.ivalue, msg.dvalue);
+              pmsg->command, pmsg->ivalue, pmsg->dvalue);
 
-    /* If we are already in COMM_ALARM then this server is not reachable, 
-     * return */
-    if ((pmca->nsta == COMM_ALARM) || (pmca->stat == COMM_ALARM)) return;
-
-    switch (msg.command) {
+    switch (pmsg->command) {
     case MSG_READ:
         /* Read data */
        pPvt->pasynMcaInterface->readData(pPvt->asynMcaInterfacePvt, 
@@ -323,9 +305,10 @@ void asynCallback(asynUser *pasynUser)
         /* All other commands just call drivers command() function */
         pPvt->pasynMcaInterface->command(pPvt->asynMcaInterfacePvt, 
                                          pPvt->pasynUser,
-                                         msg.command, msg.ivalue, msg.dvalue);
+                                         pmsg->command, pmsg->ivalue, pmsg->dvalue);
         break;
     }
+    pasynManager->memFree(pmsg, sizeof(*pmsg));
     status = pasynManager->freeAsynUser(pasynUser);
     if (status != asynSuccess) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
