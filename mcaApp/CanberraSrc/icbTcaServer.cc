@@ -12,11 +12,15 @@
 //  or mbbo.
 
 #include <stdlib.h>
-#include <stddef.h>
 #include <string.h>
 #include <stdio.h>
 
 #include <errlog.h>
+#include <iocsh.h>
+#include <epicsExport.h>
+#include <gpHash.h>
+#include <epicsTypes.h>
+#include <symTable.h>
 
 #include "Message.h"
 #include "Int32Message.h"
@@ -42,10 +46,12 @@ extern "C"
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
-#define DEBUG(l,f,v...) { if(l<=icbTcaServerDebug) errlogPrintf(f,## v); }
+#define DEBUG(l,f,v...) { if(l<=icbTcaDebug) errlogPrintf(f,## v); }
 #endif
-volatile int icbTcaServerDebug = 0;
+volatile int icbTcaDebug = 0;
 }
+
+static void *icbTcaHash;
 
 typedef struct {
    int  module;
@@ -74,6 +80,7 @@ extern "C" int icbTcaAddModule(icbTcaServer *picbTcaServer,
 class icbTcaServer {
 public:
     void processMessages();
+    static icbTcaServer *findModule(const char *serverName);
     MessageServer *pMessageServer;
     static void icbTcaServerTask(icbTcaServer *);
     int writeReg2(ICB_TCA_MODULE *m);
@@ -83,13 +90,16 @@ public:
     ICB_TCA_MODULE *icbTcaModule;
 };
 
-extern "C" icbTcaServer *icbTcaConfig(const char *serverName, int maxModules,
-                             char *address, int queueSize)
+extern "C" int icbTcaSetup(const char *serverName, int maxModules, int queueSize)
 {
-    char taskname[80];
     int s;
 
     icbTcaServer *p = new icbTcaServer;
+    if (icbTcaHash == NULL) gphInitPvt(&icbTcaHash, 256);
+    char *temp = (char *)malloc(strlen(serverName)+1);
+    strcpy(temp, serverName);
+    GPHENTRY *hashEntry = gphAdd(icbTcaHash, temp, NULL);
+    hashEntry->userPvt = p;
     p->pMessageServer = new MessageServer(serverName, queueSize);
     p->maxModules = maxModules;
     p->icbTcaModule = (ICB_TCA_MODULE *)
@@ -99,22 +109,26 @@ extern "C" icbTcaServer *icbTcaConfig(const char *serverName, int maxModules,
     s=icb_initialize();
     DEBUG(5, "(icbTcaConfig): icb_initialize=%d\n", s);
 
-    icbTcaAddModule(p, 0, address);
-    strcpy(taskname, "t");
-    strcat(taskname, serverName);
-    epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000, 
+    epicsThreadId threadId = epicsThreadCreate(serverName, epicsThreadPriorityMedium, 10000, 
                       (EPICSTHREADFUNC)icbTcaServer::icbTcaServerTask, (void*) p);
-    if(threadId == NULL)
-       errlogPrintf("%s icbTcaServer ThreadCreate Failure\n",
-            p->pMessageServer->getName());
-    return(p);
+    if(threadId == NULL) {
+       errlogPrintf("%s icbTcaServer ThreadCreate Failure\n", serverName);
+       return(-1);
+    }
+    return(0);
 }
 
-extern "C" int icbTcaAddModule(icbTcaServer *p, int module,
-                             char *address)
+extern "C" int icbTcaConfig(const char *serverName, int module, int enetAddress, int icbAddress)
 {
    ICB_TCA_MODULE *m;
    unsigned char csr;
+   char address[20];
+
+   icbTcaServer *p = icbTcaServer::findModule(serverName);
+   if (p == NULL) {
+      printf("icbTcaConfig: can't find icbTcaServer %s\n", serverName);
+      return(-1);
+   }
 
    if ((module < 0) || (module >= p->maxModules)) {
       errlogPrintf("icbTcaAddModule: invalid module\n");
@@ -126,6 +140,7 @@ extern "C" int icbTcaAddModule(icbTcaServer *p, int module,
       return(ERROR);
    }
    m->defined = 1;
+   sprintf(address, "NI%X:%X", enetAddress, icbAddress);
    if (parse_ICB_address(address, &m->module, &m->icbAddress) != OK) {
        errlogPrintf("icbTcaModule: failed to initialize this address: %s\n",
                            address);
@@ -136,6 +151,13 @@ extern "C" int icbTcaAddModule(icbTcaServer *p, int module,
    csr = ICB_M_CTRL_CLEAR_RESET;
    write_icb(m->module, m->icbAddress, 0, 1, &csr);
    return(OK);
+}
+
+icbTcaServer* icbTcaServer::findModule(const char *name)
+{
+    GPHENTRY *hashEntry = gphFind(icbTcaHash, name, NULL);
+    if (hashEntry == NULL) return (NULL);
+    return((icbTcaServer *)hashEntry->userPvt);
 }
 
 void icbTcaServer::icbTcaServerTask(icbTcaServer *picbTcaServer)
@@ -371,3 +393,39 @@ int icbTcaServer::writeDiscrim(ICB_TCA_MODULE *m, double percent, int discrim_sp
       registers[0], registers[1]);
    return(write_icb(m->module, m->icbAddress, 3, 2, &registers[0]));
 }
+
+static const iocshArg icbTcaSetupArg0 = { "Server name",iocshArgString};
+static const iocshArg icbTcaSetupArg1 = { "MaxModules",iocshArgInt};
+static const iocshArg icbTcaSetupArg2 = { "QueueSize",iocshArgInt};
+static const iocshArg * const icbTcaSetupArgs[3] = {&icbTcaSetupArg0,
+                                                 &icbTcaSetupArg1,
+                                                 &icbTcaSetupArg2};
+static const iocshFuncDef icbTcaSetupFuncDef = {"icbTcaSetup",3,icbTcaSetupArgs};
+static void icbTcaSetupCallFunc(const iocshArgBuf *args)
+{
+    icbTcaSetup(args[0].sval, args[1].ival, args[2].ival);
+}
+
+
+static const iocshArg icbTcaConfigArg0 = { "Server name",iocshArgString};
+static const iocshArg icbTcaConfigArg1 = { "Module",iocshArgInt};
+static const iocshArg icbTcaConfigArg2 = { "Ethernet address",iocshArgInt};
+static const iocshArg icbTcaConfigArg3 = { "ICB address",iocshArgInt};
+static const iocshArg * const icbTcaConfigArgs[4] = {&icbTcaConfigArg0,
+                                                  &icbTcaConfigArg1,
+                                                  &icbTcaConfigArg2,
+                                                  &icbTcaConfigArg3};
+static const iocshFuncDef icbTcaConfigFuncDef = {"icbTcaConfig",4,icbTcaConfigArgs};
+static void icbTcaConfigCallFunc(const iocshArgBuf *args)
+{
+    icbTcaConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
+}
+
+void icbTcaServerRegister(void)
+{
+    addSymbol("icbTcaDebug", (void *)&icbTcaDebug, epicsInt32T);
+    iocshRegister(&icbTcaSetupFuncDef,icbTcaSetupCallFunc);
+    iocshRegister(&icbTcaConfigFuncDef,icbTcaConfigCallFunc);
+}
+
+epicsExportRegistrar(icbTcaServerRegister);

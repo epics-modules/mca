@@ -12,11 +12,15 @@
 //  or mbbo.
 
 #include <stdlib.h>
-#include <stddef.h>
 #include <string.h>
 #include <stdio.h>
 
 #include <errlog.h>
+#include <iocsh.h>
+#include <epicsExport.h>
+#include <gpHash.h>
+#include <epicsTypes.h>
+#include <symTable.h>
 
 #include "Message.h"
 #include "Int32Message.h"
@@ -36,10 +40,12 @@ extern "C"
 #ifdef NODEBUG
 #define DEBUG(l,f,v) ;
 #else
-#define DEBUG(l,f,v...) { if(l<=icbDspServerDebug) errlogPrintf(f,## v); }
+#define DEBUG(l,f,v...) { if(l<=icbDspDebug) errlogPrintf(f,## v); }
 #endif
-volatile int icbDspServerDebug = 0;
+volatile int icbDspDebug = 0;
 }
+
+static void *icbDspHash;
 
 typedef struct {
    int  module;
@@ -53,13 +59,10 @@ typedef struct {
    int  status_flgs;
 } ICB_DSP_MODULE;
 
-class icbDspServer;
-extern "C" int icbDspAddModule(icbDspServer *picbDspServer, 
-                                int module, char *address);
-
 class icbDspServer {
 public:
     void processMessages();
+    static icbDspServer *findModule(const char *serverName);
     MessageServer *pMessageServer;
     static void icbDspServerTask(icbDspServer *);
     int sendDsp(int module, int icbAddress, int command, unsigned short data);
@@ -73,13 +76,16 @@ public:
     ICB_DSP_MODULE *icbDspModule;
 };
 
-extern "C" icbDspServer *icbDspConfig(const char *serverName, int maxModules, 
-                             char *address, int queueSize)
+extern "C" int icbDspSetup(const char *serverName, int maxModules, int queueSize)
 {
-    char taskname[80];
     int s;
 
     icbDspServer *p = new icbDspServer;
+    if (icbDspHash == NULL) gphInitPvt(&icbDspHash, 256);
+    char *temp = (char *)malloc(strlen(serverName)+1);
+    strcpy(temp, serverName);
+    GPHENTRY *hashEntry = gphAdd(icbDspHash, temp, NULL);
+    hashEntry->userPvt = p;
     p->pMessageServer = new MessageServer(serverName, queueSize);
     p->maxModules = maxModules;
     p->icbDspModule = (ICB_DSP_MODULE *)
@@ -89,23 +95,27 @@ extern "C" icbDspServer *icbDspConfig(const char *serverName, int maxModules,
     s=icb_initialize();
     DEBUG(5, "(icbDspConfig): icb_initialize=%d\n", s);
 
-    icbDspAddModule(p, 0, address);
-    strcpy(taskname, "t");
-    strcat(taskname, serverName);
-    epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000,
+    epicsThreadId threadId = epicsThreadCreate(serverName, epicsThreadPriorityMedium, 10000,
                       (EPICSTHREADFUNC)icbDspServer::icbDspServerTask, (void*) p);
-    if(threadId == NULL)
-       errlogPrintf("%s icbDspServer ThreadCreate Failure\n",
-            p->pMessageServer->getName());
-    return(p);
+    if(threadId == NULL) {
+       errlogPrintf("%s icbDspServer ThreadCreate Failure\n", serverName);
+       return(-1);
+    }
+    return(0);
 }
 
-extern "C" int icbDspAddModule(icbDspServer *p, int module, 
-                             char *address)
+extern "C" int icbDspConfig(const char *serverName, int module, int enetAddress, int icbAddress)
 {
    ICB_DSP_MODULE *m;
    unsigned char csr;
+   char address[20];
    
+   icbDspServer *p = icbDspServer::findModule(serverName);
+   if (p == NULL) {
+      printf("icbDspConfig: can't find icbDspServer %s\n", serverName);
+      return(-1);
+   }
+ 
    if ((module < 0) || (module >= p->maxModules)) {
       errlogPrintf("icbDspAddModule: invalid module\n");
       return(ERROR);
@@ -116,6 +126,7 @@ extern "C" int icbDspAddModule(icbDspServer *p, int module,
       return(ERROR);
    }
    m->defined = 1;
+   sprintf(address, "NI%X:%X", enetAddress, icbAddress);
    if (parse_ICB_address(address, &m->module, &m->icbAddress) != OK) {
        errlogPrintf("icbDspModule: failed to initialize this address: %s\n",
                            address);
@@ -126,6 +137,13 @@ extern "C" int icbDspAddModule(icbDspServer *p, int module,
    write_icb(m->module, m->icbAddress, 0, 1, &csr);
    return(OK);
 }    
+
+icbDspServer* icbDspServer::findModule(const char *name)
+{
+    GPHENTRY *hashEntry = gphFind(icbDspHash, name, NULL);
+    if (hashEntry == NULL) return (NULL);
+    return((icbDspServer *)hashEntry->userPvt);
+}
 
 void icbDspServer::icbDspServerTask(icbDspServer *picbDspServer)
 {
@@ -548,3 +566,39 @@ double icbDspServer::unpackThroughput(unsigned short ival)
    mantissa = (ival & 0x1FFF);
    return(mantissa * (2 << exponent));
 }
+
+static const iocshArg icbDspSetupArg0 = { "Server name",iocshArgString};
+static const iocshArg icbDspSetupArg1 = { "MaxModules",iocshArgInt};
+static const iocshArg icbDspSetupArg2 = { "QueueSize",iocshArgInt};
+static const iocshArg * const icbDspSetupArgs[3] = {&icbDspSetupArg0,
+                                                 &icbDspSetupArg1,
+                                                 &icbDspSetupArg2};
+static const iocshFuncDef icbDspSetupFuncDef = {"icbDspSetup",3,icbDspSetupArgs};
+static void icbDspSetupCallFunc(const iocshArgBuf *args)
+{
+    icbDspSetup(args[0].sval, args[1].ival, args[2].ival);
+}
+
+
+static const iocshArg icbDspConfigArg0 = { "Server name",iocshArgString};
+static const iocshArg icbDspConfigArg1 = { "Module",iocshArgInt};
+static const iocshArg icbDspConfigArg2 = { "Ethernet address",iocshArgInt};
+static const iocshArg icbDspConfigArg3 = { "ICB address",iocshArgInt};
+static const iocshArg * const icbDspConfigArgs[4] = {&icbDspConfigArg0,
+                                                  &icbDspConfigArg1,
+                                                  &icbDspConfigArg2,
+                                                  &icbDspConfigArg3};
+static const iocshFuncDef icbDspConfigFuncDef = {"icbDspConfig",4,icbDspConfigArgs};
+static void icbDspConfigCallFunc(const iocshArgBuf *args)
+{
+    icbDspConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
+}
+
+void icbDspServerRegister(void)
+{
+    addSymbol("icbDspDebug", (void *)&icbDspDebug, epicsInt32T);
+    iocshRegister(&icbDspSetupFuncDef,icbDspSetupCallFunc);
+    iocshRegister(&icbDspConfigFuncDef,icbDspConfigCallFunc);
+}
+
+epicsExportRegistrar(icbDspServerRegister);

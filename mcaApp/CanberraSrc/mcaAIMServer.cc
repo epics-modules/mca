@@ -20,6 +20,8 @@
 #include <epicsTime.h>
 
 #include <errlog.h>
+#include <iocsh.h>
+#include <epicsExport.h>
 
 #include "Message.h"
 #include "Int32Message.h"
@@ -374,3 +376,35 @@ int mcaAIMServer::sendAIMSetup()
    DEBUG(5, "(sendAIMSetup): status=%d\n", s);
    return(s);
 }
+
+static const iocshArg AIMConfigArg0 = { "Server name",iocshArgString};
+static const iocshArg AIMConfigArg1 = { "Address",iocshArgInt};
+static const iocshArg AIMConfigArg2 = { "Port",iocshArgInt};
+static const iocshArg AIMConfigArg3 = { "MaxChan",iocshArgInt};
+static const iocshArg AIMConfigArg4 = { "MaxSign",iocshArgInt};
+static const iocshArg AIMConfigArg5 = { "MaxSeq",iocshArgInt};
+static const iocshArg AIMConfigArg6 = { "Eth. dev",iocshArgString};
+static const iocshArg AIMConfigArg7 = { "QueSiz",iocshArgInt};
+static const iocshArg * const AIMConfigArgs[8] = {&AIMConfigArg0,
+                                                  &AIMConfigArg1,
+                                                  &AIMConfigArg2,
+                                                  &AIMConfigArg3,
+                                                  &AIMConfigArg4,
+                                                  &AIMConfigArg5,
+                                                  &AIMConfigArg6,
+                                                  &AIMConfigArg7};
+static const iocshFuncDef AIMConfigFuncDef = {"AIMConfig",8,AIMConfigArgs};
+static void AIMConfigCallFunc(const iocshArgBuf *args)
+{
+    AIMConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival,
+              args[4].ival, args[5].ival, args[6].sval, args[7].ival);
+}
+
+void mcaAIMRegister(void)
+{
+    iocshRegister(&AIMConfigFuncDef,AIMConfigCallFunc);
+}
+
+epicsExportRegistrar(mcaAIMRegister);
+ 
+

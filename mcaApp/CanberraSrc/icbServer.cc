@@ -8,9 +8,8 @@
 //    9633/9635 ADC
 //    9615      Amplifier
 //    9641/9621 HVPS
-//              TCA
-//  The 9660 DSP module has its own separate server file (icbDSPServer.cc) because it
-//  is quite complex.
+//  The 9660 DSP module and TCA have their own separate server files because they
+//  are quite complex.
 //
 //  It can receive Float64 messages (ao or ai records) or Int32 messages (mbbo,
 //  mbbi records).  pm->extra is ICB_READ for ai or mbbi, and ICB_WRITE for ao
@@ -22,6 +21,8 @@
 
 #include <errlog.h>
 
+#include <iocsh.h>
+#include <epicsExport.h>
 #include <gpHash.h>
 
 #include "Message.h"
@@ -47,6 +48,7 @@ extern "C"
 #endif
 volatile int icbServerDebug = 0;
 }
+static void* icbHash=NULL;
 
 typedef struct {
    char address[80];
@@ -54,15 +56,13 @@ typedef struct {
    int  index;
 } ICB_MODULE;
 
-class icbServer;
-extern "C" int icbAddModule(icbServer *picbServer,
-                                int module, char *address);
 
 class icbServer {
 public:
     void processMessages();
     MessageServer *pMessageServer;
     static void icbServerTask(icbServer *);
+    static icbServer *findModule(const char *serverName);
     int writeAdc(ICB_MODULE *m, long command, char c, void *addr);
     int writeAmp(ICB_MODULE *m, long command, char c, void *addr);
     int writeHvps(ICB_MODULE *m, long command, char c, void *addr);
@@ -73,13 +73,16 @@ public:
     ICB_MODULE *icbModule;
 };
 
-extern "C" icbServer *icbConfig(const char *serverName, int maxModules,
-                             char *address, int queueSize)
+extern "C" int icbSetup(const char *serverName, int maxModules, int queueSize)
 {
-    char taskname[80];
     int s;
 
     icbServer *p = new icbServer;
+    if (icbHash == NULL) gphInitPvt(&icbHash, 256);
+    char *temp = (char *)malloc(strlen(serverName)+1);
+    strcpy(temp, serverName);
+    GPHENTRY *hashEntry = gphAdd(icbHash, temp, NULL);
+    hashEntry->userPvt = p;
     p->pMessageServer = new MessageServer(serverName, queueSize);
     p->maxModules = maxModules;
     p->icbModule = (ICB_MODULE *)
@@ -88,40 +91,49 @@ extern "C" icbServer *icbConfig(const char *serverName, int maxModules,
     s=icb_initialize();
     DEBUG(5, "(icbConfig): icb_initialize=%d\n", s);
 
-    icbAddModule(p, 0, address);
-    strcpy(taskname, "t");
-    strcat(taskname, serverName);
-    epicsThreadId threadId = epicsThreadCreate(taskname, epicsThreadPriorityMedium, 10000, 
+    epicsThreadId threadId = epicsThreadCreate(serverName, epicsThreadPriorityMedium, 10000, 
                       (EPICSTHREADFUNC)icbServer::icbServerTask, (void*) p);
-    if(threadId == NULL)
-       errlogPrintf("%s icbServer ThreadCreate Failure\n",
-            p->pMessageServer->getName());
-    return(p);
+    if(threadId == NULL) {
+       errlogPrintf("%s icbServer ThreadCreate Failure\n", serverName);
+       return(-1);
+    }
+    return(0);
 }
 
-extern "C" int icbAddModule(icbServer *p, int module,
-                             char *address)
+extern "C" int icbConfig(const char *serverName, int module, int enetAddress, int icbAddress)
 {
    ICB_MODULE *m;
    int s;
 
+   icbServer *p = icbServer::findModule(serverName);
+   if (p == NULL) {
+      printf("icbConfig: can't find icbServer %s\n", serverName);
+      return(-1);
+   }
    if ((module < 0) || (module >= p->maxModules)) {
       errlogPrintf("icbAddModule: invalid module\n");
-      return(ERROR);
+      return(-1);
    }
    m = &p->icbModule[module];
    if (m->defined) {
       printf("icbAddModule: module %d already defined!\n", module);
-      return(ERROR);
+      return(-1);
    }
    m->defined = 1;
-   strcpy(m->address, address);
-   s = icb_findmod_by_address(address, &m->index);
+   sprintf(m->address, "NI%X:%X", enetAddress, icbAddress);
+   s = icb_findmod_by_address(m->address, &m->index);
    if (s != OK) {
-      errlogPrintf("(icbSub): Error looking up ICB module %s\n", address);
+      errlogPrintf("(icbConfig): Error looking up ICB module %s\n", m->address);
       return(ERROR);
    }
    return(OK);
+}
+
+icbServer* icbServer::findModule(const char *name)
+{
+    GPHENTRY *hashEntry = gphFind(icbHash, name, NULL);
+    if (hashEntry == NULL) return (NULL);
+    return((icbServer *)hashEntry->userPvt);
 }
 
 void icbServer::icbServerTask(icbServer *picbServer)
@@ -444,3 +456,38 @@ int icbServer::readHvps(ICB_MODULE *m, long command, char c, void *addr)
    if (csr == 0xff) return(ERROR);
    else return(OK);
 }
+
+static const iocshArg icbSetupArg0 = { "Server name",iocshArgString};
+static const iocshArg icbSetupArg1 = { "MaxModules",iocshArgInt};
+static const iocshArg icbSetupArg2 = { "QueueSize",iocshArgInt};
+static const iocshArg * const icbSetupArgs[3] = {&icbSetupArg0,
+                                                 &icbSetupArg1,
+                                                 &icbSetupArg2};
+static const iocshFuncDef icbSetupFuncDef = {"icbSetup",3,icbSetupArgs};
+static void icbSetupCallFunc(const iocshArgBuf *args)
+{
+    icbSetup(args[0].sval, args[1].ival, args[2].ival);
+}
+
+
+static const iocshArg icbConfigArg0 = { "Server name",iocshArgString};
+static const iocshArg icbConfigArg1 = { "Module",iocshArgInt};
+static const iocshArg icbConfigArg2 = { "Ethernet address",iocshArgInt};
+static const iocshArg icbConfigArg3 = { "ICB address",iocshArgInt};
+static const iocshArg * const icbConfigArgs[4] = {&icbConfigArg0,
+                                                  &icbConfigArg1,
+                                                  &icbConfigArg2,
+                                                  &icbConfigArg3};
+static const iocshFuncDef icbConfigFuncDef = {"icbConfig",4,icbConfigArgs};
+static void icbConfigCallFunc(const iocshArgBuf *args)
+{
+    icbConfig(args[0].sval, args[1].ival, args[2].ival, args[3].ival);
+}
+
+void icbServerRegister(void)
+{
+    iocshRegister(&icbSetupFuncDef,icbSetupCallFunc);
+    iocshRegister(&icbConfigFuncDef,icbConfigCallFunc);
+}
+
+epicsExportRegistrar(icbServerRegister);
