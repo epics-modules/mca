@@ -82,10 +82,12 @@
  * .23  04-07-02  mlr  V5.4 Improved logic for dead time to avoid 100% when acquisition
  *                          first starts.
  * .24  05-26-03  mlr  V5.5 Converted to R3.14.2, Jens Eden did most of the work
- * .xx  07-23-03  tmm  V5.501 Keep nuse <= nmax
- * .xx  09-16-03  mlr  V5.502 Added export for mcaRecordDebug, to access from iocsh
+ * .25  07-23-03  tmm  V5.501 Keep nuse <= nmax
+ * .26  09-16-03  mlr  V5.502 Added export for mcaRecordDebug, to access from iocsh
+ * .27  11-14-03  mlr  V6.0 Update record version to 6 to reflect release major version
+ * .28  12-01-03  mlr  V6.01 Renamed "alarm" function to avoid conflict on Darwin
  */
-#define VERSION 5.502
+#define VERSION 6.01
 
 
 #include    <stdlib.h>
@@ -176,7 +178,7 @@ struct mcaDSET { /* mca DSET */
 /*sizes of field types (see dbFldTypes.h) */
 static int sizeofTypes[] = {0,1,1,2,2,4,4,4,8};
 
-static void alarm();
+static void mcaAlarm();
 static void monitor();
 static long readValue();
 
@@ -809,7 +811,7 @@ read_data:
 
     pmca->udf = FALSE;
 
-    alarm(pmca);
+    mcaAlarm(pmca);
     monitor(pmca);
 
     /*
@@ -936,7 +938,7 @@ static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad)
     return(0);
 }
 
-static void alarm(mcaRecord *pmca)
+static void mcaAlarm(mcaRecord *pmca)
 {
     double idtim;
     float  hyst, lalm, hihi, high, low, lolo;
