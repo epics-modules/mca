@@ -55,6 +55,8 @@
  * .12  10/04/00  mlr  Added ability to enable channel 1 25MHz reference pulses.
  *                     Additional argument to STR7201Config.
  * .13  10/24/00  mlr  Added drvSTR7201GetConfig() to return configuration.
+ * .14  10/16/02  mlr  Fixed bug with 25MHz reference pulses, can't use with old
+ *                     boards.
  */
 
 
@@ -310,11 +312,13 @@ int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable)
     /* Set the prescale factor to 0.  Only on new boards */
     if (p->firmwareVersion >= 5) p->address->prescale_factor_reg = 0;
 
-    /* Enable or disable 25 MHz channel 1 reference pulses */
-    if (p->ch1RefEnable)
-         p->address->enable_ch1_pulser = 1;
-    else
-         p->address->disable_ch1_pulser = 1;
+    /* Enable or disable 25 MHz channel 1 reference pulses. Only on new boards */
+    if (p->firmwareVersion >= 5) {
+       if (p->ch1RefEnable)
+            p->address->enable_ch1_pulser = 1;
+       else
+            p->address->disable_ch1_pulser = 1;
+    }
 
     /* The interrupt service routine can do floating point, need to save
      * fpContext */
