@@ -17,10 +17,13 @@
 #include <epicsTime.h>
 #include <epicsExport.h>
 #include <asynDriver.h>
+#include <asynInt32.h>
+#include <asynFloat64.h>
 #include <asynInt32Array.h>
+#include <asynDrvUser.h>
 
 #include "mca.h"
-#include "asynMca.h"
+#include "drvMca.h"
 #include "nmc_sys_defs.h"
 
 typedef struct {
@@ -48,24 +51,46 @@ typedef struct {
     double maxStatusTime;
     int acquiring;
     asynInterface common;
-    asynInterface mca;
+    asynInterface int32;
+    asynInterface float64;
     asynInterface int32Array;
+    asynInterface drvUser;
 } mcaAIMPvt;
 
+/* These functions are in public interfaces */
+static asynStatus int32Write        (void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 value);
+static asynStatus int32Read         (void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 *value);
+static asynStatus getBounds         (void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 *low, epicsInt32 *high);
+static asynStatus float64Write      (void *drvPvt, asynUser *pasynUser,
+                                     epicsFloat64 value);
+static asynStatus float64Read       (void *drvPvt, asynUser *pasynUser,
+                                     epicsFloat64 *value);
+static asynStatus int32ArrayRead    (void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 *data, size_t maxChans,
+                                     size_t *nactual);
+static asynStatus int32ArrayWrite   (void *drvPvt, asynUser *pasynUser,
+                                     epicsInt32 *data, size_t maxChans);
+static asynStatus drvUserCreate     (void *drvPvt, asynUser *pasynUser,
+                                     const char *drvInfo,
+                                     const char **pptypeName, size_t *psize);
+static asynStatus drvUserGetType    (void *drvPvt, asynUser *pasynUser,
+                                     const char **pptypeName, size_t *psize);
+static asynStatus drvUserDestroy    (void *drvPvt, asynUser *pasynUser);
+
+static void AIMReport               (void *drvPvt, FILE *fp, int details);
+static asynStatus AIMConnect        (void *drvPvt, asynUser *pasynUser);
+static asynStatus AIMDisconnect     (void *drvPvt, asynUser *pasynUser);
+
+/* Private methods */
 static int sendAIMSetup(mcaAIMPvt *drvPvt);
-static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser, 
-                             mcaCommand command, 
-                             int ivalue, double dvalue);
-static asynStatus AIMReadStatus(void *drvPvt, asynUser *pasynUser,
-                                mcaAsynAcquireStatus *pstat);
-static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser, 
-                              epicsInt32 *data, size_t maxChans, 
-                              size_t *nactual);
-static asynStatus AIMWriteData(void *drvPvt, asynUser *pasynUser, 
-                               epicsInt32 *data, size_t maxChans);
-static void AIMReport(void *drvPvt, FILE *fp, int details);
-static asynStatus AIMConnect(void *drvPvt, asynUser *pasynUser);
-static asynStatus AIMDisconnect(void *drvPvt, asynUser *pasynUser);
+static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
+                           epicsInt32 ivalue, epicsFloat64 dvalue);
+static asynStatus AIMRead(void *drvPvt, asynUser *pasynUser,
+                          epicsInt32 *pivalue, epicsFloat64 *pfvalue);
+
 /*
  * asynCommon methods
  */
@@ -75,17 +100,29 @@ static const struct asynCommon mcaAIMCommon = {
     AIMDisconnect
 };
 
-/*
- * asynMca methods
- */
-static const asynMca mcaAIMMca = {
-    AIMCommand,
-    AIMReadStatus
+/* asynInt32 methods */
+static const asynInt32 mcaAIMInt32 = {
+    int32Write,
+    int32Read,
+    getBounds
 };
 
+/* asynFloat64 methods */
+static const asynFloat64 mcaAIMFloat64 = {
+    float64Write,
+    float64Read
+};
+
+/* asynInt32Array methods */
 static const asynInt32Array mcaAIMInt32Array = {
-    AIMWriteData,
-    AIMReadData
+    int32ArrayWrite,
+    int32ArrayRead
+};
+
+static const asynDrvUser mcaAIMDrvUser = {
+    drvUserCreate,
+    drvUserGetType,
+    drvUserDestroy
 };
 
 
@@ -162,12 +199,18 @@ int AIMConfig(
     pPvt->common.interfaceType = asynCommonType;
     pPvt->common.pinterface  = (void *)&mcaAIMCommon;
     pPvt->common.drvPvt = pPvt;
-    pPvt->mca.interfaceType = asynMcaType;
-    pPvt->mca.pinterface  = (void *)&mcaAIMMca;
-    pPvt->mca.drvPvt = pPvt;
+    pPvt->int32.interfaceType = asynInt32Type;
+    pPvt->int32.pinterface  = (void *)&mcaAIMInt32;
+    pPvt->int32.drvPvt = pPvt;
+    pPvt->float64.interfaceType = asynFloat64Type;
+    pPvt->float64.pinterface  = (void *)&mcaAIMFloat64;
+    pPvt->float64.drvPvt = pPvt;
     pPvt->int32Array.interfaceType = asynInt32ArrayType;
     pPvt->int32Array.pinterface  = (void *)&mcaAIMInt32Array;
     pPvt->int32Array.drvPvt = pPvt;
+    pPvt->drvUser.interfaceType = asynDrvUserType;
+    pPvt->drvUser.pinterface  = (void *)&mcaAIMDrvUser;
+    pPvt->drvUser.drvPvt = pPvt;
     status = pasynManager->registerPort(pPvt->portName,
                                         ASYN_MULTIDEVICE | ASYN_CANBLOCK,
                                         1,  /* autoconnect */
@@ -177,54 +220,133 @@ int AIMConfig(
         errlogPrintf("AIMConfig ERROR: Can't register myself.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->common);
+    status = pasynManager->registerInterface(pPvt->portName, &pPvt->common);
     if (status != asynSuccess) {
-        errlogPrintf("AIMConfig ERROR: Can't register common.\n");
+        errlogPrintf("AIMConfig: Can't register common.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->mca);
+    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32);
     if (status != asynSuccess) {
-        errlogPrintf("AIMConfig ERROR: Can't register mca.\n");
+        errlogPrintf("AIMConfig: Can't register int32.\n");
         return -1;
     }
-    status = pasynManager->registerInterface(pPvt->portName,&pPvt->int32Array);
+
+    status = pasynManager->registerInterface(pPvt->portName, &pPvt->float64);
     if (status != asynSuccess) {
-        errlogPrintf("AIMConfig ERROR: Can't register int32Array.\n");
+        errlogPrintf("AIMConfig: Can't register float64.\n");
+        return -1;
+    }
+
+    status = pasynManager->registerInterface(pPvt->portName, &pPvt->int32Array);
+    if (status != asynSuccess) {
+        errlogPrintf("AIMConfig: Can't register int32Array.\n");
+        return -1;
+    }
+
+    status = pasynManager->registerInterface(pPvt->portName,&pPvt->drvUser);
+    if (status != asynSuccess) {
+        errlogPrintf("AIMConfig ERROR: Can't register drvUser\n");
         return -1;
     }
     return(0);
 }
 
 
-static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser, 
-                             mcaCommand command, 
-                             int ivalue, double dvalue)
+static asynStatus int32Write(void *drvPvt, asynUser *pasynUser,
+                             epicsInt32 value)
+{
+    return(AIMWrite(drvPvt, pasynUser, value, 0.));
+}
+
+static asynStatus float64Write(void *drvPvt, asynUser *pasynUser,
+                               epicsFloat64 value)
+{
+    return(AIMWrite(drvPvt, pasynUser, 0, value));
+}
+
+static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
+                           epicsInt32 ivalue, epicsFloat64 dvalue)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
+    mcaCommand command, *pcommand=pasynUser->drvUser;
+    asynStatus status=asynSuccess;
     int len;
     int address, seq;
-    int status;
     int signal;
+    epicsTimeStamp now;
+
+
+    if (!pcommand) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "drvMcaAIMAsyn::AIMWrite:: null command pointer\n");
+        return(asynError);
+    }
+    command = *pcommand;
 
     pasynManager->getAddr(pasynUser, &signal);
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-             "mcaAIMAsynDriver::AIMCommand entry, command=%d, signal=%d, "
+             "mcaAIMAsynDriver::AIMWrite entry, command=%d, signal=%d, "
              "ivalue=%d, dvalue=%f\n", command, signal, ivalue, dvalue);
     switch (command) {
-        case MSG_ACQUIRE:
+        case mcaStartAcquire:
             /* Start acquisition. */
             status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 1);
             break;
-        case MSG_SET_CHAS_INT:
+        case mcaStopAcquire:
+            /* stop data acquisition */
+            status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 0);
+            break;
+        case mcaErase:
+            /* Erase. If this is signal 0 then erase memory for all signals.
+             * Databases take advantage of this for performance with
+             * multielement detectors with multiplexors */
+            if (signal == 0)
+                len = pPvt->maxChans*pPvt->maxSignals*4;
+            else
+                len = pPvt->nchans*4;
+            /* If AIM is acquiring, turn if off */
+            if (pPvt->acquiring)
+            status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 0);
+            address = pPvt->seq_address + pPvt->maxChans*signal*4;
+            status = nmc_acqu_erase(pPvt->module, address, len);
+            asynPrint(pasynUser, ASYN_TRACE_FLOW,
+                    "(mcaAIMAsynDriver::command [%s signal=%d]):"
+                    " erased %d chans, status=%d\n",
+                    pPvt->portName, signal, len, status);
+            /* Set the elapsed live and real time back to zero. */
+            status = nmc_acqu_setelapsed(pPvt->module, pPvt->adc, 0, 0);
+            /* If AIM was acquiring, turn it back on */
+            if (pPvt->acquiring)
+                status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 1);
+                break;
+        case mcaReadStatus:
+            /* The status will be the same for each signal on a port.
+             * We optimize by not reading the status if this is not
+             * signal 0 and if the cached status is relatively recent
+             * Read the current status of the device if signal 0 or
+             * if the existing status info is too old */
+            epicsTimeGetCurrent(&now);
+            if ((signal == 0) || 
+                    (epicsTimeDiffInSeconds(&now, &pPvt->statusTime)
+                    > pPvt->maxStatusTime)) {
+                status = nmc_acqu_statusupdate(pPvt->module, pPvt->adc, 0, 0, 0,
+                                              &pPvt->elive, &pPvt->ereal, 
+                                              &pPvt->etotals, &pPvt->acquiring);
+                asynPrint(pasynUser, ASYN_TRACE_FLOW,
+                          "(mcaAIMAsynDriver [%s signal=%d]): get_acq_status=%d\n",
+                          pPvt->portName, signal, status);
+                epicsTimeGetCurrent(&pPvt->statusTime);
+            }
+        case mcaChannelAdvanceInternal:
             /* set channel advance source to internal (timed) */
             /* This is a NOOP for current MCS hardware - done manually */
             break;
-        case MSG_SET_CHAS_EXT:
+        case mcaChannelAdvanceExternal:
             /* set channel advance source to external */
             /* This is a NOOP for current MCS hardware - done manually */
             break;
-        case MSG_SET_NCHAN:
+        case mcaNumChannels:
             /* set number of channels */
             pPvt->nchans = ivalue;
             if (pPvt->nchans > pPvt->maxChans) {
@@ -234,88 +356,22 @@ static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser,
             }
             status = sendAIMSetup(pPvt);
             break;
-        case MSG_SET_DWELL:
-            /* set dwell time */
-            /* This is a NOOP for current MCS hardware - done manually */
-            break;
-        case MSG_SET_REAL_TIME:
-            /* set preset real time. Convert to centiseconds */
-            pPvt->preal = (int) (100. * dvalue);
-            status = sendAIMSetup(pPvt);
-            break;
-        case MSG_SET_LIVE_TIME:
-            /* set preset live time. Convert to centiseconds */
-            pPvt->plive = (int) (100. * dvalue);
-            status = sendAIMSetup(pPvt);
-            break;
-        case MSG_SET_COUNTS:
-            /* set preset counts */
-            pPvt->ptotal = ivalue;
-            status = sendAIMSetup(pPvt);
-            break;
-        case MSG_SET_LO_CHAN:
-            /* set lower side of region integrated for preset counts */
-            /* The preset total start channel is in bytes from start of
-               AIM memory */
-            pPvt->ptschan = pPvt->seq_address + 
-                                  pPvt->maxChans*signal*4 + ivalue*4;
-            status = sendAIMSetup(pPvt);
-            break;
-        case MSG_SET_HI_CHAN:
-            /* set high side of region integrated for preset counts */
-            /* The preset total end channel is in bytes from start of
-               AIM memory */
-            pPvt->ptechan = pPvt->seq_address + 
-                                  pPvt->maxChans*signal*4 + ivalue*4;
-            status = sendAIMSetup(pPvt);
-            break;
-        case MSG_SET_NSWEEPS:
-            /* set number of sweeps (for MCS mode) */
-            /* This is a NOOP on current version of MCS */
-            break;
-        case MSG_SET_MODE_PHA:
+        case mcaModePHA:
             /* set mode to Pulse Height Analysis */
             pPvt->acqmod = 1;
             status = sendAIMSetup(pPvt);
             break;
-        case MSG_SET_MODE_MCS:
+        case mcaModeMCS:
             /* set mode to MultiChannel Scaler */
             pPvt->acqmod = 1;
             status = sendAIMSetup(pPvt);
             break;
-        case MSG_SET_MODE_LIST:
+        case mcaModeList:
             /* set mode to LIST (record each incoming event) */
             pPvt->acqmod = 3;
             status = sendAIMSetup(pPvt);
             break;
-        case MSG_STOP_ACQUISITION:
-            /* stop data acquisition */
-            status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 0);
-            break;
-        case MSG_ERASE:
-            /* Erase. If this is signal 0 then erase memory for all signals.
-             * Databases take advantage of this for performance with
-             * multielement detectors with multiplexors */
-            if (signal == 0) 
-                len = pPvt->maxChans*pPvt->maxSignals*4;
-            else
-                len = pPvt->nchans*4;
-            /* If AIM is acquiring, turn if off */
-            if (pPvt->acquiring)
-            status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 0);
-            address = pPvt->seq_address + pPvt->maxChans*signal*4;
-            status = nmc_acqu_erase(pPvt->module, address, len);
-            asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                    "(mcaAIMAsynDriver::command [%s signal=%d]):"
-                    " erased %d chans, status=%d\n", 
-                    pPvt->portName, signal, len, status);
-            /* Set the elapsed live and real time back to zero. */
-            status = nmc_acqu_setelapsed(pPvt->module, pPvt->adc, 0, 0);
-            /* If AIM was acquiring, turn it back on */
-            if (pPvt->acquiring)
-                status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 1);
-                break;
-        case MSG_SET_SEQ:
+        case mcaSequence:
             /* set sequence number */
             seq = ivalue;
             if (seq > pPvt->maxSequences) {
@@ -327,8 +383,47 @@ static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser,
                                       pPvt->maxChans * pPvt->maxSignals * seq * 4;
             status = sendAIMSetup(pPvt);
             break;
-        case MSG_SET_PSCL:
+        case mcaPrescale:
             /* No-op for AIM */
+            break;
+        case mcaPresetSweeps:
+            /* set number of sweeps (for MCS mode) */
+            /* This is a NOOP on current version of MCS */
+            break;
+        case mcaPresetLowChannel:
+            /* set lower side of region integrated for preset counts */
+            /* The preset total start channel is in bytes from start of
+               AIM memory */
+            pPvt->ptschan = pPvt->seq_address + 
+                                  pPvt->maxChans*signal*4 + ivalue*4;
+            status = sendAIMSetup(pPvt);
+            break;
+        case mcaPresetHighChannel:
+            /* set high side of region integrated for preset counts */
+            /* The preset total end channel is in bytes from start of
+               AIM memory */
+            pPvt->ptechan = pPvt->seq_address + 
+                                  pPvt->maxChans*signal*4 + ivalue*4;
+            status = sendAIMSetup(pPvt);
+            break;
+        case mcaDwellTime:
+            /* set dwell time */
+            /* This is a NOOP for current MCS hardware - done manually */
+            break;
+        case mcaPresetRealTime:
+            /* set preset real time. Convert to centiseconds */
+            pPvt->preal = (int) (100. * dvalue);
+            status = sendAIMSetup(pPvt);
+            break;
+        case mcaPresetLiveTime:
+            /* set preset live time. Convert to centiseconds */
+            pPvt->plive = (int) (100. * dvalue);
+            status = sendAIMSetup(pPvt);
+            break;
+        case mcaPresetCounts:
+            /* set preset counts */
+            pPvt->ptotal = ivalue;
+            status = sendAIMSetup(pPvt);
             break;
         default:
             asynPrint(pasynUser, ASYN_TRACE_ERROR, 
@@ -339,10 +434,70 @@ static asynStatus AIMCommand(void *drvPvt, asynUser *pasynUser,
     return(asynSuccess);
 }
 
+
+static asynStatus int32Read(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *value)
+{
+    return(AIMRead(drvPvt, pasynUser, value, NULL));
+}
+
+static asynStatus float64Read(void *drvPvt, asynUser *pasynUser,
+                              epicsFloat64 *value)
+{
+    return(AIMRead(drvPvt, pasynUser, NULL, value));
+}
+
+static asynStatus AIMRead(void *drvPvt, asynUser *pasynUser,
+                          epicsInt32 *pivalue, epicsFloat64 *pfvalue)
+{
+    mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
+    mcaCommand command, *pcommand=pasynUser->drvUser;
+    asynStatus status=asynSuccess;
+
+    if (!pcommand) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "drvMcaAIM::AIMRead:: null command pointer\n");
+        return(asynError);
+    }
+    command = *pcommand;
+    switch (command) {
+        case mcaAcquiring:
+            *pivalue = pPvt->acquiring;
+            break;
+        case mcaDwellTime:
+            *pfvalue = 0.;
+            break;
+        case mcaElapsedLiveTime:
+            *pfvalue = pPvt->elive/100.;
+            break;
+        case mcaElapsedRealTime:
+            *pfvalue = pPvt->ereal/100.;
+            break;
+        case mcaElapsedCounts:
+            *pfvalue = pPvt->etotals;
+            break;
+        default:
+            asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                      "drvMcaAIMAsyn::AIMRead got illegal command %d\n",
+                      command);
+            status = asynError;
+            break;
+    }
+    return(status);
+}
+
+static asynStatus getBounds(void *drvPvt, asynUser *pasynUser,
+                            epicsInt32 *low, epicsInt32 *high)
+{
+    *low = 0;
+    *high = 0;
+    return(asynSuccess);
+}
+
 
-static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser,
-                              epicsInt32 *data, size_t maxChans, 
-                              size_t *nactual)
+static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
+                                 epicsInt32 *data, size_t maxChans, 
+                                 size_t *nactual)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
     int status;
@@ -366,11 +521,10 @@ static asynStatus AIMReadData(void *drvPvt, asynUser *pasynUser,
     return(asynSuccess);
 }
 
-static asynStatus AIMWriteData(void *drvPvt, asynUser *pasynUser,
-                              epicsInt32 *data, size_t maxChans)
+static asynStatus int32ArrayWrite(void *drvPvt, asynUser *pasynUser,
+                                  epicsInt32 *data, size_t maxChans)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
-    int status;
     int address;
     int signal;
 
@@ -392,41 +546,47 @@ static asynStatus AIMWriteData(void *drvPvt, asynUser *pasynUser,
 }
 
 
-static asynStatus AIMReadStatus(void *drvPvt, asynUser *pasynUser,
-                                mcaAsynAcquireStatus *pstat)
+/* asynDrvUser routines */
+static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
+                                const char *drvInfo,
+                                const char **pptypeName, size_t *psize)
 {
-    mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
-    int status;
-    epicsTimeStamp now;
-    int signal;
+    int i;
+    char *pstring;
 
-    pasynManager->getAddr(pasynUser, &signal);
-
-    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-             "mcaAIMAsynDriver::AIMReadStatus entry, signal=%d\n", signal);
-
-    epicsTimeGetCurrent(&now);
-
-    /* The status will be the same for each signal on a port.
-     * We optimize by not reading the status if this is not
-     * signal 0 and if the cached status is relatively recent */
-    /* Read the current status of the device if signal 0 or
-      * if the existing status info is too old */
-    if ((signal == 0) || (epicsTimeDiffInSeconds(&now, &pPvt->statusTime) 
-                              > pPvt->maxStatusTime)) {
-        status = nmc_acqu_statusupdate(pPvt->module, pPvt->adc, 0, 0, 0,
-                                       &pPvt->elive, &pPvt->ereal, &pPvt->etotals, 
-                                       &pPvt->acquiring);
-        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                  "(mcaAIMAsynDriver [%s signal=%d]): get_acq_status=%d\n", 
-                  pPvt->portName, signal, status);
-        epicsTimeGetCurrent(&pPvt->statusTime);
+    for (i=0; i<MAX_MCA_COMMANDS; i++) {
+        pstring = mcaCommands[i].commandString;
+        if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
+            pasynUser->drvUser = &mcaCommands[i].command;
+            if (pptypeName) *pptypeName = epicsStrDup(pstring);
+            if (psize) *psize = sizeof(mcaCommands[i].command);
+            asynPrint(pasynUser, ASYN_TRACE_FLOW,
+              "drvSweep::drvUserCreate, command=%s\n", pstring);
+            return(asynSuccess);
+        }
     }
-    pstat->realTime = pPvt->ereal/100.0;
-    pstat->liveTime = pPvt->elive/100.0;
-    pstat->dwellTime = 0.;
-    pstat->acquiring = pPvt->acquiring;
-    pstat->totalCounts = pPvt->etotals;
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "drvMcaAIMAsyn::drvUserCreate, unknown command=%s\n", drvInfo);
+    return(asynError);
+}
+
+static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
+                                 const char **pptypeName, size_t *psize)
+{
+    mcaCommand *pcommand = pasynUser->drvUser;
+
+    *pptypeName = NULL;
+    *psize = 0;
+    if (pcommand) {
+        if (pptypeName)
+            *pptypeName = epicsStrDup(mcaCommands[*pcommand].commandString);
+        if (psize) *psize = sizeof(*pcommand);
+    }
+    return(asynSuccess);
+}
+
+static asynStatus drvUserDestroy(void *drvPvt, asynUser *pasynUser)
+{
     return(asynSuccess);
 }
 
