@@ -10,6 +10,10 @@
   
     Modifications:
       24-Nov-2000  MLR  Changed DSET definition to eliminate compiler errors in new G++
+      12-Feb-2002  MLR  Removed connectIO; added waitConnect to
+                        sendFloat64Message, so that messages can be sent before
+                        iocInit is complete.
+      23-Feb-2002  MLR  Fixed bug, missing code for MSG_SET_SEQ.
 */
 
 
@@ -55,7 +59,6 @@ public:
         DevMcaMpf(dbCommon*,DBLINK*);
         long startIO(dbCommon* pr);
         long completeIO(dbCommon* pr,Message* m);
-        virtual void connectIO(dbCommon *pr, Message *message);
         virtual void receiveReply(dbCommon* pr, Message* m);
         static long init_record(void*);
         static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg);
@@ -264,10 +267,6 @@ long DevMcaMpf::send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
         devMcaMpf->sendFloat64Message(MSG_SET_DWELL, (double)pmca->dwel);
         DEBUG(5, "DevMcaMpf(send_msg): setting dwell time\n");
         break;
-    case MSG_SET_PSCL:
-        /* set channel advance prescaler. */
-        devMcaMpf->sendFloat64Message(MSG_SET_PSCL, (double)pmca->pscl);
-        break;
     case MSG_SET_REAL_TIME:
         /* set preset real time. */
         devMcaMpf->sendFloat64Message(MSG_SET_REAL_TIME, (double)pmca->prtm);
@@ -321,77 +320,26 @@ long DevMcaMpf::send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
         devMcaMpf->sendFloat64Message(MSG_ERASE, 0.);
         DEBUG(5, "DevMcaMpf(send_msg): erase\n");
         break;
+    case MSG_SET_SEQ:
+        /* set sequence number */
+        devMcaMpf->sendFloat64Message(MSG_SET_SEQ, (double)pmca->seq);
+        break;
+    case MSG_SET_PSCL:
+        /* set channel advance prescaler. */
+        devMcaMpf->sendFloat64Message(MSG_SET_PSCL, (double)pmca->pscl);
+        break;
     }
     return(0);
 }
 
 
-void DevMcaMpf::connectIO(dbCommon *pr, Message* message)
-{
-   // Set the acquisition parameters when the server connects
-   // The MCA record attempts to do this if PINI is true.  However, for MPF
-   // device support the MPF server may not yet be connected when the MCA
-   // record initializes, so we need to send the device dependent setup info
-   // whenever the server connects.
-   mcaRecord* pmca = (mcaRecord*)pr;
-   ConnectMessage *pConnectMessage = (ConnectMessage *)message;
-   DEBUG(5,"DevMcaIp330::connectIO, enter, record=%s, status=%d\n",
-            pr->name, pConnectMessage->status);
-   if (pConnectMessage->status != connectYes) goto finish;
-   if (pmca->chas==mcaCHAS_Internal) {
-      /* set channel advance source to internal (timed) */
-      sendFloat64Message(MSG_SET_CHAS_INT, 0.);
-   } else {
-      /* set channel advance source to external */
-      sendFloat64Message(MSG_SET_CHAS_EXT, 0.);
-   }
-   /* set number of channels */
-   sendFloat64Message(MSG_SET_NCHAN, (double)pmca->nuse);
-   /* set dwell time per channel. */
-   sendFloat64Message(MSG_SET_DWELL, (double)pmca->dwel);
-   /* set channel advance prescaler. */
-   sendFloat64Message(MSG_SET_PSCL, (double)pmca->pscl);
-   /* set preset real time. */
-   sendFloat64Message(MSG_SET_REAL_TIME, (double)pmca->prtm);
-   /* set preset live time */
-   sendFloat64Message(MSG_SET_LIVE_TIME, (double)pmca->pltm);
-   /* set preset counts */
-   sendFloat64Message(MSG_SET_COUNTS, (double)pmca->pct);
-   /* set preset count low channel */
-   sendFloat64Message(MSG_SET_LO_CHAN, (double)pmca->pctl);
-   /* set preset count high channel */
-   sendFloat64Message(MSG_SET_HI_CHAN, (double)pmca->pcth);
-   /* set number of sweeps (for MCS mode) */
-   sendFloat64Message(MSG_SET_NSWEEPS, (double)pmca->pswp);
-   switch (pmca->mode) {
-      case mcaMODE_PHA:
-      default:
-        /* set mode to pulse height analysis */
-        sendFloat64Message(MSG_SET_MODE_PHA, 0.);
-        break;
-      case mcaMODE_MCS:
-        /* set mode to MultiChannel Scaler */
-        sendFloat64Message(MSG_SET_MODE_MCS, 0.);
-        break;
-      case mcaMODE_List:
-        /* set mode to LIST (record each incoming event) */
-        sendFloat64Message(MSG_SET_MODE_LIST, 0.);
-        break;
-  }
-finish:
-   // Call the base class method
-   DevMpf::connectIO(pr, message);
-                                           }
-                                           
-   
 int DevMcaMpf::sendFloat64Message(int cmd, double value)
 {
     Float64Message *pfm = new Float64Message;
     
-    // If we are not connected don't send the message.  This could be called
-    // before we connect, and that screws up DevMpf.
-    if (!isConnected()) {
-       DEBUG(1, "(sendFloat64Message): not connected!\n");
+    // Wait up to 30 seconds to connect, since server may not yet be running
+    if (!connectWait(30.)) {
+       DEBUG(1, "(sendFloat64Message): connectWait failed!\n");
        return(-1);
     }
     pfm->cmd = cmd;
