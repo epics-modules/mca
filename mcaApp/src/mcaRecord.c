@@ -70,8 +70,13 @@
  *                          so that device support is in sync with the record.
  *                          Changed debugging to use errlogPrintf for legibility
  * .20  07-21-01  mlr  V5.1 Increased number of ROIs from 10 to 32.
+ * .21  02-11-02  mlr  V5.2 Changed init_record to pass messages directly to
+ *                          device support to initialize hardware.  This was
+ *                          made possible in version MPF version 1-8 which
+ *                          allows waiting for the MPF server to connect and
+ *                          sending messages before iocInit is complete.
  */
-#define VERSION 5.1
+#define VERSION 5.2
 
 #include    <vxWorks.h>
 #include    <types.h>
@@ -435,21 +440,42 @@ static long init_record(mcaRecord *pmca, int pass)
     if (pdset->init_record) {
         if ((status=(*pdset->init_record)(pmca))) return(status);
     }
-    /* Mark all device-dependent fields in record as changed so the device support
-     * will be initialized to agree with the record the first time the record
-     * processes */
-    NEWV_MARK(M_CHAS);
-    NEWV_MARK(M_NUSE);
-    NEWV_MARK(M_DWEL);
-    NEWV_MARK(M_PRTM);
-    NEWV_MARK(M_PLTM);
-    NEWV_MARK(M_PCT);
-    NEWV_MARK(M_PCTL);
-    NEWV_MARK(M_PCTH);
-    NEWV_MARK(M_PSWP);
-    NEWV_MARK(M_MODE);
-    NEWV_MARK(M_SEQ);
-    NEWV_MARK(M_PSCL);
+    /* Initialize hardware to agree with the record */
+    status = (*pdset->send_msg)
+                (pmca, (pmca->chas==mcaCHAS_Internal) ?
+                MSG_SET_CHAS_INT : MSG_SET_CHAS_EXT, NULL);
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_NCHAN, (void *)(&pmca->nuse));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_SEQ, (void *)(&pmca->seq));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_DWELL, (void *)(&pmca->dwel));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_PSCL, (void *)(&pmca->pscl));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_REAL_TIME, (void *)(&pmca->prtm));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_LIVE_TIME, (void *)(&pmca->pltm));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_COUNTS, (void *)(&pmca->pct));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_LO_CHAN, (void *)(&pmca->pctl));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_HI_CHAN, (void *)(&pmca->pcth));
+    status = (*pdset->send_msg)
+                (pmca,  MSG_SET_NSWEEPS, (void *)(&pmca->pswp));
+    switch (pmca->mode) {
+      case mcaMODE_PHA:
+      default:
+         status = (*pdset->send_msg) (pmca, MSG_SET_MODE_PHA, NULL);
+         break;
+      case mcaMODE_MCS:
+         status = (*pdset->send_msg) (pmca, MSG_SET_MODE_MCS, NULL);
+         break;
+      case mcaMODE_List:
+         status = (*pdset->send_msg) (pmca, MSG_SET_MODE_LIST, NULL);
+         break;
+    }
     return(0);
 }
 
