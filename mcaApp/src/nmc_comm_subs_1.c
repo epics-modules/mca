@@ -795,7 +795,8 @@ int nmc_getmsg(int module, struct response_packet *pkt, int size, int *actual)
        * ETHERNET: Read a message from the response queue with timeout
        */
 read:
-      len = epicsMessageQueueReceiveWithTimeout(m->responseQ, pkt, (double)(i->timeout_time));
+      /* The timeout_time is in milliseconds, convert to seconds */
+      len = epicsMessageQueueReceiveWithTimeout(m->responseQ, pkt, (double)(i->timeout_time/1000.));
          AIM_DEBUG(6, "(nmc_getmsg): message length:%d (%d)\n", len,m->responseQ);
       if (len < 0) {
          AIM_DEBUG(1, "(nmc_getmsg): timeout while waiting for message\n");
