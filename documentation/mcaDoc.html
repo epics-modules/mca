@@ -12,26 +12,37 @@
 <h1 align="center">mca Documentation</h1>
 <h2 align="center"> Mark Rivers</h2>
 <h2 align="center">University of Chicago</h2>
-<p><b><a href="mca.html">mca</a></b> supports Multi-Channel Analyzers (hence the name), and also related
+<p><b><a href="mca.html">
+      mca</a></b> 
+supports Multi-Channel Analyzers (hence the name), and also related
 devices such as multi-channel scalers (MCS), waveform digitizers, and
 programmable ADCs, amplifiers and power supplies.</p>
-<p><b>mca</b>  consists of:</p>
+<p><b>mca</b> consists of:</p>
 <ul>
-  <li>The <a href="mcaRecord.html">mcaRecord</a></li>
-  <li>Device support for the <a href="mcaCanberra.html">Canberra Ethernet MCAs
-    and programmable instrumentation</a></li>
-  <li>Device support for the <a href="mcaStruck.html">SIS 3801 MCS</a> (formerly the STR7201 from Struck)</li>
-  <li>General device support for the MCA record using MPF servers.&nbsp; This
-    support is used by the <a href="dxp.html">DXP module</a>, by the <a href="ip330.html">ip330
-    module</a>, and by the <a href="quadEM.html">quadEM module</a></li>
-  <li>C++ base class support for fastSweep devices.&nbsp; This is used by the <a href="ip330.html">ip330
-    module</a> and the <a href="quadEM">quadEM module</a>.</li>
+  <li>The <a href="mcaRecord.html">
+           mcaRecord</a>.</li>
+  <li>Device support for the MCA record using asyn drivers. This
+      support is used by the <a href="mcaCanberra.html"> 
+                              Canberra Ethernet MCA</a>
+      and fastSweep drivers in this module, 
+      as well as by the driver in the <a href="dxp.html">
+                                       DXP module</a></li>.
+  <li>asyn driver support for the <a href="mcaCanberra.html"> 
+                                   Canberra ICB programmable NIM modules.</a></li>
+  <li>Device and driver support for the <a href="mcaStruck.html">
+                                         SIS 3801 MCS</a> 
+     (formerly the STR7201 from Struck).</li>
+  <li>asyn fastSweep driver for waveform digitizer type devices. 
+      This is used by the <a href="ip330.html">
+                           ip330 module</a> 
+      and the <a href="quadEM">
+               quadEM module</a>.</li>
 </ul>
 <hr>
 <address>
   Suggestions and Comments to:<br>
   <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers </a>: (rivers@cars.uchicago.edu)<br>
-  Last modified: November 10, 2003
+  Last modified: April 21, 2005
 </address>
 </body>
 </html>
