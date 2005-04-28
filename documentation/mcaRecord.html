@@ -5,69 +5,61 @@
 <BODY>
 <H1>MCA Record</H1>
 
-<ADDRESS>Tim Mooney and Mark Rivers</ADDRESS>
+<ADDRESS>Mark Rivers and Tim Mooney</ADDRESS>
 
 <HR>
 <H2>Contents</H2>
 <UL>
-<LI><A HREF="#Overview">Overview</A>
-<LI><A HREF="#Fields">Field Descriptions</A>
-<LI><A HREF="#Intended">Intended Use</A>
-<LI><A HREF="#Files">Files</A>
-<LI><A HREF="#Release">Release Notes</A>
+<LI><A HREF="#Overview">
+              Overview</A>
+<LI>Record fields
+<UL>
+  <LI><A HREF="#Value Fields">
+                Value Fields</A>
+  <LI><A HREF="#Control Fields">
+                Control Fields</A>
+  <LI><A HREF="#Calibration Fields">
+                Calibration Fields</A>
+  <LI><A HREF="#Status Fields">
+                Status Fields</A>
+  <LI><A HREF="#Alarm Fields">
+                Alarm Fields</A>
+  <LI><A HREF="#Link Fields">
+                Link Fields</A>
+  <LI><A HREF="#Simulation Fields">
+                Simulation Fields</A>
+  <LI><A HREF="#Region-Of-Interest (ROI) Fields">
+                Region-Of-Interest (ROI) Fields</A>
+  <LI><A HREF="#Miscellaneous Fields">
+                Miscellaneous Fields</A>
+  <LI><A HREF="#Private Fields">
+                Private Fields</A>
+</UL>
+<LI><A HREF="#Intended Use">
+              Intended Use</A>
 </UL>
 
-<A NAME="Overview">
-<H2>Overview</H2></A>
-<P>
-This documentation describes version 4.0 of the MCA record.
+<H2><A NAME="Overview">
+             Overview</A></H2>
+
 <P>
 The MCA record controls and acquires data from a multichannel analyzer
-(MCA).  Currently, there are 3 supported multichannel analyzers.
-<OL>
-
-<LI> The Canberra model 556 AIM (Acquisition Interface Module), 
-a NIM module that 
-communicates with EPICS via ethernet (using IEEE 802 extended), and that can 
-function as a pulse-height analyzer, a multichannel scaler, and a 
-voltage sampler.  See the
-<A HREF="dev_mca_aim.html">AIM device support documentation</A> for more
-information.
-<P>
-<LI> The X-ray Instrumentation Associates DXP-4, a DSP based CAMAC module 
-which replaces the spectroscopy amplifier, ADC and MCA of a conventional
-spectroscopy system.  One CAMAC module supports up to 4 detectors.
-See the
-<A HREF="dev_mca_dxp.html">DXP device support documentation</A> for more
-information.
-<P>
-<LI> The Struck STR-7201 multiscaler, a VME module with 32 inputs which
-functions as a multichannel scaler. 
-See the
-<A HREF="dev_mca_struck.html">Struck STR-7201 device support 
-documentation</A> for more information.
-
-</OL>
-
-<P>
-The MCA record is unlike most other EPICS records in that its
+(MCA). The MCA record is unlike most other EPICS records in that its
 processing is neither "synchronous" nor "asynchronous" (as these terms
 are used in the EPICS Record Reference Manual).  Currently, PACT is
 always FALSE after record processing has completed, even though a read
 operation may be pending a callback from device support.
-
 <P>
+<HR>
+
+<H2><CENTER><A NAME="Value Fields">
+                     Value Fields</A></CENTER></H2>
 <TABLE BORDER CELLPADDING=5>
-<A NAME="Fields"><CAPTION>
-<H2>Record Field Descriptions</H2></CAPTION></A>
 <TR>
 <TH>Name</TH>
 <TH>Access</TH>
 <TH>Prompt</TH><TH>Data type</TH> 
 <TH>Description</TH>
-</TR>
-
-<TR VALIGN=TOP><TH COLSPAN=5> Value Fields</TH>
 </TR>
 
 <TR VALIGN=TOP>
@@ -91,8 +83,8 @@ fields RnLO and RnHI (see, e.g., R0LO, R0HI below).
 The record also uses this array to show the user where ROIs are:
 The first and last channels of an ROI are set to the largest value in
 the data array.  The intervening channels are set to the background
-values calculated for those channels.  This behavior is a temporary
-kludge to help users set ROIs using a generic channel-access client.</TD>
+values calculated for those channels.  This behavior is intended
+to help users set ROIs using a generic channel-access client.</TD>
 </TR>
 
 <TR VALIGN=TOP>
@@ -121,7 +113,7 @@ iocInit.
 <TR VALIGN=TOP>
 <TD>PREC</TD> <TD>R/W</TD> <TD>"Display Precision"</TD> <TD>DBF_SHORT</TD>
 <TD>Numeric precision reported to MEDM and other channel-access
-clients.  The number of digits used to display values gotten from
+clients.  The number of digits used to display values in
 this record.</TD>
 </TR>
 
@@ -142,18 +134,36 @@ FTVL  data type      comment
 7   float           (4 bytes)
 8   double          (8 bytes)
 </PRE>
+Note that the asyn device support only supports long data, as does the
+SIS driver and device support.
 </TD>
 </TR>
+</TABLE>
 
-<TR VALIGN=TOP><TH COLSPAN=5> Control Fields<BR>
-(Note: Not all device support modules support all of these fields.  See the
-relevant device support documentation for details.)
-</TH>
+<P>
+<HR>
+<H2><CENTER><A NAME="Control Fields">
+                     Control Fields</A></CENTER></H2>
+<P>
+Note: Not all device support modules support all of these fields.  See the
+relevant device support documentation for details.
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
 
 <TR VALIGN=TOP>
 <TD>STRT</TD> <TD>R/W*</TD> <TD>"Start Acquire"</TD> <TD>DBF_MENU</TD>
 <TD>Writing a nonzero value to this field causes the MCA to begin
+data acquisition.  The record immediately resets this field to zero.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ERST</TD> <TD>R/W*</TD> <TD>"Erase and Start Acquire"</TD> <TD>DBF_MENU</TD>
+<TD>Writing a nonzero value to this field causes the MCA to erase and to begin
 data acquisition.  The record immediately resets this field to zero.</TD>
 </TR>
 
@@ -167,47 +177,63 @@ data acquisition.  The record immediately resets this field to zero.</TD>
 <TR VALIGN=TOP>
 <TD>ACQG</TD> <TD>R</TD> <TD>"Acquiring"</TD> <TD>DBF_MENU</TD>
 <TD>
-When the user sets the STRT field to 1 ("Start Acquiring"), a "start data
-acquisition" command will be sent to the hardware.  If that
-command is correctly acknowledged, the ACQG field will be set to
-1 ("Acquire").  When the user sets STOP to 1 ("Stop Acquiring", 
-or when the hardware signals that data acquisition is finished,
-the ACQG field is set to 0 ("Done"), and a
-read operation (see READ/RDNG below) is initiated if one is not
-already in progress.  Thus, ACQG will be 1 ("Acquire") while data
+The current acquire status of the hardware.  ACQG will be 1 ("Acquire") while data
 acquisition is underway, and 0 ("Done") otherwise.
+When this field goes from 1 to 0, meaning that data acquisition is finished,
+a read operation (see READ/RDNG below) is initiated.  
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>PROC</TD> <TD>R/W*</TD> <TD>"Process Record"</TD> <TD>DBF_MENU</TD>
+<TD>
+Puts to the PROC field initiate record processing.  When the MCA record processes
+it reads the status of the MCA hardware (acquire done/busy, elapsed time, etc.),
+but does not read the MCA data. 
+When the user sets PROC to 1, a read status command will be sent
+to the hardware.  If that command is correctly acknowledged, the RDNS
+field (below) will be set to 1 ("Read").  When record processing completes
+the RDNS field is set to 0 ("Done").
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>RDNS</TD> <TD>R</TD> <TD>Reading status</TD> <TD>DBF_MENU</TD>
+<TD>
+Puts to the PROC field [above] initiate reading of the MCA's status.
+When the user sets PROC to 1, a read status command will be sent
+to the hardware.  If that command is correctly acknowledged, the RDNS
+field (below) will be set to 1 ("Read").  When record processing completes
+the RDNS field is set to 0 ("Done").
+This field is intended for use with MCAs that require
+asynchronous device support.
 </TD>
 </TR>
 
 <TR VALIGN=TOP>
 <TD>READ</TD> <TD>R/W*</TD> <TD>"Read array"</TD> <TD>DBF_MENU</TD>
 <TD>
-Put's to the READ field initiate or abort reading of the MCA's data.
+Put's to the READ field initiate of the MCA's data.
 When the user sets READ to 1 ("Read"), a read command will be sent
 to the hardware.  If that command is correctly acknowledged, the RDNG
-field (below) will be set to 1 ("Read").  When device support [or the
-user] sets READ to 0 ("Done") and triggers record processing, the
-read operation is finished [or aborted], and the RDNG field is set to
-0 ("Done").  Note that all existing device support is synchronous, i.e.
-setting READ to 1 causes the record to process and the read operation is
-completed immediately, setting READ back to 0 and never setting RDNG to 1.
+field (below) will be set to 1 ("Read").  When device support sets READ 
+to 0 ("Done") and triggers record processing, the
+read operation is finished, and the RDNG field is set to
+0 ("Done").
 </TD>
 </TR>
 
 <TR VALIGN=TOP>
 <TD>RDNG</TD> <TD>R</TD> <TD>Reading array</TD> <TD>DBF_MENU</TD>
 <TD>
-Put's to the READ field [above] initiate or abort reading of the MCA's data.
+Put's to the READ field [above] initiate reading of the MCA's data.
 When the user sets READ to 1 ("Read"), a read command will be sent
 to the hardware.  If that command is correctly acknowledged, the RDNG
-field will be set to 1 ("Read").  When device support [or the
-user] sets READ to 0 ("Done") and triggers record processing, the
-read operation is finished [or aborted], and the RDNG field is set to
-0 ("Done").  This field is intended for use with slow MCAs, which require
-asynchronous device support.  However, all existing device support 
-is synchronous, i.e.
-setting READ to 1 causes the record to process and the read operation is
-completed immediately, setting READ back to 0 and never setting RDNG to 1.
+field will be set to 1 ("Read").  When device support sets READ to 0 ("Done")
+and triggers record processing, the
+read operation is finished, and the RDNG field is set to
+0 ("Done").  This field is intended for use with MCAs that require
+asynchronous device support.
 </TD>
 </TR>
 
@@ -216,8 +242,7 @@ completed immediately, setting READ back to 0 and never setting RDNG to 1.
 <TD>
 Put's to this field cause the hardware to erase the data array.
 When the user sets ERAS to 1 ("Erase") an "erase" command will be
-sent to the hardware.  If that command is correctly acknowledged,
-the field will immediately be set to 0 ("Done").
+sent to the hardware.  The record immediately resets this field to 0 ("Done").
 </TD>
 </TR>
 
@@ -237,7 +262,8 @@ current channel according to its internal clock (CHAS = 0 or
 <TD>DBF_LONG</TD>
 <TD>
 Put's to this field tell the hardware how many channels (array
-elements) to use for spectrum acquisition.
+elements) to use for spectrum acquisition.  NUSE cannot be greater
+than NMAX.
 </TD>
 </TR>
 
@@ -265,10 +291,21 @@ source is "Internal" (see CHAS).
 </TR>
 
 <TR VALIGN=TOP>
+<TD>PSCL</TD> <TD>R/W*</TD> <TD>"Channel advance pre-scale"</TD> 
+<TD>DBF_LONG</TD>
+<TD>
+Pre-scale factor when the hardware is in "MCS"
+(multichannel scaler) mode (see MODE), and the channel-advance
+source is "External" (see CHAS).  The hardware will advance to the next
+channel after receiving PSCL external pulses.  Default=1.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
 <TD>PRTM</TD> <TD>R/W*</TD> <TD>"Preset real time"</TD> 
 <TD>DBF_FLOAT</TD>
 <TD>
-Put's to this field tells the hardware for how many seconds to
+Puts to this field tells the hardware for how many seconds to
 acquire data, according to a free running clock (real time).  Setting this
 field to 0.0 instructs the hardware to ignore it.
 </TD>
@@ -278,7 +315,7 @@ field to 0.0 instructs the hardware to ignore it.
 <TD>PLTM</TD> <TD>R/W*</TD> <TD>"Preset live time"</TD> 
 <TD>DBF_FLOAT</TD>
 <TD>
-Put's to this field tells the hardware for how many seconds to
+Puts to this field tells the hardware for how many seconds to
 acquire data, according to a clock which counts only when the hardware is ready
 to accept data (live time).  Setting this
 field to 0.0 instructs the hardware to ignore it.
@@ -290,7 +327,7 @@ field to 0.0 instructs the hardware to ignore it.
 <TD>PCT</TD> <TD>R/W*</TD> <TD>"Preset counts"</TD> 
 <TD>DBF_LONG</TD>
 <TD>
-Put's to this field tells the hardware that data acquisition is
+Puts to this field tells the hardware that data acquisition is
 to be halted when the sum of the numbers of counts acquired in
 channels PCTL though PCTH inclusive reaches PCT.  
 Setting this field to 0.0 instructs the hardware to ignore it.
@@ -317,7 +354,7 @@ See PCT above.
 <TD>PSWP</TD> <TD>R/W*</TD> <TD>"Preset number of sweeps"</TD> 
 <TD>DBF_LONG</TD>
 <TD>
-Put's to this field tell the hardware that data acquisition (in
+Puts to this field tell the hardware that data acquisition (in
 MCS "multichannel scaler" mode; see MODE) is to continue until
 PSWP sweeps have completed.
 </TD>
@@ -327,7 +364,7 @@ PSWP sweeps have completed.
 <TD>MODE</TD> <TD>R/W*</TD> <TD>"Mode PHA/MCS/LIST"</TD> 
 <TD>DBF_MENU</TD>
 <TD>
-Put's to this field tell the hardware in what mode to acquire
+Puts to this field tell the hardware in what mode to acquire
 data--what to do when an "event" occurs.  (An event is a hardware
 trigger that may also clock a digital word into the MCA.)
 <P>
@@ -346,12 +383,22 @@ MODE=2 ("List") is "list" mode:  the MCA simply records each event
 in the data array.
 </TD>
 </TR>
+</TABLE>
 
-<TR VALIGN=TOP><TH COLSPAN=5> Calibration Fields<BR>
-(Note: These fields are not used by the record processing or device support
+<P>
+<HR>
+<H2><CENTER><A NAME="Calibration Fields">
+                     Calibration Fields</A></CENTER></H2>
+<P>
+Note: These fields are not currently used by the record processing or device support
 software.  They are
-provided as a convenient place for client software to store these values.)
-</TH>
+provided as a convenient place for client software to store these values.
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
 
 <TR VALIGN=TOP>
@@ -399,16 +446,25 @@ The two-theta angle of the detector.  This field is useful in
 energy-dispersive diffraction experiments.
 </TD>
 </TR>
+</TABLE>
 
-
-<TR VALIGN=TOP><TH COLSPAN=5> Status Fields</TH>
+<P>
+<HR>
+<H2><CENTER><A NAME="Status Fields">
+                     Status Fields</A></CENTER></H2>
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
 
 <TR VALIGN=TOP>
 <TD>ERTM</TD> <TD>R</TD> <TD>"Elapsed real time"</TD> 
 <TD>DBF_FLOAT</TD>
 <TD>
-After a read operation, this field contains the elapsed real
+After a read status operation, this field contains the elapsed real
 time, as reported by the hardware.
 </TD>
 </TR>
@@ -417,7 +473,7 @@ time, as reported by the hardware.
 <TD>ELTM</TD> <TD>R</TD> <TD>"Elapsed live time"</TD> 
 <TD>DBF_FLOAT</TD>
 <TD>
-After a read operation, this field contains the elapsed live
+After a read status operation, this field contains the elapsed live
 time, as reported by the hardware.
 </TD>
 </TR>
@@ -426,8 +482,37 @@ time, as reported by the hardware.
 <TD>ACT</TD> <TD>R</TD> <TD>"Actual counts in pregion"</TD> 
 <TD>DBF_FLOAT</TD>
 <TD>
-After a read operation, this field contains the number of
+After a read status operation, this field contains the number of
 counts in the "preset region".  (See the PCT field.)
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>DTIM</TD> <TD>R</TD> <TD>"Average dead time"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+After a read status operation, this field contains the average dead time of the
+detector.  The average dead time is the percent of time the detector was not able to 
+collect data during the current elapsed time.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>IDTIM</TD> <TD>R</TD> <TD>"Instantaneous dead time"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+After a read status operation, this field contains the instantaneous dead time of the
+detector.  The instantaneous dead time is the percent of time the detector was not able to 
+collect data since the previous read status operation.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>STIM</TD> <TD>R</TD> <TD>"Acquisition start time"</TD> 
+<TD>DBF_STRING</TD>
+<TD>
+This field contains the time that acquisition was last started.  It is an absolute time
+as reported and formatted by the IOC.
 </TD>
 </TR>
 
@@ -440,8 +525,106 @@ and set to 1 if any command sent to the hardware is not
 acknowledged correctly.
 </TD>
 </TR>
+</TABLE>
 
-<TR VALIGN=TOP><TH COLSPAN=5> Link Fields</TH>
+<P>
+<HR>
+<H2><CENTER><A NAME="Alarm Fields">
+                     Alarm Fields</A></CENTER></H2>
+<BR>
+Note: These fields are used to control the alarm status and severity, based on
+the dead time.  See the DTIM field above.
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HIGH</TD> <TD>R/W</TD> <TD>"High deviation limit"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+The dead time value above which the record will go into alarm, with severity
+controlled by the HSV field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HSV</TD> <TD>R/W</TD> <TD>"High severity"</TD> 
+<TD>DBF_MENU</TD>
+<TD>
+The alarm severity when the dead time exceeds that in the HIGH field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HIHI</TD> <TD>R/W</TD> <TD>"High-high deviation limit"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+The dead time value above which the record will go into alarm, with severity
+controlled by the HHSV field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HHSV</TD> <TD>R/W</TD> <TD>"High severity"</TD> 
+<TD>DBF_MENU</TD>
+<TD>
+The alarm severity when the dead time exceeds that in the HIGH field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>LOW</TD> <TD>R/W</TD> <TD>"Low deviation limit"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+The dead time value below which the record will go into alarm, with severity
+controlled by the LSV field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>LSV</TD> <TD>R/W</TD> <TD>"Low severity"</TD> 
+<TD>DBF_MENU</TD>
+<TD>
+The alarm severity when the dead time is less than that in the LOW field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HIHI</TD> <TD>R/W</TD> <TD>"High-high deviation limit"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+The dead time value above which the record will go into alarm, with severity
+controlled by the HHSV field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HHSV</TD> <TD>R/W</TD> <TD>"High severity"</TD> 
+<TD>DBF_MENU</TD>
+<TD>
+The alarm severity when the dead time exceeds that in the HIGH field.</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>HYST</TD> <TD>R/W</TD> <TD>"Alarm deadband"</TD> 
+<TD>DBF_FLOAT</TD>
+<TD>
+The alarm deadband, which is used to prevent the alarm status from changing
+rapidly when the deadtime is close to an alarm limit.</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR>
+<H2><CENTER><A NAME="Link Fields">
+                     Link Fields</A></CENTER></H2>
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
 
 <TR VALIGN=TOP>
@@ -455,15 +638,24 @@ detector or signal channel, INP identifies the signal channel
 as well.
 </TD>
 </TR>
+</TABLE>
 
-<TR VALIGN=TOP><TH COLSPAN=5> Simulation Fields
+<P>
+<HR>
+<H2><CENTER><A NAME="Simulation Fields">
+                     Simulation Fields</A></CENTER></H2>
 <BR>
-(Note: these fields have been retained without modification from
+Note: these fields have been retained without modification from
 the waveform record.  See the 
 <A 
-HREF="http://www.atdiv.lanl.gov/aot8/epics/dbase/recref/rcrf-7.html#MARKER-9-4">
+HREF="http://www.aps.anl.gov/asd/controls/epics/EpicsDocumentation/AppDevManuals/RecordRef/Recordref-7.html#MARKER-9-4">
 chapter on simulation mode in the Record Reference Manual</A> for details.
-</TH>
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
 
 <TR VALIGN=TOP>
@@ -485,12 +677,21 @@ chapter on simulation mode in the Record Reference Manual</A> for details.
 <TD>SIMS</TD> <TD>R/W</TD> <TD>"Sim mode Alarm Svrty"</TD> <TD>DBF_MENU</TD>
 <TD>See waveform record.</TD>
 </TR>
+</TABLE>
 
-
-<TR VALIGN=TOP><TH COLSPAN=5> Region-Of-Interest (ROI) Fields
+<P>
+<HR>
+<H2><CENTER><A NAME="Region-Of-Interest (ROI) Fields">
+                     Region-Of-Interest (ROI) Fields</A></CENTER></H2>
 <BR>
-(In the following field names, replace 'n' with a digit '0' through '9')
-</TH>
+The MCA record has fields for 32 ROIs. 
+In the following field names, replace 'n' with a digit '0' through '31'.
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
 
 <TR VALIGN=TOP>
@@ -545,8 +746,8 @@ The total number of counts in the n'th ROI.
 <TR VALIGN=TOP>
 <TD>RnN</TD> <TD>R</TD> <TD>"Region n net counts"</TD><TD>DBF_DOUBLE</TD>
 <TD>
-The total number of counts in the n'th ROI, less the total background
-in that ROI.
+The net number of counts in the n'th ROI, i.e. the total counts
+less the total background in that ROI.
 </TD>
 </TR>
 
@@ -564,17 +765,39 @@ nonzero.
 A descriptive string for region n. 
 </TD>
 </TR>
+</TABLE>
 
-<TR VALIGN=TOP><TH COLSPAN=5> Miscellaneous Fields</TH>
+<P>
+<HR>
+<H2><CENTER><A NAME="Miscellaneous Fields">
+                     Miscellaneous Fields</A></CENTER></H2>
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
+
 <TR VALIGN=TOP>
 <TD>VERS</TD>  <TD>R</TD> <TD>"Code Version"</TD> <TD>DBF_FLOAT</TD>
 <TD>The version number of the record software.  
 </TD>
 </TR>
+</TABLE>
 
-<TR VALIGN=TOP><TH COLSPAN=5> Private Fields</TH>
+<P>
+<HR>
+<H2><CENTER><A NAME="Private Fields">
+                     Private Fields</A></CENTER></H2>
+<TABLE BORDER CELLPADDING=5>
+<TR>
+<TH>Name</TH>
+<TH>Access</TH>
+<TH>Prompt</TH><TH>Data type</TH> 
+<TH>Description</TH>
 </TR>
+
 <TR VALIGN=TOP>
 <TD>BPTR</TD>  <TD>R</TD> <TD>"Buffer Pointer"</TD> <TD>DBF_NOACCESS</TD>
 <TD>The pointer to the buffer for the VAL field.</TD>
@@ -606,6 +829,48 @@ channel access puts.
 </TD>
 </TR>
 
+<TR VALIGN=TOP>
+<TD>NEWR</TD>  <TD>R</TD> <TD>"New ROI value map"</TD> <TD>DBF_ULONG</TD>
+<TD>A field containing flags indicating which ROI fields have been changed by
+channel access puts.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>LALM</TD>  <TD>R</TD> <TD>"Last value alarmed"</TD> <TD>DBF_FLOAT</TD>
+<TD>The last deadtime alarm value.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ACQP</TD>  <TD>R</TD> <TD>"Previous acquire status"</TD> <TD>DBF_MENU</TD>
+<TD>The previous state of the ACQG field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>DWLP</TD>  <TD>R</TD> <TD>"Previous dwell time"</TD> <TD>DBF_FLOAT</TD>
+<TD>The previous value of the DWEL field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ERTP</TD>  <TD>R</TD> <TD>"Previous real time"</TD> <TD>DBF_FLOAT</TD>
+<TD>The previous value of the ERTM field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ELTP</TD>  <TD>R</TD> <TD>"Previous live time"</TD> <TD>DBF_FLOAT</TD>
+<TD>The previous value of the ELTM field.
+</TD>
+</TR>
+
+<TR VALIGN=TOP>
+<TD>ACTP</TD>  <TD>R</TD> <TD>"Previous actual counts"</TD> <TD>DBF_LONG</TD>
+<TD>The previous value of the ACT field.
+</TD>
+</TR>
 
 <TR VALIGN=TOP>
 <TD COLSPAN=5, ALIGN=LEFT>
@@ -626,8 +891,8 @@ if the record's SCAN field is set to "Passive".</TD></TR>
 </TABLE>
 
 
-<A NAME="Intended">
-<H2>Intended Use</H2></A>
+<H2><A NAME="Intended Use">
+             Intended Use</A></H2>
 <P>
 This record should normally have its SCAN field set to "Passive", since
 Put's to the STRT and READ fields are intended to cause data acquisition and
@@ -645,24 +910,30 @@ READ field,
 <LI> attach the BO record's scan-disable link (DISL) to the MCA record's
 ACQG field,
 <LI> set the BO record's scan-disable value (DISV) to 0.
+<LI> set the BO record's SCAN field to the desired update rate.
 </OL>
 
+<P>
+Similarly, to read status periodically while acquisition is underway, arrange for a '1'
+to be poked into the PROC field periodically.  The following recipe arranges
+for the PROC field to be poked periodically while the MCA is acquiring data.
+<P>
+<OL>
+<LI> attach the output link of a "binary-out" (BO) record to the MCA record's
+PROC field,
+<LI> set the BO record's value permanently to 1 (using its DOL field), 
+<LI> attach the BO record's scan-disable link (DISL) to the MCA record's
+ACQG field,
+<LI> set the BO record's scan-disable value (DISV) to 0.
+<LI> set the BO record's SCAN field to the desired update rate.
+</OL>
 
-<A NAME="Release">
-<H2>Release Notes</H2></A>
 <P>
-<H3>Version 4.0</H3>
-The .ADDR and .PORT fields of the record have been eliminated.  The .INP field
-is now used to specify the hardware addressing information.  See the 
-device documentation for details.
-<P>
-A new field, .SEQ (sequence) has been added.  This field is used to change the
-memory location into which the hardware acquires data, from which data are
-read, and where data are erased.  By simply incrementing the .SEQ field it is
-possible to rapidly acquire time-resolved data, limited only by the amount of
-acquisition memory in the hardware.
-<P>
-A new field, .RMAP has been added.  It is used only for internal bookkeeping.
+The file mca.db contains records to implement the above logic.  It also contains records
+for Start and EraseStart that optionally set a Busy record flag to wait for a channel
+access client, such as IDL, to save the data before continuing.  That database also
+contains a set of records to indicate why acquisition was stopped (preset time reached,
+user stopped it manually, etc.).
 
 
 <HR>
@@ -671,7 +942,7 @@ Suggestions and comments to:
 <A HREF="mailto:rivers@cars.uchicago.edu">
 Mark Rivers </A> : (rivers@cars.uchicago.edu)
 <BR>
-Last modified: November 23, 1997
+Last modified: April 22, 2005
 </ADDRESS>
 
 </BODY>
