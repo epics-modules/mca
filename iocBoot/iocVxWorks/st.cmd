@@ -8,11 +8,7 @@ ld < mcaAIM.munch
 
 cd startup
 dbLoadDatabase("../../dbd/mcaCanberra.dbd",0,0)
-registerRecordDeviceDriver(pdbbase) 
-
-dbLoadRecords("../../mcaApp/Db/mca.db","P=mcaTest:,M=aim_adc1,NCHAN=2048,NUSE=2048,DTYP=asynMCA,INP=@asyn(AIM1/1)")
-dbLoadRecords("../../mcaApp/Db/icb_adc.db", "P=mcaTest:,ADC=adc1,CARD=0,SERVER=icb/1,ADDR=0")
-dbLoadRecords("../../mcaApp/Db/icb_tca.db", "P=mcaTest:,TCA=tca1,MCA=aim_adc1,CARD=0,SERVER=icbTca/1,ADDR=0")
+mcaCanberra_registerRecordDeviceDriver(pdbbase) 
 
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
 #           maxSignals, maxSequences, ethernetDevice)
@@ -49,4 +45,9 @@ nmc_show_modules
 #asynSetTraceMask "icbTca1",0,0x13
 #asynSetTraceMask "icbHvps1",0,0xff
 
+< save_restore.cmd
+
 iocInit()
+
+# save settings every thirty seconds
+create_monitor_set("auto_settings.req",30,"P=mcaTest:")
