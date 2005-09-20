@@ -12,19 +12,22 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 #SNCSEQ=$(EPICS_BASE)/../modules/soft/seq
 
 # Transform record
-CALC=/corvette/home/epics/synApps5-1beta2/calc
+CALC=/corvette/home/epics/support/calc/2-5
 
 # Busy record 
-SSCAN=/corvette/home/epics/synApps5-1beta2/sscan
+SSCAN=/corvette/home/epics/support/sscan/2-5-1
 
 # Scaler record
-STD=/corvette/home/epics/synApps5-1beta2/std
+STD=/corvette/home/epics/support/std/2-5
 
 # save_restore
-AUTOSAVE=/corvette/home/epics/synApps5-1beta2/autosave
+AUTOSAVE=/corvette/home/epics/support/autosave/4-1-1
 
 # ASYN - for device/driver support
-ASYN=/corvette/home/epics/synApps5-1beta2/asyn/4-2-1
+ASYN=/corvette/home/epics/support/asyn/4-3
+
+# MCA - this module
+MCA=/corvette/home/epics/support/mca/6-6beta
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=/corvette/usr/local/epics/base-3.14.7
