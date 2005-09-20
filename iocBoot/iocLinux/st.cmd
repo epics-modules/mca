@@ -1,4 +1,5 @@
 < envPaths
+epicsEnvSet(STARTUP,$(TOP)/iocBoot/$(IOC))
 
 dbLoadDatabase("../../dbd/mcaCanberra.dbd",0,0)
 mcaCanberra_registerRecordDeviceDriver(pdbbase) 
@@ -37,4 +38,10 @@ mcaAIMShowModules
 #asynSetTraceMask "icbTca1",0,0x13
 #asynSetTraceMask "icbHvps1",0,0xff
 
+< save_restore.cmd
+
 iocInit()
+
+# save settings every thirty seconds
+create_monitor_set("auto_settings.req",30,"P=mcaTest:")
+
