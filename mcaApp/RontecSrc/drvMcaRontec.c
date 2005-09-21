@@ -48,7 +48,7 @@ typedef struct {
     int acquiring;
     char inputEos[10];
     int inputEosLen;
-    char mcaBuffer[RONTEC_MAXCHANS * 4];
+    char mcaBuffer[RONTEC_MAXCHANS*4 + 4];
     asynUser *pasynUser;
     asynInterface common;
     asynInterface int32;
@@ -432,7 +432,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
              "drvMcaRontec::int32ArrayRead entry, signal=%d, maxChans=%d\n", 
              signal, maxChans);
 
-    sprintf(message, "$SS 0,%d,%d,%d", pPvt->binning, pPvt->binning, maxChans*pPvt->binning-1);
+    sprintf(message, "$SS 0,%d,%d,%d", pPvt->binning, pPvt->binning, maxChans*pPvt->binning);
     /* The MCA data from the Rontec are in binary format, need to turn off the input EOS processing */
     pasynOctetSyncIO->setInputEos(pPvt->pasynUser, "", 0);
     nread = 4 + 4*maxChans;  /* Rontec sends !SS<CR> followed by 4 bytes/channel */
@@ -532,6 +532,8 @@ static void RontecReport(void *drvPvt, FILE *fp, int details)
             pPvt->portName, pPvt->serialPort);
     if (details >= 1) {
         fprintf(fp, "              maxChans: %d\n", pPvt->maxChans);
+        fprintf(fp, "              nchans:   %d\n", pPvt->nchans);
+        fprintf(fp, "              binning:  %d\n", pPvt->binning);
     }
 }
 
