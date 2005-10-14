@@ -21,6 +21,7 @@
 #include <link.h>
 #include <errlog.h>
 #include <dbCommon.h>
+#include <dbScan.h>
 #include <cantProceed.h>
 #include <recSup.h>
 #include <devSup.h>
@@ -61,12 +62,16 @@ typedef struct {
     double dwellTime;
     double totalCounts;
     int acquiring;
+    IOSCANPVT ioScanPvt;
+    void *registrarPvt;
 } mcaAsynPvt;
 
 static long init_record(mcaRecord *pmca);
+static long getIoIntInfo(int cmd, dbCommon *pr, IOSCANPVT *iopvt);
 static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg);
 static long read_array(mcaRecord *pmca);
 static void asynCallback(asynUser *pasynUser);
+static void interruptCallback(void *drvPvt, asynUser *pasynUser, epicsInt32 value);
 
 typedef struct {
     long            number;
@@ -194,9 +199,9 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         pmca->act =  pPvt->totalCounts;
         pmca->acqg = pPvt->acquiring;
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                  "devMcaAsyn::send_msg, record=%s, elapsed time=%f,"
-                  " dwell time=%f, acqg=%d\n", 
-                  pmca->name, pmca->ertm, pmca->dwel, pmca->acqg);
+                  "devMcaAsyn::send_msg, record=%s, elapsed real=%f,"
+                  " elapsed live=%f, dwell time=%f, acqg=%d\n", 
+                  pmca->name, pmca->ertm, pmca->eltm, pmca->dwel, pmca->acqg);
         return(0);
     }
 
@@ -291,7 +296,7 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
 }
 
 
-void asynCallback(asynUser *pasynUser)
+static void asynCallback(asynUser *pasynUser)
 {
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pasynUser->userPvt;
     mcaRecord *pmca = pPvt->pmca;
@@ -370,3 +375,48 @@ static long read_array(mcaRecord *pmca)
               pmca->name, pmca->nord);
     return(0);
 }
+
+static long getIoIntInfo(int cmd, dbCommon *pr, IOSCANPVT *iopvt)
+{
+    mcaAsynPvt *pPvt = (mcaAsynPvt *)pr->dpvt;
+    asynStatus status;
+
+    if (cmd == 0) {
+        /* Add to scan list.  Register interrupts */
+        asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+            "%s devMcaAsyn::getIoIntInfo registering interrupt\n",
+            pr->name);
+        status = pPvt->pasynInt32->registerInterruptUser(
+           pPvt->asynInt32Pvt,pPvt->pasynUser,
+           interruptCallback,pPvt,&pPvt->registrarPvt);
+        if(status!=asynSuccess) {
+            printf("%s devMcaAsyn registerInterruptUser %s\n",
+                   pr->name,pPvt->pasynUser->errorMessage);
+        }
+    } else {
+        asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+            "%s devMcaAsyn::getIoIntInfo cancelling interrupt\n",
+             pr->name);
+        status = pPvt->pasynInt32->cancelInterruptUser(pPvt->asynInt32Pvt,
+             pPvt->pasynUser,pPvt->registrarPvt);
+        if(status!=asynSuccess) {
+            printf("%s devMcaAsyn cancelInterruptUser %s\n",
+                   pr->name,pPvt->pasynUser->errorMessage);
+        }
+    }
+    *iopvt = pPvt->ioScanPvt;
+    return 0;
+}
+
+static void interruptCallback(void *drvPvt, asynUser *pasynUser,
+                epicsInt32 value)
+{
+    mcaAsynPvt *pPvt = (mcaAsynPvt *)drvPvt;
+    mcaRecord *pmca = pPvt->pmca;
+
+    asynPrint(pPvt->pasynUser, ASYN_TRACEIO_DEVICE,
+        "%s devMcaAsyn::interruptCallback new value=%d\n",
+        pmca->name, value);
+    scanIoRequest(pPvt->ioScanPvt);
+}
+
