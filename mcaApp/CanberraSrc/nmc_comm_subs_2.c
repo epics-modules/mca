@@ -399,7 +399,7 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
 
       /* Change byte order */
       nmc_byte_order_out(&ipkt);
-      AIM_DEBUG(2, "nmc_broadcast_inq, sending inquiry\n");
+      if (aimDebug > 1) errlogPrintf("nmc_broadcast_inq, sending inquiry\n");
       length=sizeof(ipkt);
 #ifdef vxWorks
       s=etherOutput((*i).pIf, &ether_header,
@@ -420,7 +420,7 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
                         libnet_geterror(i->pIf->libnet));
       }
 #endif
-      AIM_DEBUG(1, "(nmc_broadcast_inq): wrote %d bytes of %d\n",s,length);
+      if (aimDebug > 0) errlogPrintf("(nmc_broadcast_inq): wrote %d bytes of %d\n",s,length);
 
       /*
        * If we sent one of the "conditional" inquiry messages, nothing to

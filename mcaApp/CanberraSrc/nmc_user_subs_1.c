@@ -82,7 +82,7 @@ int module,adc,group,address,mode,*live,*real,*totals,*status;
                  &getstatus,sizeof(getstatus),&retstatus,
                  sizeof(retstatus),&respsize,0);
    if(s != NCP_K_MRESP_ADCSTATUS) {
-      AIM_DEBUG(1, "(nmc_acqu_statusupdate): bad response expected=%d, actual=%d\n", 
+      if (aimDebug > 0) errlogPrintf("(nmc_acqu_statusupdate): bad response expected=%d, actual=%d\n", 
                 NCP_K_MRESP_ADCSTATUS, s);
       nmc_signal("nmc_acqu_statusupdate",NMC__INVMODRESP);
       return ERROR;
@@ -172,8 +172,7 @@ int module,adc,saddress,nrows,start,srow,channels,*address;
                actual == 0 ||
                (*r).channels > NMC_K_MAX_NIMSG)
            {
-                AIM_DEBUG(1, 
-                 "(nmc_acqu_getmemory_cmp): bad response expected=%d, actual=%d\n",
+                if (aimDebug > 0) errlogPrintf("(nmc_acqu_getmemory_cmp): bad response expected=%d, actual=%d\n",
                         NCP_K_MRESP_RETMEMCMP, s);
                 nmc_signal("nmc_acqu_getmemory_cmp",NMC__INVMODRESP);
                 return ERROR;
