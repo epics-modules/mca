@@ -33,14 +33,17 @@
 extern "C" {
 #endif
 
-#ifdef vxWorks
+#if defined(vxWorks)
 #include <vxWorks.h>
 #include <msgQLib.h>
 #include <etherLib.h>
 #include <semLib.h>
+#elif defined (CYGWIN32)
+#include <libnet_cygwin.h>
+#include <wpcap.h> 		/* This is a local copy of pcap.h from the WinPcap developer's pack */
 #else
 #include <libnet.h>
-#include <pcap.h> 		/* Packet Capturing: if this gives you an error try pcap/pcap.h */
+#include <pcap.h>
 #endif
 #include <errlog.h>
 
@@ -49,6 +52,11 @@ extern "C" {
 #include "ncp_comm_defs.h"
 #include "nmcmsgdef.h"
 
+#define INTERFACE_NAME_SIZE 100
+#define SNAP_SIZE 5
+#ifndef ETH_ALEN
+#define ETH_ALEN 6
+#endif
 
 #ifdef vxWorks
 #else
@@ -77,9 +85,6 @@ typedef       int             BOOL;
 typedef int STATUS;
 #endif /* vxWorks */
 
-#define AIM_DEBUG(l,FMT,V...) {if (l <= aimDebug) \
-              { errlogPrintf("%s(%d):",__FILE__,__LINE__); \
-                            errlogPrintf(FMT,##V);}}
 extern volatile int aimDebug;
 
 #define NMC_K_MAX_MODULES 64                    /* we can know about 64 modules */
@@ -96,8 +101,8 @@ struct nmc_module_info_struct {
    char module_comm_state;             /* module communications status */
    char module_type;                   /* module type */
    struct nmc_comm_info_struct *comm_device; /* Pointer to network link to module */
-   unsigned char address[6];           /* module network address */
-   unsigned char owner_id[6];          /* owner id of module */
+   unsigned char address[ETH_ALEN];   /* module network address */
+   unsigned char owner_id[ETH_ALEN];  /* owner id of module */
    char owner_name[8];                 /* owner name of module */
    unsigned char num_of_inputs;        /* number of inputs provided by module */
    unsigned int input_usage_map;       /* bits are 0 if an input is free */
@@ -145,13 +150,8 @@ struct ifnet {
                 char errbuf[LIBNET_ERRBUF_SIZE];
 		struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
 };
-/* vxWorks has this defined, Linux also
-struct  ether_header {
-        epicsUInt8  ether_dhost[6];
-        epicsUInt8  ether_shost[6];
-        epicsUInt16 ether_type;
-}; */
 #endif
+
 /*
 * This structure contains data relating to the communications channel over
 * which we talk to networked modules.
@@ -160,13 +160,14 @@ struct  ether_header {
 struct nmc_comm_info_struct {
    char valid;                    /* structure entry valid */
    char type;                     /* Network device type */
-   char name[10];                 /* Network device name */
-   unsigned char sys_address[6];  /* System network address */
+   char name[INTERFACE_NAME_SIZE]; /* Network device name */
+   unsigned char sys_address[ETH_ALEN];  /* System network address */
    struct ifnet *pIf;             /* Pointer to ifnet structure */
    epicsThreadId status_pid;       /* Thread ID of status dispatch */
    epicsThreadId broadcast_pid;    /* Thread ID of broadcast poller  */
 #ifdef vxWorks
 #else
+   pcap_t *pcap;                  /* Pointer to pcap structure */
    epicsThreadId capture_pid;      /* Thread ID of ether capture thread */
 #endif
 /* this was the no of ticks for timeout, it is float seconds now*/
@@ -177,8 +178,8 @@ struct nmc_comm_info_struct {
    epicsMessageQueueId statusQ;   /* Message queue for status messages */
    unsigned char response_sap;    /* NI SAP address for normal messages */
    unsigned char status_sap;      /* NI SAP address for status/event messages */
-   unsigned char response_snap[5]; /* NI SNAP ID for normal messages */
-   unsigned char status_snap[5];  /* NI SNAP ID for status/event messages */
+   unsigned char response_snap[SNAP_SIZE]; /* NI SNAP ID for normal messages */
+   unsigned char status_snap[SNAP_SIZE];  /* NI SNAP ID for status/event messages */
 };
 
 #define NMC_K_MAX_IDS 4                         /* Number of network devices */
@@ -209,7 +210,7 @@ struct nmc_sem_node
 
 #define MODULE_INTERLOCK_ON(module) \
         if (epicsMutexLock(nmc_module_info[module].module_mutex)) \
-           AIM_DEBUG(1, "MODULE_INTERLOCK_ON failed!\n")
+           if (aimDebug > 0) errlogPrintf("AIM MODULE_INTERLOCK_ON failed!\n")
 #define MODULE_INTERLOCK_OFF(module) \
         epicsMutexUnlock(nmc_module_info[module].module_mutex)
 
