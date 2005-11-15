@@ -344,15 +344,19 @@ struct event_packet{
 	VxWorks needs 1 underscore
 */
 
-#ifndef BYTE_ORDER
-#define BYTE_ORDER _BYTE_ORDER
+#ifndef __BYTE_ORDER
+#define __BYTE_ORDER _BYTE_ORDER
 #endif
 
-#ifndef BIG_ENDIAN
-#define BIG_ENDIAN _BIG_ENDIAN
+#ifndef __BIG_ENDIAN
+#define __BIG_ENDIAN _BIG_ENDIAN
 #endif
 
-#if (BYTE_ORDER == BIG_ENDIAN)
+/* There is a serious bug in Cygin compiler.  
+ * It sets __BYTE_ORDER == __BIG_ENDIAN when
+ * it is really little endian! */
+#if (__BYTE_ORDER == __BIG_ENDIAN) && (!CYGWIN32)
+/* #warning "Big Endian" */
 /* Swap an INT16 or UINT16 integer */
 #define SSWAP(num) \
       { register UINT8 tmp, *p; \
@@ -373,6 +377,7 @@ struct event_packet{
         *(p+2) = tmp; }
 
 #else  /* Nothing to do, little-endian */
+/* #warning "Little Endian" */
 #define SSWAP(num)
 #define LSWAP(num)
 #endif
