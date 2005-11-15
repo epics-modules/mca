@@ -523,7 +523,7 @@ LONG icb_monitor_modules ();
 /* The following routines are in icb_strings.c */
 int icb_dsc2str (CHAR *str, CHAR *dsc, LONG max_len);
 int icb_str2dsc (CHAR *dsc,     CHAR *str);
-int strnicmp (CHAR *s1, CHAR *s2, int len);
+int StrNCmp (CHAR *s1, CHAR *s2, int len);
 int StrUpCase (CHAR *dst, CHAR *src, int len);
 int StrTrim (CHAR *dst, CHAR *src, int len, int *trim_len);
 

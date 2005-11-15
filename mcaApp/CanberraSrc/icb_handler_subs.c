@@ -37,7 +37,7 @@
 *				current ON/OFF state is read in from the
 *				module itself in order to preserve it's value.
 *	24-May-1993	TLG	Converted some string compare calls from
-*				strcmp() or stricmp() to strnicmp().  This
+*				strcmp() or stricmp() to StrNCmp().  This
 *				will ensure that CAM_T_xxxx parameters are
 *				evaluated correctly. (i.e. CAM_T_ADCACQMODE).
 *
@@ -2100,7 +2100,7 @@ LONG icb_adc_write (ICB_CCNIM_ADC *adc,
 			icb_dsc2str (adc->acqmode, params->value, 8);
 		     if (!entry) break;
 
-		     if (strnicmp (adc->acqmode, "SVA", 3) == 0)
+		     if (StrNCmp (adc->acqmode, "SVA", 3) == 0)
 			entry->registers[0] &= ~ADC_M_R2_ACQMODE_SVA;
 		     else
 			entry->registers[0] |= ADC_M_R2_ACQMODE_SVA;
@@ -2921,9 +2921,9 @@ LONG icb_amp_write (ICB_CCNIM_AMP *amp,
 			icb_dsc2str (amp->pramptype, params->value, 8);
 		     if (!entry) break;
 
-		     if (strnicmp (amp->pramptype, "TRP", 3) == 0)
+		     if (StrNCmp (amp->pramptype, "TRP", 3) == 0)
 			entry->registers[4] |= AMP_M_R6_PREAMP_TRP;
-		     else if (strnicmp (amp->pramptype, "RC", 2) == 0)
+		     else if (StrNCmp (amp->pramptype, "RC", 2) == 0)
 			entry->registers[4] &= ~AMP_M_R6_PREAMP_TRP;
 		     else {
 			strcpy (amp->pramptype, "RC");
@@ -3014,7 +3014,7 @@ LONG icb_amp_write (ICB_CCNIM_AMP *amp,
 			icb_dsc2str (amp->shapemode, params->value, 8);
 		     if (!entry) break;
 
-		     if (strnicmp (amp->shapemode, "TRIANGLE", 8) == 0)
+		     if (StrNCmp (amp->shapemode, "TRIANGLE", 8) == 0)
 			entry->registers[4] |= AMP_M_R6_SHAPEMODE_TRIANGLE;
 		     else
 			entry->registers[4] &= ~AMP_M_R6_SHAPEMODE_TRIANGLE;
@@ -3047,7 +3047,7 @@ LONG icb_amp_write (ICB_CCNIM_AMP *amp,
 			icb_dsc2str (amp->blrtype, params->value, 8);
 		     if (!entry) break;
 
-		     if (strnicmp (amp->blrtype, "ASYM", 4) == 0)
+		     if (StrNCmp (amp->blrtype, "ASYM", 4) == 0)
 			entry->registers[4] |= AMP_M_R6_BLRMODE_ASYM;
 		     else
 			entry->registers[4] &= ~AMP_M_R6_BLRMODE_ASYM;
@@ -3067,7 +3067,7 @@ LONG icb_amp_write (ICB_CCNIM_AMP *amp,
 			icb_dsc2str (amp->dtctype, params->value, 8);
 		     if (!entry) break;
 
-		     if (strnicmp (amp->dtctype, "LFC", 3) == 0)
+		     if (StrNCmp (amp->dtctype, "LFC", 3) == 0)
 			entry->registers[4] |= AMP_M_R6_LTCMODE_LFC;
 		     else
 			entry->registers[4] &= ~AMP_M_R6_LTCMODE_LFC;

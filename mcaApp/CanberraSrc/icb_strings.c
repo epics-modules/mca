@@ -84,11 +84,11 @@ int icb_str2dsc (CHAR *dsc,
 
 /*******************************************************************************
 *
-* strnicmp compares two strings
+* StrNCmp compares two strings
 *
 * Its calling format is:
 *
-*	status = strnicmp (s1, s2, len);
+*	status = StrNCmp (s1, s2, len);
 * 
 * where
 *
@@ -102,7 +102,7 @@ int icb_str2dsc (CHAR *dsc,
 *
 *******************************************************************************/
 
-int strnicmp (CHAR *s1,
+int StrNCmp (CHAR *s1,
 	     CHAR *s2,
 		 int len)
 {
