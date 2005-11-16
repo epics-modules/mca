@@ -31,7 +31,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * @(#) $Header: /net/beams-nfs/export/local/cvs/support/mca/mcaApp/CanberraSrc/wpcap.h,v 1.1 2005-11-15 23:20:22 rivers Exp $ (LBL)
+ * @(#) $Header: /net/beams-nfs/export/local/cvs/support/mca/mcaApp/CanberraSrc/wpcap.h,v 1.2 2005-11-16 00:00:33 rivers Exp $ (LBL)
  */
 
 #ifndef lib_pcap_h
@@ -54,9 +54,9 @@
 #include <stdio.h>
 
 #ifdef HAVE_REMOTE
-	// We have to define the SOCKET here, although it has been defined in sockutils.h
-	// This is to avoid the distribution of the 'sockutils.h' file around
-	// (for example in the WinPcap developer's pack)
+	/* We have to define the SOCKET here, although it has been defined in sockutils.h
+	 * This is to avoid the distribution of the 'sockutils.h' file around
+	 * (for example in the WinPcap developer's pack) */
 	#ifndef SOCKET
 		#ifdef WIN32
 			#define SOCKET unsigned int
