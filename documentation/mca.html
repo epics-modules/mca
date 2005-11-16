@@ -26,10 +26,21 @@ programmable ADCs, amplifiers and power supplies.</p>
   <li>9645 6kV High Voltage Power Supply</li>
   <li>2016A Amplifier, 3-channel analyzer</li>
 </ul>
+The Canberra support runs on vxWorks, Linux and Cygwin.  It should also run on other
+Unix systems if the libnet and libpcap packages are intalled.
+
 <p>From <a href="http://www.struck.de/">Struck Innovative Systems</a></p>
 <ul>
   <li>SIS 3801 MCS (formerly the STR7201 from Struck)</li>
 </ul>
+The SIS support runs on vxWorks.  It should also run on RTEMS, but has not been tested.
+
+<p>From <a href="http://www.rontec.com/">Rontec</a></p>
+<ul>
+  <li>XFlash MCA</li>
+</ul>
+The Rontec support will run on any IOC with support for asyn serial ports.
+
 <p>Drivers that support the asyn version of the mcaRecord device support are provided for additional 
 devices in other synApps modules that I've written.&nbsp; These include <a href="dxp.html">dxp</a>,
 <a href="ip330.html">ip330</a>, and <a href="quadEM.html">quadEM</a>.</p>
@@ -49,6 +60,15 @@ below:</p>
     <th>Documentation</th>
     <th>Release Notes</th>
     <th>Known Problems</th>
+  </tr>
+
+  <tr>
+    <td>R6-6</td>
+    <td>16-Nov-2005</td>
+    <td><a href="pub/mcaR6-6.tar.gz">mcaR6-6.tar.gz</a></td>
+    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
+    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
+    <td>See release notes</td>
   </tr>
 
   <tr>
@@ -143,6 +163,38 @@ below:</p>
     <th>Requires module</th>
     <th>Release needed</th>
     <th>Required for</th>
+  </tr>
+
+  <tr>
+    <td rowspan=6>6-6</td>
+    <td>EPICS base</td>
+    <td>3.14.7</td>
+    <td>Base support</td>
+  </tr>
+  <tr>
+    <td>asyn</td>
+    <td>4-3</td>
+    <td>Driver support</td>
+  </tr>
+  <tr>
+    <td>std</td>
+    <td>2-5</td>
+    <td>Scaler record</td>
+  </tr>
+  <tr>
+    <td>calc</td>
+    <td>2-5</td>
+    <td>Transform record</td>
+  </tr>
+  <tr>
+    <td>sscan</td>
+    <td>2-5-1</td>
+    <td>Busy record</td>
+  </tr>
+  <tr>
+    <td>autosave</td>
+    <td>4-1-1</td>
+    <td>Save/restore</td>
   </tr>
 
   <tr>

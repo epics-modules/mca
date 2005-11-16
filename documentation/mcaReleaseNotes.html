@@ -8,6 +8,27 @@
 
 <h1 align="center">mca Release Notes</h1>
 
+<h2 align="center">Release 6-6 (November 16, 2005)</h2>
+<ul>
+  <li>Added mcaApp/RontecSrc directory with support for the Rontec XFlash MCA.   
+      This works with any serial port with asyn support.
+  <li>Added support for Canberra AIM on Windows IOCs (using Cygwin).
+  <li>Fixed a bug in mcaRecord.  If a channel access put should have caused the record
+      to process again because it was busy (.RPRO field=1) it was not processing again
+      because the record only calls recGblFwdLink when acquisition completes.  Work around
+      problem by checking RPRO at end of record processing and repeating processing loop
+      if RPRO=1 and acquisition is not complete.
+  <li>Fixed occasional timing problem with Canberra AIM on Linux not receiving first
+      inquiry response.
+  <li>Fixed problems with the iocLinux and iocVxWorks example IOCs.
+  <li>Added iocRontec example IOC.
+  <li>Added iocCygwin example IOC for Canberra on Cygwin.
+  <li>Added mcaApp/op/adl/mcaTest.adl medm screen for testing the example IOCs.
+  <li>Improved the documentation in mcaDoc.html and mcaRecord.html.
+  <li>Added the acquiring (.ACQG) field to 16element_time.adl.
+</ul>
+
+
 <h2 align="center">Release 6-5 (March 29, 2005)</h2>
 <ul>
   <li>Changed behavior on the SIS (Struck) MCS with software_next.
