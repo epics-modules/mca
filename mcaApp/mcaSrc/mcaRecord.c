@@ -505,6 +505,8 @@ static long process(mcaRecord *pmca)
         return(S_dev_missingSup);
     }
 
+reprocess:
+
     /* init Not ACKnowledged flag */
     if (pmca->nack) {
        if (mcaRecordDebug > 1) errlogPrintf("process: clearing NACK field\n");
@@ -810,7 +812,24 @@ read_data:
      * Process forward-linked record.  Tell EPICS dbPutNotify mechanism
      * that processing is finished.
      */
-    if (!pmca->acqg) recGblFwdLink(pmca);
+    if (!pmca->acqg) {
+        if (mcaRecordDebug > 1) errlogPrintf("mcaRecord::process: %s calling recGblFwdLink rpro=%d\n", pmca->name, pmca->rpro);
+        recGblFwdLink(pmca);
+    } else {
+        /* There is a problem with the MCA record not calling recGblFwdLink until
+         * acquisition completes.  dbPutField might have set the .RPRO field to tell the
+         * record to process again while .PACT was 1.  But the reprocessing won't happen if
+         * recGblFwdLink is not called.  Thus, we need to handle the .RPRO field locally,
+         * by starting the process() procedure again.
+         */
+        if (pmca->rpro) {
+            pmca->rpro = 0;
+             if (mcaRecordDebug > 1) errlogPrintf("mcaRecord::process: %s reprocess\n", pmca->name);
+            goto reprocess;
+        } else {
+             if (mcaRecordDebug > 1) errlogPrintf("mcaRecord::process: %s exit, acquiring\n", pmca->name);
+        }
+    }
 
     pmca->pact=FALSE;
     return(0);
