@@ -490,10 +490,10 @@ BOOL nmcEtherGrab(struct ifnet *pIf, char *buffer, int length)
         (*h).source[2] != 0xAF ) {
       if (aimDebug > 9) errlogPrintf("(nmcEtherGrab): Got non-AIM packet, source=%d %d %d\n",
          (*h).source[0], (*h).source[1], (*h).source[2]);
-      return FALSE;
+      goto bad;
    }
 #else
-pcap_handler nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkthdr, const unsigned char *buffer)
+void nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkthdr, const unsigned char *buffer)
 {
    struct enet_header *h;
    struct nmc_comm_info_struct *net;
@@ -511,7 +511,7 @@ pcap_handler nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkth
    if (COMPARE_SNAP((*h).snap_id, (*net).status_snap)) {
       if (epicsMessageQueueSend(net->statusQ, h, length) == -1) {
          nmc_signal("nmcEtherGrab: Status Queue full",0);
-         return FALSE;  
+         goto bad;  
       }
    }
    /* If the packet has the responseSNAP ID then write the message to the responseQ for this module */
@@ -522,20 +522,27 @@ pcap_handler nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkth
                    length, module, (void *)nmc_module_info[module].responseQ);
          if (epicsMessageQueueSend(nmc_module_info[module].responseQ, h, length) == -1) {
             nmc_signal("nmcEtherGrab: Message Queue of module full",module);
-            return FALSE;
+            goto bad;
          }
       }
       else { 
          nmc_signal("nmcEtherGrab: Can't find module",module);
-         return FALSE;
+         goto bad;
       }
    } 
    else {
       if (aimDebug > 0) errlogPrintf("(nmcEtherGrab): ...unrecognized SNAP ID\n");
       nmc_signal("nmcEtherGrab: unrecognized SNAP ID",NMC__INVMODRESP);
-      return FALSE;
+      goto bad;
    }
+#ifdef vxWorks
    return TRUE;
+bad: 
+   return FALSE;
+#else
+bad:
+   return;
+#endif
 }
 
 /*******************************************************************************
