@@ -8,6 +8,18 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
 #           maxSignals, maxSequences, ethernetDevice)
+# On Windows the ethernetDevice name is unique to each network card.  
+# You can get this number for your Window machine by
+# using the "regedit" utility, and doing an "export" of the key:
+# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards]
+# This should look like:
+# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards]
+#
+# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards\2]
+# "ServiceName"="{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}"
+# "Description"="3Com 3C920 Integrated Fast Ethernet Controller (3C905C-TX Compatible)"
+# The number that is needed in the ServiceName field.
+# Copy this number and paste into the AIMConfig command below
 AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}")
 AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
