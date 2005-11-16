@@ -62,12 +62,9 @@ typedef struct {
     double dwellTime;
     double totalCounts;
     int acquiring;
-    IOSCANPVT ioScanPvt;
-    void *registrarPvt;
 } mcaAsynPvt;
 
 static long init_record(mcaRecord *pmca);
-static long getIoIntInfo(int cmd, dbCommon *pr, IOSCANPVT *iopvt);
 static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg);
 static long read_array(mcaRecord *pmca);
 static void asynCallback(asynUser *pasynUser);
@@ -376,38 +373,6 @@ static long read_array(mcaRecord *pmca)
     return(0);
 }
 
-static long getIoIntInfo(int cmd, dbCommon *pr, IOSCANPVT *iopvt)
-{
-    mcaAsynPvt *pPvt = (mcaAsynPvt *)pr->dpvt;
-    asynStatus status;
-
-    if (cmd == 0) {
-        /* Add to scan list.  Register interrupts */
-        asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
-            "%s devMcaAsyn::getIoIntInfo registering interrupt\n",
-            pr->name);
-        status = pPvt->pasynInt32->registerInterruptUser(
-           pPvt->asynInt32Pvt,pPvt->pasynUser,
-           interruptCallback,pPvt,&pPvt->registrarPvt);
-        if(status!=asynSuccess) {
-            printf("%s devMcaAsyn registerInterruptUser %s\n",
-                   pr->name,pPvt->pasynUser->errorMessage);
-        }
-    } else {
-        asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
-            "%s devMcaAsyn::getIoIntInfo cancelling interrupt\n",
-             pr->name);
-        status = pPvt->pasynInt32->cancelInterruptUser(pPvt->asynInt32Pvt,
-             pPvt->pasynUser,pPvt->registrarPvt);
-        if(status!=asynSuccess) {
-            printf("%s devMcaAsyn cancelInterruptUser %s\n",
-                   pr->name,pPvt->pasynUser->errorMessage);
-        }
-    }
-    *iopvt = pPvt->ioScanPvt;
-    return 0;
-}
-
 static void interruptCallback(void *drvPvt, asynUser *pasynUser,
                 epicsInt32 value)
 {
@@ -417,6 +382,10 @@ static void interruptCallback(void *drvPvt, asynUser *pasynUser,
     asynPrint(pPvt->pasynUser, ASYN_TRACEIO_DEVICE,
         "%s devMcaAsyn::interruptCallback new value=%d\n",
         pmca->name, value);
-    scanIoRequest(pPvt->ioScanPvt);
+    /* Is this the correct way to do this?  Should we do a caput to the .READ field? */
+    dbScanLock((dbCommon *)pmca);
+    pmca->read = 1;
+    dbScanUnlock((dbCommon*)pmca);
+    scanOnce(pmca);
 }
 
