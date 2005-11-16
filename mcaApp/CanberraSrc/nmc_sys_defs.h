@@ -244,7 +244,7 @@ IMPORT STATUS nmc_broadcast_inq_task(struct nmc_comm_info_struct *net);
 #ifdef vxWorks
 IMPORT STATUS nmcEtherGrab(struct ifnet *pIf, char *buffer, int length);
 #else
-pcap_handler nmcEtherGrab(unsigned char *,const struct pcap_pkthdr*, const unsigned char*);
+void nmcEtherGrab(unsigned char *,const struct pcap_pkthdr*, const unsigned char*);
 void nmcEthCapture(struct nmc_comm_info_struct *);
 #endif
 IMPORT STATUS nmc_broadcast_inq(struct nmc_comm_info_struct *net,
