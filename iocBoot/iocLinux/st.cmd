@@ -4,6 +4,8 @@ epicsEnvSet(STARTUP,$(TOP)/iocBoot/$(IOC))
 dbLoadDatabase("../../dbd/mcaCanberra.dbd",0,0)
 mcaCanberra_registerRecordDeviceDriver(pdbbase) 
 
+#var aimDebug 10
+
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
 #           maxSignals, maxSequences, ethernetDevice)
 AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "eth0")
