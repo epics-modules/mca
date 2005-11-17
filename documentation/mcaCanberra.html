@@ -1,177 +1,399 @@
 <HTML>
 <HEAD>
-<TITLE>AIM Device Device Support for the MCA Record</TITLE>
+<TITLE>Canberra AIM and ICB Device Device Support</TITLE>
 </HEAD>
 <BODY>
-<H1>AIM Device Device Support for the MCA Record</H1>
+<H1>Canberra AIM and ICB Device Device Support</H1>
 
-<ADDRESS>Mark Rivers and Tim Mooney</ADDRESS>
+<ADDRESS>Mark Rivers</ADDRESS>
 
 <HR>
 <H2>Contents</H2>
 <UL>
-<LI><A HREF="#Overview">Overview</A>
-<LI><A HREF="#Files">Files</A>
-<LI><A HREF="#Example">Example Startup Script</A>
-<LI><A HREF="#Performance">Performance Measurements</A>
+  <LI><A HREF="#Overview">Overview</A>
+  <LI><A HREF="#AIM MCA setup">AIM MCA setup</A>
+  <LI><A HREF="#ICB setup">ICB setup</A>
+  <LI><A HREF="#Utility commands">Utility commands</A>
+  <LI><A HREF="#vxWorks configuration">vxWorks configuration</A>
+  <LI><A HREF="#Linux configuration">Linux configuration</A>
+  <LI><A HREF="#Windows configuration">Windows configuration</A>
+  <LI><A HREF="#Time-resolved measurements">Time-resolved measurements</A>
+  <LI><A HREF="#Performance Measurements">Performance Measurements</A>
 </UL>
 
 <A NAME="Overview">
 <H2>Overview</H2></A>
 <P>
-In the past the MCA record and AIM device support was limited to supporting
-only one "spectrum" per ADC input.  This was insufficient for several purposes:
-<OL>
-<LI> When acquiring data using the Canberra multiplexor each ADC is processing
-spectra for several inputs, which each input being automatically stored in a
-separate region of memory in the AIM.  The memory offset between these spectra
-is set by switch settings in the multiplexor.  There was previously no way to 
-tell the AIM device support to allocate the memory in the AIM required to
-support this, nor to read out the separate spectra.  For this application it is
-preferable to have separate MCA records for each multiplexor input, since each
-input may have a different energy calibration, etc.  The only limitation is
-that it is not possible to start and stop acquisition independently on the
-various inputs, since the hardware cannot do this.  However, it is possible to
-independently erase the different spectra.
-<P>
-<LI> The same limitations applied when using the Canberra Multichannel Scaler. 
-This device is very similar to the multiplexor, in that each MCS input is
-stored in a different region of the AIM memory, with the number of segments and
-size of each segment being determined by the front panel switches.  Since each
-input is used to measure a different quantity it is generally desirable to have
-each input be a separate MCA record.
-<P>
-<LI>For time-resolved spectroscopy it is very desirable to be able to rapidly
-change the region of the AIM memory into which an ADC acquires.  One can then
-acquire a number of spectra in rapid succession, without incurring the delay of
-reading the spectra from the AIM and erasing the memory between acquisitions. 
-The only delay is the few msec required to transmit a message changing the
-memory address of acquisition.  For this application it is preferable to have
-the data in a single MCA record, with a new field which controls the memory
-location for acquisition, reading and erasing.
-</OL>
-Version 4.0 of the MCA record and the AIM device support software fully supports
-the above 3 applications.  
-
+The Canberra 556 AIM is an Ethernet multichannel analyzer in a NIM form factor.
+It has 2 ADC inputs, and a total of about 64K channels, each 32-bits deep.  
+It can control programmable devices such as amplifiers, ADCs, high-voltage
+power supplies, etc. using an auxilliary bus called the Instrument Control Bus (ICB).
 
 <P>
-The previous version of the MCA device support did not use the INP field of the
-MCA record, but rather used two other fields, ADDR and PORT to specify the
-address of the AIM module and which ADC port on the AIM should be used.
-The new version of AIM device support declares the INP field of the MCA record
-to be type VME_IO, and uses the concept of "card" and "signal" to specify the
-location of the input.  A new routine, AIMConfig(), has been added, and this
-routine must be called in the vxWorks startup file before iocInit.
+The AIM uses the IEEE 802.2 Extended SNAP protocol, which is a low-level protocol, 
+and does not use TCP/IP.
+The protocol is not routeable, so the AIM must be placed on the same physical subnet
+as the IOC that is controlling it.
 
 <P>
-In the new device support a logical "card" corresponds to one ADC input port on
-one AIM.  Each AIM can thus have two "cards" associated with it.  Each logical
-card can have multiple "signals", where a signal is a region of AIM memory
-associated with a physical signal input.  Each input signal can have
-more than one "sequence" or time-slice allocated to it. The association of a
-particular AIM port with a logical card, and the allocation of memory within
+The AIM has a concept of module "ownership", i.e. a particular computer that can control it.
+Once an AIM is "owned" only that one computer can control the AIM,
+all other computers are prevented from accessing it.  When the AIM is first powered on it is unowned,
+and any computer can take ownership.  The EPICS driver attempts to gain ownership during the AIMConfig
+command.  If it cannot, then it prints an error message.  If the AIM is currently owned by another
+computer and you want to change what computer owns it, you can do one of two things.  Either power
+off the AIM and back on, or issue the command mcaAIMFreeModule, described below.
+
+<P>
+The AIM and ICB device support runs on vxWorks, Linux, and Cygwin.  It should also build
+and run on other Unix systems, including Mac OS X, as long as the 
+<A HREF="http://www.packetfactory.net/libnet/">libnet</A> and
+<A HREF="http://www.tcpdump.org/pcap.htm/">libpcap</A>
+libraries are available and installed.  Note that Linux often comes with libpcap installed,
+but libnet often needs to be obtained separately.  On Cygwin it is not necessary to 
+install libnet, and only the WinPcap driver, as explained in the Cygwin notes below.
+
+<P>
+The device support for the Canberra hardware uses the following:
+<UL>
+  <LI> 
+    The MCA record device support is supplied by the device-independent
+    file devMcaAsyn.c.  This device support communicates with the 
+    device-dependent file, drvMcaAIMAsyn.c.  This file implements an asyn
+    server.  There is one server per ADC input on the AIM module.  The asyn
+    "address" field is used to implement multiple-spectra per ADC, either using
+    the Canberra multiplexor, or multi-channel scaler module.
+  <LI>
+    The ICB device support is done using the generic EPICS asyn device support
+    provide in the asyn package.  It communicates with an asyn driver, drvIcbAsyn.c.
+</UL>
+<P>
+
+<A NAME="AIM MCA setup">
+<H2>AIM MCA setup</H2></A>
+<P>
+There is a separate asyn server for each ADC input port on an AIM.  
+Each AIM can thus have two asyn ports associated with it.
+Each port card can have multiple "addresses", where each address is a region 
+of AIM memory associated with a physical signal input.  Each input signal can have
+more than one "sequence" or time-slice allocated to it. The configuration of an
+AIM input with an asyn port, and the allocation of memory within
 the AIM for this input is done by routine AIMConfig.  AIMConfig is called as 
 follows:
 
 <PRE>
-AIMConfig(int card, int address, int port, int maxChans, int maxSignals,
-          int maxSequences)
+# AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
+#           maxSignals, maxSequences, ethernetDevice)
 </PRE>
 <P>
 <UL>
-<LI> "card" is a logical card number for this AIM port. "card" values must be
-in the range 0 to maxCards-1, where maxCards is discussed below.
-
-<LI> "address" is the Ethernet address of the AIM, specified as a hex number
-as printed on the front of the AIM, for example 0xE85.
-
-<LI> "port" is the ADC port number on the AIM, either 1 or 2.
-
-<LI> "maxChans" is the maximum number of channels for each input signal.
-When using the multiplexor this value must agree with the switch setting
-inside the multiplexor, e.g. 1024, 2048, etc.
-When using the MCS this value must agree with the front panel switch,
-e.g. 256, 512, 1024, etc.
-
-<LI> "maxSignals" is the maximum number of inputs which will be used with this
-port. When using the multiplexor this value must agree with the switch 
-setting inside the multiplexor, i.e. 1, 2, 4, or 8.  When using the MCS 
-this value must agree with the front panel switch, e.g. 1, 2, 4, or 8.
-
-<LI> "maxSequences" is the maximum number of sequences or time slices which 
-will be used with this port.
-
+  <LI> 
+    "portName" is a name for this asyn port. This name is chosen by the user.
+  <LI> 
+    "ethernetAddress" is the Ethernet address of the AIM, specified as a 2-byte
+    hex number as printed on the front of the AIM, for example 0xE85.
+  <LI> 
+    "portNumber" is the ADC port number on the AIM, either 1 or 2.
+  <LI> 
+    "maxChans" is the maximum number of channels for each input signal.
+    When using the multiplexor this value must agree with the switch setting
+    inside the multiplexor, e.g. 1024, 2048, etc.
+    When using the MCS this value must agree with the front panel switch,
+    e.g. 256, 512, 1024, etc.
+  <LI> 
+    "maxSignals" is the maximum number of inputs which will be used with this
+    port. When using the multiplexor this value must agree with the switch 
+    setting inside the multiplexor, i.e. 1, 2, 4, or 8.  When using the MCS 
+    this value must agree with the front panel switch, e.g. 1, 2, 4, or 8.
+    If a multiplexor or MCS is not being used specify 1.
+  <LI>
+    "maxSequences" is the maximum number of sequences or time slices which 
+    will be used with this port.  If time-resolved work is not being done
+    specify 1.
+  <LI>
+    "ethernetDevice is the name of the Ethernet device for the network on
+    which the AIM resides.  Some typical examples are:
+    <UL>
+      <LI>
+        ei0 for Motorola 68 boards with vxWorks. 
+      <LI> 
+        dc0 for PowerPC boards with vxWorks
+      <LI> 
+        eth0 or eth1 for network cards on Linux
+      <LI> 
+        \Device\NPF_{8ECC055D-047F-11D1-A537-0000F8753ED1} for
+        Windows (Cygwin).  The very long hex number is unique for
+        each computer.  How to determine this number is described in the Cygwin
+        section below.
+    </UL>
 </UL>
+
 The total amount of memory (in channels) allocated for the port will be
-maxChans*maxSignals*maxSequences
-<P>
+maxChans*maxSignals*maxSequences.  
 The total amount of memory in the AIM is about 64,000 channels, and this is
 shared by the two ports.
 <P>
-When creating an MCA record which uses the new AIM device support the INP field
+When creating an MCA record which uses the AIM device support the INP field
 must be specified in the form:
 <PRE>
-    #Cn #Sm @
+    @asyn(portName address),NCHAN=nchans
 </PRE>
-where "n" is the logical card number defined in the call to AIMConfig and "m"
-is the signal number in the range 0 to maxSignals-1.
+where:
+<UL>
+  <LI>
+    portName is defined in the call to AIMConfig.
+  <LI>
+    address must be less than maxSignals defined in the call to AIMConfig
+  <LI>
+    nchans must less than maxChans defined in the call to AIMConfig
+</UL>
 
-The default maximum number of logical cards is 10 which corresponds to 5 AIM
-modules.  To increase this value simply call AIMSetup(maxCards) before the
-first call to AIMConfig().
-
-
-<A NAME="Example">
-<H2>Example startup script</H2></A>
 <P>
 
-
-Assume we have an AIM with Ethernet address 0x100.  To port 1 of this AIM there
+<H3>Example MCA startup script</H3>
+<P>
+Assume we have an AIM with Ethernet address 0x59e.  To port 1 of this AIM there
 is a single ADC which is set for 2048 channels.  This ADC will be used for
 "conventional" data acquisition, i.e. with no multiplexor and not doing 
 time-resolved work. To port 2 of this AIM there is a multiplexor.  The switches
 in the multiplexor have been set for 4 inputs and 4096 channels.  The records
 for these multiplexor inputs only use 1024 channels in this example.
-
-The system has a second AIM at Ethernet address 0x200.  To port 1 of this AIM 
+<P>
+The system has a second AIM at Ethernet address 0x100.  To port 1 of this AIM 
 there is a single ADC which is set for 1024 channels.  This ADC will be used
 for time-resolved work, and we want to collect 20 spectra within the AIM. To
 port 2 of this AIM there is an MCS which has front panel switches set to 2
-inputs and 8192 channels.  The following are excerpts from the vxWorks startup
-file.
-
+inputs and 8192 channels.  
 <PRE>
-# Start of example ##################################################
-AIMConfig(0, 0x100, 1, 2048, 1, 1)
-AIMConfig(1, 0x100, 2, 4096, 4, 1)
-AIMConfig(2, 0x200, 1, 1024, 1, 20)
-AIMConfig(3, 0x200, 2, 8192, 2, 1)
+AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "dc0")
+AIMConfig("AIM1/2", 0x59e, 2, 4096, 4, 1, "dc0")
+AIMConfig("AIM2/1", 0x100, 1, 1024, 1,20, "dc0")
+AIMConfig("AIM2/2", 0x100, 2, 8192, 2, 1, "dc0")
 
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_adc1,CARD=0,SIGNAL=0,CHANS=2048")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim1_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux1,CARD=1,SIGNAL=0,CHANS=1024")
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux2,CARD=1,SIGNAL=1,CHANS=1024")
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux3,CARD=1,SIGNAL=2,CHANS=1024")
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mux4,CARD=1,SIGNAL=3,CHANS=1024")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim1_adc2_1,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=1024")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim1_adc2_2,DTYP=asynMCA,INP=@asyn(AIM1/2 1),NCHAN=1024")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim1_adc2_2,DTYP=asynMCA,INP=@asyn(AIM1/2 2),NCHAN=1024")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim1_adc2_3,DTYP=asynMCA,INP=@asyn(AIM1/2 3),NCHAN=1024")
 
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_adc2,CARD=2,SIGNAL=0,CHANS=1024")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim2_adc1,DTYP=asynMCA,INP=@asyn(AIM2/1 0),NCHAN=1024")
 
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mcs1,CARD=3,SIGNAL=0,CHANS=8192")
-dbLoadRecords("mca_aim.db", "P=13LAB:,R=aim_mcs1,CARD=3,SIGNAL=1,CHANS=8192")
-# End of example ##################################################
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim2_adc2_1,DTYP=asynMCA,INP=@asyn(AIM2/2 0),NCHAN=8192")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim2_adc2_2,DTYP=asynMCA,INP=@asyn(AIM2/2 1),NCHAN=8192")
 </PRE>
 <P>
 Note that it is convenient to set the multiplexor switches for the largest
 spectral size and largest number of inputs which you anticipate using.  Smaller
-spectral sizes can be selected by setting NUSE to a smaller value in the MCA
-record, without having to open the multiplexor and change the switch settings.
+spectral sizes can be selected by setting NCHAN in the startup script
+(=NUSE and NMAX in MCA record) to a smaller value, 
+without having to open the multiplexor and change the switch settings.
 Extra inputs are ignored simply by not assigning any records to those inputs.
 The only disadvantage of this approach is that it wastes AIM memory.  However,
 the AIM has a total of more than 64,000 channels of acquisition memory which is
 more than enough for many applications.
 
+<P>
+<A NAME="ICB setup">
+<H2>ICB setup</H2></A>
+<P>
+There is a separate asyn server for ICB module (such as an ADC, amplifier, etc.)
+The configuration of an ICB module and creation of the asyn server 
+is done by routine ICBConfig.  ICBConfig is called as 
+follows:
+<PRE>
+#icbConfig(portName, module, ethernetAddress, icbAddress, moduleType)
+</PRE>
+<UL>
+  <LI> 
+    "portName" is a name for this asyn port. This name is chosen by the user.
+  <LI> 
+    "ethernetAddress" is the Ethernet address of the AIM to which this ICB module
+    is connected, specified as a 2-byte hex number as printed on the front of the AIM, 
+    for example 0xE85.
+  <LI> 
+    "icbAddress" is the address of this ICB module, which is set by the rotary switch
+    inside the ICB module.
+  <LI> 
+    "moduleType" is the module type (number between 0 and 4) of this ICB module.  
+    The following is the list of supported ICB modules and associated module type
+    numbers.
+  <UL>
+    <LI> 0 = ADC (9635)
+    <LI> 1 = Amplifier (9615)
+    <LI> 2 = High voltage power supply (HVPS) (9641, 9645)
+    <LI> 3 = Three-channel analyzer (TCA) (2016)
+    <LI> 4 = Digital signal processor (DSP) (9660)
+  </UL>
+</UL>
 
-<A NAME="Performance">
+The following lines show how to set up ICB modules in an EPICS startup script.
+This assumes an AIM at address 0x59e, an ADC at ICB address 5, an amplifier at
+ICB address 3, a HVPS at ICB address 2, a TCA at ICB address 8, and a DSP at ICB
+address 7.  The LIMIT parameter for the HVPS specifies the maximum voltage.
+The MCA parameter for the TCA specifies an associated MCA record for which programming
+the first three ROIs will program the TCA windows.
+<PRE>
+icbConfig("icbAdc1", 0x59e, 5, 0)
+dbLoadRecords("$(MCA)/mcaApp/Db/icb_adc.db", "P=mcaTest:,ADC=adc1,PORT=icbAdc1")
+icbConfig("icbAmp1", 0x59e, 3, 1)
+dbLoadRecords("$(MCA)/mcaApp/Db/icb_amp.db", "P=mcaTest:,AMP=amp1,PORT=icbAmp1")
+icbConfig("icbHvps1", 0x59e, 2, 2)
+dbLoadRecords("$(MCA)/mcaApp/Db/icb_hvps.db", "P=mcaTest:,HVPS=hvps1,PORT=icbHvps1,LIMIT=1000")
+icbConfig("icbTca1", 0x59e, 8, 3)
+dbLoadRecords("$(MCA)/mcaApp/Db/icb_tca.db", "P=mcaTest:,TCA=tca1,MCA=aim_adc2,PORT=icbTca1")
+#icbConfig("icbDsp1", 0x59e, 7, 4)
+#dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
+</PRE>
+
+
+<P>
+<A NAME="Utility commands">
+<H2>Utility commands</H2></A>
+<P>
+There are several commands for the Canberra support that are defined in the EPICS iocsh shell.  
+<UL>
+  <LI>
+    AIMConfig and icbConfig are described above. 
+  <LI>
+    mcaAIMShowModules lists all of the AIM modules found on the local subnet,
+    with the names and MAC addresses of their owners, and their status.  (The
+    nmc_show_modules command at the vxWorks shell is equivalent.)
+  <LI>
+    icbShowModules lists all of the ICB modules found on AIMs that are owned
+    by this IOC, with their module types and some low-level information.
+   (The icb_show_modules command at the vxWorks shell is equivalent.)
+  <LI>
+    mcaAIMFreeModule releases ownership of an AIM module.  The syntax is
+    "mcaAIMFreeModule moduleNumber forceFlag".  moduleNumber is the index number
+    of the AIM in the list of modules produced by mcaAIMShowModules, where the
+    first module is index 0, the second module index 1, etc.  If forceFlag
+    is 0 (the default) then it is only possible to release ownership of AIM
+    modules that are owned by this IOC.  If forceFlag is 1 then it forces the
+    AIM to become unowned, even if this IOC is not currently the owner.
+    (The nmc_freemodule command at the vxWorks shell is equivalent.)
+</UL>
+Examples of these commands:
+<PRE>
+epics> mcaAIMShowModules
+Module     Owner name      Owner ID       Status      Memory size Free address
+NI008058    ioc13lab  00:01:AF:0C:11:F7  Reachable     262140      00000000
+NI00059e    gselab1   00:B0:D0:D9:A3:03  Reachable     261116      00004000
+NI0006e6    ioc13idc  00:01:AF:00:74:CD  Reachable     261116      00000000
+NI0009ce    ioc13bmd  08:00:3E:2E:63:37  Reachable     261116      00000000
+NI0003ed    ioc13idd  08:00:3E:2F:1F:F8  Reachable     261116      00000000
+
+epics> icbShowModules
+NI59E:2   3  CI9641 2K HVPS     8965924
+NI59E:3   7  CI9615 AMP         11923928
+   Preamp type:       RC
+   Coarse gain:       2.500000
+   Fine gain:         1.000000
+   Super fine gain:   1.000000
+   Shaping mode:      GAUSSIAN
+   Pole zero:         1
+   Baseline restore:  SYM
+   Dead-time control: Norm
+   Time constant:     4.000000
+   Flags:             10
+NI59E:5   6  CI9635 8K ADC      2945853
+   Range:             2048
+   Offset:            0
+   Acquisition mode:  PHA
+   Conversion gain:   2048
+   Lower level disc:  1.000000
+   Upper level disc:  100.000000
+   Zero:              0.000000
+   Flags:             40
+NI59E:8   2  Unknown            3994275
+
+# Release the second module in the above list (NI00059e) even if this command
+# is not being issued from the owner IOC, gselab1. 
+epics> mcaAIMFreeModule 1 1
+</PRE>
+
+<P>
+<A NAME="vxWorks configuration">
+<H2>vxWorks configuration</H2></A>
+<P>
+The driver on vxWorks uses the functions "etherInputHookAdd" and "etherOutput".
+These functions exist in vxWorks 5.4, but they have been eliminated in vxWorks 5.5.
+Thus, it is not possible to use the existing driver for vxWorks 5.5.  There is a new
+interface in vxWorks that should make it possible to write a driver that will
+work on both 5.4 and 5.5, but this has not yet been done.  There is nothing special
+that needs to be done to build the driver or run it in vxWorks 5.4.
+
+<P>
+<A NAME="Linux configuration">
+<H2>Linux configuration</H2></A>
+
+<UL>
+  <LI>
+    libcap.  This is often installed by default on Linux systems, but if it is not you
+    will need to install it.
+  <LI>
+    libnet.  This typically needs to be installed.  Version 1.1 or higher must be used,
+    the older 1.0 version will not work.
+</UL>
+The libnet (and possibly libpcap?) libraries need root permission in order to send non-TCP/IP
+packets on the network.  Thus, the EPICS IOC application must be run by someone with root privilege,
+or else the application must be installed with SUID root.
+
+<P>
+<A NAME="Windows configuration">
+<H2>Windows configuration</H2></A>
+
+The following must be installed:
+<UL>
+  <LI>WinPcap from <A HREF="http://www.winpcap.org/">www.winpcap.org</A>.  Only the autoinstaller with 
+drivers and DLLS needs to be installed.  The EPICS Canberra device support includes the header
+and library files from WinPcap, so it is not necessary to install the WinPcap developer's pack.  
+</UL>
+
+<P>
+Although the Cygwin driver uses libnet, it is not necessary to install libnet on your
+PC.  The EPICS software for the Canberra includes pre-built libnet header and library files.
+
+<P>
+It is necessary to specify the name of the Ethernet device in the AIMConfig command in
+the EPICS startup script. This is of the format:
+<P>
+\Device\NPF_{8ECC055D-047F-11D1-A537-0000F8753ED1}
+<P>
+The long number at the end is unique to each network card.  You can get this number for your Window machine by
+using the "regedit" utility, and doing an "export" of the key:
+<P>
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards]
+<P>
+This should look like:
+<PRE>
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards]
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards\2]
+"ServiceName"="{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}"
+"Description"="3Com 3C920 Integrated Fast Ethernet Controller (3C905C-TX Compatible)"
+</PRE>
+
+The number that is needed in the ServiceName field.  Copy this number and paste into the AIMConfig command in
+your st.cmd startup command file.
+
+<P>
+<A NAME="Time-resolved measurements">
+<H2>Time-resolved measurements</H2></A>
+
+For time-resolved spectroscopy it is very desirable to be able to rapidly
+change the region of the AIM memory into which an ADC acquires. 
+The .SEQ field in the MCA record is designed for this purpose, and it is
+implemented in the AIM device support. 
+By rapidly incrementing the value of the .SEQ field, for example
+with a database or Channel Access client, one can 
+acquire a number of spectra in rapid succession, without incurring the delay of
+reading the spectra from the AIM and erasing the memory between acquisitions. 
+The only delay is the few msec required to transmit a message changing the
+memory address of acquisition.  
+
+<P>
+<A NAME="Performance Measurements">
 <H2>Performance Measurements</H2></A>
 <P>
 
@@ -275,7 +497,7 @@ Suggestions and comments to:
 <A HREF="mailto:rivers@cars.uchicago.edu">
 Mark Rivers </A> : (rivers@cars.uchicago.edu)
 <BR>
-Last modified: November 23, 1997
+Last modified: November 16, 2005
 </ADDRESS>
 
 </BODY>
