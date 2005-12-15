@@ -20,7 +20,12 @@ programmable ADCs, amplifiers and power supplies.</p>
 <p><b>mca</b> consists of:</p>
 <ul>
   <li>The <a href="mcaRecord.html">
-           mcaRecord</a>.</li>
+           mcaRecord</a>. 
+      The mca record is device independent, and can be used to control
+      a large number of devices in an identical way.  The mca record is
+      similar to the waveform record, in that the .VAL field is a 1-D
+      array.  However, the mca record provides many additional fields that
+      are used to control data acquisition, regions-of-interest, etc. </li>
   <li>Device support for the MCA record using asyn drivers. This
       support is used by the <a href="mcaCanberra.html"> 
                               Canberra Ethernet MCA</a>
@@ -38,6 +43,40 @@ programmable ADCs, amplifiers and power supplies.</p>
       and the <a href="quadEM">
                quadEM module</a>.</li>
 </ul>
+<p>
+
+EPICS MCA client software.
+<P>
+A basic interface to the mca record is provided with medm.  These screens allow one to control acquisition,
+view spectra on a linear or logarithmic scale.  There are no markers or cursors, or tools for
+energy calibration or peak fitting.
+<h3 align="center">mca.adl</h3>
+<p>medm mca record screen.</p>
+<p align="center"><img border="0" src="mca.png"</p>
+
+<P>There is a setup window for controlling preset count times, update rates, etc.
+<h3 align="center">mca_setup.adl</h3>
+<p>medm mca setup screen.</p>
+<p align="center"><img border="0" src="mca_setup.png"</p>
+
+<P>
+An IDL MCA display program is available, shown in the screen show below.  This program is available in both
+a source code version that requires and IDL license to run, and also in a pre-compiled form that can be
+run under the IDL Virtual Machine for free.  It provides tools for energy calibration and peak fitting.
+<h3 align="center">IDL mcaDisplay</h3>
+<p>IDL MCA display.</p>
+<p align="center"><img border="0" src="idl_mca.png"</p>
+<P>
+
+Another IDL tool is provided for controlling multi-elemement detectors (MED).  This screen allows one to
+display one spectrum at a time in the IDL MCA display tool above, and to turn off and on acquisition simultaneously
+on all detectors.
+
+<P>
+The IDL MCA display and multi-element display tools have also been ported to Python.  With the advent of the IDL Virtual
+Machine that allows IDL programs to be run for free I am no longer actively working on the Python versions, but it is 
+available here.
+
 <hr>
 <address>
   Suggestions and Comments to:<br>
