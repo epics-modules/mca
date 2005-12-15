@@ -16,7 +16,6 @@
 #include <epicsTime.h>
 #include <epicsTypes.h>
 #include <epicsMutex.h>
-#include <epicsExport.h>
 #include <epicsString.h>
 #include <errlog.h>
 #include <iocsh.h>
@@ -29,6 +28,7 @@
 
 #include "mca.h"
 #include "drvMca.h"
+#include <epicsExport.h>
 
 typedef struct {
     char *portName;
