@@ -175,9 +175,9 @@ int STR7201NumCards=1;
 
 
 /* Debug support */
-#define Debug(l,FMT,V...) {if (l <= drvSTR7201Debug) \
+#define Debug(l,FMT,V) {if (l <= drvSTR7201Debug) \
 			  { printf("%s(%d):",__FILE__,__LINE__); \
-                            printf(FMT,## V);}}
+                            printf(FMT,V);}}
 
 volatile int drvSTR7201Debug = 0;
 epicsExportAddress(int, drvSTR7201Debug);
@@ -299,7 +299,7 @@ int STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable, int 
     p->address->key_reset_reg = 1;
 
     /* Clear FIFO */
-    Debug(2, "STR7201Config: clearing FIFO\n");
+    Debug(2, "%s", "STR7201Config: clearing FIFO\n");
     p->address->clear_fifo_reg = 1;
 
     /* Initialize board */
@@ -528,17 +528,20 @@ int drvSTR7201Read(int card, int signal, int nchans, long *buff)
     if (p->exists == 0) return (ERROR);
 
     INTERLOCK_ON;
-    Debug(1, "drvSTR7201Read: card=%d, signal=%d, nchans=%d, maxSignals=%d\n",
-                    card, signal, nchans, p->maxSignals);
+    if (drvSTR7201Debug >= 1) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("drvSTR7201Read: card=%d, signal=%d, nchans=%d, maxSignals=%d\n",
+               card, signal, nchans, p->maxSignals);
+    }
     readFIFO(card);
-    Debug(1, "drvSTR7201Read: readFIFO OK\n");
+    Debug(1, "%s", "drvSTR7201Read: readFIFO OK\n");
     checkAcquireStatus(card);
-    Debug(1, "drvSTR7201Read: checkAcquireStatus OK\n");
+    Debug(1, "%s", "drvSTR7201Read: checkAcquireStatus OK\n");
     for (i=0; i<nchans; i++) {
         *out++ = *in;
         in += p->maxSignals;
     }
-    Debug(1, "drvSTR7201Read: copied data OK\n");
+    Debug(1, "%s", "drvSTR7201Read: copied data OK\n");
     INTERLOCK_OFF;
     return (0);
 }
@@ -623,13 +626,13 @@ static int checkAcquireStatus(int card)
     if (p->nextChan >= p->nChans) {
         /* WORK NEEDED: Logic for number of sweeps goes here */
         presetReached = TRUE;
-        Debug(1, "drvSTR7201CheckAcquire status: preset channels reached\n");
+        Debug(1, "%s", "drvSTR7201CheckAcquire status: preset channels reached\n");
     }
 
     if (p->presetTime > 0.0) {
         if (p->elapsedTime >= p->presetTime) {
             presetReached = TRUE;
-            Debug(1, "drvSTR7201CheckAcquire status: preset time reached\n");
+            Debug(1, "%s", "drvSTR7201CheckAcquire status: preset time reached\n");
         }
     }
 
@@ -637,8 +640,7 @@ static int checkAcquireStatus(int card)
         if (p->presetCounts[signal] > 0) {
             if (p->elapsedCounts[signal] >= p->presetCounts[signal]) {
                 presetReached = TRUE;
-                Debug(1, 
-                    "drvSTR7201CheckAcquire status: preset counts reached\n");
+                Debug(1, "%s", "drvSTR7201CheckAcquire status: preset counts reached\n");
             }
         }
     }

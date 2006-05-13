@@ -49,13 +49,6 @@ Date: 3/25/00
 #else
 #define STATIC
 #endif
-#ifdef NODEBUG
-#define Debug(l,f,v) ;
-#else
-#define Debug(l,FMT,V...) {  if(l <= devScalerSTR7201Debug) \
-                        { printf("%s(%d):",__FILE__,__LINE__); \
-                          printf(FMT,## V); } }
-#endif
 volatile int devScalerSTR7201Debug=0;
 extern int STR7201NumCards;  /* Defined in drvStr7201.c */
 
@@ -109,7 +102,10 @@ STATIC long scaler_init(int after)
 {
     int card;
     
-    Debug(2,"scaler_init(): entry, after = %d\n", after);
+    if(devScalerSTR7201Debug >= 2) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_init(): entry, after = %d\n", after);
+    }
     if (after) return(0);
 
     /* allocate scaler_state structures, array of pointers */
@@ -135,7 +131,10 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
     CALLBACK *pcallbacks;
     int maxSignals, maxChans, ch1RefEnable, softAdvance;
 
-    Debug(5,"scaler_init_record: card %d\n", card);
+    if(devScalerSTR7201Debug >= 5) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_init_record: card %d\n", card);
+    }
 
     /* out must be an VME_IO */
     if (psr->out.type != VME_IO) {
@@ -175,7 +174,10 @@ STATIC long scaler_reset(int card)
 {
     int signal;
 
-    Debug(5,"scaler_reset: card %d\n", card);
+    if(devScalerSTR7201Debug >= 5) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_reset: card %d\n", card);
+    }
     if ((card+1) > scaler_total_cards) return(ERROR);
 
     /* clear hardware-done flag */
@@ -202,18 +204,30 @@ STATIC long scaler_read(int card, long *val)
     long ecounts;
     int counting;
 
-    Debug(5,"scaler_read: card %d\n", card);
+    if(devScalerSTR7201Debug >= 5) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_read: card %d\n", card);
+    }
     if ((card+1) > scaler_total_cards) return(ERROR);
     for (i=0; i < scaler_state[card]->num_channels; i++) {
         drvSTR7201Read(card, i, 1, &val[i]);
-        Debug(10,"scaler_read: ...(chan %d = %ld)\n", i, val[i]);
+        if(devScalerSTR7201Debug >= 10) {
+            printf("%s(%d):",__FILE__,__LINE__);
+            printf("scaler_read: ...(chan %d = %ld)\n", i, val[i]);
+        }
     }
 
     /* See if acquisition has completed.  If so, issue callback request */
     drvSTR7201GetAcqStatus(card, 0, &etime, &ecounts, &counting);
-    Debug(8,"scaler_read: counting = %d\n", counting);
+    if(devScalerSTR7201Debug >= 8) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_read: counting = %d\n", counting);
+    }
     if ( (scaler_state[card]->prev_counting == 1) && (counting == 0)) {
-        Debug(8,"scaler_read: issuing callback request\n");
+        if(devScalerSTR7201Debug >= 8) {
+            printf("%s(%d):",__FILE__,__LINE__);
+            printf("scaler_read: issuing callback request\n");
+        }
         scaler_state[card]->done = 1;
         callbackRequest(scaler_state[card]->pcallback);
     }
@@ -226,8 +240,11 @@ STATIC long scaler_read(int card, long *val)
 ****************************************************/
 STATIC long scaler_write_preset(int card, int signal, long val)
 {
-    Debug(5,"scaler_write_preset: card=%d, signal=%d, val=%ld\n", 
-                            card, signal, val);
+    if(devScalerSTR7201Debug >= 5) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_write_preset: card=%d, signal=%d, val=%ld\n", 
+               card, signal, val);
+    }
 
     if ((card+1) > scaler_total_cards) return(ERROR);
     if ((signal+1) > scaler_state[card]->num_channels) return(ERROR);
@@ -243,7 +260,10 @@ STATIC long scaler_write_preset(int card, int signal, long val)
 ****************************************************/
 STATIC long scaler_arm(int card, int val)
 {
-    Debug(5,"scaler_arm: card=%d, val=%d\n", card, val);
+    if(devScalerSTR7201Debug >= 5) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_arm: card=%d, val=%d\n", card, val);
+    }
     if ((card+1) > scaler_total_cards) return(ERROR);
 
     /* clear hardware-done flag */
@@ -269,8 +289,11 @@ STATIC long scaler_arm(int card, int val)
 STATIC long scaler_done(int card)
 {
 
-    Debug(5,"scaler_done: card=%d, scaler_state[card]->done=%d\n", card,
-                    scaler_state[card]->done);
+    if(devScalerSTR7201Debug >= 5) {
+        printf("%s(%d):",__FILE__,__LINE__);
+        printf("scaler_done: card=%d, scaler_state[card]->done=%d\n", card,
+               scaler_state[card]->done);
+    }
     if ((card+1) > scaler_total_cards) return(ERROR);
 
     if (scaler_state[card]->done) {

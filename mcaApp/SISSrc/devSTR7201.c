@@ -43,9 +43,9 @@
 #include        "drvSTR7201.h"
 #include        <epicsExport.h>
 
-#define Debug(l,FMT,V...) {if (l <= devSTR7201Debug) \
+#define Debug(l,FMT,V) {if (l <= devSTR7201Debug) \
                           { printf("%s(%d):",__FILE__,__LINE__); \
-                            printf(FMT,## V);}}
+                            printf(FMT,V);}}
 volatile int devSTR7201Debug = 0;
 epicsExportAddress(int, devSTR7201Debug);
 
@@ -83,7 +83,7 @@ epicsExportAddress(dset, devSTR7201);
 static long init_record(mcaRecord *pmca)
 {
     int card;
-    Debug(5, "devSTR7201(init_record): entry\n");
+    Debug(5, "%s", "devSTR7201(init_record): entry\n");
     /* pmca->inp must be VME_IO */
     switch (pmca->inp.type) {
     case (VME_IO) :
