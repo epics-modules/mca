@@ -48,14 +48,6 @@ extern struct icb_module_info_struct *icb_module_info;  /* pointer to ICB module
 
 extern struct nmc_module_info_struct *nmc_module_info;  /* pointer to networked module info */
 
-/* Debug support */
-#ifdef NODEBUG
-#define Debug(l,FMT,V) ;
-#else
-#define Debug(l,FMT,V...) {if (l <= icbDebug) \
-                          { errlogPrintf("%s(%d):",__FILE__,__LINE__); \
-                            errlogPrintf(FMT,## V);}}
-#endif
 extern volatile int icbDebug;
 
 
@@ -114,8 +106,11 @@ char *dsc_controller;
       should_exist = (icb_findmod_by_address(temp,&index) == OK);
 
       if(array[i*2] != -1) {
-         Debug(5, "icb_poll_controller: address=%s, type=%d (%d)\n",
+         if (icbDebug >= 5) {
+            errlogPrintf("%s(%d):",__FILE__,__LINE__); \
+            errlogPrintf("icb_poll_controller: address=%s, type=%d (%d)\n",
                   temp, array[i*2], type);
+         }
 
          if(!should_exist) {
 
@@ -181,8 +176,11 @@ char *dsc_controller;
                 if (s != OK) return s;
 
                 if (icb_module_info[index].handler != NULL) {
-                   Debug(5, "icb_poll_controller: index=%d, calling handler\n",
-                                 index);
+                   if (icbDebug >= 5) {
+                      errlogPrintf("%s(%d):",__FILE__,__LINE__); \
+                      errlogPrintf("icb_poll_controller: index=%d, calling handler\n",
+                                   index);
+                   }
                    s = (*icb_module_info[index].handler) (
                                  index,
                                  0, ICB_M_HDLR_INITIALIZE);
@@ -425,7 +423,10 @@ int index;
    if (s != OK) return s;
    (*entry).module_type = lsn | (msn * 16);
 
-   Debug(5, "icb_get_module_id: module_type = %d\n", (*entry).module_type);
+   if (icbDebug >= 5) {
+      errlogPrintf("%s(%d):",__FILE__,__LINE__); \
+      errlogPrintf("icb_get_module_id: module_type = %d\n", (*entry).module_type);
+   }
    if (((*entry).module_type >= 0) &&
        ((*entry).module_type <= ICB_K_MAX_MTYPE))
       (*entry).handler = handler_list[(int) (*entry).module_type];

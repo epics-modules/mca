@@ -15,15 +15,6 @@
 #include "mcamsgdef.h"
 #include "icb_user_subs.h"
 
-/* Debug support */
-
-#ifdef NODEBUG
-#define Debug(l,FMT,V) ;
-#else
-#define Debug(l,FMT,V...) {if (l <= icbDebug) \
-                          { printf("%s(%d):",__FILE__,__LINE__); \
-                            printf(FMT,## V);}}
-#endif
 volatile int icbDebug = 0;
 
 /* pointer to networked module info */
@@ -47,7 +38,10 @@ int parse_ICB_address(char *address, int *ni_module, int *icb_addr)
     * and convert it to binary.
     */
       
-   Debug(1, "parse_ICB_address: address='%s'\n", address);
+   if (icbDebug >= 1) {
+      printf("%s(%d):",__FILE__,__LINE__); \
+      printf("parse_ICB_address: address='%s'\n", address);
+   }
 
    if (nmc_module_info == NULL) return(NMC__NOSUCHMODULE);
 
@@ -65,22 +59,34 @@ int parse_ICB_address(char *address, int *ni_module, int *icb_addr)
    temp_array[3] = temp_int.chars[2];
    temp_array[4] = temp_int.chars[1];
    temp_array[5] = temp_int.chars[0];
-   Debug(1, "parse_ICB_address: temp_array[2..5]=%x,%x,%x,%x\n",
+   if (icbDebug >= 1) {
+      printf("%s(%d):",__FILE__,__LINE__); \
+      printf("parse_ICB_address: temp_array[2..5]=%x,%x,%x,%x\n",
              temp_array[2], temp_array[3], temp_array[4], temp_array[5]);
+   }
    s = nmc_findmod_by_addr(ni_module, temp_array);
    if (s != OK) {
-      Debug(1, "parse_ICB_address: nmc_findmod_by_addr() returns %d\n", s);
+      if (icbDebug >= 1) {
+         printf("%s(%d):",__FILE__,__LINE__); \
+         printf("parse_ICB_address: nmc_findmod_by_addr() returns %d\n", s);
+      }
       return(s);
    }
    pc = strchr(address, (int)':');
    if (pc) *icb_addr = atoi(pc+1);
 
-   Debug(1, "parse_ICB_address: ni_module=%d, icb_addr=%d\n",
+   if (icbDebug >= 1) {
+      printf("%s(%d):",__FILE__,__LINE__); \
+      printf("parse_ICB_address: ni_module=%d, icb_addr=%d\n",
              *ni_module, *icb_addr);
+   }
     /* Make sure we own the module by trying to "buy" it */
     s = nmc_buymodule(*ni_module, 0);
     if (s != OK) {
-      Debug(1, "parse_ICB_address: nmc_buymodule() returns %d\n", s);
+      if (icbDebug >= 1) {
+         printf("%s(%d):",__FILE__,__LINE__); \
+         printf("parse_ICB_address: nmc_buymodule() returns %d\n", s);
+      }
       return(s);
     }
    return(OK);
