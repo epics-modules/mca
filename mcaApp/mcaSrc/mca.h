@@ -32,4 +32,13 @@ typedef enum {
 
 #define MAX_MCA_COMMANDS 24
 
+typedef struct {
+    int acquiring;
+    double elapsedReal;
+    double elapsedLive;
+    double totalCounts;
+    double dwellTime;
+    double deadTime;
+} mcaStatus;
+    
 #endif /* mcaH */
