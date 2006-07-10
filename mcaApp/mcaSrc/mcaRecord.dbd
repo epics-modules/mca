@@ -25,7 +25,7 @@ menu(mcaR0IP) {
 }
 recordtype(mca) {
 	include "dbCommon.dbd" 
-	field(VERS,DBF_FLOAT) {
+	field(VERS,DBF_DOUBLE) {
 		prompt("Code Version")
 		special(SPC_NOMOD)
 		initial("1")
@@ -58,12 +58,19 @@ recordtype(mca) {
 		size(4)
 		extra("void *pbg")
 	}
-	field(HOPR,DBF_FLOAT) {
+	field(PSTATUS,DBF_NOACCESS) {
+		prompt("Status buffer")
+		special(SPC_NOMOD)
+		interest(4)
+		size(4)
+		extra("void *pstatus")
+	}
+	field(HOPR,DBF_DOUBLE) {
 		prompt("High Operating Range")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
 	}
-	field(LOPR,DBF_FLOAT) {
+	field(LOPR,DBF_DOUBLE) {
 		prompt("Low Operating Range")
 		promptgroup(GUI_DISPLAY)
 		interest(1)
@@ -120,12 +127,6 @@ recordtype(mca) {
 		interest(1)
 		menu(mcaSTRT)
 	}
-	field(ACQP,DBF_MENU) {
-		prompt("Prev. acquiring")
-		special(SPC_NOMOD)
-		interest(1)
-		menu(mcaSTRT)
-	}
 	field(READ,DBF_MENU) {
 		prompt("Read array")
 		promptgroup(GUI_COMMON)
@@ -175,19 +176,13 @@ recordtype(mca) {
 		pp(TRUE)
 		interest(1)
 	}
-	field(DWEL,DBF_FLOAT) {
+	field(DWEL,DBF_DOUBLE) {
 		prompt("Dwell time per channel")
 		promptgroup(GUI_COMMON)
 		special(SPC_MOD)
 		pp(TRUE)
 		interest(1)
 		initial("1.0")
-	}
-	field(DWLP,DBF_FLOAT) {
-		prompt("Prev. dwell time")
-		promptgroup(GUI_COMMON)
-		special(SPC_NOMOD)
-		interest(1)
 	}
 	field(PSCL,DBF_LONG) {
 		prompt("Channel advance prescale")
@@ -197,14 +192,14 @@ recordtype(mca) {
 		interest(1)
 		initial("1")
 	}
-	field(PRTM,DBF_FLOAT) {
+	field(PRTM,DBF_DOUBLE) {
 		prompt("Preset real time")
 		promptgroup(GUI_COMMON)
 		special(SPC_MOD)
 		pp(TRUE)
 		interest(1)
 	}
-	field(PLTM,DBF_FLOAT) {
+	field(PLTM,DBF_DOUBLE) {
 		prompt("Preset live time")
 		promptgroup(GUI_COMMON)
 		special(SPC_MOD)
@@ -247,18 +242,18 @@ recordtype(mca) {
 		pp(TRUE)
 		menu(mcaMODE)
 	}
-	field(CALO,DBF_FLOAT) {
+	field(CALO,DBF_DOUBLE) {
 		prompt("Calibration offset")
 		promptgroup(GUI_COMMON)
 		interest(1)
 	}
-	field(CALS,DBF_FLOAT) {
+	field(CALS,DBF_DOUBLE) {
 		prompt("Calibration slope")
 		promptgroup(GUI_COMMON)
 		interest(1)
 		initial("1")
 	}
-	field(CALQ,DBF_FLOAT) {
+	field(CALQ,DBF_DOUBLE) {
 		prompt("Calibration quadratic")
 		promptgroup(GUI_COMMON)
 		interest(1)
@@ -269,36 +264,26 @@ recordtype(mca) {
 		interest(1)
 		size(16)
 	}
-	field(TTH,DBF_FLOAT) {
+	field(TTH,DBF_DOUBLE) {
 		prompt("Two-theta")
 		promptgroup(GUI_COMMON)
 		interest(1)
 		initial("10")
 	}
-	field(ERTM,DBF_FLOAT) {
+	field(ERTM,DBF_DOUBLE) {
 		prompt("Elapsed real time")
 		interest(1)
 	}
-	field(ERTP,DBF_FLOAT) {
-		prompt("Previous real time")
-		special(SPC_NOMOD)
-		interest(1)
-	}
-	field(ELTM,DBF_FLOAT) {
+	field(ELTM,DBF_DOUBLE) {
 		prompt("Elapsed live time")
 		interest(1)
 	}
-	field(ELTP,DBF_FLOAT) {
-		prompt("Prev. live time")
-		special(SPC_NOMOD)
-		interest(1)
-	}
-	field(DTIM,DBF_FLOAT) {
+	field(DTIM,DBF_DOUBLE) {
 		prompt("Average % dead time")
 		special(SPC_NOMOD)
 		interest(1)
 	}
-	field(IDTIM,DBF_FLOAT) {
+	field(IDTIM,DBF_DOUBLE) {
 		prompt("Instantaneous % dead time")
 		special(SPC_NOMOD)
 		interest(1)
@@ -320,11 +305,6 @@ recordtype(mca) {
 		special(SPC_NOMOD)
 		interest(1)
 	}
-	field(ACTP,DBF_LONG) {
-		prompt("Prev. actual counts")
-		special(SPC_NOMOD)
-		interest(1)
-	}
 	field(NACK,DBF_SHORT) {
 		prompt("Message not acknowledge")
 		special(SPC_NOMOD)
@@ -337,22 +317,22 @@ recordtype(mca) {
 		special(SPC_NOMOD)
 		interest(1)
 	}
-	field(HIHI,DBF_FLOAT) {
+	field(HIHI,DBF_DOUBLE) {
 		prompt("Hihi Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(LOLO,DBF_FLOAT) {
+	field(LOLO,DBF_DOUBLE) {
 		prompt("Lolo Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(HIGH,DBF_FLOAT) {
+	field(HIGH,DBF_DOUBLE) {
 		prompt("High Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(LOW,DBF_FLOAT) {
+	field(LOW,DBF_DOUBLE) {
 		prompt("Low Deviation Limit")
 		promptgroup(GUI_ALARMS)
 		interest(1)
@@ -381,12 +361,12 @@ recordtype(mca) {
 		interest(1)
 		menu(menuAlarmSevr)
 	}
-	field(HYST,DBF_FLOAT) {
+	field(HYST,DBF_DOUBLE) {
 		prompt("Alarm Deadband")
 		promptgroup(GUI_ALARMS)
 		interest(1)
 	}
-	field(LALM,DBF_FLOAT) {
+	field(LALM,DBF_DOUBLE) {
 		prompt("Last Value Alarmed")
 		special(SPC_NOMOD)
 		interest(3)
