@@ -411,7 +411,7 @@ static long init_record(mcaRecord *pmca, int pass)
     struct mcaDSET *pdset;
     long status;
 
-    /* Allocate memory for spectrum */
+    /* Allocate memory for spectrum and status buffer */
     if (pass==0) {
         pmca->vers = VERSION;
         if (pmca->nmax <= 0) pmca->nmax=1;
@@ -423,12 +423,13 @@ static long init_record(mcaRecord *pmca, int pass)
             pmca->bptr = (char *)calloc(pmca->nmax,sizeofTypes[pmca->ftvl]);
             pmca->pbg = (char *)calloc(pmca->nmax,sizeofTypes[pmca->ftvl]);
         }
+        pmca->pstatus = (char *)calloc(1, sizeof(mcaStatus));
         pmca->nord = 0;
         return(0);
     }
 
-	/* check nuse */
-	if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
+    /* check nuse */
+    if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
 
     /* simulation links */
     if (pmca->siml.type == CONSTANT) {
@@ -497,6 +498,8 @@ static long process(mcaRecord *pmca)
     long status;
     short preset_reached = 0;
     int rdns;
+    mcaStatus *pstatus = pmca->pstatus;
+    double ertp=0., eltp=0.;
 
     /*** Check existence of device support ***/
     if ( (pdset==NULL) || (pdset->read_array==NULL) ) {
@@ -534,7 +537,7 @@ reprocess:
         }
         if (NEWV_MARKED(M_NUSE)) {
             MARK(M_NUSE);
-			if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
+            if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
             status = (*pdset->send_msg)
                 (pmca,  mcaNumChannels, (void *)(&pmca->nuse));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
@@ -680,16 +683,10 @@ reprocess:
      * in preset region and the current acquisition status. 
      */
 read_status:
-    /* Save fields updated by mcaReadStatus */
-    pmca->acqp = pmca->acqg;
-    pmca->ertp = pmca->ertm;
-    pmca->eltp = pmca->eltm;
-    pmca->actp = pmca->act;
-    pmca->dwlp = pmca->dwel;
     rdns = pmca->rdns;  /* Save current state of rdns */
 
     if (mcaRecordDebug > 5) errlogPrintf("process: reading elapsed time, etc.\n");
-    status = (*pdset->send_msg)(pmca, mcaReadStatus, NULL);
+    status = (*pdset->send_msg)(pmca, mcaReadStatus, pmca->pstatus);
     if (status) {
        if (mcaRecordDebug > 1) errlogPrintf("process: error sending mcaReadStatus\n");
        pmca->nack = 1; MARK(M_NACK);
@@ -708,10 +705,27 @@ read_status:
     } 
     pmca->rdns = 0;
 
-    if (pmca->ertm != pmca->ertp) MARK(M_ERTM);
-    if (pmca->eltm != pmca->eltp) MARK(M_ELTM);
-    if (pmca->act  != pmca->actp) MARK(M_ACT);
-    if (pmca->dwel != pmca->dwlp) MARK(M_DWEL);
+    if (mcaRecordDebug > 5)
+        errlogPrintf("process: status from callback: elapsedReal=%f, elapsedLive=%f, acquiring=%d\n",
+                      pstatus->elapsedReal, pstatus->elapsedLive, pstatus->acquiring);
+    if (pmca->ertm != pstatus->elapsedReal) {
+        ertp = pmca->ertm;
+        pmca->ertm  = pstatus->elapsedReal;
+        MARK(M_ERTM);
+    }
+    if (pmca->eltm != pstatus->elapsedLive) { 
+        eltp = pmca->eltm;
+        pmca->eltm  = pstatus->elapsedLive;
+        MARK(M_ELTM);
+    }
+    if (pmca->act  != pstatus->totalCounts) {
+        pmca->act   = pstatus->totalCounts;
+        MARK(M_ACT);
+    }
+    if (pmca->dwel != pstatus->dwellTime) {
+        pmca->dwel  = pstatus->dwellTime;
+        MARK(M_DWEL);
+    }
     if (MARKED(M_ERTM) || MARKED(M_ELTM)) {
        /* Compute average and instantaneous dead time */
        if (pmca->ertm > .001) {
@@ -722,9 +736,9 @@ read_status:
        pmca->dtim = MAX(MIN(pmca->dtim, 100.), 0.);
        /* If acquiring then compute instantaneous dead time else use average */
        if (pmca->acqg) {
-          double drt = pmca->ertm - pmca->ertp;
+          double drt = pmca->ertm - ertp;
           if (drt > .001) {
-             pmca->idtim = 100. * (drt - (pmca->eltm - pmca->eltp)) / drt;
+             pmca->idtim = 100. * (drt - (pmca->eltm - eltp)) / drt;
              pmca->idtim = MAX(MIN(pmca->idtim, 100.), 0.);
           } else {
              pmca->idtim = 0.;
@@ -736,11 +750,12 @@ read_status:
        MARK(M_IDTIM);
     }
 
-    if (mcaRecordDebug > 5) errlogPrintf("process: acqg=%d, acqp=%d\n", pmca->acqg, pmca->acqp);
-    if (pmca->acqg != pmca->acqp) {
-       MARK(M_ACQG);
-       /* Force a read when acquire turns off */
-       if (!pmca->acqg) {
+    if (mcaRecordDebug > 5) errlogPrintf("process: pstatus->acqg=%d, acqg=%d\n", pstatus->acquiring, pmca->acqg);
+    if (pmca->acqg != pstatus->acquiring) {
+       /* Note: we don't copy pstatus->acquiring to pmca->acqg here yet, because if acquiring has stopped
+        * we don't want clients to know that before we read the data and compute ROIs.
+        * Force a read when acquire turns off */
+       if (!pstatus->acquiring) {
           pmca->read = 1; MARK(M_READ);
        }
     }
@@ -803,6 +818,11 @@ read_data:
         status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
     }
 
+    /* Now we update the acqg field, since data have been read and ROIs computed. */
+    if (pmca->acqg != pstatus->acquiring) {
+       pmca->acqg = pstatus->acquiring;
+       MARK(M_ACQG);
+    }
     pmca->udf = FALSE;
 
     mcaAlarm(pmca);
@@ -1003,7 +1023,6 @@ static void monitor(mcaRecord *pmca)
     if (MARKED(M_VAL)) db_post_events(pmca,pmca->bptr,monitor_mask);
     if (MARKED(M_BG))   db_post_events(pmca,pmca->pbg,monitor_mask);
     if (MARKED(M_NACK)) db_post_events(pmca,&pmca->nack,monitor_mask);
-    if (MARKED(M_ACQG)) db_post_events(pmca,&pmca->acqg,monitor_mask);
     if (MARKED(M_READ)) db_post_events(pmca,&pmca->read,monitor_mask);
     if (MARKED(M_RDNG)) db_post_events(pmca,&pmca->rdng,monitor_mask);
     if (MARKED(M_ERTM)) db_post_events(pmca,&pmca->ertm,monitor_mask);
@@ -1023,6 +1042,9 @@ static void monitor(mcaRecord *pmca)
           db_post_events(pmca,&psum[i].net ,monitor_mask);
        }
     }
+    /* Post monitors on the acqg field last, so that valid data is posted before
+     * acqq would make a 1 to 0 transition (which clients may be monitoring) */
+    if (MARKED(M_ACQG)) db_post_events(pmca,&pmca->acqg,monitor_mask);
     UNMARK_ALL;
     ROI_UNMARK_ALL;
     return;
