@@ -175,6 +175,7 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pmca->dpvt;
     asynUser *pasynUser = pPvt->pasynUser;
     mcaAsynMessage *pmsg;
+    mcaStatus *pstatus = pmca->pstatus;
     int status;
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
@@ -190,15 +191,15 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     if (pmca->rdns && (command == mcaReadStatus)) {
         /* This is a second call from record after I/O is complete. 
          * Copy information from private to record */
-        pmca->ertm = pPvt->elapsedReal;
-        pmca->eltm = pPvt->elapsedLive;
-        pmca->dwel = pPvt->dwellTime;
-        pmca->act =  pPvt->totalCounts;
-        pmca->acqg = pPvt->acquiring;
+        pstatus->elapsedReal = pPvt->elapsedReal;
+        pstatus->elapsedLive = pPvt->elapsedLive;
+        pstatus->dwellTime   = pPvt->dwellTime;
+        pstatus->totalCounts = pPvt->totalCounts;
+        pstatus->acquiring   = pPvt->acquiring;
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
                   "devMcaAsyn::send_msg, record=%s, elapsed real=%f,"
                   " elapsed live=%f, dwell time=%f, acqg=%d\n", 
-                  pmca->name, pmca->ertm, pmca->eltm, pmca->dwel, pmca->acqg);
+                  pmca->name, pstatus->elapsedReal, pstatus->elapsedLive, pstatus->dwellTime, pstatus->acquiring);
         return(0);
     }
 
@@ -207,8 +208,13 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     pasynUser = pasynManager->duplicateAsynUser(pasynUser, asynCallback, 0);
     pmsg = pasynManager->memMalloc(sizeof *pmsg);
     pmsg->command = command;
-    pmsg->ivalue=0;
-    pmsg->dvalue=0.;
+    if (parg) { 
+        pmsg->ivalue= *(int *)parg;
+        pmsg->dvalue= *(double*)parg;
+    } else {
+        pmsg->ivalue = 0;
+        pmsg->dvalue = 0.;
+    }
     pmsg->interface = int32Type;
     pasynUser->userData = pmsg;
 
@@ -237,32 +243,24 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     case mcaChannelAdvanceExternal:
         break;
     case mcaNumChannels:
-        pmsg->ivalue = pmca->nuse;
         break;
     case mcaDwellTime:
         pmsg->interface = float64Type;
-        pmsg->dvalue = pmca->dwel;
         break;
     case mcaPresetLiveTime:
         pmsg->interface = float64Type;
-        pmsg->dvalue = pmca->pltm;
         break;
     case mcaPresetRealTime:
         pmsg->interface = float64Type;
-        pmsg->dvalue = pmca->prtm;
         break;
     case mcaPresetCounts:
         pmsg->interface = float64Type;
-        pmsg->dvalue = pmca->pct;
         break;
     case mcaPresetLowChannel:
-        pmsg->ivalue = pmca->pct;
         break;
     case mcaPresetHighChannel:
-        pmsg->ivalue = pmca->pcth;
         break;
     case mcaPresetSweeps:
-        pmsg->ivalue = pmca->pswp;
         break;
     case mcaModePHA:
         break;
@@ -271,10 +269,8 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     case mcaModeList:
         break;
     case mcaSequence:
-        pmsg->ivalue = pmca->seq;
         break;
     case mcaPrescale:
-        pmsg->ivalue = pmca->pscl;
         break;
     default:
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
