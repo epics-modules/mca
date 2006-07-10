@@ -111,6 +111,7 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
         int s, acq_status;
         long ecounts;
         float ereal;
+        mcaStatus *pstatus = pmca->pstatus;
 
         switch (msg) {
         case mcaStartAcquire:
@@ -182,10 +183,11 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                 s = drvSTR7201GetAcqStatus(card, signal, &ereal, &ecounts, 
                                                 &acq_status);
                 Debug(5, "devSTR7201(send_msg): status update %d\n", s);
-                pmca->ertm = ereal;
-                pmca->eltm = ereal;
-                pmca->act = ecounts;
-                pmca->acqg = acq_status;
+                pstatus->elapsedReal = ereal;
+                pstatus->elapsedLive = ereal;
+                pstatus->totalCounts = ecounts;
+                pstatus->acquiring = acq_status;
+                pstatus->dwellTime = pmca->dwel;
                 break;
         case mcaStopAcquire:
                 /* stop data acquisition */
