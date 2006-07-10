@@ -8,6 +8,34 @@
 
 <h1 align="center">mca Release Notes</h1>
 
+<h2 align="center">Release 6-7 (July 10, 2006)</h2>
+<ul>
+  <li>Fixed timing bug in communication between record and device support.
+      In previous releases device support was setting the .ACQG field to 0 (Done)
+      before the final read of the device was complete.  This meant that channel access
+      clients that were doing cagets() of .ACQG to see when acquisition was complete
+      and then reading data immediately could get incorrect data.  Note that this problem did not
+      occur if clients were using monitors (callbacks), because the record did not
+      call dbPostEvents until the final read of data from the device was complete.
+      <p>
+      The fix to this problem required re-writing the interface between the record and
+      device support so that device support does not directly modify the .ACQG field.
+      Rather it now passes a structure with status information which the record uses
+      to modify the record fields, and it does not set the .ACQG field until the record contains
+      the latest data.
+      <p>
+      The record support, asyn device support (for all devices except Struck), and the Struck (SIS) 
+      device support were all modified.
+  <li>mcaRecord
+    <ul>
+      <li>Converted all DBF_FLOAT record fields to DBF_DOUBLE.
+      <li>Added the PSTATUS (private) field for status buffer.
+      <li>Removed the ACQP, DWLP, ERTP, ELTP and ACTP (private) fields which are
+          no longer needed because PSTATUS field replaces them.
+    </ul>
+   <li>Removed macro definitions with variable arguments (e.q. Debug) for portability.
+</ul>
+
 <h2 align="center">Release 6-6 (November 16, 2005)</h2>
 <ul>
   <li>Added mcaApp/RontecSrc directory with support for the Rontec XFlash MCA.   
@@ -26,7 +54,7 @@
   <li>Added mcaApp/op/adl/mcaTest.adl medm screen for testing the example IOCs.
   <li>Improved the documentation in mcaDoc.html and mcaRecord.html.
   <li>Added the acquiring (.ACQG) field to 16element_time.adl.
-  <li>Things planned for next release:
+  <li>Things planned for future release:
     <ul>
       <li>
         Add a calibrated X axis PV, so one can plot spectra versus energy in medm
