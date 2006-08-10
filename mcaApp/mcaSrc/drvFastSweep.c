@@ -631,7 +631,7 @@ static const iocshArg * const initSweepArgs[4] = {&initSweepArg0,
                                                   &initSweepArg1,
                                                   &initSweepArg2,
                                                   &initSweepArg3};
-static const iocshFuncDef initSweepFuncDef = {"initSweep",4,initSweepArgs};
+static const iocshFuncDef initSweepFuncDef = {"initFastSweep",4,initSweepArgs};
 static void initSweepCallFunc(const iocshArgBuf *args)
 {
     initFastSweep(args[0].sval, args[1].sval, args[2].ival, args[3].ival);
