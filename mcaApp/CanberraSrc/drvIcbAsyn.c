@@ -1280,11 +1280,8 @@ static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
 {
     int command = pasynUser->reason;
 
-    *pptypeName = NULL;
-    *psize = 0;
-    if (pptypeName)
-        *pptypeName = epicsStrDup("icbCommands");
-    if (psize) *psize = sizeof(command);
+    *pptypeName = epicsStrDup("icbCommands");
+    *psize = sizeof(command);
     return(asynSuccess);
 }
 
