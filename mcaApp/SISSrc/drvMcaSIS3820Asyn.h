@@ -1,4 +1,4 @@
-/* File: 	  drvMcaSIS3820Asyn.c
+/* File: 	  drvMcaSIS3820Asyn.h
  * Author:  Wayne Lewis
  * Date:    04-sep-2006
  *
@@ -11,6 +11,7 @@
  *
  * Revisions:
  * 0.1  Wayne Lewis               Original version
+ * 0.2  Mark Rivers               Modifications for vxWorks, external channel advance, etc.
  *
  * Copyright (c) 2006, Australian Synchrotron
  * All rights reserved.
@@ -56,7 +57,7 @@
 #define SIMPLE_SCALER_MODE       1
 #define SIS3820_LNE_CHANNEL 32
 #define SIS3820_INTERNAL_CLOCK 50000000  /* The internal clock on the SIS38xx */
-#define SIS3820_10MHZ_CLOCK 10000000  /* The internal clock on the SIS38xx */
+#define SIS3820_10MHZ_CLOCK 10000000  /* The internal LNE clock on the SIS38xx */
 
 #define SIS3820_ADDRESS_TYPE atVMEA32
 #define SIS3820_BOARD_SIZE 0x400000
@@ -82,9 +83,6 @@
 /* FIFO information */
 #define SIS3820_FIFO_SIZE 0x800000
 
-/* Message queue */
-#define MAX_MESSAGES 100
-
 #ifndef ERROR
 #define ERROR -1
 #endif
@@ -92,15 +90,9 @@
 #define OK 0
 #endif
 
-#define NINT(f) (long)((f)>0 ? (f)+0.5 : (f)-0.5) 
-
 /************/
 /* Includes */
 /************/
-
-#ifdef vxWorks
-#include	<fppLib.h>
-#endif
 
 /* EPICS includes */
 #include <asynDriver.h>
@@ -108,7 +100,7 @@
 #include <asynFloat64.h>
 #include <asynInt32Array.h>
 #include <asynDrvUser.h>
-#include <epicsMessageQueue.h>
+#include <epicsEvent.h>
 #include <epicsMutex.h>
 #include <epicsTime.h>
 #include <epicsTypes.h>
@@ -225,14 +217,13 @@ typedef struct mcaSIS3820Pvt {
   int nchans;
   int nextChan;
   int nextSignal;
-  double presetTime;
+  double presetReal;
+  double presetLive;
   epicsTimeStamp startTime;
   epicsTimeStamp statusTime;
   double maxStatusTime;
   double elapsedTime;
   double elapsedPrevious;
-  double elive;
-  double ereal;
   int presetStartChan[SIS3820_MAX_SIGNALS];
   int presetEndChan[SIS3820_MAX_SIGNALS];
   long presetCounts[SIS3820_MAX_SIGNALS];
@@ -246,9 +237,7 @@ typedef struct mcaSIS3820Pvt {
   epicsUInt32 *buffer;  /* maxSignals * maxChans */
   epicsUInt32 *buffPtr;
   int acquiring;
-#ifdef vxWorks
-  FP_CONTEXT *pFpContext;
-#endif
+  int prevAcquiring;
   epicsMutexId lock;
   epicsMutexId fifoLock;
 
@@ -262,9 +251,7 @@ typedef struct mcaSIS3820Pvt {
   void *int32ArrayInterruptPvt;
   asynInterface drvUser;
   
-  int messagesSent;
-  int messagesFailed;
-  epicsMessageQueueId intMsgQId;
+  epicsEventId intEventId;
 } mcaSIS3820Pvt;
 
 /***********************/
