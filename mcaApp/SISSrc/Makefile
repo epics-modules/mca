@@ -16,6 +16,19 @@ mcaSIS_SRCS += devSTR7201.c
 mcaSIS_SRCS += devScalerSTR7201.c
 mcaSIS_SRCS += mcaSISRegister.c
 
+#==================================
+PROD_IOC_vxWorks += mcaSISTest
+
+## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
+mcaSISTest_SRCS += mcaSISTest_registerRecordDeviceDriver.cpp
+mcaSISTest_SRCS_DEFAULT += mcaSISTestMain.cpp
+mcaSISTest_SRCS_vxWorks += -nil-
+mcaSISTest_LIBS += mcaSIS
+mcaSISTest_LIBS += mca
+mcaSISTest_LIBS += calc sscan autosave
+mcaSISTest_LIBS += asyn
+mcaSISTest_LIBS += $(EPICS_BASE_IOC_LIBS)
+
 include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
