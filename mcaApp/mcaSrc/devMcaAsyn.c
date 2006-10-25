@@ -254,7 +254,6 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         pmsg->interface = float64Type;
         break;
     case mcaPresetCounts:
-        pmsg->interface = float64Type;
         break;
     case mcaPresetLowChannel:
         break;
