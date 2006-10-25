@@ -5,7 +5,7 @@ include $(TOP)/configure/CONFIG
 #=============================
 
 # <name>.dbd will be created from <name>Include.dbd
-DBD += mcaSISSupport.dbd
+DBD += mcaSISTest.dbd
 
 #=============================
 LIBRARY_IOC_vxWorks += mcaSIS
@@ -25,6 +25,7 @@ mcaSISTest_SRCS_DEFAULT += mcaSISTestMain.cpp
 mcaSISTest_SRCS_vxWorks += -nil-
 mcaSISTest_LIBS += mcaSIS
 mcaSISTest_LIBS += mca
+mcaSISTest_LIBS += std
 mcaSISTest_LIBS += calc sscan autosave
 mcaSISTest_LIBS += asyn
 mcaSISTest_LIBS += $(EPICS_BASE_IOC_LIBS)
