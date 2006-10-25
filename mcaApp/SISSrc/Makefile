@@ -10,6 +10,7 @@ DBD += mcaSISSupport.dbd
 #=============================
 LIBRARY_IOC_vxWorks += mcaSIS
 
+mcaSIS_SRCS += drvMcaSIS3820Asyn.c
 mcaSIS_SRCS += drvSTR7201.c
 mcaSIS_SRCS += devSTR7201.c
 mcaSIS_SRCS += devScalerSTR7201.c
