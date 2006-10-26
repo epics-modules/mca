@@ -5,8 +5,8 @@ file {
 }
 display {
 	object {
-		x=77
-		y=43
+		x=334
+		y=152
 		width=159
 		height=41
 	}
@@ -109,17 +109,22 @@ text {
 	display[0] {
 		label="SIS3801 MCA"
 		name="Struck32.adl"
-		args="P=SIS:3820:"
+		args="P=SIS:3801:"
 	}
 	display[1] {
 		label="SIS3820 MCA"
 		name="Struck32.adl"
-		args="P=SIS:3801:"
+		args="P=SIS:3820:"
 	}
 	display[2] {
-		label="SAIS3801 Scaler"
+		label="SIS3801 Scaler"
 		name="scaler_full.adl"
-		args="P=SIS:, S=scaler1"
+		args="P=SIS:3801:, S=scaler1"
+	}
+	display[3] {
+		label="SIS3820 Scaler"
+		name="scaler_full.adl"
+		args="P=SIS:3820:, S=scaler1"
 	}
 	clr=14
 	bclr=4
