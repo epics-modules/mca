@@ -54,12 +54,12 @@ extern int STR7201NumCards;  /* Defined in drvStr7201.c */
 
 STATIC long scaler_report(int level);
 STATIC long scaler_init(int after);
-STATIC long scaler_init_record(struct scalerRecord *psr);
-STATIC long scaler_reset(int card);
-STATIC long scaler_read(int card, long *val);
-STATIC long scaler_write_preset(int card, int signal, long val);
-STATIC long scaler_arm(int card, int val);
-STATIC long scaler_done(int card);
+STATIC long scaler_init_record(struct scalerRecord *psr, CALLBACK *pcallback);
+STATIC long scaler_reset(scalerRecord *psr);
+STATIC long scaler_read(scalerRecord *psr, long *val);
+STATIC long scaler_write_preset(scalerRecord *psr, int signal, long val);
+STATIC long scaler_arm(scalerRecord *psr, int val);
+STATIC long scaler_done(scalerRecord *psr);
 
 SCALERDSET devScalerSTR7201 = {
     7,
@@ -81,7 +81,12 @@ struct scaler_state {
     int prev_counting;
     int done;
     CALLBACK *pcallback;
+    scalerRecord *psr;
 };
+
+typedef struct {
+        int card;
+} devScalerPvt;
 
 STATIC struct scaler_state **scaler_state = 0;
 
@@ -125,16 +130,20 @@ STATIC long scaler_init(int after)
 /***************************************************
 * scaler_init_record()
 ****************************************************/
-STATIC long scaler_init_record(struct scalerRecord *psr)
+STATIC long scaler_init_record(struct scalerRecord *psr, CALLBACK *pcallback)
 {
     int card = psr->out.value.vmeio.card;
-    CALLBACK *pcallbacks;
     int maxSignals, maxChans, ch1RefEnable, softAdvance;
+    devScalerPvt *dpvt;
 
     if(devScalerSTR7201Debug >= 5) {
         printf("%s(%d):",__FILE__,__LINE__);
         printf("scaler_init_record: card %d\n", card);
     }
+    dpvt = (devScalerPvt *)calloc(1, sizeof(devScalerPvt));
+    dpvt->card = card;
+    psr->dpvt = dpvt;
+    scaler_state[card]->psr = psr;
 
     /* out must be an VME_IO */
     if (psr->out.type != VME_IO) {
@@ -158,10 +167,9 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
     scaler_state[card]->num_channels = maxSignals;
     psr->nch = scaler_state[card]->num_channels;
 
-    scaler_reset(card);
+    scaler_reset(psr);
 
-    pcallbacks = (CALLBACK *)psr->dpvt;
-    scaler_state[card]->pcallback = (CALLBACK *)&(pcallbacks[3]);
+    scaler_state[card]->pcallback = pcallback;
 
     return(OK);
 }
@@ -170,8 +178,10 @@ STATIC long scaler_init_record(struct scalerRecord *psr)
 /***************************************************
 * scaler_reset()
 ****************************************************/
-STATIC long scaler_reset(int card)
+STATIC long scaler_reset(scalerRecord *psr)
 {
+    devScalerPvt *dpvt = psr->dpvt;
+    int card = dpvt->card;
     int signal;
 
     if(devScalerSTR7201Debug >= 5) {
@@ -197,8 +207,10 @@ STATIC long scaler_reset(int card)
 * scaler_read()
 * return pointer to array of scaler values (on the card)
 ****************************************************/
-STATIC long scaler_read(int card, long *val)
+STATIC long scaler_read(scalerRecord *psr, long *val)
 {
+    devScalerPvt *dpvt = psr->dpvt;
+    int card = dpvt->card;
     int i;
     float etime;
     long ecounts;
@@ -238,8 +250,11 @@ STATIC long scaler_read(int card, long *val)
 /***************************************************
 * scaler_write_preset()
 ****************************************************/
-STATIC long scaler_write_preset(int card, int signal, long val)
+STATIC long scaler_write_preset(scalerRecord *psr, int signal, long val)
 {
+    devScalerPvt *dpvt = psr->dpvt;
+    int card = dpvt->card;
+
     if(devScalerSTR7201Debug >= 5) {
         printf("%s(%d):",__FILE__,__LINE__);
         printf("scaler_write_preset: card=%d, signal=%d, val=%ld\n", 
@@ -258,8 +273,11 @@ STATIC long scaler_write_preset(int card, int signal, long val)
 * Make scaler ready to count.  If GATE input permits, the scaler will
 * actually start counting.
 ****************************************************/
-STATIC long scaler_arm(int card, int val)
+STATIC long scaler_arm(scalerRecord *psr, int val)
 {
+    devScalerPvt *dpvt = psr->dpvt;
+    int card = dpvt->card;
+
     if(devScalerSTR7201Debug >= 5) {
         printf("%s(%d):",__FILE__,__LINE__);
         printf("scaler_arm: card=%d, val=%d\n", card, val);
@@ -286,8 +304,10 @@ STATIC long scaler_arm(int card, int val)
 /***************************************************
 * scaler_done()
 ****************************************************/
-STATIC long scaler_done(int card)
+STATIC long scaler_done(scalerRecord *psr)
 {
+    devScalerPvt *dpvt = psr->dpvt;
+    int card = dpvt->card;
 
     if(devScalerSTR7201Debug >= 5) {
         printf("%s(%d):",__FILE__,__LINE__);
