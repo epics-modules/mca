@@ -652,6 +652,11 @@ reprocess:
     if (pmca->strt || NEWV_MARKED(M_ERST)) {
        if (mcaRecordDebug > 5) errlogPrintf("process: start acquisition.\n");
        status = (*pdset->send_msg) (pmca, mcaStartAcquire, NULL);
+       /* We force a read of the data when acquisition is turned on.  This was added on 10/31/2006
+        * because without it a device that is done acquiring by the time the status is read below
+        * will never get the data read (because Read record in database has scanned disabled if not acquiring)
+        */
+       pmca->read = 1; MARK(M_READ);
        if (pmca->strt) {
           pmca->strt=0; 
           MARK(M_STRT);
