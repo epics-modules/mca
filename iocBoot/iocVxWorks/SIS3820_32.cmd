@@ -12,6 +12,9 @@ dbLoadRecords("$(MCA)/mcaApp/Db/SIS3820.db", "P=SIS:3820:, INP=@asyn(mcaSIS3820/
 dbLoadRecords("$(MCA)/mcaApp/Db/Struck32.db","P=SIS:3820:")
 dbLoadTemplate("SIS3820_32.substitutions")
 
+/* Scaler record with asyn device support*/
+dbLoadRecords("$(MCA)/mcaApp/Db/SIS3820AsynScaler.db", "P=SIS:3820:,S=scaler1,OUT=@asyn(mcaSIS3820/1 0)")
+
 #SIS3820Setup(numCards,
 #             baseAddress,
 #             intVector,
