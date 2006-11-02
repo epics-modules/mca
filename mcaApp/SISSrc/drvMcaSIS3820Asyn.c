@@ -3,8 +3,8 @@
  * Date:    04-sep-2006
  *
  * Purpose: 
- * This module provides the driver support for the MCA asyn device support layer
- * for the SIS3820 multichannel scaler.
+ * This module provides the driver support for the MCA and scaler record asyn device 
+ * support layer for the SIS3820 multichannel scaler.
  *
  * Acknowledgements:
  * This driver module is based in part on drvMcaAIMAsyn.c by Mark Rivers.
@@ -52,7 +52,6 @@
  *     below that it messes up, 100% CPU time.
  * - There looks like a problem with BaseAddresss with multiple cards.  Each card needs
  *   it own base address
- * - Implement preset counts
  */
 
 /*******************/
@@ -122,9 +121,10 @@ int mcaSIS3820IntLevel;
 /**************/
 /* Prototypes */
 /**************/
-static epicsUInt32 setControlStatusReg();
-static epicsUInt32 setOpModeReg(int inputMode, int outputMode);
-static epicsUInt32 setIrqControlStatusReg();
+static void setControlStatusReg(mcaSIS3820Pvt *pPvt);
+static void setOpModeReg(mcaSIS3820Pvt *pPvt);
+static void setIrqControlStatusReg(mcaSIS3820Pvt *pPvt);
+static void setAcquireMode(mcaSIS3820Pvt *pPvt, SIS3820AcquireMode acquireMode);
 
 static void intFunc(void *drvPvt);
 static void intTask(mcaSIS3820Pvt *pPvt);
@@ -234,11 +234,7 @@ int mcaSIS3820Config(
 {
   mcaSIS3820Pvt *pPvt;
   int status;
-  int i;
   epicsUInt32 controlStatusReg;
-  epicsUInt32 irqControlStatusReg;
-  epicsUInt32 opModeReg;
-  epicsUInt32 channelDisableRegister = SIS3820_CHANNEL_DISABLE_MASK;
 
   /* Allocate and initialize mcaSIS3820Pvt if not done yet */
 
@@ -310,6 +306,8 @@ int mcaSIS3820Config(
   pPvt->nchans = maxChans;
 
   pPvt->maxSignals = maxSignals;
+  pPvt->inputMode = inputMode;
+  pPvt->outputMode = outputMode;
   pPvt->acquiring = 0;
   pPvt->prevAcquiring = 0;
   pPvt->nextChan = 0;
@@ -319,9 +317,6 @@ int mcaSIS3820Config(
   pPvt->lneSource = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
   pPvt->softAdvance = 1;
   pPvt->maxStatusTime = 2.0;
-
-  /* Set the acquisition mode to 1=MCS */
-  pPvt->acqmod = 1;
 
   /* If no prescale is set, use a 1 second channel advance to avoid flooding the
    * memory
@@ -360,100 +355,9 @@ int mcaSIS3820Config(
       "mcaSIS3820Config: clearing FIFO\n");
   pPvt->address->key_fifo_reset_reg= 1;
 
-  /* Initialize board and set the control status register */
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: initialising control status register\n");
-  controlStatusReg = setControlStatusReg();
-  pPvt->address->control_status_reg = controlStatusReg;
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: control status register = 0x%08x\n",
-      pPvt->address->control_status_reg);
-
-  /* Set the interrupt control register */
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: setting interrupt control register\n");
-
-  irqControlStatusReg = setIrqControlStatusReg();
-  pPvt->address->irq_control_status_reg = irqControlStatusReg;
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: interrupt control register = 0x%08x\n",
-      pPvt->address->irq_control_status_reg);
-
-  /* Set the operation mode of the scaler */
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: setting operation mode\n");
-
-  opModeReg = setOpModeReg(inputMode, outputMode);
-  pPvt->address->op_mode_reg = opModeReg;
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: operation mode register = 0x%08x\n",
-      pPvt->address->op_mode_reg);
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: control status register = 0x%08x\n",
-      pPvt->address->control_status_reg);
-
-  /* Trigger an interrupt when 1024 FIFO registers have been filled */
-  pPvt->address->fifo_word_threshold_reg = 1024;
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: FIFO threshold = %d\n",
-      pPvt->address->fifo_word_threshold_reg);
-
-  /* Set the LNE channel */
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: setting LNE signal generation to channel %d\n",
-      SIS3820_LNE_CHANNEL);
-
-  pPvt->address->lne_channel_select_reg = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: set LNE signal generation to channel %d\n",
-      pPvt->address->lne_channel_select_reg);
-
-
-  /* 
-   * Set number of readout channels to maxSignals
-   * Assumes that the lower channels will be used first, and the only unused
-   * channels will be at the upper end of the channel range.
-   * Create a mask with zeros in the rightmost maxSignals bits, 
-   * 1 in all higher order bits.
-   */
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: setting readout channels=%d\n",maxSignals);
-
-  for (i = 0; i < maxSignals; i++)
-  {
-    channelDisableRegister <<= 1;
-  }
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: setting readout disable register=0x%08x\n",
-      channelDisableRegister);
-
-  /* Disable channel in MCS mode. */
-  pPvt->address->copy_disable_reg = channelDisableRegister;
-  /* Disable channel in scaler mode. */
-  pPvt->address->count_disable_reg = channelDisableRegister;
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: setting copy disable register=0x%08x\n",
-      pPvt->address->copy_disable_reg);
-
-  /* Set the prescale factor to the desired value. */
-  pPvt->address->lne_prescale_factor_reg = lnePrescale - 1;
-
-  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820Config: lne prescale register=%d\n",
-      pPvt->address->lne_prescale_factor_reg);
-
-  /* Enable or disable 50 MHz channel 1 reference pulses. */
-  if (pPvt->ch1RefEnable)
-    pPvt->address->control_status_reg |= CTRL_REFERENCE_CH1_ENABLE;
-  else
-    pPvt->address->control_status_reg |= CTRL_REFERENCE_CH1_DISABLE;
+  /* Initialize board in MCS mode */
+  pPvt->acquireMode = UNDEFINED_MODE;
+  setAcquireMode(pPvt, MCS_MODE);
 
   /* Set up the interrupt service routine */
   asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
@@ -629,7 +533,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
     epicsInt32 ivalue, epicsFloat64 dvalue)
 {
   mcaSIS3820Pvt *pPvt = (mcaSIS3820Pvt *)drvPvt;
-  mcaCommand command=pasynUser->reason;
+  int command=pasynUser->reason;
   int signal;
   epicsUInt32 operationModeRegister;
 
@@ -637,12 +541,15 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
   pasynManager->getAddr(pasynUser, &signal);
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820AsynDriver::SIS3820Write entry, command=%d, signal=%d, "
+      "drvMcaSIS3820Asyn::SIS3820Write entry, command=%d, signal=%d, "
       "ivalue=%d, dvalue=%f\n", command, signal, ivalue, dvalue);
   switch (command) 
   {
     case mcaStartAcquire:
       /* Start acquisition. */
+      /* Note that we don't start acquisition except for channel 0. */
+      if (signal != 0) break;
+
       /* If the MCS is set to use internal channel advance, just start
        * collection. If it is set to use an external channel advance, arm
        * the scaler so that the next LNE pulse starts collection
@@ -651,20 +558,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       pPvt->acquiring = 1;
       pPvt->prevAcquiring = 1;
 
-      /* Set the acquisition preset register to the number of channels (time bins) */
-      pPvt->address->acq_preset_reg = pPvt->nchans;
-
-      if (pPvt->acqmod == 1) {
-        operationModeRegister = pPvt->address->op_mode_reg;
-        operationModeRegister &= ~SIS3820_OP_MODE_REG_MODE_MASK;
-        operationModeRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
-        pPvt->address->op_mode_reg = operationModeRegister;
-      } 
-      else
-      {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-            "mcaSIS3820AsynDriver unsupported acqmod %d\n", pPvt->acqmod);
-      }
+      setAcquireMode(pPvt, MCS_MODE);
 
       if (pPvt->lneSource == SIS3820_LNE_SOURCE_INTERNAL_10MHZ)
       {
@@ -697,25 +591,25 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       else
       {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-            "mcaSIS3820AsynDriver unsupported lneSource %d\n", pPvt->lneSource);
+            "drvMcaSIS3820Asyn::SIS3820Write unsupported lneSource %d\n", pPvt->lneSource);
       }
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Write lneSource = %d\n",
+          "drvMcaSIS3820Asyn::SIS3820Write lneSource = %d\n",
           pPvt->lneSource);
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Write(mcaStartAcquire) op mode register = 0x%08x\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write(mcaStartAcquire) op mode register = 0x%08x\n", 
           pPvt->address->op_mode_reg);
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Write control status register = 0x%08x\n",
+          "drvMcaSIS3820Asyn::SIS3820Write control status register = 0x%08x\n",
           pPvt->address->control_status_reg);
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Write lne prescale = %d\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write lne prescale = %d\n", 
           pPvt->address->lne_prescale_factor_reg);
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDrivers::SIS3820Write acq_preset_req = %d\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write acq_preset_req = %d\n", 
           pPvt->address->acq_preset_reg);
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDrivers::SIS3820Write fifo_word_threshold_reg = %d\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write fifo_word_threshold_reg = %d\n", 
           pPvt->address->fifo_word_threshold_reg);
       break;
 
@@ -742,7 +636,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
         pPvt->address->key_op_disable_reg = 1;
 
       asynPrint(pasynUser, ASYN_TRACE_FLOW,
-          "(mcaSIS3820AsynDriver::command [%s signal=%d]):"
+          "(drvMcaSIS3820Asyn::SIS3820Write [%s signal=%d]):"
           " erased\n",
           pPvt->portName, signal);
 
@@ -775,7 +669,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       /* Just cache this setting here, set it when acquisition starts */
       pPvt->lneSource = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Write(mcaChannelAdvanceInternal) pPvt-lneSource = 0x%x\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write(mcaChannelAdvanceInternal) pPvt-lneSource = 0x%x\n", 
           pPvt->lneSource);
 
       break;
@@ -785,7 +679,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       /* Just cache this setting here, set it when acquisition starts */
       pPvt->lneSource = SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Write(mcaChannelAdvanceExternal) pPvt-lneSource = 0x%x\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write(mcaChannelAdvanceExternal) pPvt-lneSource = 0x%x\n", 
           pPvt->lneSource);
       break;
 
@@ -800,7 +694,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       if (pPvt->nchans > pPvt->maxChans) 
       {
         asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-            "mcaSIS3820Server Illegal nuse field");
+            "drvMcaSIS3820Asyn::SIS3820Write Illegal nuse field %d", pPvt->nchans);
         pPvt->nchans = pPvt->maxChans;
       }
       break;
@@ -809,12 +703,12 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       /* set mode to Pulse Height Analysis */
       /* This is a NOOP for the SIS3820 */
       /* To make sure, we set the mode to MCS anyway */
-      pPvt->acqmod = 1;
+      pPvt->acquireMode = MCS_MODE;
       break;
 
     case mcaModeMCS:
       /* set mode to MultiChannel Scaler */
-      pPvt->acqmod = 1;
+      pPvt->acquireMode = MCS_MODE;
       break;
 
     case mcaModeList:
@@ -833,7 +727,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
        */
       pPvt->lnePrescale = ivalue;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "lne prescale = %d\n", pPvt->lnePrescale);
+          "drvMcaSIS3820::SIS3820Write lne prescale = %d\n", pPvt->lnePrescale);
       break;
 
     case mcaPresetSweeps:
@@ -841,7 +735,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       /* This is not implemented yet, but we cache the value anyway */
       pPvt->numSweeps = ivalue;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaPresetSweeps = %d\n", pPvt->numSweeps);
+          "drvMcaSIS3820Asyn::SIS3820Write mcaPresetSweeps = %d\n", pPvt->numSweeps);
       break;
 
     case mcaPresetLowChannel:
@@ -875,9 +769,39 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       pPvt->presetCounts[signal] = ivalue;
       break;
 
+    case scalerResetCommand:
+      /* Reset scaler */
+      pPvt->address->key_op_disable_reg = 1;
+      pPvt->address->key_fifo_reset_reg = 1;
+      pPvt->address->key_counter_clear = 1;
+      pPvt->acquiring = 0;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::SIS3820Write scalerResetCommand\n");
+      break;
+
+    case scalerArmCommand:
+      /* Arm or disarm scaler */
+      if (ivalue != 0) {
+        setAcquireMode(pPvt, SCALER_MODE);
+        pPvt->address->key_op_enable_reg = 1;
+        pPvt->acquiring = 1;
+      } else {
+        pPvt->address->key_op_disable_reg = 1;
+        pPvt->address->key_fifo_reset_reg = 1;
+      }
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::SIS3820Write scalerArmCommand=%d\n", ivalue);
+      break;
+
+    case scalerPresetCommand:
+      /* Set scaler preset */
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::SIS3820Write scalerPresetCommand channel %d=%d\n", signal, ivalue);
+      break;
+
     default:
       asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-          "mcaSIS3820AsynDriver::command port %s got illegal command %d\n",
+          "drvMcaSIS3820Asyn::SIS3820Write port %s got illegal command %d\n",
           pPvt->portName, command);
       break;
   }
@@ -902,42 +826,59 @@ static asynStatus SIS3820Read(void *drvPvt, asynUser *pasynUser,
     epicsInt32 *pivalue, epicsFloat64 *pfvalue)
 {
   mcaSIS3820Pvt *pPvt = (mcaSIS3820Pvt *)drvPvt;
-  mcaCommand command = pasynUser->reason;
+  int command = pasynUser->reason;
   asynStatus status=asynSuccess;
+  int signal;
+
+  pasynManager->getAddr(pasynUser, &signal);
 
   INTERLOCK_ON;
   switch (command) {
     case mcaAcquiring:
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Read mcaAcquiring\n");
+          "drvMcaSIS3820Asyn::SIS3820Read mcaAcquiring\n");
       *pivalue = pPvt->acquiring;
       break;
 
     case mcaDwellTime:
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Read mcaDwellTime\n");
+          "drvMcaSIS3820Asyn::SIS3820Read mcaDwellTime\n");
       *pfvalue = pPvt->dwellTime;
       break;
 
     case mcaElapsedLiveTime:
       /* The SIS3820 does not support live time recording */
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Read mcaElapsedLiveTime\n");
+          "drvMcaSIS3820Asyn::SIS3820Read mcaElapsedLiveTime\n");
       *pfvalue = pPvt->elapsedTime;
       break;
 
     case mcaElapsedRealTime:
       /* The SIS3820 does not support real time recording */
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Read mcaElapsedRealTime\n");
+          "drvMcaSIS3820Asyn::SIS3820Read mcaElapsedRealTime\n");
       *pfvalue = pPvt->elapsedTime;
       break;
 
     case mcaElapsedCounts:
       /* The SIS3820 does not support elapsed count recording */
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "mcaSIS3820AsynDriver::SIS3820Read mcaElapsedCounts\n");
+          "drvMcaSIS3820Asyn::SIS3820Read mcaElapsedCounts\n");
       *pfvalue = 0;
+      break;
+
+    case scalerReadCommand:
+      /* Read a single scaler channel */
+      *pivalue = pPvt->address->counter_regs[signal];
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::SIS3820Read scalerReadCommand channel%d=%d\n", signal, *pivalue);
+      break;
+
+    case scalerDoneCommand:
+      /* Return scaler done */
+      *pivalue = pPvt->acquiring;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::SIS3820Read scalerDoneCommand =%d\n", *pivalue);
       break;
 
     default:
@@ -971,44 +912,72 @@ static asynStatus int32ArrayRead(
   int signal;
   int maxSignals = pPvt->maxSignals;
   int numSamples;
+  int command = pasynUser->reason;
+  asynStatus status = asynSuccess;
   epicsInt32 *pBuff = data;
   epicsUInt32 *pPvtBuff;
+  volatile epicsUInt32 *in;
+  epicsUInt32 *out;
+  int i;
 
   INTERLOCK_ON;
   pasynManager->getAddr(pasynUser, &signal);
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820AsynDriver::int32ArrayRead entry, signal=%d, maxChans=%d\n", 
+      "drvMcaSIS3820Asyn::int32ArrayRead entry, signal=%d, maxChans=%d\n", 
       signal, maxChans);
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820AsynDriver::int32ArrayRead fifo word count = %d\n", 
+      "drvMcaSIS3820Asyn::int32ArrayRead fifo word count = %d\n", 
       pPvt->address->fifo_word_count_reg);
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-      "mcaSIS3820AsynDriver::int32ArrayRead status register = 0x%08x\n", 
+      "drvMcaSIS3820Asyn::int32ArrayRead status register = 0x%08x\n", 
       pPvt->address->control_status_reg);
 
-  /* Update the private data buffer by reading the data from the FIFO memory */
-  readFIFO(pPvt, pasynUser);
+  switch (command) {
+    case mcaData:
+      /* Update the private data buffer by reading the data from the FIFO memory */
+      readFIFO(pPvt, pasynUser);
 
-  /* Transfer the data from the private driver structure to the supplied data
-   * buffer. The private data structure will have the information for all the
-   * signals, so we need to just extract the signal being requested.
-   */
-  for (pPvtBuff = pPvt->buffer + signal, numSamples = 0; 
-      pPvtBuff < pPvt->buffPtr; 
-      pPvtBuff += maxSignals, numSamples++)
-  {
-    *pBuff++ = (epicsInt32) *pPvtBuff;
+      /* Transfer the data from the private driver structure to the supplied data
+       * buffer. The private data structure will have the information for all the
+       * signals, so we need to just extract the signal being requested.
+       */
+      for (pPvtBuff = pPvt->buffer + signal, numSamples = 0; 
+          pPvtBuff < pPvt->buffPtr; 
+          pPvtBuff += maxSignals, numSamples++)
+      {
+        *pBuff++ = (epicsInt32) *pPvtBuff;
+      }
+
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "(drvMcaSIS3820Asyn::int32ArrayRead [signal=%d]): read %d chans\n", signal, numSamples);
+
+      *nactual = numSamples;
+      break;
+
+    case scalerReadCommand:
+      if (maxChans > pPvt->maxSignals) maxChans = pPvt->maxSignals;
+      in = pPvt->address->counter_regs;
+      out = data;
+      for (i=0; i<maxChans; i++) {
+        *out++ = *in++;
+      }
+      *nactual = maxChans;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "(drvMcaSIS3820Asyn::int32ArrayRead scalerReadCommand): read %d chans, channel[0]=%d\n", 
+          maxChans, data[0]);
+      break;
+
+    default:
+      asynPrint(pasynUser, ASYN_TRACE_ERROR,
+          "drvMcaSIS3820Asyn::int32ArrayRead got illegal command %d\n",
+          command);
+      status = asynError;
   }
-
-  asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-      "(mcaSIS3820AsynDriver [signal=%d]): read %d chans\n", signal, numSamples);
-
-  *nactual = numSamples;
   INTERLOCK_OFF;
-  return(asynSuccess);
+  return(status);
 }
 
 
@@ -1019,7 +988,7 @@ static asynStatus int32ArrayWrite(void *drvPvt, asynUser *pasynUser,
    * so this function is not implemented in this driver.
    */
   asynPrint(pasynUser, ASYN_TRACE_ERROR,
-      "drvMcaSIS3820::SIS3820WriteData, write to SIS3820 not implemented\n");
+      "drvMcaSIS3820Asyn::int32ArrayWrite, write to SIS3820 not implemented\n");
   return(asynSuccess);
 }
 
@@ -1039,6 +1008,17 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
       if (pptypeName) *pptypeName = epicsStrDup(pstring);
       if (psize) *psize = sizeof(mcaCommands[i].command);
       asynPrint(pasynUser, ASYN_TRACE_FLOW,
+          "drvMcaSIS3820Asyn::drvUserCreate, command=%s\n", pstring);
+      return(asynSuccess);
+    }
+  }
+  for (i=0; i<MAX_SIS3820_SCALER_COMMANDS; i++) {
+    pstring = sis3820ScalerCommands[i].commandString;
+    if (epicsStrCaseCmp(drvInfo, pstring) == 0) {
+      pasynUser->reason = sis3820ScalerCommands[i].command;
+      if (pptypeName) *pptypeName = epicsStrDup(pstring);
+      if (psize) *psize = sizeof(sis3820ScalerCommands[i].command);
+      asynPrint(pasynUser, ASYN_TRACE_FLOW,
           "drvSweep::drvUserCreate, command=%s\n", pstring);
       return(asynSuccess);
     }
@@ -1051,7 +1031,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
 static asynStatus drvUserGetType(void *drvPvt, asynUser *pasynUser,
     const char **pptypeName, size_t *psize)
 {
-  mcaCommand command = pasynUser->reason;
+  int command = pasynUser->reason;
 
   *pptypeName = NULL;
   *psize = 0;
@@ -1156,7 +1136,6 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
   epicsUInt32 *endBuff;
   int count = 0;
   int signal, i, j;
-  int fifoWordCount;
   epicsTimeStamp now;
   int reason;
   ELLLIST *pclientList;
@@ -1170,14 +1149,14 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
   pBuff = pPvt->buffPtr;
   endBuff = pPvt->buffer + (pPvt->maxSignals * pPvt->nchans);
 
-  fifoWordCount = pPvt->address->fifo_word_count_reg;
-
   epicsTimeGetCurrent(&now);
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-      "drvMcaSIS3820Asyn::readFIFO fifo word count = %d, irq_csr=%x\n",
-      fifoWordCount,
-      pPvt->address->irq_control_status_reg);
+      "drvMcaSIS3820Asyn::readFIFO enter: fifo word count = %d, irq_csr=%x, acquiring=%d, prevAcquiring=%d\n",
+      pPvt->address->fifo_word_count_reg,
+      pPvt->address->irq_control_status_reg,
+      pPvt->acquiring,
+      pPvt->prevAcquiring);
 
   /* Check if the FIFO actually contains anything. If so, read out the FIFO to
    * the local buffer.  Put a sanity check on output pointer so we don't
@@ -1193,33 +1172,51 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
 
   if (pPvt->acquiring) {
     pPvt->elapsedTime = epicsTimeDiffInSeconds(&now, &pPvt->startTime);
-    if ((pPvt->presetReal > 0) && (pPvt->elapsedTime >= pPvt->presetReal))
-        pPvt->acquiring = 0;
-    if ((pPvt->presetLive > 0) && (pPvt->elapsedTime >= pPvt->presetLive))
-        pPvt->acquiring = 0;
+    if ((pPvt->presetReal > 0) && (pPvt->elapsedTime >= pPvt->presetReal)) {
+      pPvt->acquiring = 0;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+        "drvMcaSIS3820Asyn::readFIFO, stopped acquisition by preset real time\n");
+    }
+  }
+
+
+  if (pPvt->acquiring) {
+    if ((pPvt->presetLive > 0) && (pPvt->elapsedTime >= pPvt->presetLive)) {
+      pPvt->acquiring = 0;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+        "drvMcaSIS3820Asyn::readFIFO, stopped acquisition by preset live time\n");
+    }
   }
 
   /* Check that acquisition is complete by buffer pointer.  This ensures
    * that it will be detected even if interrupts are disabled.
    */
-  if (pBuff >= endBuff) {
-    pPvt->acquiring = 0;
-    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-        "drvMcaSIS3820Asyn::readFIFO, stopped acquisition by buffer pointer = %p\n",
-        endBuff);
+  if (pPvt->acquiring) {
+    if (pBuff >= endBuff) {
+      pPvt->acquiring = 0;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::readFIFO, stopped acquisition by buffer pointer = %p\n",
+          endBuff);
+    }
   }
 
   /* Check that acquisition is complete by preset counts */
-  for (signal=0; signal<pPvt->maxSignals; signal++) {
-    if (pPvt->presetCounts[signal] > 0) {
-      pPvt->elapsedCounts[signal] = 0;
-      for (i = pPvt->presetStartChan[signal],
-           j = pPvt->presetStartChan[signal] * pPvt->maxSignals + signal;
-           i <= pPvt->presetEndChan[signal];
-           i++, j += pPvt->maxSignals) {
-             pPvt->elapsedCounts[signal] += pPvt->buffer[j];
+  if (pPvt->acquiring) {
+    for (signal=0; signal<pPvt->maxSignals; signal++) {
+      if (pPvt->presetCounts[signal] > 0) {
+        pPvt->elapsedCounts[signal] = 0;
+        for (i = pPvt->presetStartChan[signal],
+             j = pPvt->presetStartChan[signal] * pPvt->maxSignals + signal;
+             i <= pPvt->presetEndChan[signal];
+             i++, j += pPvt->maxSignals) {
+               pPvt->elapsedCounts[signal] += pPvt->buffer[j];
+        }
+        if (pPvt->elapsedCounts[signal] >= pPvt->presetCounts[signal]) {
+          pPvt->acquiring=0;
+          asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+            "drvMcaSIS3820Asyn::readFIFO, stopped acquisition by preset counts\n");
+        }
       }
-      if (pPvt->elapsedCounts[signal] >= pPvt->presetCounts[signal]) pPvt->acquiring=0;
     }
   }
  
@@ -1237,6 +1234,8 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
       reason = pint32Interrupt->pasynUser->reason;
       if (reason == mcaAcquiring)
       {
+        asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::readFIFO, making pint32Interrupt->Callback\n");
         pint32Interrupt->callback(pint32Interrupt->userPvt,
             pint32Interrupt->pasynUser,
             0);
@@ -1254,6 +1253,13 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
   /* Save the new pointer to the start of the empty section of the data buffer */
   pPvt->buffPtr = pBuff;
 
+  asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+      "drvMcaSIS3820Asyn::readFIFO exit: fifo word count = %d, irq_csr=%x, acquiring=%d, prevAcquiring=%d\n",
+      pPvt->address->fifo_word_count_reg,
+      pPvt->address->irq_control_status_reg,
+      pPvt->acquiring,
+      pPvt->prevAcquiring);
+
   /* Save the acquisition status */
   pPvt->prevAcquiring = pPvt->acquiring;
 
@@ -1261,7 +1267,110 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
 }
 
 
-static epicsUInt32 setControlStatusReg()
+static void setAcquireMode(mcaSIS3820Pvt *pPvt, SIS3820AcquireMode acquireMode)
+{
+  int i;
+  epicsUInt32 operationModeRegister;
+  epicsUInt32 channelDisableRegister = SIS3820_CHANNEL_DISABLE_MASK;
+
+  if (pPvt->acquireMode == acquireMode) return;  /* Nothing to do */
+  pPvt->acquireMode = acquireMode;
+
+  /* Initialize board and set the control status register */
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: initialising control status register\n");
+  setControlStatusReg(pPvt);
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: control status register = 0x%08x\n",
+      pPvt->address->control_status_reg);
+
+  /* Set the interrupt control register */
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: setting interrupt control register\n");
+  setIrqControlStatusReg(pPvt);
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: interrupt control register = 0x%08x\n",
+      pPvt->address->irq_control_status_reg);
+
+  /* Set the operation mode of the scaler */
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: setting operation mode\n");
+  setOpModeReg(pPvt);
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: operation mode register = 0x%08x\n",
+      pPvt->address->op_mode_reg);
+
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: control status register = 0x%08x\n",
+      pPvt->address->control_status_reg);
+
+  /* Trigger an interrupt when 1024 FIFO registers have been filled */
+  pPvt->address->fifo_word_threshold_reg = 1024;
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: FIFO threshold = %d\n",
+      pPvt->address->fifo_word_threshold_reg);
+
+  /* Set the LNE channel */
+  if (pPvt->acquireMode == MCS_MODE) {
+    pPvt->address->lne_channel_select_reg = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+  } else {
+    pPvt->address->lne_channel_select_reg = SIS3820_LNE_CHANNEL;
+  }
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: set LNE signal generation to channel %d\n",
+      pPvt->address->lne_channel_select_reg);
+
+  /*
+   * Set number of readout channels to maxSignals
+   * Assumes that the lower channels will be used first, and the only unused
+   * channels will be at the upper end of the channel range.
+   * Create a mask with zeros in the rightmost maxSignals bits,
+   * 1 in all higher order bits.
+   */
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: setting readout channels=%d\n",pPvt->maxSignals);
+  for (i = 0; i < pPvt->maxSignals; i++)
+  {
+    channelDisableRegister <<= 1;
+  }
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: setting readout disable register=0x%08x\n",
+      channelDisableRegister);
+
+  /* Disable channel in MCS mode. */
+  pPvt->address->copy_disable_reg = channelDisableRegister;
+  /* Disable channel in scaler mode. */
+  pPvt->address->count_disable_reg = channelDisableRegister;
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: setting copy disable register=0x%08x\n",
+      pPvt->address->copy_disable_reg);
+
+  /* Set the prescale factor to the desired value. */
+  pPvt->address->lne_prescale_factor_reg = pPvt->lnePrescale - 1;
+  asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW,
+      "mcaSIS3820Config: lne prescale register=%d\n",
+      pPvt->address->lne_prescale_factor_reg);
+
+  /* Enable or disable 50 MHz channel 1 reference pulses. */
+  if (pPvt->ch1RefEnable)
+    pPvt->address->control_status_reg |= CTRL_REFERENCE_CH1_ENABLE;
+  else
+    pPvt->address->control_status_reg |= CTRL_REFERENCE_CH1_DISABLE;
+
+
+  if (pPvt->acquireMode == MCS_MODE) {
+    /* Set the acquisition preset register to the number of channels (time bins) */
+    pPvt->address->acq_preset_reg = pPvt->nchans;
+    operationModeRegister = pPvt->address->op_mode_reg;
+    operationModeRegister &= ~SIS3820_OP_MODE_REG_MODE_MASK;
+    operationModeRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
+    pPvt->address->op_mode_reg = operationModeRegister;
+  }
+
+}
+
+
+static void setControlStatusReg(mcaSIS3820Pvt *pPvt)
 {
   /* Set up the default behaviour of the card */
   /* Initially, this will have the following:
@@ -1273,16 +1382,16 @@ static epicsUInt32 setControlStatusReg()
 
   epicsUInt32 controlRegister = 0;
 
-  controlRegister += CTRL_USER_LED_OFF;
-  controlRegister += CTRL_COUNTER_TEST_25MHZ_DISABLE;
-  controlRegister += CTRL_COUNTER_TEST_MODE_DISABLE;
-  controlRegister += CTRL_REFERENCE_CH1_ENABLE;
+  controlRegister |= CTRL_USER_LED_OFF;
+  controlRegister |= CTRL_COUNTER_TEST_25MHZ_DISABLE;
+  controlRegister |= CTRL_COUNTER_TEST_MODE_DISABLE;
+  controlRegister |= CTRL_REFERENCE_CH1_ENABLE;
 
-  return (controlRegister);
+  pPvt->address->control_status_reg = controlRegister;
 }
 
 
-static epicsUInt32 setOpModeReg(int inputMode, int outputMode)
+static void setOpModeReg(mcaSIS3820Pvt *pPvt)
 {
   /* Need to set this up to be accessed from asyn interface to allow changes on
    * the fly. Prior to that, I should split it out to allow individual changes
@@ -1303,39 +1412,47 @@ static epicsUInt32 setOpModeReg(int inputMode, int outputMode)
 
   epicsUInt32 operationRegister = 0;
 
-  operationRegister += SIS3820_CLEARING_MODE;
-  operationRegister += SIS3820_MCS_DATA_FORMAT_32BIT;
-  operationRegister += SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
-  operationRegister += SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
-  operationRegister += SIS3820_FIFO_MODE;
+  operationRegister |= SIS3820_MCS_DATA_FORMAT_32BIT;
+  operationRegister |= SIS3820_SCALER_DATA_FORMAT_32BIT;
+
+  if (pPvt->acquireMode == MCS_MODE) {
+    operationRegister |= SIS3820_CLEARING_MODE;
+    operationRegister |= SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
+    operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
+    operationRegister |= SIS3820_FIFO_MODE;
+    operationRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
+  } else {
+    operationRegister |= SIS3820_NON_CLEARING_MODE;
+    operationRegister |= SIS3820_LNE_SOURCE_VME;
+    operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
+    operationRegister |= SIS3820_FIFO_MODE;
+    operationRegister |= SIS3820_HISCAL_START_SOURCE_VME;
+    operationRegister |= SIS3820_OP_MODE_SCALER;
+  }
 
   /* Check that input mode is in the allowable range. If so, shift the mode
    * requested by the correct number of bits, and add to the register.
    */
 
-  if (inputMode < 0 || inputMode > 5)
-    inputMode = 0;
+  if (pPvt->inputMode < 0 || pPvt->inputMode > 5)
+    pPvt->inputMode = 0;
 
-  operationRegister += inputMode << SIS3820_INPUT_MODE_SHIFT;
+  operationRegister |= pPvt->inputMode << SIS3820_INPUT_MODE_SHIFT;
 
   /* Check that output mode is in the allowable range. If so, shift the mode
    * requested by the correct number of bits, and add to the register.
    */
 
-  if (outputMode < 0 || outputMode > 2)
-    outputMode = 0;
+  if (pPvt->outputMode < 0 || pPvt->outputMode > 2)
+    pPvt->outputMode = 0;
 
-  operationRegister += outputMode << SIS3820_OUTPUT_MODE_SHIFT;
+  operationRegister |= pPvt->outputMode << SIS3820_OUTPUT_MODE_SHIFT;
 
-  /* Set the scaler mode to multichannel scaler */
-
-  operationRegister += SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
-
-  return (operationRegister);
+  pPvt->address->op_mode_reg = operationRegister;
 }
 
 
-static epicsUInt32 setIrqControlStatusReg()
+static void setIrqControlStatusReg(mcaSIS3820Pvt *pPvt)
 {
   /* Set the desired interrupts. The SIS3820 can generate interrupts on
    * the following conditions:
@@ -1347,26 +1464,28 @@ static epicsUInt32 setIrqControlStatusReg()
    */
   epicsUInt32 interruptRegister = 0;
 
-  interruptRegister += SIS3820_IRQ_SOURCE0_DISABLE;
+  /* This register is set up the same for MCS_MODE and SCALER_MODE) */
+
+  interruptRegister |= SIS3820_IRQ_SOURCE0_DISABLE;
   /* NOTE: WE ARE NOT USING FIFO THRESHOLD INTERRUPTS FOR NOW */
-  interruptRegister += SIS3820_IRQ_SOURCE1_DISABLE;
-  interruptRegister += SIS3820_IRQ_SOURCE2_ENABLE;
-  interruptRegister += SIS3820_IRQ_SOURCE3_DISABLE;
-  interruptRegister += SIS3820_IRQ_SOURCE4_ENABLE;
-  interruptRegister += SIS3820_IRQ_SOURCE5_DISABLE;
-  interruptRegister += SIS3820_IRQ_SOURCE6_DISABLE;
-  interruptRegister += SIS3820_IRQ_SOURCE7_DISABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE1_DISABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE2_ENABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE3_DISABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE4_ENABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE5_DISABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE6_DISABLE;
+  interruptRegister |= SIS3820_IRQ_SOURCE7_DISABLE;
 
-  interruptRegister += SIS3820_IRQ_SOURCE0_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE1_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE2_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE3_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE4_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE5_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE6_CLEAR;
-  interruptRegister += SIS3820_IRQ_SOURCE7_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE0_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE1_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE2_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE3_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE4_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE5_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE6_CLEAR;
+  interruptRegister |= SIS3820_IRQ_SOURCE7_CLEAR;
 
-  return interruptRegister;
+  pPvt->address->irq_control_status_reg = interruptRegister;
 }
 
 
@@ -1432,6 +1551,8 @@ static void intTask(mcaSIS3820Pvt *pPvt)
 
     /* Read the accumulated data from the FIFO */
     INTERLOCK_ON;
+    asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
+        "drvMcaSIS3820Asyn::intTask, got interrupt event\n");
     readFIFO(pPvt, pPvt->pasynUser);
     INTERLOCK_OFF;
   }
