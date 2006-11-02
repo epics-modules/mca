@@ -90,6 +90,13 @@
 #define OK 0
 #endif
 
+
+typedef enum {
+    UNDEFINED_MODE,
+    MCS_MODE,
+    SCALER_MODE
+} SIS3820AcquireMode;
+
 /************/
 /* Includes */
 /************/
@@ -104,6 +111,8 @@
 #include <epicsMutex.h>
 #include <epicsTime.h>
 #include <epicsTypes.h>
+#include <drvMca.h>
+
 
 /**************/
 /* Structures */
@@ -210,11 +219,12 @@ typedef struct mcaSIS3820Pvt {
   int firmwareVersion;
   SIS3820_REGS *address;
   epicsUInt32 *fifo_base;
-  int mode;
-  int acqmod ;
+  SIS3820AcquireMode acquireMode;
   int maxSignals;
   int maxChans;
   int nchans;
+  int inputMode;
+  int outputMode;
   int nextChan;
   int nextSignal;
   double presetReal;
@@ -275,6 +285,29 @@ int drvSIS3820GetConfig(int card,
                         int *maxChans, 
                         int *ch1RefEnable, 
                         int *softAdvance);
+
+typedef enum{
+    scalerResetCommand=MAX_MCA_COMMANDS + 1,
+    scalerReadCommand,
+    scalerPresetCommand,
+    scalerArmCommand,
+    scalerDoneCommand
+} sis3820ScalerCommand;
+
+#define MAX_SIS3820_SCALER_COMMANDS 5
+
+typedef struct {
+    sis3820ScalerCommand command;
+    char *commandString;
+} sis3820ScalerCommandStruct;
+
+static sis3820ScalerCommandStruct sis3820ScalerCommands[MAX_SIS3820_SCALER_COMMANDS] = {
+    {scalerResetCommand,        "SCALER_RESET"}, /* int32, write */
+    {scalerReadCommand,         "SCALER_READ"},  /* int32Array, read */
+    {scalerPresetCommand,        "SCALER_PRESET"},/* int32, write */
+    {scalerArmCommand,           "SCALER_ARM"},   /* int32, write */
+    {scalerDoneCommand,          "SCALER_DONE"},  /* int32, read */
+};
 
 #endif
 
