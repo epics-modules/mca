@@ -109,6 +109,31 @@
 /**************/
 /* Structures */
 /**************/
+typedef enum{
+    scalerResetCommand=MAX_MCA_COMMANDS + 1,
+    scalerChannelsCommand,
+    scalerReadCommand,
+    scalerPresetCommand,
+    scalerArmCommand,
+    scalerDoneCommand
+} sis3820ScalerCommand;
+
+#define MAX_SIS3820_SCALER_COMMANDS 6
+
+typedef struct {
+    sis3820ScalerCommand command;
+    char *commandString;
+} sis3820ScalerCommandStruct;
+
+static sis3820ScalerCommandStruct sis3820ScalerCommands[MAX_SIS3820_SCALER_COMMANDS] = {
+    {scalerResetCommand,        SCALER_RESET_COMMAND_STRING},    /* int32, write */
+    {scalerChannelsCommand,     SCALER_CHANNELS_COMMAND_STRING}, /* int32, read */
+    {scalerReadCommand,         SCALER_READ_COMMAND_STRING},     /* int32Array, read */
+    {scalerPresetCommand,       SCALER_PRESET_COMMAND_STRING},   /* int32, write */
+    {scalerArmCommand,          SCALER_ARM_COMMAND_STRING},      /* int32, write */
+    {scalerDoneCommand,         SCALER_DONE_COMMAND_STRING},     /* int32, read */
+};
+
 
 /*******************************/
 /* Global variable declaration */
@@ -125,6 +150,8 @@ static void setControlStatusReg(mcaSIS3820Pvt *pPvt);
 static void setOpModeReg(mcaSIS3820Pvt *pPvt);
 static void setIrqControlStatusReg(mcaSIS3820Pvt *pPvt);
 static void setAcquireMode(mcaSIS3820Pvt *pPvt, SIS3820AcquireMode acquireMode);
+static void clearScalerPresets(mcaSIS3820Pvt *pPvt);
+static void setScalerPresets(mcaSIS3820Pvt *pPvt);
 
 static void intFunc(void *drvPvt);
 static void intTask(mcaSIS3820Pvt *pPvt);
@@ -535,6 +562,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
   mcaSIS3820Pvt *pPvt = (mcaSIS3820Pvt *)drvPvt;
   int command=pasynUser->reason;
   int signal;
+  int i;
   epicsUInt32 operationModeRegister;
 
   INTERLOCK_ON;
@@ -775,6 +803,10 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       pPvt->address->key_fifo_reset_reg = 1;
       pPvt->address->key_counter_clear = 1;
       pPvt->acquiring = 0;
+      /* Clear all of the presets */
+      for (i=0; i<pPvt->maxSignals; i++) {
+        pPvt->scalerPresets[i] = 0;
+      }
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
           "drvMcaSIS3820Asyn::SIS3820Write scalerResetCommand\n");
       break;
@@ -783,8 +815,10 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       /* Arm or disarm scaler */
       if (ivalue != 0) {
         setAcquireMode(pPvt, SCALER_MODE);
+        setScalerPresets(pPvt);
         pPvt->address->key_op_enable_reg = 1;
         pPvt->acquiring = 1;
+        pPvt->prevAcquiring = 1;
       } else {
         pPvt->address->key_op_disable_reg = 1;
         pPvt->address->key_fifo_reset_reg = 1;
@@ -795,6 +829,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
 
     case scalerPresetCommand:
       /* Set scaler preset */
+      pPvt->scalerPresets[signal] = ivalue;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
           "drvMcaSIS3820Asyn::SIS3820Write scalerPresetCommand channel %d=%d\n", signal, ivalue);
       break;
@@ -867,6 +902,13 @@ static asynStatus SIS3820Read(void *drvPvt, asynUser *pasynUser,
       *pfvalue = 0;
       break;
 
+    case scalerChannelsCommand:
+      /* Return the number of scaler channels */
+      *pivalue = pPvt->maxSignals;
+      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+          "drvMcaSIS3820Asyn::SIS3820Read scalerChanneksCommand %d\n", *pivalue);
+      break;
+
     case scalerReadCommand:
       /* Read a single scaler channel */
       *pivalue = pPvt->address->counter_regs[signal];
@@ -875,10 +917,10 @@ static asynStatus SIS3820Read(void *drvPvt, asynUser *pasynUser,
       break;
 
     case scalerDoneCommand:
-      /* Return scaler done */
-      *pivalue = pPvt->acquiring;
+      /* Return scaler done, which is opposite of pPvt->acquiring */
+      *pivalue = 1 - pPvt->acquiring;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "drvMcaSIS3820Asyn::SIS3820Read scalerDoneCommand =%d\n", *pivalue);
+          "drvMcaSIS3820Asyn::SIS3820Read scalerDoneCommand, returning %d\n", *pivalue);
       break;
 
     default:
@@ -1232,7 +1274,7 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
     {
       pint32Interrupt = pNode->drvPvt;
       reason = pint32Interrupt->pasynUser->reason;
-      if (reason == mcaAcquiring)
+      if ((reason == mcaAcquiring) || (reason == scalerDoneCommand))
       {
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
           "drvMcaSIS3820Asyn::readFIFO, making pint32Interrupt->Callback\n");
@@ -1365,8 +1407,59 @@ static void setAcquireMode(mcaSIS3820Pvt *pPvt, SIS3820AcquireMode acquireMode)
     operationModeRegister &= ~SIS3820_OP_MODE_REG_MODE_MASK;
     operationModeRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
     pPvt->address->op_mode_reg = operationModeRegister;
+    /* Clear all presets from scaler mode */
+    clearScalerPresets(pPvt);
   }
+}
 
+
+static void clearScalerPresets(mcaSIS3820Pvt *pPvt)
+{
+  pPvt->address->preset_channel_select_reg &= ~SIS3820_FOUR_BIT_MASK;
+  pPvt->address->preset_channel_select_reg &= ~(SIS3820_FOUR_BIT_MASK << 16);
+  pPvt->address->preset_enable_reg &= ~SIS3820_PRESET_STATUS_ENABLE_GROUP1;
+  pPvt->address->preset_enable_reg &= ~SIS3820_PRESET_STATUS_ENABLE_GROUP2;
+  pPvt->address->preset_group2_reg = 0;
+  pPvt->address->preset_group2_reg = 0;
+}
+
+static void setScalerPresets(mcaSIS3820Pvt *pPvt)
+{
+  int i;
+  epicsUInt32 presetChannelSelectRegister;
+
+  if (pPvt->acquireMode == SCALER_MODE) {
+    /* Disable all presets to start */
+    clearScalerPresets(pPvt);
+
+    /* The logic implemented in this code is that the last channel with a non-zero
+     * preset value in a given channel group (1-16, 17-32) will be the one that is
+     * in effect
+     */
+    for (i=0; i<pPvt->maxSignals; i++) {
+      if (pPvt->scalerPresets[i] != 0) {
+        if (i < 16) {
+          pPvt->address->preset_group1_reg = pPvt->scalerPresets[i];
+          /* Enable this bank of counters for preset checking */
+          pPvt->address->preset_enable_reg |= SIS3820_PRESET_STATUS_ENABLE_GROUP1;
+          /* Set the correct channel for checking against the preset value */
+          presetChannelSelectRegister = pPvt->address->preset_channel_select_reg;
+          presetChannelSelectRegister &= ~SIS3820_FOUR_BIT_MASK;
+          presetChannelSelectRegister |= i;
+          pPvt->address->preset_channel_select_reg = presetChannelSelectRegister;
+        } else {
+          pPvt->address->preset_group2_reg = pPvt->scalerPresets[i];
+          /* Enable this bank of counters for preset checking */
+          pPvt->address->preset_enable_reg |= SIS3820_PRESET_STATUS_ENABLE_GROUP2;
+          /* Set the correct channel for checking against the preset value */
+          presetChannelSelectRegister = pPvt->address->preset_channel_select_reg;
+          presetChannelSelectRegister &= ~(SIS3820_FOUR_BIT_MASK << 16);
+          presetChannelSelectRegister |= (i << 16);
+          pPvt->address->preset_channel_select_reg = presetChannelSelectRegister;
+        }
+      }
+    }
+  }
 }
 
 
@@ -1496,16 +1589,15 @@ static void setIrqControlStatusReg(mcaSIS3820Pvt *pPvt)
 static void intFunc(void *drvPvt)
 {
   mcaSIS3820Pvt *pPvt = (mcaSIS3820Pvt *)drvPvt;
-  epicsUInt32 irqStatusReg;
 
   /* Disable interrupts */
   pPvt->address->irq_config_reg &= ~SIS3820_IRQ_ENABLE;
 
   /* Test which interrupt source has triggered this interrupt. */
-  irqStatusReg = pPvt->address->irq_control_status_reg;
+  pPvt->irqStatusReg = pPvt->address->irq_control_status_reg;
 
   /* Check for the FIFO threshold interrupt */
-  if (irqStatusReg & SIS3820_IRQ_SOURCE1_FLAG)
+  if (pPvt->irqStatusReg & SIS3820_IRQ_SOURCE1_FLAG)
   {
     /* Note that this is a level-sensitive interrupt, not edge sensitive, so it can't be cleared */
     /* Disable this interrupt, since it is caused by FIFO threshold, and that
@@ -1514,7 +1606,7 @@ static void intFunc(void *drvPvt)
   }
 
   /* Check for the data acquisition complete interrupt */
-  else if (irqStatusReg & SIS3820_IRQ_SOURCE2_FLAG)
+  else if (pPvt->irqStatusReg & SIS3820_IRQ_SOURCE2_FLAG)
   {
     /* Reset the interrupt source */
     pPvt->address->irq_control_status_reg = SIS3820_IRQ_SOURCE2_CLEAR;
@@ -1522,7 +1614,7 @@ static void intFunc(void *drvPvt)
   }
 
   /* Check for the FIFO almost full interrupt */
-  else if (irqStatusReg & SIS3820_IRQ_SOURCE4_FLAG)
+  else if (pPvt->irqStatusReg & SIS3820_IRQ_SOURCE4_FLAG)
   {
     /* This interrupt represents an error condition of sorts. For the moment, I
      * will terminate data collection, as it is likely that data will have been
@@ -1552,7 +1644,8 @@ static void intTask(mcaSIS3820Pvt *pPvt)
     /* Read the accumulated data from the FIFO */
     INTERLOCK_ON;
     asynPrint(pPvt->pasynUser, ASYN_TRACE_FLOW, 
-        "drvMcaSIS3820Asyn::intTask, got interrupt event\n");
+        "drvMcaSIS3820Asyn::intTask, got interrupt event, irq_csr in intFunc=%x, now=%x\n", 
+        pPvt->irqStatusReg, pPvt->address->irq_control_status_reg);
     readFIFO(pPvt, pPvt->pasynUser);
     INTERLOCK_OFF;
   }
