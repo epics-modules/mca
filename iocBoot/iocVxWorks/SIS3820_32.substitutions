@@ -1,17 +1,42 @@
+# This loads the scaler record and supporting records
+file "$(STD)/stdApp/Db/asynScaler32.db"
+{
+pattern
+{P,           S,          DTYP,           OUT,                     FREQ}
+{SIS:3820:  scaler1,  "Asyn Scaler",  "@asyn(mcaSIS3820/1 0)",  50000000}
+}
+
+# This database provides the record for callbacks when acquisition is complete
+file "$(MCA)/mcaApp/Db/SIS3820.db"
+{
+pattern
+{P,         INP}
+{SIS:3820:  "@asyn(mcaSIS3820/1 0)"}
+}
+
+# This database provides the logic for multiple mca records
+file "$(MCA)/mcaApp/Db/Struck32.db"
+{
+pattern
+{P}
+{SIS:3820:}
+}
+
+# This loads the MCA records
 file "$(MCA)/mcaApp/Db/simple_mca.db"
 {
 pattern
 {P,           M,          DTYP,           INP, PREC, CHANS}
-{SIS:3820:  mca1, "asynMCA", "@asyn(mcaSIS3820/1 0)", 3,  2048}
-{SIS:3820:  mca2, "asynMCA", "@asyn(mcaSIS3820/1 1)", 3,  2048}
-{SIS:3820:  mca3, "asynMCA", "@asyn(mcaSIS3820/1 2)", 3,  2048}
-{SIS:3820:  mca4, "asynMCA", "@asyn(mcaSIS3820/1 3)", 3,  2048}
-{SIS:3820:  mca5, "asynMCA", "@asyn(mcaSIS3820/1 4)", 3,  2048}
-{SIS:3820:  mca6, "asynMCA", "@asyn(mcaSIS3820/1 5)", 3,  2048}
-{SIS:3820:  mca7, "asynMCA", "@asyn(mcaSIS3820/1 6)", 3,  2048}
-{SIS:3820:  mca8, "asynMCA", "@asyn(mcaSIS3820/1 7)", 3,  2048}
-{SIS:3820:  mca9, "asynMCA", "@asyn(mcaSIS3820/1 8)", 3,  2048}
-{SIS:3820:  mca10, "asynMCA", "@asyn(mcaSIS3820/1 9)", 3,  2048}
+{SIS:3820:  mca1,  "asynMCA", "@asyn(mcaSIS3820/1 0)",  3,  2048}
+{SIS:3820:  mca2,  "asynMCA", "@asyn(mcaSIS3820/1 1)",  3,  2048}
+{SIS:3820:  mca3,  "asynMCA", "@asyn(mcaSIS3820/1 2)",  3,  2048}
+{SIS:3820:  mca4,  "asynMCA", "@asyn(mcaSIS3820/1 3)",  3,  2048}
+{SIS:3820:  mca5,  "asynMCA", "@asyn(mcaSIS3820/1 4)",  3,  2048}
+{SIS:3820:  mca6,  "asynMCA", "@asyn(mcaSIS3820/1 5)",  3,  2048}
+{SIS:3820:  mca7,  "asynMCA", "@asyn(mcaSIS3820/1 6)",  3,  2048}
+{SIS:3820:  mca8,  "asynMCA", "@asyn(mcaSIS3820/1 7)",  3,  2048}
+{SIS:3820:  mca9,  "asynMCA", "@asyn(mcaSIS3820/1 8)",  3,  2048}
+{SIS:3820:  mca10, "asynMCA", "@asyn(mcaSIS3820/1 9)",  3,  2048}
 {SIS:3820:  mca11, "asynMCA", "@asyn(mcaSIS3820/1 10)", 3,  2048}
 {SIS:3820:  mca12, "asynMCA", "@asyn(mcaSIS3820/1 11)", 3,  2048}
 {SIS:3820:  mca13, "asynMCA", "@asyn(mcaSIS3820/1 12)", 3,  2048}
