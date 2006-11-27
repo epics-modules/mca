@@ -563,7 +563,6 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
   int command=pasynUser->reason;
   int signal;
   int i;
-  epicsUInt32 operationModeRegister;
 
   INTERLOCK_ON;
   pasynManager->getAddr(pasynUser, &signal);
@@ -587,13 +586,13 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       pPvt->prevAcquiring = 1;
 
       setAcquireMode(pPvt, MCS_MODE);
+      setOpModeReg(pPvt);
+
+      /* Set the number of channels to acquire */
+      pPvt->address->acq_preset_reg = pPvt->nchans;
 
       if (pPvt->lneSource == SIS3820_LNE_SOURCE_INTERNAL_10MHZ)
       {
-        operationModeRegister = pPvt->address->op_mode_reg;
-        operationModeRegister &= ~SIS3820_OP_MODE_REG_LNE_MASK;
-        operationModeRegister |= SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
-        pPvt->address->op_mode_reg = operationModeRegister;
         /* The SIS3820 requires the value in the LNE prescale register to be one
          * less than the actual number of incoming signals. We do this adjustment
          * here, so the user sees the actual number at the record level.
@@ -605,10 +604,6 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       }
       else if (pPvt->lneSource == SIS3820_LNE_SOURCE_CONTROL_SIGNAL)
       {
-        operationModeRegister = pPvt->address->op_mode_reg;
-        operationModeRegister &= ~SIS3820_OP_MODE_REG_LNE_MASK;
-        operationModeRegister |= SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
-        pPvt->address->op_mode_reg = operationModeRegister;
         /* The SIS3820 requires the value in the LNE prescale register to be one
          * less than the actual number of incoming signals. We do this adjustment
          * here, so the user sees the actual number at the record level.
@@ -664,7 +659,7 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
         pPvt->address->key_op_disable_reg = 1;
 
       asynPrint(pasynUser, ASYN_TRACE_FLOW,
-          "(drvMcaSIS3820Asyn::SIS3820Write [%s signal=%d]):"
+          "drvMcaSIS3820Asyn::SIS3820Write [%s signal=%d]:"
           " erased\n",
           pPvt->portName, signal);
 
@@ -813,8 +808,8 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
 
     case scalerArmCommand:
       /* Arm or disarm scaler */
+      setAcquireMode(pPvt, SCALER_MODE);
       if (ivalue != 0) {
-        setAcquireMode(pPvt, SCALER_MODE);
         setScalerPresets(pPvt);
         pPvt->address->key_op_enable_reg = 1;
         pPvt->acquiring = 1;
@@ -994,7 +989,7 @@ static asynStatus int32ArrayRead(
       }
 
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "(drvMcaSIS3820Asyn::int32ArrayRead [signal=%d]): read %d chans\n", signal, numSamples);
+          "drvMcaSIS3820Asyn::int32ArrayRead [signal=%d]: read %d chans\n", signal, numSamples);
 
       *nactual = numSamples;
       break;
@@ -1008,7 +1003,7 @@ static asynStatus int32ArrayRead(
       }
       *nactual = maxChans;
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "(drvMcaSIS3820Asyn::int32ArrayRead scalerReadCommand): read %d chans, channel[0]=%d\n", 
+          "drvMcaSIS3820Asyn::int32ArrayRead scalerReadCommand: read %d chans, channel[0]=%d\n", 
           maxChans, data[0]);
       break;
 
@@ -1274,7 +1269,8 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
     {
       pint32Interrupt = pNode->drvPvt;
       reason = pint32Interrupt->pasynUser->reason;
-      if ((reason == mcaAcquiring) || (reason == scalerDoneCommand))
+      if (((pPvt->acquireMode == MCS_MODE)     && (reason == mcaAcquiring)) || 
+          ((pPvt->acquireMode == SCALER_MODE)  && (reason == scalerDoneCommand)))
       {
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
           "drvMcaSIS3820Asyn::readFIFO, making pint32Interrupt->Callback\n");
@@ -1312,7 +1308,6 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
 static void setAcquireMode(mcaSIS3820Pvt *pPvt, SIS3820AcquireMode acquireMode)
 {
   int i;
-  epicsUInt32 operationModeRegister;
   epicsUInt32 channelDisableRegister = SIS3820_CHANNEL_DISABLE_MASK;
 
   if (pPvt->acquireMode == acquireMode) return;  /* Nothing to do */
@@ -1401,14 +1396,11 @@ static void setAcquireMode(mcaSIS3820Pvt *pPvt, SIS3820AcquireMode acquireMode)
 
 
   if (pPvt->acquireMode == MCS_MODE) {
-    /* Set the acquisition preset register to the number of channels (time bins) */
-    pPvt->address->acq_preset_reg = pPvt->nchans;
-    operationModeRegister = pPvt->address->op_mode_reg;
-    operationModeRegister &= ~SIS3820_OP_MODE_REG_MODE_MASK;
-    operationModeRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
-    pPvt->address->op_mode_reg = operationModeRegister;
     /* Clear all presets from scaler mode */
     clearScalerPresets(pPvt);
+  } else {
+    /* Clear the preset register */
+    pPvt->address->acq_preset_reg = 0;
   }
 }
 
@@ -1510,10 +1502,15 @@ static void setOpModeReg(mcaSIS3820Pvt *pPvt)
 
   if (pPvt->acquireMode == MCS_MODE) {
     operationRegister |= SIS3820_CLEARING_MODE;
-    operationRegister |= SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
     operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
     operationRegister |= SIS3820_FIFO_MODE;
     operationRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
+    if (pPvt->lneSource == SIS3820_LNE_SOURCE_INTERNAL_10MHZ) {
+      operationRegister |= SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+    }
+    if (pPvt->lneSource == SIS3820_LNE_SOURCE_CONTROL_SIGNAL) {
+      operationRegister |= SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
+    }
   } else {
     operationRegister |= SIS3820_NON_CLEARING_MODE;
     operationRegister |= SIS3820_LNE_SOURCE_VME;
