@@ -32,8 +32,6 @@ set_pass1_restoreFile("auto_settings_sis.sav")
 
 # specify directories in which to to search for included request files
 # Note cdCommands defines 'startup', but envPaths does not
-set_requestfile_path(startup,  "")
-set_requestfile_path(startup,  "autosave")
 set_requestfile_path(autosave, "asApp/Db")
 set_requestfile_path(calc,     "calcApp/Db")
 set_requestfile_path(mca,      "mcaApp/Db")
