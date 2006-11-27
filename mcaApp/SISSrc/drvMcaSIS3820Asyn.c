@@ -1095,20 +1095,23 @@ static void SIS3820Report(void *drvPvt, FILE *fp, int details)
   mcaSIS3820Pvt *pPvt = (mcaSIS3820Pvt *)drvPvt;
 
   assert(pPvt);
-  fprintf(fp, "SIS3820: asyn port: %s, connected at VME base address %p",
-      pPvt->portName, pPvt->address);
-  if (details >= 1) {
-    fprintf(fp, "              maxChans: %d\n", pPvt->maxChans);
-  }
+  fprintf(fp, "SIS3820: asyn port: %s, connected at VME base address %p, maxChans=%d\n",
+      pPvt->portName, pPvt->address, pPvt->maxChans);
 }
 
 /* Connect */
 static asynStatus SIS3820Connect(void *drvPvt, asynUser *pasynUser)
 {
-  /* Does nothing for now.  
-   * May be used if connection management is implemented */
-  pasynManager->exceptionConnect(pasynUser);
-  return(asynSuccess);
+  mcaSIS3820Pvt *pPvt = (mcaSIS3820Pvt *)drvPvt;
+  int signal;
+  
+  pasynManager->getAddr(pasynUser, &signal);
+  if (signal < pPvt->maxSignals) {
+    pasynManager->exceptionConnect(pasynUser);
+    return(asynSuccess);
+  } else {
+    return(asynError);
+  }
 }
 
 /* Disconnect */
