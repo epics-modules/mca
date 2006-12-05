@@ -32,8 +32,10 @@ Unix systems if the libnet and libpcap packages are intalled.
 <p>From <a href="http://www.struck.de/">Struck Innovative Systems</a></p>
 <ul>
   <li>SIS 3801 MCS (formerly the STR7201 from Struck)</li>
+  <li>SIS 3820 MCS </li>
 </ul>
-The SIS support runs on vxWorks.  It should also run on RTEMS, but has not been tested.
+The SIS support runs on vxWorks.  It should also run on RTEMS, but has not been tested. The SIS3820 support
+runs on Linux with the SIS PCI/VME bridge.
 
 <p>From <a href="http://www.rontec.com/">Rontec</a></p>
 <ul>
@@ -60,6 +62,15 @@ below:</p>
     <th>Documentation</th>
     <th>Release Notes</th>
     <th>Known Problems</th>
+  </tr>
+
+  <tr>
+    <td>R6-9</td>
+    <td>5-Dec-2006</td>
+    <td><a href="pub/mcaR6-9.tgz">mcaR6-9.tgz</a></td>
+    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
+    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
+    <td>See release notes</td>
   </tr>
 
   <tr>
@@ -182,6 +193,38 @@ below:</p>
     <th>Requires module</th>
     <th>Release needed</th>
     <th>Required for</th>
+  </tr>
+
+  <tr>
+    <td rowspan=6>6-9</td>
+    <td>EPICS base</td>
+    <td>3.14.8.2</td>
+    <td>Base support</td>
+  </tr>
+  <tr>
+    <td>asyn</td>
+    <td>4-6</td>
+    <td>Driver support</td>
+  </tr>
+  <tr>
+    <td>std</td>
+    <td>2-5-4</td>
+    <td>Scaler record</td>
+  </tr>
+  <tr>
+    <td>calc</td>
+    <td>2-6-3</td>
+    <td>Transform record</td>
+  </tr>
+  <tr>
+    <td>sscan</td>
+    <td>2-5-3</td>
+    <td>Busy record</td>
+  </tr>
+  <tr>
+    <td>autosave</td>
+    <td>4-2-1</td>
+    <td>Save/restore</td>
   </tr>
 
   <tr>

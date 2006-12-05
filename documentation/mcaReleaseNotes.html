@@ -8,12 +8,16 @@
 
 <h1 align="center">mca Release Notes</h1>
 
-<h2 align="center">Release 6-9 (November 27, 2006)</h2>
+<h2 align="center">Release 6-9 (December 5, 2006)</h2>
 <ul>
 <li> Added support for SIS3820 multi-scaler for both mca and scaler records.
 <li> Added example application (mcaSISTest) for SIS3801 (STR7201) and SIS3820 in SISSrc,
      and added iocBoot/iocVxWorks/st_sis.cmd and /mcaApp/op/adl/SISTest.adl to test it.
 <li> Fixed bug with data type of mcaPresetCounts in devMcaAsyn.c</li>
+<li> Fixed bug in mcaRecord.c. Need to force a read of the data when acquisition is turned on.  
+     Without it a device that is done acquiring by the time the status is read for the first time
+     will never get the data read (because Read record in database has scanned disabled if not acquiring).
+
 </ul>
 <p></p>
 
