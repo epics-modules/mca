@@ -35,7 +35,7 @@ mcaSISTest_LIBS += mca
 mcaSISTest_LIBS += std
 mcaSISTest_LIBS += calc sscan autosave
 mcaSISTest_LIBS += asyn
-mcaSISTest_LIBS += seq pv
+#mcaSISTest_LIBS += seq pv
 mcaSISTest_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 include $(TOP)/configure/RULES
