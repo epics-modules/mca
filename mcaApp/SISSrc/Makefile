@@ -7,23 +7,22 @@ include $(TOP)/configure/CONFIG
 # <name>.dbd will be created from <name>Include.dbd
 DBD += mcaSISSupport.dbd
 DBD += mcaSIS3820Support.dbd
-DBD += sis3820Support.dbd
 DBD += mcaSISTest.dbd
 
 #=============================
-LIBRARY_IOC_vxWorks += mcaSIS
+LIBRARY_IOC += mcaSIS
 
 mcaSIS_SRCS += drvSIS3820.c
-mcaSIS_SRCS += devScalerSIS3820.c
 mcaSIS_SRCS += drvMcaSIS3820Asyn.c
-mcaSIS_SRCS += drvSTR7201.c
-mcaSIS_SRCS += devSTR7201.c
-mcaSIS_SRCS += devScalerSTR7201.c
-mcaSIS_SRCS += mcaSISRegister.c
 mcaSIS_SRCS += mcaSIS3820Register.c
-mcaSIS_SRCS += sis3820Register.c
+mcaSIS_SRCS_vxWorks += drvSTR7201.c
+mcaSIS_SRCS_vxWorks += devSTR7201.c
+mcaSIS_SRCS_vxWorks += devScalerSTR7201.c
+mcaSIS_SRCS_vxWorks += mcaSISRegister.c
 
 #==================================
+# If your version of Linux has support for VME devLib uncomment following line
+#PROD_IOC_Linux += mcaSISTest
 PROD_IOC_vxWorks += mcaSISTest
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
