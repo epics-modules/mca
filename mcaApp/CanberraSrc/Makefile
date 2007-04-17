@@ -17,6 +17,7 @@ DBD += mcaCanberraSupport.dbd
 #=============================
 LIBRARY_IOC_vxWorks += mcaCanberra
 LIBRARY_IOC_cygwin32 += mcaCanberra
+#LIBRARY_IOC_WIN32 += mcaCanberra
 # If libnet is installed on your host Linux system;
 #  uncomment the following line.
 #LIBRARY_IOC_Linux += mcaCanberra
@@ -42,6 +43,7 @@ mcaCanberra_LIBS += $(EPICS_BASE_IOC_LIBS)
 # should be mcaAIM_LIBS_linux-x86 which won't work
 mcaCanberra_SYS_LIBS_DEFAULT += net pcap
 mcaCanberra_SYS_LIBS_cygwin32 += wpcap Libnet rpc
+mcaCanberra_SYS_LIBS_WIN32 += wpcap Libnet rpc
 mcaCanberra_SYS_LIBS_vxWorks += -nil-
 
 LIB_INSTALLS_cygwin32 += ../Libnet.lib
@@ -51,6 +53,7 @@ BIN_INSTALLS_cygwin32 += ../Libnet.dll
 #==================================
 PROD_IOC_vxWorks += mcaAIM
 PROD_IOC_cygwin32 += mcaAIM
+#PROD_IOC_WIN32 += mcaAIM
 # If libnet is installed on your host Linux system;
 #  uncomment the following line.
 #PROD_IOC_Linux += mcaAIM
@@ -68,6 +71,7 @@ mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 # should be mcaAIM_LIBS_linux-x86 which won't work
 mcaAIM_SYS_LIBS_DEFAULT += net pcap
 mcaAIM_SYS_LIBS_cygwin32 += wpcap Libnet rpc
+mcaAIM_SYS_LIBS_WIN32 += wpcap Libnet rpc
 mcaAIM_SYS_LIBS_vxWorks += -nil-
 
 mcaAIM_LDOBJS_DEFAULT += mcaCanberraRegister.o
@@ -96,27 +100,6 @@ nmcDemo_SRCS += nmc_user_subs_2.c
 nmcDemo_SRCS += nmc_demo.c
 
 
-#===========================
-ifneq ($(strip $(LIB_INSTALLS_$(OS_CLASS))),)
-LIB_INSTALLS+=$(subst -nil-,,$(LIB_INSTALLS_$(OS_CLASS)))
-mcaAIM$(EXE):libInstalls
-else
-ifdef LIB_INSTALLS_DEFAULT
-LIB_INSTALLS+=$(LIB_INSTALLS_DEFAULT)
-endif
-endif
-
 include $(TOP)/configure/RULES
 #----------------------------------------
 #  ADD RULES AFTER THIS LINE
-
-ifdef LIB_INSTALLS
-buildInstall : libInstalls
-endif
-
-libInstalls:  $(LIB_INSTALLS)
-	@echo "Installing $(^F)"
-	@$(INSTALL) -d -m 555 $^ $(INSTALL_LIB)
-
-
-
