@@ -58,9 +58,8 @@ typedef struct {
 
 /* These are callback functions, called from driver */
 static void dataCallback(void *drvPvt, asynUser *pasynUser, epicsInt32 *data, 
-                         epicsUInt32 nelem, asynStatus status);
-static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds,
-                             asynStatus status);
+                         epicsUInt32 nelem);
+static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds);
 
 /* These are private functions, not in any interface */
 static void nextPoint(fastSweepPvt *pPvt, int *newData);
@@ -292,8 +291,7 @@ int initFastSweep(const char *portName, const char *inputName,
     return(0);
 }
 
-static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds,
-                             asynStatus status)
+static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds)
 {
     /* This is callback function that is called from the port-specific driver */
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
@@ -305,8 +303,7 @@ static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds,
 }
 
 static void dataCallback(void *drvPvt, asynUser *pasynUser, 
-                         epicsInt32 *newData, epicsUInt32 nelem,
-                         asynStatus status)
+                         epicsInt32 *newData, epicsUInt32 nelem)
 {
     /* This is callback function that is called from the port-specific driver */
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
