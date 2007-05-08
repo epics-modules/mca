@@ -12,7 +12,6 @@ DBD += mcaSISTest.dbd
 #=============================
 LIBRARY_IOC += mcaSIS
 
-mcaSIS_SRCS += drvSIS3820.c
 mcaSIS_SRCS += drvMcaSIS3820Asyn.c
 mcaSIS_SRCS += mcaSIS3820Register.c
 mcaSIS_SRCS_vxWorks += drvSTR7201.c
