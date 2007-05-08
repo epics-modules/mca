@@ -7,7 +7,6 @@ include $(TOP)/configure/CONFIG
 
 # <name>.dbd will be created from <name>Include.dbd
 DBD += mcaRontec.dbd
-DBD += mcaRontecWin32.dbd
 DBD += mcaRontecSupport.dbd
 
 #=============================
@@ -24,7 +23,6 @@ PROD_IOC += mcaRontecApp
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaRontecApp_SRCS_DEFAULT += mcaRontec_registerRecordDeviceDriver.cpp mcaRontecMain.cpp
-mcaRontecApp_SRCS_WIN32   += mcaRontecWin32_registerRecordDeviceDriver.cpp mcaRontecMain.cpp
 mcaRontecApp_SRCS_vxWorks += mcaRontec_registerRecordDeviceDriver.cpp
 mcaRontecApp_LIBS += mca
 mcaRontecApp_LIBS += mcaRontec
