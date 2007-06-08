@@ -1,13 +1,13 @@
 
 file {
-	name="p:\epics\support\mca\mcaApp\op\adl\4element_time.adl"
-	version=020306
+	name="/home/epics/devel/mca/6-10beta/mcaApp/op/adl/4element_time.adl"
+	version=030000
 }
 display {
 	object {
-		x=543
-		y=403
-		width=660
+		x=307
+		y=102
+		width=740
 		height=210
 	}
 	clr=14
@@ -100,9 +100,9 @@ rectangle {
 }
 text {
 	object {
-		x=147
+		x=177
 		y=10
-		width=372
+		width=312
 		height=25
 	}
 	"basic attribute" {
@@ -113,57 +113,58 @@ text {
 }
 text {
 	object {
-		x=8
-		y=45
-		width=40
+		x=18
+		y=93
+		width=10
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
+	textix="1"
 	align="horiz. centered"
 }
 text {
 	object {
-		x=88
-		y=45
-		width=30
+		x=18
+		y=120
+		width=10
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
-	textix="Preset"
+	textix="2"
 	align="horiz. centered"
 }
 text {
 	object {
-		x=186
-		y=45
-		width=40
+		x=18
+		y=147
+		width=10
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
-	textix="Elapsed"
+	textix="3"
 	align="horiz. centered"
 }
 text {
 	object {
-		x=293
-		y=45
-		width=40
+		x=18
+		y=174
+		width=10
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
-	textix="Preset"
+	textix="4"
 	align="horiz. centered"
 }
 text {
@@ -182,35 +183,21 @@ text {
 }
 text {
 	object {
-		x=85
-		y=67
-		width=30
+		x=72
+		y=45
+		width=60
 		height=20
 	}
 	"basic attribute" {
 		clr=14
 		fill="outline"
 	}
-	textix="Live"
+	textix="Preset"
 	align="horiz. centered"
 }
 text {
 	object {
-		x=186
-		y=67
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="Live"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=290
+		x=79
 		y=67
 		width=40
 		height=20
@@ -219,26 +206,12 @@ text {
 		clr=14
 		fill="outline"
 	}
-	textix="Real"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=18
-		y=93
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="1"
+	textix="Live"
 	align="horiz. centered"
 }
 "text entry" {
 	object {
-		x=51
+		x=50
 		y=92
 		width=100
 		height=22
@@ -253,51 +226,7 @@ text {
 }
 "text entry" {
 	object {
-		x=261
-		y=92
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca1.PRTM"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=161
-		y=93
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca1.ELTM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=18
-		y=120
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="2"
-	align="horiz. centered"
-}
-"text entry" {
-	object {
-		x=51
+		x=50
 		y=119
 		width=100
 		height=22
@@ -312,51 +241,7 @@ text {
 }
 "text entry" {
 	object {
-		x=261
-		y=119
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca2.PRTM"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=161
-		y=120
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca2.ELTM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=18
-		y=147
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="3"
-	align="horiz. centered"
-}
-"text entry" {
-	object {
-		x=51
+		x=50
 		y=146
 		width=100
 		height=22
@@ -371,51 +256,7 @@ text {
 }
 "text entry" {
 	object {
-		x=261
-		y=146
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)mca3.PRTM"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=161
-		y=147
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca3.ELTM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=18
-		y=174
-		width=10
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="4"
-	align="horiz. centered"
-}
-"text entry" {
-	object {
-		x=51
+		x=50
 		y=173
 		width=100
 		height=22
@@ -428,24 +269,82 @@ text {
 	limits {
 	}
 }
-"text entry" {
+text {
 	object {
-		x=261
-		y=173
-		width=100
-		height=22
+		x=165
+		y=45
+		width=70
+		height=20
 	}
-	control {
-		chan="$(P)mca4.PRTM"
+	"basic attribute" {
 		clr=14
-		bclr=51
+		fill="outline"
+	}
+	textix="Elapsed"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=180
+		y=67
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Live"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=155
+		y=93
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca1.ELTM"
+		clr=54
+		bclr=1
 	}
 	limits {
 	}
 }
 "text update" {
 	object {
-		x=161
+		x=155
+		y=120
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca2.ELTM"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=155
+		y=147
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca3.ELTM"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=155
 		y=174
 		width=90
 		height=20
@@ -460,9 +359,323 @@ text {
 }
 text {
 	object {
-		x=396
+		x=272
 		y=45
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Preset"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=279
+		y=67
 		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Real"
+	align="horiz. centered"
+}
+"text entry" {
+	object {
+		x=250
+		y=92
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)mca1.PRTM"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=250
+		y=119
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)mca2.PRTM"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=250
+		y=146
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)mca3.PRTM"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=250
+		y=173
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)mca4.PRTM"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=593
+		y=67
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Dead Time"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=545
+		y=93
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca1.IDTIM"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=545
+		y=120
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca2.IDTIM"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=545
+		y=147
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca3.IDTIM"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=545
+		y=174
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca4.IDTIM"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+bar {
+	object {
+		x=641
+		y=93
+		width=80
+		height=20
+	}
+	monitor {
+		chan="$(P)mca1.IDTIM"
+		clr=0
+		bclr=14
+	}
+	clrmod="alarm"
+	limits {
+	}
+}
+bar {
+	object {
+		x=641
+		y=120
+		width=80
+		height=20
+	}
+	monitor {
+		chan="$(P)mca2.IDTIM"
+		clr=0
+		bclr=14
+	}
+	clrmod="alarm"
+	limits {
+	}
+}
+bar {
+	object {
+		x=641
+		y=147
+		width=80
+		height=20
+	}
+	monitor {
+		chan="$(P)mca3.IDTIM"
+		clr=0
+		bclr=14
+	}
+	clrmod="alarm"
+	limits {
+	}
+}
+bar {
+	object {
+		x=641
+		y=174
+		width=80
+		height=20
+	}
+	monitor {
+		chan="$(P)mca4.IDTIM"
+		clr=0
+		bclr=14
+	}
+	clrmod="alarm"
+	limits {
+	}
+}
+text {
+	object {
+		x=460
+		y=45
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Acquire"
+	align="horiz. centered"
+}
+"text update" {
+	object {
+		x=450
+		y=93
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca1.ACQG"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=450
+		y=120
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca2.ACQG"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=450
+		y=147
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca3.ACQG"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=450
+		y=174
+		width=90
+		height=20
+	}
+	monitor {
+		chan="$(P)mca4.ACQG"
+		clr=54
+		bclr=1
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=465
+		y=67
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+		fill="outline"
+	}
+	textix="Status"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=365
+		y=45
+		width=70
 		height=20
 	}
 	"basic attribute" {
@@ -474,7 +687,7 @@ text {
 }
 text {
 	object {
-		x=396
+		x=380
 		y=67
 		width=40
 		height=20
@@ -488,7 +701,7 @@ text {
 }
 "text update" {
 	object {
-		x=371
+		x=355
 		y=93
 		width=90
 		height=20
@@ -503,7 +716,7 @@ text {
 }
 "text update" {
 	object {
-		x=371
+		x=355
 		y=120
 		width=90
 		height=20
@@ -518,7 +731,7 @@ text {
 }
 "text update" {
 	object {
-		x=371
+		x=355
 		y=147
 		width=90
 		height=20
@@ -533,7 +746,7 @@ text {
 }
 "text update" {
 	object {
-		x=371
+		x=355
 		y=174
 		width=90
 		height=20
@@ -543,144 +756,6 @@ text {
 		clr=54
 		bclr=1
 	}
-	limits {
-	}
-}
-text {
-	object {
-		x=548
-		y=67
-		width=40
-		height=20
-	}
-	"basic attribute" {
-		clr=14
-		fill="outline"
-	}
-	textix="Dead Time"
-	align="horiz. centered"
-}
-"text update" {
-	object {
-		x=475
-		y=93
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca1.IDTIM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=475
-		y=120
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca2.IDTIM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=475
-		y=147
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca3.IDTIM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-"text update" {
-	object {
-		x=475
-		y=174
-		width=90
-		height=20
-	}
-	monitor {
-		chan="$(P)mca4.IDTIM"
-		clr=54
-		bclr=1
-	}
-	limits {
-	}
-}
-bar {
-	object {
-		x=571
-		y=93
-		width=80
-		height=20
-	}
-	monitor {
-		chan="$(P)mca1.IDTIM"
-		clr=0
-		bclr=14
-	}
-	clrmod="alarm"
-	limits {
-	}
-}
-bar {
-	object {
-		x=571
-		y=120
-		width=80
-		height=20
-	}
-	monitor {
-		chan="$(P)mca2.IDTIM"
-		clr=0
-		bclr=14
-	}
-	clrmod="alarm"
-	limits {
-	}
-}
-bar {
-	object {
-		x=571
-		y=147
-		width=80
-		height=20
-	}
-	monitor {
-		chan="$(P)mca3.IDTIM"
-		clr=0
-		bclr=14
-	}
-	clrmod="alarm"
-	limits {
-	}
-}
-bar {
-	object {
-		x=571
-		y=174
-		width=80
-		height=20
-	}
-	monitor {
-		chan="$(P)mca4.IDTIM"
-		clr=0
-		bclr=14
-	}
-	clrmod="alarm"
 	limits {
 	}
 }
