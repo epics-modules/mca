@@ -504,7 +504,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
 
     address = pPvt->seq_address + pPvt->maxChans*signal*4;
  
-    status = nmc_acqu_getmemory_cmp(pPvt->module, pPvt->adc, address, 1, 1, 1, 
+    status = nmc_acqu_getmemory(pPvt->module, pPvt->adc, address, 1, 1, 1, 
                                     maxChans, data);
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "(mcaAIMAsynDriver [%s signal=%d]): read %d chans, status=%d\n", 
