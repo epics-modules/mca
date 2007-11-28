@@ -107,7 +107,7 @@ int module,adc,group,address,mode,*live,*real,*totals,*status;
 *
 * The calling format is:
 *
-*	status=NMC_ACQU_GETMEMORY(module,adc,address,nrows,start ch,start row,channels,address)
+*        status=NMC_ACQU_GETMEMORY(module,adc,address,nrows,start ch,start row,channels,address)
 *
 * where
 *
@@ -141,51 +141,53 @@ int module,adc,saddress,nrows,start,srow,channels,*address;
 
 {
 
-	int s=ERROR,max_chans,cur_chans,chans_left,max_bytes,actual;
-	char *mem_buffer;
-	struct ncp_hcmd_retmemory retmemory;
+        int s=ERROR,max_chans,cur_chans,chans_left,max_bytes,actual,i;
+        char *mem_buffer;
+        struct ncp_hcmd_retmemory retmemory;
 
 /*
 * Determine how many channels can be returned per message from the module
 */
 
-	max_chans = ((*nmc_module_info[module].comm_device).max_msg_size - 
-		sizeof(struct ncp_comm_header) -
-		sizeof(struct ncp_comm_packet))/4;
+        max_chans = ((*nmc_module_info[module].comm_device).max_msg_size - 
+                sizeof(struct ncp_comm_header) -
+                sizeof(struct ncp_comm_packet))/4;
 
 /*
 * Now transfer the data. Basically, each time through the loop, we just get 
 * either the number of channels left or the max/message, whichever is smaller.
 */
 
-	chans_left = channels;				/* init channels left to go */
-	mem_buffer = (char *)address;				/* init current dest address */
+        chans_left = channels;                                /* init channels left to go */
+        mem_buffer = (char *)address;                                /* init current dest address */
 
-	while (chans_left > 0) {
+        while (chans_left > 0) {
 
-	   cur_chans = chans_left;			/* Get number of chans for this message */
-	   if(cur_chans > max_chans) cur_chans = max_chans;
+           cur_chans = chans_left;                        /* Get number of chans for this message */
+           if(cur_chans > max_chans) cur_chans = max_chans;
 
-	   retmemory.address = saddress + 		/* compute source address and size */
-			((channels - chans_left) + 
-			(start-1) + (nrows * (srow-1))) * 4; 
-	   retmemory.size = cur_chans * 4;
+           retmemory.address = saddress +                 /* compute source address and size */
+                        ((channels - chans_left) + 
+                        (start-1) + (nrows * (srow-1))) * 4; 
+           retmemory.size = cur_chans * 4;
 
-	   max_bytes = chans_left * 4;
-	   s = nmc_sendcmd(module,NCP_K_HCMD_RETMEMORY, /* get the memory */
-			&retmemory,sizeof(retmemory),mem_buffer,
-			max_bytes,&actual,1);
-	   if(s != NCP_K_HCMD_RETMEMORY || actual == 0) {
+           max_bytes = chans_left * 4;
+           s = nmc_sendcmd(module,NCP_K_HCMD_RETMEMORY, /* get the memory */
+                        &retmemory,sizeof(retmemory),mem_buffer,
+                        max_bytes,&actual,1);
+           if(s != NCP_K_HCMD_RETMEMORY || actual == 0) {
                 if (aimDebug > 0) errlogPrintf("(nmc_acqu_getmemory): bad response expected=%d, actual=%d\n",
                         NCP_K_HCMD_RETMEMORY, s);
                 nmc_signal("nmc_acqu_getmemory",NMC__INVMODRESP);
                 return ERROR;
-	   }
+           }
 
-	   chans_left -= actual/4;			/* Update channels to go and dest address */
-	   mem_buffer += (actual & ~3);
+           chans_left -= actual/4;                        /* Update channels to go and dest address */
+           mem_buffer += (actual & ~3);
 
-	}
+        }
+        /* Need to byte swap the data on big-endian hosts */
+        for (i=0; i<channels; i++) LSWAP(address[i]);
 
 /*
 * All done, return (errors go thru here too)
@@ -408,7 +410,7 @@ int nmc_show_modules()
         int i;
         struct nmc_module_info_struct *p;
 
-        printf("Module     Owner name      Owner ID       Status      Memory size Free address\n");
+        printf("Module     Type  HW rev.  FW rev.  Owner name      Owner ID       Status      Memory size Free address\n");
 
         for (i=0; i < NMC_K_MAX_MODULES; i++)
         {
@@ -418,6 +420,7 @@ int nmc_show_modules()
                         (*p).address[3],
                         (*p).address[4],
                         (*p).address[5]);
+                printf("%5d%8d%9d   ", (*p).module_type, (*p).hw_revision, (*p).fw_revision);
                 printf("    %8.8s  %2.2X:%2.2X:%2.2X:%2.2X:%2.2X:%2.2X",
                         (*p).owner_name,
                         (*p).owner_id[0],
