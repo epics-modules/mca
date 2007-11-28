@@ -8,10 +8,38 @@
 
 <h1 align="center">mca Release Notes</h1>
 
-<h2 align="center">Release 6-10 (May 8, 2007)</h2>
+<h2 align="center">Release 6-10 (November 30, 2007)</h2>
 <ul>
-<li> Removed WIN32 specific code in RontecSrc, no longer needed.
-<li> Fixed example IOC for STR7201.
+  <li> mcaSrc
+  <ul>
+    <li> Fixed bug in MCA record.  The record should force a read of the data whenever
+         acquisition completes (.ACQG=1 changes to .ACQG=0).  In earlier versions
+         it could miss this transition if acquisition was complete by the time of the first
+         status poll.  The bug fix in R6-9 attempted to fix this, but it was inefficient and
+         not completely effective.  The new fix is for the record to force .ACQG=1 whenever 
+         acquisition is started, and not rely on the poll to set .ACQG to 1.
+  </ul>
+  <li> CanberraSrc
+  <ul>
+    <li> Added code to read data in uncompressed format.  This greatly improves the performance
+         on the newer 556A modules.  The older 556 modules should still be read in compressed
+         format.
+    <li> Added code to use LLC sockets on vxWorks (rather than etherLib) and 
+         Linux (rather than libnet and libpcap). (Thanks to Peter Denison of DLS).
+  </ul>
+  <li> RontecSrc
+  <ul>
+    <li> Removed WIN32 specific code, no longer needed.
+    <li> Bug fix for Rontec driver.  It was sometimes getting garbage for the elapsed real time.
+         (Thanks to Lewis Muir).
+  </ul>
+  <li> iocBoot
+    <li> Fixed example IOC for STR7201.
+  </ul>
+  <li> op/adl
+  <ul>
+    <li> Added readback-rate control to xxIcbAdc.adl (thanks to Tim Mooney).
+  </ul>
 </ul>
 
 <h2 align="center">Release 6-9 (December 5, 2006)</h2>
