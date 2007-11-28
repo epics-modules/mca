@@ -396,8 +396,78 @@ memory address of acquisition.
 <A NAME="Performance Measurements">
 <H2>Performance Measurements</H2></A>
 <P>
+<hr>
+Tests were done with R6-10 of the mca module to measure the performance of the Canberra AIM modules in 
+rapidly collecting spectra in a scan.  
+The tests were done under the following conditions:
+<ul>
+  <li>2048 channel spectra
+  <li>0.01 second acquisition time, in order to attain real data but with minimal overhead.
+  <li>EPICS sscan record.  It had no positioner drive PV to minimize overhead.  
+      The positioner readback was "time".
+      The detector was the first ROI, mca1.R0.
+  <li>The scan rate for the MCA status was 0.1 second, and scan rate for the MCA read was Passive to minimize overhead.  
+  <li>100 scan points were collected.  There were no positioner or detector delays in the scan records.
+</ul>
 
+<center>
+<h3>Performance Measurements: Time to collect 100 spectra</h3>
+<p></p>
+<table summary="Performance Measurements" border="1">
+<tbody>
+  <tr align="center">
+    <th>Model</td>
+    <th>Host</td>
+    <th>Compressed read</td>
+    <th>Uncompressed read</td>
+  </tr>
 
+  <tr valign=top>
+    <td>556</td>
+    <td>Linux (libnet/libpcap)</td>
+    <td>10.2</td>
+    <td>15.8</td>
+  </tr>
+
+  <tr valign=top>
+    <td>556</td>
+    <td>vxWorks (etherLib)</td>
+    <td>10.0</td>
+    <td>14.4</td>
+  </tr>
+
+  <tr valign=top>
+    <td>556A</td>
+    <td>Linux (libnet/libpcap)</td>
+    <td>35.0</td>
+    <td>10.8</td>
+  </tr>
+
+  <tr valign=top>
+    <td>556A</td>
+    <td>vxWorks (etherLib)</td>
+    <td>30.0</td>
+    <td>10.1</td>
+  </tr>
+
+  <tr valign=top>
+    <td>DSA2000</td>
+    <td>Linux (libnet/libpcap)</td>
+    <td>30.8</td>
+    <td>13.4</td>
+  </tr>
+
+  <tr valign=top>
+    <td>DSA2000</td>
+    <td>vxWorks (etherLib)</td>
+    <td>N.D.</td>
+    <td>12.0</td>
+  </tr>
+
+</table>
+</center>
+
+<P>
 The following IDL program measures how fast time-resolved data can be acquired.
 It was tested with record 13LAB:aim_adc1 configured with maxSequences=4 and
 with an input pulser at about 100 kHz.
