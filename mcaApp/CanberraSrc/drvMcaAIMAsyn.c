@@ -57,6 +57,8 @@ typedef struct {
     asynInterface drvUser;
 } mcaAIMPvt;
 
+extern struct nmc_module_info_struct *nmc_module_info;
+
 /* These functions are in public interfaces */
 static asynStatus int32Write        (void *drvPvt, asynUser *pasynUser,
                                      epicsInt32 value);
@@ -495,6 +497,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     int status;
     int address;
     int signal;
+    struct nmc_module_info_struct minfo = nmc_module_info[pPvt->module];
 
     pasynManager->getAddr(pasynUser, &signal);
 
@@ -504,8 +507,20 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
 
     address = pPvt->seq_address + pPvt->maxChans*signal*4;
  
-    status = nmc_acqu_getmemory(pPvt->module, pPvt->adc, address, 1, 1, 1, 
+    /* There is a real performance difference between reading compressed and
+     * uncompressed data on different module types.  It is 40% faster to
+     * read compressed data on the original 556 model, 300% faster to read 
+     * uncompresed data on the 556A, and 230% faster to read uncompressed data
+     * on the DSA2000.  The hw_revision of the 556 is 0, 556A is 1, and DS2000 is 2.
+     * We read compressed for 556 and uncompressed for others.
+     */
+    if (minfo.hw_revision == 0) {
+        status = nmc_acqu_getmemory_cmp(pPvt->module, pPvt->adc, address, 1, 1, 1, 
+                                        maxChans, data);
+    } else {
+        status = nmc_acqu_getmemory(pPvt->module, pPvt->adc, address, 1, 1, 1, 
                                     maxChans, data);
+    }
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "(mcaAIMAsynDriver [%s signal=%d]): read %d chans, status=%d\n", 
               pPvt->portName, signal, maxChans, status);
