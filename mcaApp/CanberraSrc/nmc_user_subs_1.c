@@ -25,6 +25,9 @@
 
 extern struct nmc_module_info_struct *nmc_module_info;
 
+extern struct nmc_comm_info_struct *nmc_comm_info;
+                                        /* Stores comm info for each network type */
+
 
 /*******************************************************************************
 *
@@ -39,7 +42,7 @@ extern struct nmc_module_info_struct *nmc_module_info;
 *
 *  "status" is the status of the operation.
 *
-*  "module" (longword is the module number.
+*  "module" (longword) is the module number.
 *
 *  "adc" (longword) is the module ADC number.
 *
@@ -98,6 +101,98 @@ int module,adc,group,address,mode,*live,*real,*totals,*status;
 
 }
 
+/*******************************************************************************
+*
+* NMC_ACQU_GETMEMORY returns the contents of networked module acquisition memory.
+*
+* The calling format is:
+*
+*	status=NMC_ACQU_GETMEMORY(module,adc,address,nrows,start ch,start row,channels,address)
+*
+* where
+*
+*  "status" is the status of the operation. Only errors from lower level routines
+*   have been signaled.
+*
+*  "module" (longword) is the module ADC number.
+*
+*  "adc" (longword) is the module-relative ADC number.
+*
+*  "saddress" (longword) is the start address (module-relative) of
+*   the memory of the group.
+*
+*  "nrows" (longword) is the number of rows/group.
+*
+*  "start ch" (longword) is the start channel of the memory to be
+*   returned.
+*
+*  "start row" (longword) is the start row of the memory to be
+*   returned.
+*
+*  "channels" (longword) is the number of channels to be returned.
+*
+*  "address" (address) is where the memory contents are to be returned.
+*
+*******************************************************************************/
+
+int nmc_acqu_getmemory(module,adc,saddress,nrows,start,srow,channels,address)
+
+int module,adc,saddress,nrows,start,srow,channels,*address;
+
+{
+
+	int s=ERROR,max_chans,cur_chans,chans_left,max_bytes,actual;
+	char *mem_buffer;
+	struct ncp_hcmd_retmemory retmemory;
+
+/*
+* Determine how many channels can be returned per message from the module
+*/
+
+	max_chans = ((*nmc_module_info[module].comm_device).max_msg_size - 
+		sizeof(struct ncp_comm_header) -
+		sizeof(struct ncp_comm_packet))/4;
+
+/*
+* Now transfer the data. Basically, each time through the loop, we just get 
+* either the number of channels left or the max/message, whichever is smaller.
+*/
+
+	chans_left = channels;				/* init channels left to go */
+	mem_buffer = (char *)address;				/* init current dest address */
+
+	while (chans_left > 0) {
+
+	   cur_chans = chans_left;			/* Get number of chans for this message */
+	   if(cur_chans > max_chans) cur_chans = max_chans;
+
+	   retmemory.address = saddress + 		/* compute source address and size */
+			((channels - chans_left) + 
+			(start-1) + (nrows * (srow-1))) * 4; 
+	   retmemory.size = cur_chans * 4;
+
+	   max_bytes = chans_left * 4;
+	   s = nmc_sendcmd(module,NCP_K_HCMD_RETMEMORY, /* get the memory */
+			&retmemory,sizeof(retmemory),mem_buffer,
+			max_bytes,&actual,1);
+	   if(s != NCP_K_HCMD_RETMEMORY || actual == 0) {
+                if (aimDebug > 0) errlogPrintf("(nmc_acqu_getmemory): bad response expected=%d, actual=%d\n",
+                        NCP_K_HCMD_RETMEMORY, s);
+                nmc_signal("nmc_acqu_getmemory",NMC__INVMODRESP);
+                return ERROR;
+	   }
+
+	   chans_left -= actual/4;			/* Update channels to go and dest address */
+	   mem_buffer += (actual & ~3);
+
+	}
+
+/*
+* All done, return (errors go thru here too)
+*/
+    return s;
+
+}
 /*******************************************************************************
 *
 * NMC_ACQU_GETMEMORY_CMP returns the contents of networked module acquisition
