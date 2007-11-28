@@ -260,6 +260,9 @@ IMPORT STATUS nmc_acqu_statusupdate(int module, int adc, int group, int address,
 IMPORT STATUS nmc_acqu_getmemory_cmp(int module, int adc, int saddress, int nrows,
                                    int start, int row, int channels,
                                    int *address);
+IMPORT STATUS nmc_acqu_getmemory(int module, int adc, int saddress, int nrows,
+                                   int start, int row, int channels,
+                                   int *address);
 IMPORT STATUS ndl_diffdecm(unsigned char *input, int channels, int *output,
                         int chans_left, int *actual_chans);
 
@@ -282,6 +285,7 @@ IMPORT STATUS nmc_acqu_erase(int module, int address, int size);
 IMPORT STATUS nmc_acqu_setpresets(int module, int adc, int plive, int preal,
                                   int ptotals, int ptschan, int ptechan);
 IMPORT STATUS nmc_acqu_setelapsed(int module, int adc, int elive, int ereal);
+IMPORT STATUS nmc_show_modules();
 
 
 #ifdef __cplusplus
