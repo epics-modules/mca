@@ -610,11 +610,6 @@ reprocess:
             status = (*pdset->send_msg)
                 (pmca,  mcaErase, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
-            if (NEWV_MARKED(M_ERAS)) {
-               pmca->eras = 0;
-               MARK(M_ERAS);
-               NEWV_UNMARK(M_ERAS);
-            }
             /* Use TimeStamp to record beginning of acquisition */
             recGblGetTimeStamp(pmca);
             tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY,
@@ -626,8 +621,18 @@ reprocess:
             /* Erase the data array.  Do this inside the record rather than
              * forcing a read from device support for perfomance reasons. */
             memset(pmca->bptr, 0, pmca->nuse*sizeofTypes[pmca->ftvl]);
-            MARK(M_VAL);           /* Post monitor on VAL field */
-            NEWR_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
+            /* We only post monitors on the value field for ERAS, not ERST.
+             * This is for performance reasons.  If the ERAS field is set
+             * then users want to see the array zeroed.  But if ERST is set
+             * then new data are coming in, and it is OK to just see the first
+             * new data */
+            if (NEWV_MARKED(M_ERAS)) {
+               pmca->eras = 0;
+               MARK(M_ERAS);
+               NEWV_UNMARK(M_ERAS);
+               MARK(M_VAL);           /* Post monitor on VAL field */
+               NEWR_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
+            }
         }
         if (NEWV_MARKED(M_MODE)) {
             MARK(M_MODE);
@@ -652,11 +657,11 @@ reprocess:
     if (pmca->strt || NEWV_MARKED(M_ERST)) {
        if (mcaRecordDebug > 5) errlogPrintf("process: start acquisition.\n");
        status = (*pdset->send_msg) (pmca, mcaStartAcquire, NULL);
-       /* We force a read of the data when acquisition is turned on.  This was added on 10/31/2006
-        * because without it a device that is done acquiring by the time the status is read below
-        * will never get the data read (because Read record in database has scanned disabled if not acquiring)
+       /* We force ACQG=1 when acquisition is turned on.  This is needed so that the logic
+        * below will read the data when ACQG goes to 0, even if acquisition is so fast 
+        * that ACQG is zero on the very first status read.
         */
-       pmca->read = 1; MARK(M_READ);
+       pmca->acqg = 1; MARK(M_ACQG);
        if (pmca->strt) {
           pmca->strt=0; 
           MARK(M_STRT);
@@ -758,7 +763,7 @@ read_status:
     if (mcaRecordDebug > 5) errlogPrintf("process: pstatus->acqg=%d, acqg=%d\n", pstatus->acquiring, pmca->acqg);
     if (pmca->acqg != pstatus->acquiring) {
        /* Note: we don't copy pstatus->acquiring to pmca->acqg here yet, because if acquiring has stopped
-        * we don't want clients to know that before we read the data and compute ROIs.
+        * we don't want clients to know that before we read and post the data and compute ROIs.
         * Force a read when acquire turns off */
        if (!pstatus->acquiring) {
           pmca->read = 1; MARK(M_READ);
