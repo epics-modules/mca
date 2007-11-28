@@ -140,6 +140,7 @@ int AIMConfig(
 {
     unsigned char enet_address[6];
     int status;
+    int retries = 0;
     mcaAIMPvt *pPvt;
 
     pPvt = callocMustSucceed(1, sizeof(mcaAIMPvt), "AIMConfig");
@@ -174,8 +175,16 @@ int AIMConfig(
     /* Compute the module Ethernet address */
     nmc_build_enet_addr(address, enet_address);
 
-    /* Find the particular module on the net */
-    status = nmc_findmod_by_addr(&pPvt->module, enet_address);
+    /* Find the particular module on the net - may have to retry in case
+       the module database is still being built after initialisation.
+       This is not possible to resolve other than by waiting, since there are
+       an unknown number of modules on the local subnet, and they can reply
+       to the initial inquiry broadcast in an arbitrary order. */
+    do {
+	status = nmc_findmod_by_addr(&pPvt->module, enet_address);
+	epicsThreadSleep(0.1);
+    } while ((status != OK) && (retries++ < 5));
+
     if (status != OK) {
         errlogPrintf("AIMConfig ERROR: cannot find module on the network!\n");
         return (ERROR);
