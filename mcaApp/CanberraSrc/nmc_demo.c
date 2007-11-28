@@ -44,6 +44,7 @@
 /* Definitions */
 
 #include "nmc_sys_defs.h"
+#include "epicsTime.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -69,6 +70,7 @@ int main(int argc, char** argv)
 	static int data[4096];			/* Buffer for the spectrum = 4K channels */
 	unsigned char address[6];	/* Buffer for full Ethernet address */
 	int low_address_default=0x675;		/* Low order part of Ethernet address */
+        epicsTimeStamp startTime, endTime;
 
 #ifdef vxWorks
 #else
@@ -180,9 +182,18 @@ int main(int argc, char** argv)
 */
 
 	printf("Calling nmc_getmemory_cmp ...\n");
+        epicsTimeGetCurrent(&startTime);
 	s=nmc_acqu_getmemory_cmp(module,adc,0,1,1,1,4096,data);
 	if(s==ERROR) return ERROR;
+        epicsTimeGetCurrent(&endTime);
+        printf("Time for nmc_getmemory_cmp = %f\n", epicsTimeDiffInSeconds(&endTime, &startTime));
 
+	printf("Calling nmc_getmemory ...\n");
+        epicsTimeGetCurrent(&startTime);
+	s=nmc_acqu_getmemory(module,adc,0,1,1,1,4096,data);
+	if(s==ERROR) return ERROR;
+        epicsTimeGetCurrent(&endTime);
+        printf("Time for nmc_getmemory = %f\n", epicsTimeDiffInSeconds(&endTime, &startTime));
 /*
 * Totalize the memory, print the results, release the module, and exit
 */
