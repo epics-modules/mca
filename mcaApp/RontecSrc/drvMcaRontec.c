@@ -246,6 +246,8 @@ static asynStatus RontecWrite(void *drvPvt, asynUser *pasynUser,
     mcaCommand command=pasynUser->reason;
     char message[RONTEC_MESSAGE_SIZE], response[RONTEC_MESSAGE_SIZE];
     int signal;
+    size_t nactual;
+    epicsInt32 dummy[1];
 
     pasynManager->getAddr(pasynUser, &signal);
 
@@ -277,7 +279,7 @@ static asynStatus RontecWrite(void *drvPvt, asynUser *pasynUser,
             sendMessage(pPvt, "$FP", response);
             if (response[4] == '-') pPvt->acquiring = 1; else pPvt->acquiring = 0;
             /* Read 1 channel of the spectrum so we get the elapsed live and real time */
-            sendMessage(pPvt, "$SS 0,1,1,1", NULL);
+            int32ArrayRead(pPvt, pasynUser, dummy, 1, &nactual);
             sendMessage(pPvt, "$MS", response);
             pPvt->ereal = atoi(&response[4]);
             /* LS seems not to be supported - track this down */
