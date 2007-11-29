@@ -23,6 +23,10 @@
 *                               Defined LSWAP and SSWAP correctly depending
 *                               upon architecture.
 *       03-Sept-2000    MLR     Moved interlock macros to nmc_sys_defs.h
+*       25-Nov-2005     PND     Stripped out ethernet specific bits for
+*                               socket comms.
+*	21-Sep-2006	PND	Re-added ethernet bits to allow old non-socket
+*				comms on platforms which don't support it.
 *******************************************************************************/
 
 /*
@@ -197,6 +201,9 @@ struct enet_header {
         UINT8 dest[6];
         UINT8 source[6];
         UINT16 length;
+} __attribute__ ((packed));
+
+struct snap_header {
         UINT8 dsap;
         UINT8 ssap;
         UINT8 control;
@@ -204,11 +211,19 @@ struct enet_header {
 } __attribute__ ((packed));
 
 /* Define the maximum header size for all network types (Ethernet, FDDI,etc.) */
-#define NCP_MAX_HEADER_SIZE sizeof(struct enet_header)
+#define NCP_MAX_HEADER_SIZE (sizeof(struct enet_header)+sizeof(struct snap_header))
 
-/* Define structure of an Ethernet packet to/from an AIM module */
+/* Link layer information passed at the start of each packet passed up to
+   the higher layers, also including the SNAP header sent out in all packets */
+struct llinfo {
+        UINT8 source[6];
+        UINT8 snap_id[5];
+} __attribute__ ((packed));
+
+/* Define structure of a packet to/from an AIM module */
 struct enet_packet{
         struct enet_header enet_header;
+        struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         union {
            struct ncp_comm_mstatus ncp_comm_mstatus;
@@ -220,11 +235,13 @@ struct enet_packet{
 
 struct status_packet{
         struct enet_header enet_header;
+        struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_mstatus ncp_comm_mstatus;
 } __attribute__ ((packed));
 struct response_packet{
         struct enet_header enet_header;
+        struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_packet  ncp_comm_packet;
         UINT8 ncp_packet_data[NMC_K_MAX_NIMSG -
@@ -233,11 +250,13 @@ struct response_packet{
 } __attribute__ ((packed));
 struct inquiry_packet{
         struct enet_header enet_header;
+        struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_inquiry ncp_comm_inquiry;
 } __attribute__ ((packed));
 struct event_packet{
         struct enet_header enet_header;
+        struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_mevent ncp_comm_mevent;
 } __attribute__ ((packed));
