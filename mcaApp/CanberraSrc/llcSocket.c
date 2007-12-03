@@ -29,6 +29,7 @@
 
 #include <vxWorks.h>
 #include <stdlib.h>
+#include <string.h>
 #include <iosLib.h>
 #include <sockLib.h>
 #include <sockFunc.h>
@@ -160,7 +161,6 @@ STATUS llcSockListen(int fd, int backlog)
 STATUS llcSockRecvFrom(int fd, char *buf, int bufLen, int flags,
 			struct sockaddr *from, int *pFromLen)
 {
-    struct llc_socket *s = (struct llc_socket *)iosFdValue(fd);
     int size;
 
     size = llcReceivePacket((struct sockaddr_llc *)from, buf, bufLen);
