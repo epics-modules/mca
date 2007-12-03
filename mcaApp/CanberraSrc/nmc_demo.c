@@ -181,19 +181,19 @@ int main(int argc, char** argv)
 * Get the data into "data"
 */
 
-	printf("Calling nmc_getmemory_cmp ...\n");
+	printf("Calling nmc_acqu_getmemory_cmp ...\n");
         epicsTimeGetCurrent(&startTime);
 	s=nmc_acqu_getmemory_cmp(module,adc,0,1,1,1,4096,data);
 	if(s==ERROR) return ERROR;
         epicsTimeGetCurrent(&endTime);
-        printf("Time for nmc_getmemory_cmp = %f\n", epicsTimeDiffInSeconds(&endTime, &startTime));
+        printf("Time for nmc_acqu_getmemory_cmp = %f\n", epicsTimeDiffInSeconds(&endTime, &startTime));
 
-	printf("Calling nmc_getmemory ...\n");
+	printf("Calling nmc_acqu_getmemory ...\n");
         epicsTimeGetCurrent(&startTime);
 	s=nmc_acqu_getmemory(module,adc,0,1,1,1,4096,data);
 	if(s==ERROR) return ERROR;
         epicsTimeGetCurrent(&endTime);
-        printf("Time for nmc_getmemory = %f\n", epicsTimeDiffInSeconds(&endTime, &startTime));
+        printf("Time for nmc_acqu_getmemory = %f\n", epicsTimeDiffInSeconds(&endTime, &startTime));
 /*
 * Totalize the memory, print the results, release the module, and exit
 */
