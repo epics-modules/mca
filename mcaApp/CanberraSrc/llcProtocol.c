@@ -43,6 +43,9 @@
 
 #define QUEUE_SIZE 512
 
+#define HEADER_OFFSET 22  /* This is a temporary kludge */
+
+
 int llcDetach(void);
 void mBlkShow(M_BLK_ID mBlk);
 void *copyFromMblk(void *dest, M_BLK_ID src, int offset, int len);
@@ -93,13 +96,14 @@ BOOL llcRcvRtn( void *netCallbackId, long type, M_BLK_ID pNetBuf,
 {
     unsigned short typelen;
 
-    typelen = ntohs(*(unsigned short *)(pNetBuf->mBlkHdr.mData + SIZEOF_ETHERHEADER - 2));
+    typelen = ntohs(*(unsigned short *)(pNetBuf->mBlkHdr.mData-HEADER_OFFSET + SIZEOF_ETHERHEADER - 2));
+    if (llcDebug > 10) printf("llc: received any packet, passed type: %04lx length:%d\n", type, typelen);
     if (typelen > ETHERMTU) {
 	/* Can't be IEEE 802.2 LLC, which has length in the ether header */
 	return FALSE; /* Pass the packet on */
     }
 
-    if (llcDebug > 4) printf("llc: received packet, passed type: %04lx length:%04x\n", type, typelen);
+    if (llcDebug > 4) printf("llc: received llc packet, passed type: %04lx length:%04x\n", type, typelen);
 
     /* In future, this could be extended to put the packet onto a different
      * queue for each bound socket, but for now, just use a single queue */
@@ -157,6 +161,11 @@ int llcAttach(char *device, int unit)
 {
     int i;
 
+    /* Check to see what kind of a driver this is: END or NTP */
+    i = muxTkDrvCheck(device);
+
+    printf("muxTkDrvCheck returns %d\n", i);
+
     cookie= muxTkBind (device, /* char * pName, interface name, for example: ln, ei */
 		       unit, /* int unit, unit number */
 		       &llcRcvRtn, /* llcRcvRtn( ) Receive data from the MUX */
@@ -171,7 +180,7 @@ int llcAttach(char *device, int unit)
 		       );
     if (cookie==NULL) {
 	perror("Failed to bind service:");
-	return 0;
+	return -1;
     }
 
     if (llcDebug > 0) printf("Attached LLC interface to %s unit %d\n",
@@ -189,16 +198,16 @@ int llcAttach(char *device, int unit)
     
     if (netPoolInit (pNetPool, &mClBlkConfig, &clDescTbl
 		     [0],clDescTblNumEnt, NULL) != OK)
-	return 0;
+	return -1;
 
     /* Create the message queue for received packets */
     llcRecvQueue = msgQCreate(QUEUE_SIZE, sizeof(M_BLK_ID), MSG_Q_FIFO);
     if (!llcRecvQueue) {
 	perror("Allocate receive queue:");
-	return 0;
+	return -1;
     }
     
-    return 1;
+    return 0;
 }
 
 /**
@@ -276,6 +285,17 @@ int llcSendPacket(struct sockaddr_llc *addr, int sap, int type,
        support) confirms this.
     */
 
+    /* Dump packet if debugging level set */
+    if (llcDebug > 4) printf("llc: sending packet, destination: %2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x len: %d\n", 
+                             addr->sllc_mac[0],
+                             addr->sllc_mac[1],
+                             addr->sllc_mac[2],
+                             addr->sllc_mac[3],
+                             addr->sllc_mac[4],
+                             addr->sllc_mac[5],
+                             len);
+    if (llcDebug > 7) mBlkShow(pMblk);
+
     /* send the data */
     ret= muxTkSend(cookie, /* returned by muxTkBind()*/
 		   pMblk, /* data to be sent */
@@ -311,7 +331,7 @@ int llcReceivePacket(struct sockaddr_llc *addr, char *data, int datalen)
     struct {
 	struct ether_header eth_head;
 	struct llc llc_head;
-    } ETHER_PACKED header; 
+    } __attribute__ ((packed)) header; 
     M_BLK_ID pMblk;
 
     /* Pull a packet off the internal queue */
@@ -321,11 +341,33 @@ int llcReceivePacket(struct sockaddr_llc *addr, char *data, int datalen)
     if (ret == ERROR || errno == S_objLib_OBJ_UNAVAILABLE) {
 	return 0;
     }
+    
+    /* We are getting data pointer with header removed - back up pointer */
+    pMblk->mBlkHdr.mData -= HEADER_OFFSET;
+    pMblk->mBlkHdr.mLen += HEADER_OFFSET;
 
     if (llcDebug > 7) mBlkShow(pMblk); 
 
     /* Copy header from block */
     copyFromMblk(&header, pMblk, 0, SIZEOF_ETHERHEADER + LLC_UFRAMELEN);
+
+    if (llcDebug > 8) {
+        printf("llc: received packet: \n"
+               "  destination = %02x:%02x:%02x:%02x:%02x:%02x\n"
+               "       source = %02x:%02x:%02x:%02x:%02x:%02x\n",
+               header.eth_head.ether_dhost[0],
+               header.eth_head.ether_dhost[1],
+               header.eth_head.ether_dhost[2],
+               header.eth_head.ether_dhost[3],
+               header.eth_head.ether_dhost[4],
+               header.eth_head.ether_dhost[5],
+               header.eth_head.ether_shost[0],
+               header.eth_head.ether_shost[1],
+               header.eth_head.ether_shost[2],
+               header.eth_head.ether_shost[3],
+               header.eth_head.ether_shost[4],
+               header.eth_head.ether_shost[5]);
+    }
     
     /* If we have anywhere to put it, fill in the sockaddr with details
      * of where the packet came from */
@@ -343,6 +385,7 @@ int llcReceivePacket(struct sockaddr_llc *addr, char *data, int datalen)
        the copying of too much data - use the length field inside the Ethernet
        header in the data instead. */
     len = ntohs(header.eth_head.ether_type);
+printf("length of packet: %d\n", len);
     /* Remove the LLC header from the payload length*/
     len -= LLC_UFRAMELEN;
     if (len > datalen) {
