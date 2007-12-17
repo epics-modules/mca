@@ -1,0 +1,28 @@
+# Set the UNIX uid/gid to the EPICS account
+nfsAuthUnixSet("corvette",401,400,0,0)
+
+# Mount drives with NFS
+nfsMount("corvette","/home","/home")
+
+cd "/home/epics/devel/mca/6-10beta/bin/vxWorks-ppc603/"
+ld < muxTest.munch
+
+# Do an ls so we can se that NFS is working
+ls
+
+# Set the debug flag
+muxTestDebug=1
+
+# Bind the MUX_PROTO_SNARF callback
+muxTestAttach("dc",0)
+
+# Sleep for 5 seconds to see some messages
+taskDelay(300)
+
+# Turn off debugging
+muxTestDebug=0
+
+# At this point an ls command will hang.  However, if we do
+#muxTestDetach
+# it will start working again.
+
