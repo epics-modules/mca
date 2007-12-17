@@ -30,20 +30,32 @@
 #include <epicsThread.h>
 
 #ifdef __cplusplus
-extern "C" {
+  extern "C" {
+#endif
+
+#ifdef USE_SOCKETS
+  #include <sys/socket.h>
+  #include <net/if.h>
 #endif
 
 #if defined(vxWorks)
-#include <vxWorks.h>
-#include <msgQLib.h>
-#include <etherLib.h>
-#include <semLib.h>
+  #include <vxWorks.h>
+  #include <msgQLib.h>
+  #include <etherLib.h>
+  #include <semLib.h>
+  #include <sockLib.h>
+  #include <net/if_llc.h>
+  #include "llc.h"
 #elif defined (CYGWIN32)
-#include <libnet_cygwin.h>
-#include <wpcap.h> 		/* This is a local copy of pcap.h from the WinPcap developer's pack */
+  #include <libnet_cygwin.h>
+  #include <wpcap.h>        /* This is a local copy of pcap.h from the WinPcap developer's pack */
 #else
-#include <libnet.h>
-#include <pcap.h>
+  #ifdef USE_SOCKETS
+   #include "linux-llc.h"
+  #else
+    #include <libnet.h>
+    #include <pcap.h>
+  #endif
 #endif
 #include <errlog.h>
 
@@ -55,34 +67,46 @@ extern "C" {
 #define INTERFACE_NAME_SIZE 100
 #define SNAP_SIZE 5
 #ifndef ETH_ALEN
-#define ETH_ALEN 6
+  #define ETH_ALEN 6
+#endif
+
+#ifndef AF_LLC
+  #define AF_LLC 26
+#endif
+
+#if !defined(LLC_SAP_SNAP)
+  #define LLC_SAP_SNAP 0xAA
+#endif
+
+#if !defined(LLC_SNAP_LSAP) && defined(LLC_SAP_SNAP)
+  #define LLC_SNAP_LSAP LLC_SAP_SNAP
 #endif
 
 #ifdef vxWorks
 #else
-/* VxWorks has these definitions */
-#define OK 			0
-#define ERROR 		(-1)
-#define FALSE       0
-#define TRUE            1
+  /* VxWorks has these definitions */
+  #define OK 			0
+  #define ERROR 		(-1)
+  #define FALSE       0
+  #define TRUE            1
 
-#define IMPORT 
+  #define IMPORT 
 
-#ifndef _EPICS_AIM_NMC_TYPE_REDEFINITIONS
-typedef epicsInt8 		INT8;
-typedef epicsUInt8		UINT8;
-typedef epicsInt16		INT16;
-typedef epicsUInt16		UINT16;
-typedef epicsInt32		INT32;
-typedef epicsUInt32		UINT32;
-typedef epicsFloat32		FLOAT32;
-typedef epicsFloat64		FLOAT64;
-#define _EPICS_AIM_NMC_TYPE_REDEFINITIONS
-#endif /* _EPICS_AIM_NMC_TYPE_REDEFINITIONS */
+  #ifndef _EPICS_AIM_NMC_TYPE_REDEFINITIONS
+    typedef epicsInt8 		INT8;
+    typedef epicsUInt8		UINT8;
+    typedef epicsInt16		INT16;
+    typedef epicsUInt16		UINT16;
+    typedef epicsInt32		INT32;
+    typedef epicsUInt32		UINT32;
+    typedef epicsFloat32		FLOAT32;
+    typedef epicsFloat64		FLOAT64;
+    #define _EPICS_AIM_NMC_TYPE_REDEFINITIONS
+  #endif /* _EPICS_AIM_NMC_TYPE_REDEFINITIONS */
 
-/* this is defined by VxWorks */
-typedef       int             BOOL;
-typedef int STATUS;
+  /* this is defined by VxWorks */
+  typedef       int             BOOL;
+  typedef int STATUS;
 #endif /* vxWorks */
 
 extern volatile int aimDebug;
@@ -140,16 +164,17 @@ struct nmc_module_info_struct {
 #define NMC_K_MCS_UNREACHABLE 1     /* module is unreachable */
 #define NMC_K_MCS_REACHABLE 2       /* module is reachable */
 
-#ifdef vxWorks
-#else
-/* ifnet: linux version is different from VxWorks */
-struct ifnet {
-        char    *if_name;              /* interface name, e.g. eth0 */
-		short   if_unit;       /* not used, always 0 */
-		libnet_t *libnet;      /* libnet_t struct for packet injection */
-                char errbuf[LIBNET_ERRBUF_SIZE];
-		struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
-};
+
+#ifndef USE_SOCKETS
+  /* We used to call this an ifnet structure.  That is OK on Linux, which does not define that structure,
+     but it could lead to problems on BSD systems.  Use another name instead. */
+  struct libnet_ifnet {
+          char    *if_name;              /* interface name, e.g. eth0 */
+		  short   if_unit;       /* not used, always 0 */
+		  libnet_t *libnet;      /* libnet_t struct for packet injection */
+                  char errbuf[LIBNET_ERRBUF_SIZE];
+		  struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
+  };
 #endif
 
 /*
@@ -162,22 +187,25 @@ struct nmc_comm_info_struct {
    char type;                     /* Network device type */
    char name[INTERFACE_NAME_SIZE]; /* Network device name */
    unsigned char sys_address[ETH_ALEN];  /* System network address */
-   struct ifnet *pIf;             /* Pointer to ifnet structure */
    epicsThreadId status_pid;       /* Thread ID of status dispatch */
    epicsThreadId broadcast_pid;    /* Thread ID of broadcast poller  */
-#ifdef vxWorks
-#else
-   pcap_t *pcap;                  /* Pointer to pcap structure */
    epicsThreadId capture_pid;      /* Thread ID of ether capture thread */
-#endif
 /* this was the no of ticks for timeout, it is float seconds now*/
    float timeout_time;            /* time in s */
    int header_size;               /* The size of the device dependent header */
    int max_msg_size;              /* Largest possible message size */
    int max_tries;                 /* Number of command retries allowed */
    epicsMessageQueueId statusQ;   /* Message queue for status messages */
+#ifdef USE_SOCKETS
+   int sockfd;                    /* Socket */
+   struct sockaddr_llc dest;      /* addr struct for sending (address overwritten) */
+   unsigned char status_sap;      /* still here to keep nmc_user_subs_2.c happy */
+#else
    unsigned char response_sap;    /* NI SAP address for normal messages */
-   unsigned char status_sap;      /* NI SAP address for status/event messages */
+   unsigned char status_sap;      /* NI SAP address for status/event messages*/
+   struct libnet_ifnet *pIf;      /* Pointer to libnet_ifnet structure */
+   pcap_t *pcap;		  /* Pointer to pcap structure */
+#endif
    unsigned char response_snap[SNAP_SIZE]; /* NI SNAP ID for normal messages */
    unsigned char status_snap[SNAP_SIZE];  /* NI SNAP ID for status/event messages */
 };
@@ -241,12 +269,12 @@ IMPORT STATUS nmc_buymodule(int module, int override);
 IMPORT STATUS nmc_allocate_memory(int module, int size, int *base_address);
 IMPORT STATUS nmc_build_enet_addr(int input_addr, unsigned char *output_addr);
 IMPORT STATUS nmc_broadcast_inq_task(struct nmc_comm_info_struct *net);
-#ifdef vxWorks
-IMPORT STATUS nmcEtherGrab(struct ifnet *pIf, char *buffer, int length);
+#ifdef USE_SOCKETS
+  IMPORT void nmcEtherGrab(char *buffer, int length);
 #else
-void nmcEtherGrab(unsigned char *,const struct pcap_pkthdr*, const unsigned char*);
-void nmcEthCapture(struct nmc_comm_info_struct *);
+  void nmcEtherGrab(unsigned char *,const struct pcap_pkthdr*, const unsigned char*);
 #endif
+void nmcEthCapture(struct nmc_comm_info_struct *);
 IMPORT STATUS nmc_broadcast_inq(struct nmc_comm_info_struct *net,
                                 int inqtype, int addr);
 IMPORT STATUS nmc_freemodule(int module, int override);
