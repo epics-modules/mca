@@ -20,8 +20,8 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 # "Description"="3Com 3C920 Integrated Fast Ethernet Controller (3C905C-TX Compatible)"
 # The number that is needed in the ServiceName field.
 # Copy this number and paste into the AIMConfig command below
-AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}")
-AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}")
+AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{E9C3D739-42E6-4239-9E45-0763306D1802}")
+AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{E9C3D739-42E6-4239-9E45-0763306D1802}")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
 
