@@ -321,13 +321,22 @@ int llcSendPacket(struct sockaddr_llc *addr, int sap, int type,
 #ifndef USE_MUXTKLIB
     pSrc = netTupleGet(pNetPool, sizeof(struct ether_addr), M_WAIT,
                        MT_IFADDR, TRUE);
+    if (!pSrc) {
+        perror("llcSendPacket: error getting source packet");
+        return ERROR;
+    }
     memcpy(pSrc->mBlkHdr.mData, &local_mac_addr, sizeof(struct ether_addr));
-    pSrc->mBlkHdr.reserved = len;
     pDst = netTupleGet(pNetPool, sizeof(struct ether_addr), M_WAIT,
                        MT_IFADDR, TRUE);
+    if (!pDst) {
+        perror("llcSendPacket: error getting destination packet");
+        return ERROR;
+    }
     memcpy(pDst->mBlkHdr.mData, addr->sllc_mac, sizeof(struct ether_addr));
     pDst->mBlkHdr.reserved = len;
     pMblk = muxAddressForm(cookie, pMblk, pSrc, pDst);
+    netMblkClChainFree(pSrc);
+    netMblkClChainFree(pDst);
 #endif
 
     /* Dump packet if debugging level set */
