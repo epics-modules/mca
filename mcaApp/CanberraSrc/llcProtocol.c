@@ -385,7 +385,7 @@ int llcReceivePacket(struct sockaddr_llc *addr, char *data, int datalen)
        the copying of too much data - use the length field inside the Ethernet
        header in the data instead. */
     len = ntohs(header.eth_head.ether_type);
-printf("length of packet: %d\n", len);
+    if (llcDebug > 8) printf("length of packet: %d\n", len);
     /* Remove the LLC header from the payload length*/
     len -= LLC_UFRAMELEN;
     if (len > datalen) {
