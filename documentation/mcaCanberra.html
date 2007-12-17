@@ -437,6 +437,13 @@ The tests were done under the following conditions:
   </tr>
 
   <tr valign=top>
+    <td>556</td>
+    <td>vxWorks (LLC sockets, muxLib)</td>
+    <td>10.0</td>
+    <td>N.D.</td>
+  </tr>
+
+  <tr valign=top>
     <td>556A</td>
     <td>Linux (libnet/libpcap)</td>
     <td>35.0</td>
@@ -451,6 +458,13 @@ The tests were done under the following conditions:
   </tr>
 
   <tr valign=top>
+    <td>556A</td>
+    <td>vxWorks (LLC sockets, muxLib)</td>
+    <td>N.D.</td>
+    <td>10.0</td>
+  </tr>
+
+  <tr valign=top>
     <td>DSA2000</td>
     <td>Linux (libnet/libpcap)</td>
     <td>30.8</td>
@@ -460,6 +474,83 @@ The tests were done under the following conditions:
   <tr valign=top>
     <td>DSA2000</td>
     <td>vxWorks (etherLib)</td>
+    <td>N.D.</td>
+    <td>12.0</td>
+  </tr>
+
+  <tr valign=top>
+    <td>DSA2000</td>
+    <td>vxWorks (LLC sockets, muxLib)</td>
+    <td>N.D.</td>
+    <td>12.0</td>
+  </tr>
+
+</table>
+</center>
+
+<P>
+The following IDL program measures how fast time-resolved data can be acquired.
+It was tested with record 13LAB:aim_adc1 configured with maxSequences=4 and
+with an input pulser at about 100 kHz.
+
+<PRE>
+;************************************************************
+; This program tests the time-resolved spectroscopy capabilities of the
+; new MCA record with the AIM.  The hardware configuration is an ADC with
+; pulses coming in at about 100 kHz.
+
+; Create EPICS MCA object
+rec = '13LAB:aim_adc1'
+casettimeout, .005  ; Fast channel access timeout
+max_sequences = 4
+mca = obj_new('epics_mca', rec)
+
+; Turn of acquisition, erase all of the spectra in the AIM
+mca->acquire_off
+for i=0,max_sequences-1 do begin
+   mca->set_sequence, i
+   mca->erase
+endfor
+
+; Acquire data in sequence 0 for 1 second to determine input count rate
+mca->set_sequence, 0
+presets = mca->get_presets()
+presets.real_time = 1.0
+presets.live_time = 0.0
+mca->set_presets, presets
+mca->erase
+mca->acquire_on
+mca->acquire_wait
+data = mca->get_data()
+count_rate = total(data)
+print, 'Input count rate = ', count_rate
+
+; Clear presets, erase sequence 0
+presets.live_time = 0.0
+mca->set_presets, presets
+mca->erase
+
+; Now collect time-resolved spectra as fast as possible
+mca->acquire_on
+t0 = systime(1)
+for i=0,max_sequences-1 do begin
+  <tr valign=top>
+    <td>DSA2000</td>
+    <td>Linux (libnet/libpcap)</td>
+    <td>30.8</td>
+    <td>13.4</td>
+  </tr>
+
+  <tr valign=top>
+    <td>DSA2000</td>
+    <td>vxWorks (etherLib)</td>
+    <td>N.D.</td>
+    <td>12.0</td>
+  </tr>
+
+  <tr valign=top>
+    <td>DSA2000</td>
+    <td>vxWorks (LLC sockets, muxLib)</td>
     <td>N.D.</td>
     <td>12.0</td>
   </tr>
