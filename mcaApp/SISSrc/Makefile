@@ -27,7 +27,6 @@ mcaSIS_LIBS += mca
 mcaSIS_LIBS += std
 mcaSIS_LIBS += calc sscan autosave
 mcaSIS_LIBS += asyn
-mcaSIS_LIBS += seq pv
 mcaSIS_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #==================================
