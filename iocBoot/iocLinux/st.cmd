@@ -31,7 +31,7 @@ icbConfig("icbHvps1", 0x59e, 2, 2)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_hvps.db", "P=mcaTest:,HVPS=hvps1,PORT=icbHvps1,LIMIT=1000")
 icbConfig("icbTca1", 0x59e, 8, 3)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_tca.db", "P=mcaTest:,TCA=tca1,MCA=aim_adc2,PORT=icbTca1")
-#icbConfig("icbDsp1", 0x8058, 0, 4)
+#icbConfig("icbDsp1", 0x59e, 0, 4)
 #dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
 
 mcaAIMShowModules
