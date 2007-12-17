@@ -1,4 +1,3 @@
-
 /* NMC_COMM_SUBS_2.C */
 
 /*******************************************************************************
@@ -39,6 +38,8 @@ static unsigned char ni_broadcast_address[6] = {1,0,0xaf,0,0,0};
 extern epicsMutexId nmc_global_mutex;           /* Mutual exclusion semaphore
                                                    to interlock access to
                                                    global variables */
+extern epicsEventId semStartup;			/* used for synchronising
+						   threads at startup */
 
 extern char sys_node_name[9];                   /* our system's node name */
 
@@ -74,8 +75,8 @@ int nmc_allocmodnum(int *module)
       
    for (*module=0; *module < NMC_K_MAX_MODULES; (*module)++) {
       p = &nmc_module_info[*module];
-      if(!(*p).valid) {
-         (*p).valid = 1; 
+      if(!p->valid) {
+         p->valid = 1; 
          return OK;
       }
    }
@@ -133,7 +134,7 @@ int nmc_buymodule(int module, int override)
     * Return success if we already own the module
     */
 
-   if((*p).module_ownership_state == NMC_K_MOS_OWNEDBYUS) {
+   if(p->module_ownership_state == NMC_K_MOS_OWNEDBYUS) {
       s = OK; 
       MODULE_INTERLOCK_OFF(module);
       goto done;
@@ -143,7 +144,7 @@ int nmc_buymodule(int module, int override)
     * Return an error if someone else already owns the module
     */
 
-   if((*p).module_ownership_state == NMC_K_MOS_NOTBYUS && !(override)) {
+   if(p->module_ownership_state == NMC_K_MOS_NOTBYUS && !(override)) {
       s = NMC__OWNERNOTSET;
       MODULE_INTERLOCK_OFF(module);
       goto done;
@@ -153,7 +154,7 @@ int nmc_buymodule(int module, int override)
     * Build the command packet
     */
 
-   COPY_ENET_ADDR((*netinfo).sys_address, packet.owner_id);
+   COPY_ENET_ADDR(netinfo->sys_address, packet.owner_id);
    for (i=0; i < sizeof(packet.owner_name); i++) 
       packet.owner_name[i] = sys_node_name[i];
 
@@ -295,6 +296,10 @@ int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i)
 {
    int inqtype=NCP_C_INQTYPE_ALL;
    int addr=0;
+
+   /* Don't send the broadcast out until the listener thread has signalled
+      that it has started up */
+   epicsEventWait(semStartup);
    while (1) {
       nmc_broadcast_inq(i, inqtype, addr);
       epicsThreadSleep((double)NCP_BROADCAST_PERIOD);
@@ -339,10 +344,8 @@ int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i)
 
 int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
 {
-   int s, module, length;
-   struct ether_header ether_header;
+   int ret, module, length;
    struct inquiry_packet ipkt;
-   struct enet_header *e;
    struct ncp_comm_header *h;
    struct ncp_comm_inquiry *p;
    struct nmc_module_info_struct *c;
@@ -353,74 +356,75 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
    /*
     * Build the command packet
     */
-
    memset(&ipkt,0,sizeof(ipkt));
 
-   e = &ipkt.enet_header;
-   (*e).dsap = (*i).status_sap;
-   (*e).ssap = (*i).status_sap;
-   (*e).control = 3;
-   COPY_SNAP((*i).status_snap, (*e).snap_id);
+   COPY_SNAP(i->status_snap, ipkt.snap_header.snap_id);
+#ifndef USE_SOCKETS
+   ipkt.snap_header.dsap = i->status_sap;
+   ipkt.snap_header.ssap = i->status_sap;
+   ipkt.snap_header.control = 3;
+#endif
 
    h = &ipkt.ncp_comm_header;
-   (*h).checkword = NCP_K_CHECKWORD;
-   (*h).protocol_type = NCP_C_PRTYPE_NAM;
-   (*h).message_type = NCP_C_MSGTYPE_INQUIRY;
-   /*
-    * There is a bug(?) in the Gnu C compiler. The correct form of the
-    * following statement is:
-    *       (*h).data_size = sizeof(*p);
-    * However, the Gnu compiler says the sizeof(*p) is 2, not 1. The AIM
-    * doesn't like this.
-    */
-   (*h).data_size = 1;
+   h->checkword = NCP_K_CHECKWORD;
+   h->protocol_type = NCP_C_PRTYPE_NAM;
+   h->message_type = NCP_C_MSGTYPE_INQUIRY;
+   h->data_size = sizeof(*p);
 
    p = &ipkt.ncp_comm_inquiry;
-   (*p).inquiry_type = inqtype;
+   p->inquiry_type = inqtype;
 
    /*
     * Now broadcast the message. Split up according to each network device type.
     */
 
-   switch ((*i).type) {
+   switch (i->type) {
    case NMC_K_DTYPE_ETHERNET:
       /*
        * Ethernet: just multicast the message using the status SAP
        */
 
-      COPY_ENET_ADDR(ni_broadcast_address, ether_header.ether_dhost);
+#ifdef USE_SOCKETS
+      COPY_ENET_ADDR(ni_broadcast_address, i->dest.sllc_mac);
       /* put in the LSB of the multicast address */
-      ether_header.ether_dhost[5] = addr;
-      /*
-       * The same bug in the Gnu compiler means the following won't work:
-       *     ether_heder.ether_type = sizeof(ipkt) - 14;
-       */
-      ether_header.ether_type = 41;
+      i->dest.sllc_mac[5] = addr;
+#else
+      COPY_ENET_ADDR(ni_broadcast_address, ipkt.enet_header.dest);
+      /* put in the LSB of the multicast address */
+      ipkt.enet_header.dest[5] = addr;
+      ipkt.enet_header.length = sizeof(ipkt) - sizeof(struct enet_header);
+#endif
 
       /* Change byte order */
       nmc_byte_order_out(&ipkt);
+
       if (aimDebug > 1) errlogPrintf("nmc_broadcast_inq, sending inquiry\n");
       length=sizeof(ipkt);
-#ifdef vxWorks
-      s=etherOutput((*i).pIf, &ether_header,
-               (char *) &ipkt.enet_header.dsap, sizeof(ipkt)-14);
-      if (s==OK) s=length;
+#ifdef USE_SOCKETS
+      length -= sizeof(struct enet_header) + sizeof(struct snap_header) - 5;
+      /* Send the packet, from the SNAP ID, without the LLC header */
+      ret = sendto(i->sockfd, ipkt.snap_header.snap_id, length, 0,
+		   (struct sockaddr *)&i->dest, sizeof(struct sockaddr_llc));
 #else
       /* fill the ethernet header of ipkt */
       /* copy only addresses */
       libnet_clear_packet(i->pIf->libnet);
-      if ( libnet_build_ethernet(ether_header.ether_dhost, i->pIf->hw_address->ether_addr_octet,
-                                 ether_header.ether_type, &ipkt.enet_header.dsap, sizeof(ipkt)-14, 
-                                 i->pIf->libnet, 0) == -1) {
-         printf("Error building ethernet packet, error=%s\n", 
-                 libnet_geterror(i->pIf->libnet));
+      if ( libnet_build_ethernet(ipkt.enet_header.dest,
+				 i->pIf->hw_address->ether_addr_octet,
+				 ipkt.enet_header.length,
+				 (unsigned char *)&ipkt.snap_header,
+				 sizeof(ipkt)-sizeof(struct enet_header), 
+				 i->pIf->libnet, 0) == -1) {
+	  printf("Error building ethernet packet, error=%s\n", 
+		 libnet_geterror(i->pIf->libnet));
       }
-      if ((s=libnet_write(i->pIf->libnet)) != length) {
-         printf("Error writing ethernet broadcasting packet, error=%s\n",
-                        libnet_geterror(i->pIf->libnet));
+      if ((ret=libnet_write(i->pIf->libnet)) != length) {
+	  printf("Error writing ethernet broadcasting packet, error=%s\n",
+		 libnet_geterror(i->pIf->libnet));
       }
 #endif
-      if (aimDebug > 0) errlogPrintf("(nmc_broadcast_inq): wrote %d bytes of %d\n",s,length);
+
+      if (aimDebug > 0) errlogPrintf("(nmc_broadcast_inq): wrote %d bytes of %d\n",ret,length);
 
       /*
        * If we sent one of the "conditional" inquiry messages, nothing to
@@ -433,36 +437,26 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
          for (module=0; module < NMC_K_MAX_MODULES; module++) {
             c = &nmc_module_info[module];
             /* terminate the loop upon the last module */
-            if(!(*c).valid) break; 
-            if ((*c).module_comm_state == NMC_K_MCS_REACHABLE) {
-               if((*c).inqmsg_counter > NMC_K_MAX_UNANSMSG)
-                  (*c).module_comm_state = NMC_K_MCS_UNREACHABLE;
-               (*c).inqmsg_counter++;
+            if(!c->valid) break; 
+            if (c->module_comm_state == NMC_K_MCS_REACHABLE) {
+               if(c->inqmsg_counter > NMC_K_MAX_UNANSMSG)
+                  c->module_comm_state = NMC_K_MCS_UNREACHABLE;
+               c->inqmsg_counter++;
             }
          }
       }
 
-      s = OK;
-      goto done;
+      GLOBAL_INTERLOCK_OFF;
+      return OK;
    }
 
    /*
     * We should never get here (we fell thru the CASE)
-    */
-
-   s = NMC__INVNETYPE;                     /* Fall thru to SIGNAL */
-
-   /*
     * Signal errors
     */
-done:
-  GLOBAL_INTERLOCK_OFF;
-   if (s == OK)
-      return OK;
-   else {
-      nmc_signal("nmc_broadcast_inq",s);
-      return ERROR;
-   }
+   GLOBAL_INTERLOCK_OFF;
+   nmc_signal("nmc_broadcast_inq",NMC__INVNETYPE);
+   return ERROR;
 }
 
 /*******************************************************************************
@@ -511,7 +505,7 @@ int nmc_freemodule(int module, int oflag)
    /*
     * Return if we don't own the module and the override flag is not set
     */
-   if (!oflag && (*p).module_ownership_state != NMC_K_MOS_OWNEDBYUS) {
+   if (!oflag && p->module_ownership_state != NMC_K_MOS_OWNEDBYUS) {
       s = OK;
       MODULE_INTERLOCK_OFF(module);
       goto done;
@@ -582,40 +576,40 @@ int nmc_byte_order_in(void *inpkt)
    /* First fix the ncp_comm_header structure which is common to all
       packet types */
    pkt = (struct enet_packet *) inpkt;
-   h = &(*pkt).ncp_comm_header;
-   LSWAP((*h).checkword);
-   LSWAP((*h).data_size);
-   SSWAP((*h).checksum);
+   h = &pkt->ncp_comm_header;
+   LSWAP(h->checkword);
+   LSWAP(h->data_size);
+   SSWAP(h->checksum);
 
    /* Now fix the structures which depend upon the packet type */
    
-   switch ((*h).message_type) {
+   switch (h->message_type) {
       
    case NCP_C_MSGTYPE_MSTATUS:
       spkt = (struct status_packet *) pkt;
-      s = &(*spkt).ncp_comm_mstatus;
-      /* memmove(&(*s).acq_memory, &(*s).num_inputs+1, 20); */
-      LSWAP((*s).comm_flags);
-      LSWAP((*s).acq_memory);
+      s = &spkt->ncp_comm_mstatus;
+      /* memmove(&s->acq_memory, &s->num_inputs+1, 20); */
+      LSWAP(s->comm_flags);
+      LSWAP(s->acq_memory);
       /* If the spares are ever used they get done here */
       break;
       
    case NCP_C_MSGTYPE_MEVENT:
       epkt = (struct event_packet *) pkt;
-      e = &(*epkt).ncp_comm_mevent;
-      /* memmove(&(*e).event_id1, &(*e).event_type+1, 8); */
-      LSWAP((*e).event_id1);
-      LSWAP((*e).event_id2);
+      e = &epkt->ncp_comm_mevent;
+      /* memmove(&e->event_id1, &e->event_type+1, 8); */
+      LSWAP(e->event_id1);
+      LSWAP(e->event_id2);
       break;
 
    case NCP_C_MSGTYPE_PACKET:
       rpkt = (struct response_packet *) pkt;
-      r = &(*rpkt).ncp_comm_packet;
-      LSWAP((*r).packet_size);
-      SSWAP((*r).packet_code);
+      r = &rpkt->ncp_comm_packet;
+      LSWAP(r->packet_size);
+      SSWAP(r->packet_code);
 
       /* Switch according to packet type */
-      switch ((*r).packet_code) {
+      switch (r->packet_code) {
       case NCP_K_MRESP_SUCCESS:
          /* This needs work, since the module returns this
             code for many commands. The resuturned structure
@@ -628,45 +622,45 @@ int nmc_byte_order_in(void *inpkt)
       case NCP_K_MRESP_RETMEMCMP:
       {
          struct ncp_mresp_retmemcmp *d;
-         d = (struct ncp_mresp_retmemcmp *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).channels);
+         d = (struct ncp_mresp_retmemcmp *) rpkt->ncp_packet_data;
+         LSWAP(d->channels);
          break;
       }
 
       case NCP_K_MRESP_ADCSTATUS:
       {
          struct ncp_mresp_retadcstatus *d;
-         d = (struct ncp_mresp_retadcstatus *) (*rpkt).ncp_packet_data;
-         /* memmove(&(*d).live, &((*d).status)+1, 12); */
-         LSWAP((*d).live);
-         LSWAP((*d).real);
-         LSWAP((*d).totals);
+         d = (struct ncp_mresp_retadcstatus *) rpkt->ncp_packet_data;
+         /* memmove(&d->live, &(d->status)+1, 12); */
+         LSWAP(d->live);
+         LSWAP(d->real);
+         LSWAP(d->totals);
          break;
       }
 
       case NCP_K_MRESP_RETACQSETUP:
       {
          struct ncp_mresp_retacqsetup *d;
-         d = (struct ncp_mresp_retacqsetup *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).alimit);
-         LSWAP((*d).plive);
-         LSWAP((*d).preal);
-         LSWAP((*d).ptotals);
-         LSWAP((*d).start);
-         LSWAP((*d).end);
-         LSWAP((*d).plimit);
+         d = (struct ncp_mresp_retacqsetup *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->alimit);
+         LSWAP(d->plive);
+         LSWAP(d->preal);
+         LSWAP(d->ptotals);
+         LSWAP(d->start);
+         LSWAP(d->end);
+         LSWAP(d->plimit);
          break;
       }
       
       case NCP_K_MRESP_RETLISTSTAT:
       {
          struct ncp_mresp_retliststat *d;
-         d = (struct ncp_mresp_retliststat *) (*rpkt).ncp_packet_data;
-         /* memmove(&(*d).offset_1, &(*d).buffer_1_full+1, 9); */
-         /* memmove(&(*d).offset_2, &(*d).buffer_2_full+1, 4); */
-         LSWAP((*d).offset_1);
-         LSWAP((*d).offset_2);
+         d = (struct ncp_mresp_retliststat *) rpkt->ncp_packet_data;
+         /* memmove(&d->offset_1, &d->buffer_1_full+1, 9); */
+         /* memmove(&d->offset_2, &d->buffer_2_full+1, 4); */
+         LSWAP(d->offset_1);
+         LSWAP(d->offset_2);
          break;
       }
 
@@ -720,14 +714,14 @@ int nmc_byte_order_out(void *outpkt)
    /* First fix the ncp_comm_header structure which is common to all
       packet types */
    pkt = (struct enet_packet *) outpkt;
-   h = &(*pkt).ncp_comm_header;
-   LSWAP((*h).checkword);
-   LSWAP((*h).data_size);
-   SSWAP((*h).checksum);
+   h = &pkt->ncp_comm_header;
+   LSWAP(h->checkword);
+   LSWAP(h->data_size);
+   SSWAP(h->checksum);
 
    /* Now fix the structures which depend upon the packet type */
    
-   switch ((*h).message_type) {
+   switch (h->message_type) {
 
    case NCP_C_MSGTYPE_INQUIRY:
       /* There is nothing which needs to be done in this case */
@@ -735,30 +729,30 @@ int nmc_byte_order_out(void *outpkt)
 
    case NCP_C_MSGTYPE_PACKET:
       rpkt = (struct response_packet *) pkt;
-      r = &(*rpkt).ncp_comm_packet;
-      LSWAP((*r).packet_size);
+      r = &rpkt->ncp_comm_packet;
+      LSWAP(r->packet_size);
       /* Save the host byte ordered version of packet_code */
-      packet_code = (*r).packet_code;
-      SSWAP((*r).packet_code);
+      packet_code = r->packet_code;
+      SSWAP(r->packet_code);
 
       switch (packet_code) {
       case NCP_K_HCMD_SETACQADDR:
       {
          struct ncp_hcmd_setacqaddr *d;
-         d = (struct ncp_hcmd_setacqaddr *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
-         LSWAP((*d).address);
-         LSWAP((*d).limit);
+         d = (struct ncp_hcmd_setacqaddr *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
+         LSWAP(d->address);
+         LSWAP(d->limit);
          break;
       }
 
       case NCP_K_HCMD_SETELAPSED:
       {
          struct ncp_hcmd_setelapsed *d;
-         d = (struct ncp_hcmd_setelapsed *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
-         LSWAP((*d).live);
-         LSWAP((*d).real);
+         d = (struct ncp_hcmd_setelapsed *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
+         LSWAP(d->live);
+         LSWAP(d->real);
          break;
       }
 
@@ -767,96 +761,96 @@ int nmc_byte_order_out(void *outpkt)
          struct ncp_hcmd_setmemory *d;
          unsigned int *pdata;
          int i;
-         d = (struct ncp_hcmd_setmemory *) (*rpkt).ncp_packet_data;
-         pdata = (unsigned int *) &(*d).size + 1;
-         for (i=0; i < (*d).size/4; i++) {
+         d = (struct ncp_hcmd_setmemory *) rpkt->ncp_packet_data;
+         pdata = (unsigned int *) &d->size + 1;
+         for (i=0; i < d->size/4; i++) {
             LSWAP((pdata[i]));
          }
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         LSWAP(d->address);
+         LSWAP(d->size);
          break;
       }
 
       case NCP_K_HCMD_SETMEMCMP:
       {
          struct ncp_hcmd_setmemcmp *d;
-         d = (struct ncp_hcmd_setmemcmp *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_setmemcmp *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
          break;
       }
 
       case NCP_K_HCMD_SETPRESETS:
       {
          struct ncp_hcmd_setpresets *d;
-         d = (struct ncp_hcmd_setpresets *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
-         LSWAP((*d).live);
-         LSWAP((*d).real);
-         LSWAP((*d).totals);
-         LSWAP((*d).start);
-         LSWAP((*d).end);
-         LSWAP((*d).limit);
+         d = (struct ncp_hcmd_setpresets *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
+         LSWAP(d->live);
+         LSWAP(d->real);
+         LSWAP(d->totals);
+         LSWAP(d->start);
+         LSWAP(d->end);
+         LSWAP(d->limit);
          break;
       }
 
       case NCP_K_HCMD_SETACQSTATUS:
       {
          struct ncp_hcmd_setacqstate *d;
-         d = (struct ncp_hcmd_setacqstate *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_setacqstate *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
 
       case NCP_K_HCMD_ERASEMEM:
       {
          struct ncp_hcmd_erasemem *d;
-         d = (struct ncp_hcmd_erasemem *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_erasemem *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
          break;
       }
 
       case NCP_K_HCMD_SETACQMODE:
       {
          struct ncp_hcmd_setacqmode *d;
-         d = (struct ncp_hcmd_setacqmode *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_setacqmode *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
       
       case NCP_K_HCMD_RETMEMORY:
       {
          struct ncp_hcmd_retmemory *d;
-         d = (struct ncp_hcmd_retmemory *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_retmemory *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
          break;
       }
 
       case NCP_K_HCMD_RETMEMCMP:
       {
          struct ncp_hcmd_retmemcmp *d;
-         d = (struct ncp_hcmd_retmemcmp *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_retmemcmp *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
          break;
       }
 
       case NCP_K_HCMD_RETADCSTATUS:
       {
          struct ncp_hcmd_retadcstatus *d;
-         d = (struct ncp_hcmd_retadcstatus *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_retadcstatus *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
 
       case NCP_K_HCMD_SETHOSTMEM:
       {
          struct ncp_hcmd_sethostmem *d;
-         d = (struct ncp_hcmd_sethostmem *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_sethostmem *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
          /* What is the memory we write - do we need to swap it ? */
          break;
       }
@@ -864,16 +858,16 @@ int nmc_byte_order_out(void *outpkt)
       case NCP_K_HCMD_RETHOSTMEM:
       {
          struct ncp_hcmd_rethostmem *d;
-         d = (struct ncp_hcmd_rethostmem *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_rethostmem *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
          break;
       }
       
       case NCP_K_HCMD_SETOWNER:
       {
          struct ncp_hcmd_setowner *d;
-         d = (struct ncp_hcmd_setowner *) (*rpkt).ncp_packet_data;
+         d = (struct ncp_hcmd_setowner *) rpkt->ncp_packet_data;
          /* Nothing to do in this case */
          break;
       }
@@ -881,7 +875,7 @@ int nmc_byte_order_out(void *outpkt)
       case NCP_K_HCMD_SETOWNEROVER:
       {
          struct ncp_hcmd_setownerover *d;
-         d = (struct ncp_hcmd_setownerover *) (*rpkt).ncp_packet_data;
+         d = (struct ncp_hcmd_setownerover *) rpkt->ncp_packet_data;
          /* Nothing to do in this case */
          break;
       }
@@ -913,95 +907,95 @@ int nmc_byte_order_out(void *outpkt)
       case NCP_K_HCMD_SENDICB:
       {
          struct ncp_hcmd_sendicb *d;
-         d = (struct ncp_hcmd_sendicb *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).registers);
+         d = (struct ncp_hcmd_sendicb *) rpkt->ncp_packet_data;
+         LSWAP(d->registers);
          break;
       }
 
       case NCP_K_HCMD_RECVICB:
       {
          struct ncp_hcmd_recvicb *d;
-         d = (struct ncp_hcmd_recvicb *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).registers);
+         d = (struct ncp_hcmd_recvicb *) rpkt->ncp_packet_data;
+         LSWAP(d->registers);
          break;
       }
 
       case NCP_K_HCMD_SETUPACQ:
       {
          struct ncp_hcmd_setupacq *d;
-         d = (struct ncp_hcmd_setupacq *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
-         LSWAP((*d).address);
-         LSWAP((*d).alimit);
-         LSWAP((*d).plive);
-         LSWAP((*d).preal);
-         LSWAP((*d).ptotals);
-         LSWAP((*d).start);
-         LSWAP((*d).end);
-         LSWAP((*d).plimit);
-         LSWAP((*d).elive);
-         LSWAP((*d).ereal);
+         d = (struct ncp_hcmd_setupacq *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
+         LSWAP(d->address);
+         LSWAP(d->alimit);
+         LSWAP(d->plive);
+         LSWAP(d->preal);
+         LSWAP(d->ptotals);
+         LSWAP(d->start);
+         LSWAP(d->end);
+         LSWAP(d->plimit);
+         LSWAP(d->elive);
+         LSWAP(d->ereal);
          break;
       }
       
       case NCP_K_HCMD_RETACQSETUP:
       {
          struct ncp_hcmd_retacqsetup *d;
-         d = (struct ncp_hcmd_retacqsetup *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_retacqsetup *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
       
       case NCP_K_HCMD_SETMODEVSAP:
       {
          struct ncp_hcmd_setmodevsap *d;
-         d = (struct ncp_hcmd_setmodevsap *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).mevsource);
+         d = (struct ncp_hcmd_setmodevsap *) rpkt->ncp_packet_data;
+         SSWAP(d->mevsource);
          break;
       }
       
       case NCP_K_HCMD_RETLISTMEM:
       {
          struct ncp_hcmd_retlistmem *d;
-         d = (struct ncp_hcmd_retlistmem *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
-         LSWAP((*d).offset);
-         LSWAP((*d).size);
+         d = (struct ncp_hcmd_retlistmem *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
+         LSWAP(d->offset);
+         LSWAP(d->size);
          break;
       }
 
       case NCP_K_HCMD_RELLISTMEM:
       {
          struct ncp_hcmd_rellistmem *d;
-         d = (struct ncp_hcmd_rellistmem *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_rellistmem *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
 
       case NCP_K_HCMD_RETLISTSTAT:
       {
          struct ncp_hcmd_retliststat *d;
-         d = (struct ncp_hcmd_retliststat *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_retliststat *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
                 
       case NCP_K_HCMD_RETMEMSEP:
       {
          struct ncp_hcmd_retmemsep *d;
-         d = (struct ncp_hcmd_retmemsep *) (*rpkt).ncp_packet_data;
-         LSWAP((*d).address);
-         LSWAP((*d).size);
-         LSWAP((*d).offset);
-         LSWAP((*d).chunks);
+         d = (struct ncp_hcmd_retmemsep *) rpkt->ncp_packet_data;
+         LSWAP(d->address);
+         LSWAP(d->size);
+         LSWAP(d->offset);
+         LSWAP(d->chunks);
          break;
       }
 
       case NCP_K_HCMD_RESETLIST:
       {
          struct ncp_hcmd_resetlist *d;
-         d = (struct ncp_hcmd_resetlist *) (*rpkt).ncp_packet_data;
-         SSWAP((*d).adc);
+         d = (struct ncp_hcmd_resetlist *) rpkt->ncp_packet_data;
+         SSWAP(d->adc);
          break;
       }
 
