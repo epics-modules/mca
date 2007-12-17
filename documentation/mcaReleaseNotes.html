@@ -8,7 +8,7 @@
 
 <h1 align="center">mca Release Notes</h1>
 
-<h2 align="center">Release 6-10 (November 30, 2007)</h2>
+<h2 align="center">Release 6-10 (December 17, 2007)</h2>
 <ul>
   <li> mcaSrc
   <ul>
@@ -25,7 +25,15 @@
          on the newer 556A modules.  The older 556 modules should still be read in compressed
          format.
     <li> Added code to use LLC sockets on vxWorks (rather than etherLib) and 
-         Linux (rather than libnet and libpcap). (Thanks to Peter Denison of DLS).
+         Linux (rather than libnet and libpcap).  Thanks to Peter Denision of DLS for
+         the initial version of this code.  
+         The vxWorks code must be built with muxLib
+         on vxWorks 5.4.2 and earlier, and muxTkLib on vxWorks 5.5 and later.  muxTkLib
+         does not seem to work correctly on vxWorks 5.4.2, it kills all other protocols
+         when muxTkBind is called with MUX_PROTO_SNARF.
+         muxTkLib vs muxLib is selected via a flag in CanberraSrc/Makefile.  
+         Note that AIMConfig automatically registers and attaches to the LLC protocol
+         driver, unlike in the original version from Diamond.
   </ul>
   <li> RontecSrc
   <ul>
