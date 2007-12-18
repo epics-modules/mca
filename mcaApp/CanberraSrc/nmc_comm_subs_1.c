@@ -229,16 +229,23 @@ found:
 #ifdef USE_SOCKETS
 #ifdef vxWorks
          {
-             char temp_device[3];
+             char temp_device[20];
              int unit;
+             int len;
              /* We start the LLC protocol here.
               * Doing it here makes it simpler, no need to put LLC stuff in EPICS startup script.
               * This assumes that only the Canberra code is going to use this LLC socket. */
 
-             /* Copy the first 2 characters of device name.  Last character is unit. */
-             strncpy(temp_device, device, 2);
-             temp_device[2] = 0;
-             unit = atoi(&device[2]);
+             /* Get the length of the device string. Last character is unit. */
+             len = strlen(device);
+             if ((len < 2) || (len > 20)) {
+                 errlogPrintf("(nmc_initialize): invalid Ethernet device name %s\n", device);
+                 s = -1;
+                 goto signal;
+             }
+             unit = atoi(&device[len-1]);
+             strncpy(temp_device, device, len-1);
+             temp_device[len-1] = 0;
              s = llcAttach(temp_device, unit);
              if (s) goto signal;
              s = llcRegister();
