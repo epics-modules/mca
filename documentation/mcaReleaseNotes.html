@@ -12,7 +12,7 @@
 <ul>
   <li> mcaSrc
   <ul>
-    <li> Fixed bug in MCA record.  The record should force a read of the data whenever
+    <li> Fixed bug in MCA record.  The record must force a read of the data whenever
          acquisition completes (.ACQG=1 changes to .ACQG=0).  In earlier versions
          it could miss this transition if acquisition was complete by the time of the first
          status poll.  The bug fix in R6-9 attempted to fix this, but it was inefficient and
@@ -21,19 +21,29 @@
   </ul>
   <li> CanberraSrc
   <ul>
-    <li> Added code to read data in uncompressed format.  This greatly improves the performance
-         on the newer 556A modules.  The older 556 modules should still be read in compressed
-         format.
+    <li> Changed the code to read data from the new AIM modules (556A, DSA2000) in uncompressed mode.  
+         This improves the performance by about a factor of 3 over the previous code which
+         used compressed mode for all AIM models. 
+         These newer models are very slow
+         to compress the data because they lack a co-processor.  
+         The older 556 modules are still read in compressed format, because it is faster.
+         With this change the time to acquire spectra quickly from the 556 and 556A is virtually
+         identical.
     <li> Added code to use LLC sockets on vxWorks (rather than etherLib) and 
          Linux (rather than libnet and libpcap).  Thanks to Peter Denision of DLS for
-         the initial version of this code.  
+         the initial version of this code.  This change is needed for vxWorks 5.5, because
+         the older etherHook functions are no longer supported.  It is also useful on Linux
+         because the IOC application does not need to be run as root.<br>
          The vxWorks code must be built with muxLib
          on vxWorks 5.4.2 and earlier, and muxTkLib on vxWorks 5.5 and later.  muxTkLib
-         does not seem to work correctly on vxWorks 5.4.2, it kills all other protocols
+         does not work correctly on vxWorks 5.4.2, it kills all other protocols
          when muxTkBind is called with MUX_PROTO_SNARF.
-         muxTkLib vs muxLib is selected via a flag in CanberraSrc/Makefile.  
+         muxTkLib versus muxLib is selected via the flag USE_MUXTKLIB in CanberraSrc/Makefile.  <br>
          Note that AIMConfig automatically registers and attaches to the LLC protocol
-         driver, unlike in the original version from Diamond.
+         driver, unlike in the original version from Diamond.<br>
+         On Linux the new LLC code is selected by configuring USE_SOCKETS 
+         in CanberraSrc/Makefile.  This can only be used on Linux kernel versions 2.6.14
+         and later.  Earlier versions do not support LLC sockets correctly.
   </ul>
   <li> RontecSrc
   <ul>
