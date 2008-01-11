@@ -89,6 +89,17 @@ mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 mcaAIM_SYS_LIBS_cygwin32 += wpcap Libnet rpc
 mcaAIM_SYS_LIBS_WIN32 += wpcap Libnet rpc
 
+#===========================
+# These lines force make to install Libnet and wpcap BEFORE building mcaAIM.exe for Cygwin.
+ifneq ($(strip $(LIB_INSTALLS_$(OS_CLASS))),)
+LIB_INSTALLS+=$(subst -nil-,,$(LIB_INSTALLS_$(OS_CLASS)))
+mcaAIM$(EXE):libInstalls
+else
+ifdef LIB_INSTALLS_DEFAULT
+LIB_INSTALLS+=$(LIB_INSTALLS_DEFAULT)
+endif
+endif
+
 #=============================
 PROD_IOC_vxWorks += nmcTest
 
