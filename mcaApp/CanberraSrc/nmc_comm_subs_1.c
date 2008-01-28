@@ -80,6 +80,9 @@
 #endif
 
 #include <sys/ioctl.h>
+#ifdef USE_SOCKETS
+  #include <net/if_arp.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
