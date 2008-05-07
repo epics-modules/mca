@@ -73,7 +73,7 @@ int parse_ICB_address(char *address, int *ni_module, int *icb_addr)
       return(s);
    }
    pc = strchr(address, (int)':');
-   if (pc) *icb_addr = atoi(pc+1);
+   if (pc) *icb_addr = strtol(pc+1, NULL, 16);
 
    if (icbDebug >= 1) {
       printf("%s(%d):",__FILE__,__LINE__); \
