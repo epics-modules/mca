@@ -369,7 +369,12 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
    h->checkword = NCP_K_CHECKWORD;
    h->protocol_type = NCP_C_PRTYPE_NAM;
    h->message_type = NCP_C_MSGTYPE_INQUIRY;
-   h->data_size = sizeof(*p);
+   /* There is a bug(?) in the Gnu C compiler. The correct form of the
+    * following statement is:
+    *       h->data_size = sizeof(*p);
+    * However, the Gnu compiler says the sizeof(*p) is 2, not 1. The AIM
+    * doesn't like this. */
+   h->data_size = 1;
 
    p = &ipkt.ncp_comm_inquiry;
    p->inquiry_type = inqtype;
@@ -401,7 +406,12 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
       if (aimDebug > 1) errlogPrintf("nmc_broadcast_inq, sending inquiry\n");
       length=sizeof(ipkt);
 #ifdef USE_SOCKETS
-      length -= sizeof(struct enet_header) + sizeof(struct snap_header) - 5;
+      /* There is a bug in the GCC compiler for the 68040.  The following statement
+       * should be
+       *       length -= sizeof(struct enet_header) + sizeof(struct snap_header) - 5;
+       * However, the sizeof() operator is returning 1 too many on that platform
+       * so we hardcode the value for now. */
+      length = 38;
       /* Send the packet, from the SNAP ID, without the LLC header */
       ret = sendto(i->sockfd, ipkt.snap_header.snap_id, length, 0,
 		   (struct sockaddr *)&i->dest, sizeof(struct sockaddr_llc));
