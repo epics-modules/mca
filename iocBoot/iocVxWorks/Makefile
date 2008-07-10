@@ -1,6 +1,6 @@
 TOP = ../..
 include $(TOP)/configure/CONFIG
-ARCH = vxWorks-ppc603
+ARCH = vxWorks-ppc604
 
 # vxWorks architecture needs a cdCommands file
 buildInstall: cdCommands
