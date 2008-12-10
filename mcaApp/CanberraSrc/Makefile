@@ -82,7 +82,8 @@ mcaAIM_SRCS_DEFAULT += mcaCanberraMain.cpp
 mcaAIM_SRCS_vxWorks += -nil-
 mcaAIM_LIBS += mca
 mcaAIM_LIBS += mcaCanberra
-mcaAIM_LIBS += calc sscan autosave
+mcaAIM_LIBS += calc autosave
+mcaAIM_LIBS += busy
 mcaAIM_LIBS += asyn
 mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
