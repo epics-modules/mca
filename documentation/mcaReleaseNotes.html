@@ -10,6 +10,10 @@
 
 <h2 align="center">Release 6-11 (December 19, 2008)</h2>
 <ul>
+   <li>Force build to install Libnet and wpcap before building mcaAim.exe
+   <li>icb_user_subs.c: atoi -> strtol
+   <li>nmc_comm_subs_1.c: include if_arp.h only if USE_SOCKETS
+   <li>nmc_comm_subs_2.c: work around GCC bug
    <li>Modified to depend on busy module, instead of sscan module
    <li>Struck_settings.req - new file
    <li>directory dependencies, to support multi-job build (gnumake -j)
