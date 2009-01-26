@@ -15,7 +15,7 @@ LIBRARY_IOC += mcaRontec
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaRontec_SRCS += drvMcaRontec.c
 mcaRontec_LIBS += busy
-mcaRontec_LIBS += calc autosave
+mcaRontec_LIBS += calc sscan autosave
 mcaRontec_LIBS += asyn 
 mcaRontec_LIBS += $(EPICS_BASE_IOC_LIBS)
 
@@ -28,7 +28,7 @@ mcaRontecApp_SRCS_vxWorks += mcaRontec_registerRecordDeviceDriver.cpp
 mcaRontecApp_LIBS += mca
 mcaRontecApp_LIBS += mcaRontec
 mcaRontecApp_LIBS += busy
-mcaRontecApp_LIBS += calc autosave
+mcaRontecApp_LIBS += calc sscan autosave
 mcaRontecApp_LIBS += asyn
 mcaRontecApp_SYS_LIBS_cygwin32 += rpc
 mcaRontecApp_LIBS += $(EPICS_BASE_IOC_LIBS)
