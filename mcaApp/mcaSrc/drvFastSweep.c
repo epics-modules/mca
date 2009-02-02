@@ -33,6 +33,8 @@
 typedef struct {
     char *portName;
     char *inputName;
+    char *dataString;
+    char *intervalString;
     int maxSignals;
     int maxPoints;
     int numPoints;
@@ -138,7 +140,7 @@ static asynDrvUser fastSweepDrvUser = {
 
 
 int initFastSweep(const char *portName, const char *inputName, 
-                  int maxSignals, int maxPoints)
+                  int maxSignals, int maxPoints, char *dataString, char *intervalString)
 {
     fastSweepPvt *pPvt;
     asynStatus status;
@@ -159,6 +161,16 @@ int initFastSweep(const char *portName, const char *inputName,
     pPvt->maxPoints = maxPoints;
     pPvt->portName = epicsStrDup(portName);
     pPvt->inputName = epicsStrDup(inputName);
+    if ((dataString != NULL) && (strlen(dataString) != 0)) {
+        pPvt->dataString = epicsStrDup(dataString);
+    } else {
+        pPvt->dataString = epicsStrDup("DATA");
+    }
+    if ((intervalString != NULL) && (strlen(intervalString) != 0)) {
+        pPvt->intervalString = epicsStrDup(intervalString);
+    } else {
+        pPvt->intervalString = epicsStrDup("SCAN_PERIOD");
+    }
     epicsTimeGetCurrent(&pPvt->startTime);
 
     pPvt->mutexId = epicsMutexCreate();
@@ -256,10 +268,10 @@ int initFastSweep(const char *portName, const char *inputName,
     int32ArrayPvt = pasynInterface->drvPvt;
 
     /* Configure the asynUser for data command */
-    pdrvUser->create(drvUserPvt, pasynUser, "DATA", &ptypeName, &psize);
-    if (strcmp(ptypeName, "DATA") != 0) {
+    pdrvUser->create(drvUserPvt, pasynUser, pPvt->dataString, &ptypeName, &psize);
+    if (strcmp(ptypeName, pPvt->dataString) != 0) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "initFastSweep, error in drvUser for DATA\n");
+                  "initFastSweep, error in drvUser for %s\n", pPvt->dataString);
         return(-1);
     }
     pint32Array->registerInterruptUser(int32ArrayPvt, pasynUser, 
@@ -278,16 +290,16 @@ int initFastSweep(const char *portName, const char *inputName,
     }
     pfloat64 = (asynFloat64 *)pasynInterface->pinterface;
     float64Pvt = pasynInterface->drvPvt;
-    /* Configure the asynUser for SCAN_PERIOD command */
-    pdrvUser->create(drvUserPvt, pasynUser, "SCAN_PERIOD", &ptypeName, &psize);
-    if (strcmp(ptypeName, "SCAN_PERIOD") != 0) {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                  "initFastSweep, error in drvUser for SCAN_PERIOD\n");
-        return(-1);
+    /* Configure the asynUser for callback interval command */
+    pdrvUser->create(drvUserPvt, pasynUser, pPvt->intervalString, &ptypeName, &psize);
+    if (strcmp(ptypeName, pPvt->intervalString) != 0) {
+        /* This driver does not support this command.  Just set numAverage=1 */
+        pPvt->numAverage = 1;
+    } else {
+        pfloat64->registerInterruptUser(float64Pvt, pasynUser, 
+                                        intervalCallback, pPvt, &registrarPvt);
+        status = pfloat64->read(float64Pvt, pasynUser, &pPvt->callbackInterval);
     }
-    pfloat64->registerInterruptUser(float64Pvt, pasynUser, 
-                                    intervalCallback, pPvt, &registrarPvt);
-    status = pfloat64->read(float64Pvt, pasynUser, &pPvt->callbackInterval);
     return(0);
 }
 
@@ -336,9 +348,6 @@ static void nextPoint(fastSweepPvt *pPvt, epicsInt32 *newData)
     int offset;
     epicsTimeStamp now;
 
-    if (pPvt->numAcquired >= pPvt->numPoints) {
-       pPvt->acquiring = 0;
-    }
     if (!pPvt->acquiring) return;
     
     offset = pPvt->numAcquired;
@@ -347,6 +356,9 @@ static void nextPoint(fastSweepPvt *pPvt, epicsInt32 *newData)
         offset += pPvt->maxPoints;
     }
     pPvt->numAcquired++;
+    if (pPvt->numAcquired >= pPvt->numPoints) {
+       pPvt->acquiring = 0;
+    }
     epicsTimeGetCurrent(&now);
     pPvt->elapsedTime = epicsTimeDiffInSeconds(&now, &pPvt->startTime);
     if ((pPvt->realTime > 0) && (pPvt->elapsedTime >= pPvt->realTime))
@@ -627,14 +639,19 @@ static const iocshArg initSweepArg0 = { "portName",iocshArgString};
 static const iocshArg initSweepArg1 = { "inputName",iocshArgString};
 static const iocshArg initSweepArg2 = { "maxSignals",iocshArgInt};
 static const iocshArg initSweepArg3 = { "maxPoints",iocshArgInt};
-static const iocshArg * const initSweepArgs[4] = {&initSweepArg0,
+static const iocshArg initSweepArg4 = { "dataString",iocshArgString};
+static const iocshArg initSweepArg5 = { "intervalString",iocshArgString};
+static const iocshArg * const initSweepArgs[6] = {&initSweepArg0,
                                                   &initSweepArg1,
                                                   &initSweepArg2,
-                                                  &initSweepArg3};
-static const iocshFuncDef initSweepFuncDef = {"initFastSweep",4,initSweepArgs};
+                                                  &initSweepArg3,
+                                                  &initSweepArg4,
+                                                  &initSweepArg5};
+static const iocshFuncDef initSweepFuncDef = {"initFastSweep",6,initSweepArgs};
 static void initSweepCallFunc(const iocshArgBuf *args)
 {
-    initFastSweep(args[0].sval, args[1].sval, args[2].ival, args[3].ival);
+    initFastSweep(args[0].sval, args[1].sval, args[2].ival, args[3].ival,
+                  args[4].sval, args[5].sval);
 }
 
 void fastSweepRegister(void)
