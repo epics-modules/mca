@@ -1,621 +1,988 @@
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>synApps mca</title>
-<meta name="author" content="Mark Rivers">
+  <title>synApps mca</title>
 </head>
 <body>
-<img src="http://www.aps.anl.gov/aod/bcda/Icons/logo101.gif" alt=
-"EPICS" hspace="5" height="101" width="101" align="right">
-
-<h1>synApps: <b>mca</b></h1>
-<p>Module Owner: Mark Rivers: University of Chicago</p>
-<p>This page is the home of <b>mca</b>.&nbsp;</p>
-<p><b>mca</b> supports Multi-Channel Analyzers (hence the name), and also related
-devices such as multi-channel scalers (MCS), waveform digitizers, and
-programmable ADCs, amplifiers and power supplies.</p>
-<p><b>mca</b> includes a new record, the mcaRecord.</p>
-<p>Devices supported in <b>mca</b> include:</p>
-<p>From <a href="http://www.canberra.com/">Canberra Industries</a></p>
-<ul>
-  <li>556/AIM Ethernet MCA</li>
-  <li>DSA-2000 Ethernet MCA</li>
-  <li>9660 Digital Signal Processor (replaces amplifier and ADC)</li>
-  <li>9615 Programmable Amplifier</li>
-  <li>9635 ADC</li>
-  <li>9641 2kV High Voltage Power Supply</li>
-  <li>9645 6kV High Voltage Power Supply</li>
-  <li>2016A Amplifier, 3-channel analyzer</li>
-</ul>
-The Canberra support runs on vxWorks, Linux and Cygwin.  It should also run on other
-Unix systems if the libnet and libpcap packages are intalled.
-
-<p>From <a href="http://www.struck.de/">Struck Innovative Systems</a></p>
-<ul>
-  <li>SIS 3801 MCS (formerly the STR7201 from Struck)</li>
-  <li>SIS 3820 MCS </li>
-</ul>
-The SIS support runs on vxWorks.  It should also run on RTEMS, but has not been tested. The SIS3820 support
-runs on Linux with the SIS PCI/VME bridge.
-
-<p>From <a href="http://www.bruker-axs.de/index.php?id=microanalysis&L=0">Bruker (formerly Rontec)</a></p>
-<ul>
-  <li>XFlash MCA</li>
-</ul>
-The Rontec support will run on any IOC with support for asyn serial ports.
-
-<p>Drivers that support the asyn version of the mcaRecord device support are provided for additional 
-devices in other synApps modules that I've written.&nbsp; These include <a href="dxp.html">dxp</a>,
-<a href="ip330.html">ip330</a>, and <a href="quadEM.html">quadEM</a>.</p>
-<p>Please email any comments and bug reports to <a href="mailto:%20rivers@cars.uchicago.edu">Mark
-Rivers</a> who is
-responsible for coordinating development and releases.</p>
-
-<h2>Where to find it</h2>
-<p>You can download the software from the links in the table
-below:</p>
-<table summary="Where to find the software" border="1">
-<tbody>
-  <tr align="center">
-    <th>Module Version</th>
-    <th>Release Date</th>
-    <th>Filename</th>
-    <th>Documentation</th>
-    <th>Release Notes</th>
-    <th>Known Problems</th>
-  </tr>
-
-  <tr>
-    <td>R6-10</td>
-    <td>21-Dec-2007</td>
-    <td><a href="pub/mcaR6-10.tgz">mcaR6-10.tgz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-9</td>
-    <td>5-Dec-2006</td>
-    <td><a href="pub/mcaR6-9.tgz">mcaR6-9.tgz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-8</td>
-    <td>5-Sep-2006</td>
-    <td><a href="pub/mcaR6-8.tgz">mcaR6-8.tgz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-7</td>
-    <td>10-Jul-2006</td>
-    <td><a href="pub/mcaR6-7.tgz">mcaR6-7.tgz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-  <tr>
-    <td>R6-6</td>
-    <td>16-Nov-2005</td>
-    <td><a href="pub/mcaR6-6.tar.gz">mcaR6-6.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-5</td>
-    <td>29-Mar-2005</td>
-    <td><a href="pub/mcaR6-5.tar.gz">mcaR6-5.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-4</td>
-    <td>24-Mar-2005</td>
-    <td><a href="pub/mcaR6-4.tar.gz">mcaR6-4.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-3</td>
-    <td>12-May-2004?</td>
-    <td><a href="pub/mcaR6-3.tar.gz">mcaR6-3.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-2</td>
-    <td>4-Mar-2004</td>
-    <td><a href="pub/mcaR6-2.tar.gz">mcaR6-2.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R6-1</td>
-    <td>5-Nov-2003</td>
-    <td><a href="pub/mcaR6-1.tar.gz">mcaR6-1.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>See release notes</td>
-  </tr>
-
-  <tr>
-    <td>R5-5</td>
-    <td>23-Jul-2003?</td>
-    <td><a href="pub/mcaR5-5.tar.gz">mcaR5-5.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>see release notes</td>
-  </tr>
-
-  <tr>
-    <td>R5-4</td>
-    <td>26-May-2003</td>
-    <td><a href="pub/mcaR5-4.tar.gz">mcaR5-4.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>see release notes</td>
-  </tr>
-
-  <tr>
-    <td>R5-3</td>
-    <td>3-Apr-2003</td>
-    <td><a href="pub/mcaR5-3.tar.gz">mcaR5-3.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>see release notes</td>
-  </tr>
-
-  <tr>
-    <td>R5-2</td>
-    <td>29-Jul-2002</td>
-    <td><a href="pub/mcaR5-2.tar.gz">mcaR5-2.tar.gz</a></td>
-    <td><a href="mcaDoc.html">mcaDoc.html</a></td>
-    <td><a href="mcaReleaseNotes.html">Release notes</a></td>
-    <td>see release notes</td>
-  </tr>
-
-</tbody>
-</table>
-
-<h2>Required Modules</h2>
-<table summary="Required Modules" border="1">
-<tbody>
-  <tr align="center">
-    <th>Module version</th>
-    <th>Requires module</th>
-    <th>Release needed</th>
-    <th>Required for</th>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-10</td>
-    <td>EPICS base</td>
-    <td>3.14.8.2</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-8</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5-4</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-6-4</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5-6</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-3</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-9</td>
-    <td>EPICS base</td>
-    <td>3.14.8.2</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-6</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5-4</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-6-3</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5-3</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-2-1</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-8</td>
-    <td>EPICS base</td>
-    <td>3.14.8.2</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-6</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5-3</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-6-3</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5-3</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-2-1</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-7</td>
-    <td>EPICS base</td>
-    <td>3.14.8.2</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-6</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5-2</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-6-1</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5-2</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-1-3</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-6</td>
-    <td>EPICS base</td>
-    <td>3.14.7</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-3</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-5</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5-1</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-1-1</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-5</td>
-    <td>EPICS base</td>
-    <td>3.14.7</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-2</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-5</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-1</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-4</td>
-    <td>EPICS base</td>
-    <td>3.14.7</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>asyn</td>
-    <td>4-2</td>
-    <td>Driver support</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-5</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>2-5</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>2-5</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>4-1</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-3</td>
-    <td>EPICS base</td>
-    <td>3.14.5</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>2-4-2</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>?</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>?</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>?</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>?</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=6>6-2</td>
-    <td>EPICS base</td>
-    <td>3.14.5</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>2-4-2</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>?</td>
-    <td>Scaler record</td>
-  </tr>
-  <tr>
-    <td>calc</td>
-    <td>?</td>
-    <td>Transform record</td>
-  </tr>
-  <tr>
-    <td>sscan</td>
-    <td>?</td>
-    <td>Busy record</td>
-  </tr>
-  <tr>
-    <td>autosave</td>
-    <td>?</td>
-    <td>Save/restore</td>
-  </tr>
-
-  <tr>
-    <td rowspan=3>6-1</td>
-    <td>EPICS base</td>
-    <td>3.14.4</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>2-4</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>2-2</td>
-    <td>Records used in databases</td>
-  </tr>
-
-  <tr>
-    <td rowspan=3>5-5</td>
-    <td>EPICS base</td>
-    <td>3.13.7</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>1-10</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>1-3</td>
-    <td>Records used in databases</td>
-  </tr>
-
-  <tr>
-    <td rowspan=3>5-4</td>
-    <td>EPICS base</td>
-    <td>3.13.7</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>1-10</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>1-3</td>
-    <td>Records used in databases</td>
-  </tr>
-
-  <tr>
-    <td rowspan=3>5-3</td>
-    <td>EPICS base</td>
-    <td>3.13.3</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>1-8</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>1-2?</td>
-    <td>Records used in databases</td>
-  </tr>
-
-  <tr>
-    <td rowspan=3>5-2</td>
-    <td>EPICS base</td>
-    <td>3.13.3</td>
-    <td>Base support</td>
-  </tr>
-  <tr>
-    <td>mpf</td>
-    <td>1-8</td>
-    <td>Message passing</td>
-  </tr>
-  <tr>
-    <td>std</td>
-    <td>1-2?</td>
-    <td>Records used in databases</td>
-  </tr>
-
-</tbody>
-</table>
-
-<h2>Installation and Building</h2>
-<p>After obtaining a copy of the distribution, it must be installed
-and built for use at your site. These steps only need to be
-performed once for the site (unless versions of the module running
-under different releases of EPICS and/or the other required modules
-are needed).</p>
-<ol>
-<li>Create an installation directory for the module, usually this
-will end with<br>
-  <br>
-  <tt>.../support/</tt>
-  <br>
-</li>
-<li>Place the distribution file in this directory. Then issue the
-commands (Unix style)
-<pre>
+  <h1 style="text-align: center">
+  </h1>
+  <h1>
+    synApps: <b>mca</b></h1>
+  <p>
+    Module Owner: Mark Rivers: University of Chicago</p>
+  <p>
+    This page is the home of <b>mca</b>.&nbsp;</p>
+  <p>
+    <b>mca</b> supports Multi-Channel Analyzers (hence the name), and also related devices
+    such as multi-channel scalers (MCS), waveform digitizers, and programmable ADCs,
+    amplifiers and power supplies.</p>
+  <p>
+    <b>mca</b> includes a new record, the mcaRecord.</p>
+  <p>
+    Devices supported in <b>mca</b> include:</p>
+  <p>
+    From <a href="http://www.canberra.com/">Canberra Industries</a></p>
+  <ul>
+    <li>556/AIM Ethernet MCA</li>
+    <li>DSA-2000 Ethernet MCA</li>
+    <li>9660 Digital Signal Processor (replaces amplifier and ADC)</li>
+    <li>9615 Programmable Amplifier</li>
+    <li>9635 ADC</li>
+    <li>9641 2kV High Voltage Power Supply</li>
+    <li>9645 6kV High Voltage Power Supply</li>
+    <li>2016A Amplifier, 3-channel analyzer</li>
+  </ul>
+  <p>
+    The Canberra support runs on vxWorks, Linux and Cygwin. It should also run on other
+    Unix systems if the libnet and libpcap packages are intalled.</p>
+  <p>
+    From <a href="http://www.struck.de/">Struck Innovative Systems</a></p>
+  <ul>
+    <li>SIS 3801 MCS (formerly the STR7201 from Struck)</li>
+    <li>SIS 3820 MCS </li>
+  </ul>
+  <p>
+    The SIS support runs on vxWorks. It should also run on RTEMS, but has not been tested.
+    The SIS3820 support runs on Linux with the SIS PCI/VME bridge.</p>
+  <p>
+    From <a href="http://www.bruker-axs.de/index.php?id=microanalysis&L=0">Bruker (formerly
+      Rontec)</a></p>
+  <ul>
+    <li>XFlash MCA</li>
+  </ul>
+  <p>
+    The Rontec support will run on any IOC with support for asyn serial ports.</p>
+  <p>
+    Drivers that support the asyn version of the mcaRecord device support are provided
+    for additional devices in other synApps modules that I've written.&nbsp; These include
+    <a href="http://cars.uchicago.edu/software/epics/dxp.html">dxp</a>, <a href="http://cars.uchicago.edu/software/epics/ip330.html">
+      ip330</a>, and <a href="http://cars.uchicago.edu/software/epics/quadEM.html">quadEM</a>.</p>
+  <p>
+    Please email any comments and bug reports to <a href="mailto:%20rivers@cars.uchicago.edu">
+      Mark Rivers</a> who is responsible for coordinating development and releases.</p>
+  <h2>
+    Where to find it</h2>
+  <p>
+    You can download the software from the links in the table below:</p>
+  <table border="1" summary="Where to find the software">
+    <tbody>
+      <tr align="center">
+        <th>
+          Module Version</th>
+        <th>
+          Release Date</th>
+        <th>
+          Filename</th>
+        <th>
+          Documentation</th>
+        <th>
+          Release Notes</th>
+        <th>
+          Known Problems</th>
+      </tr>
+      <tr>
+        <td>
+          R6-11</td>
+        <td>
+          2-Feb-2009</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-11.tgz">mcaR6-11.tgz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-10</td>
+        <td>
+          21-Dec-2007</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-10.tgz">mcaR6-10.tgz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-9</td>
+        <td>
+          5-Dec-2006</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-9.tgz">mcaR6-9.tgz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-8</td>
+        <td>
+          5-Sep-2006</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-8.tgz">mcaR6-8.tgz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-7</td>
+        <td>
+          10-Jul-2006</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-7.tgz">mcaR6-7.tgz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-6</td>
+        <td>
+          16-Nov-2005</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-6.tar.gz">mcaR6-6.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-5</td>
+        <td>
+          29-Mar-2005</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-5.tar.gz">mcaR6-5.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-4</td>
+        <td>
+          24-Mar-2005</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-4.tar.gz">mcaR6-4.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-3</td>
+        <td>
+          12-May-2004?</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-3.tar.gz">mcaR6-3.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-2</td>
+        <td>
+          4-Mar-2004</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-2.tar.gz">mcaR6-2.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R6-1</td>
+        <td>
+          5-Nov-2003</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR6-1.tar.gz">mcaR6-1.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          See release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R5-5</td>
+        <td>
+          23-Jul-2003?</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR5-5.tar.gz">mcaR5-5.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          see release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R5-4</td>
+        <td>
+          26-May-2003</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR5-4.tar.gz">mcaR5-4.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          see release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R5-3</td>
+        <td>
+          3-Apr-2003</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR5-3.tar.gz">mcaR5-3.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          see release notes</td>
+      </tr>
+      <tr>
+        <td>
+          R5-2</td>
+        <td>
+          29-Jul-2002</td>
+        <td>
+          <a href="http://cars.uchicago.edu/software/pub/mcaR5-2.tar.gz">mcaR5-2.tar.gz</a></td>
+        <td>
+          <a href="mcaDoc.html">mcaDoc.html</a></td>
+        <td>
+          <a href="mcaReleaseNotes.html">Release notes</a></td>
+        <td>
+          see release notes</td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>
+    Required Modules</h2>
+  <table border="1" summary="Required Modules">
+    <tbody>
+      <tr align="center">
+        <th>
+          Module version</th>
+        <th>
+          Requires module</th>
+        <th>
+          Release needed</th>
+        <th>
+          Required for</th>
+      </tr>
+      <tr>
+        <td rowspan="7">
+          6-11</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.10</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-10</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-7</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-7</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-6-3</td>
+        <td>
+          Needed by calc</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-1</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-5</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-10</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.8.2</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-8</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5-4</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-6-4</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5-6</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-3</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-9</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.8.2</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-6</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5-4</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-6-3</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5-3</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-2-1</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-8</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.8.2</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-6</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5-3</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-6-3</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5-3</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-2-1</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-7</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.8.2</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-6</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5-2</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-6-1</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5-2</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-1-3</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-6</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.7</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-3</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-5</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5-1</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-1-1</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-5</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.7</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-2</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-5</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-1</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-4</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.7</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-2</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-5</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          2-5</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-5</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          4-1</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-3</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.5</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          2-4-2</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          ?</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          ?</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          ?</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          ?</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="6">
+          6-2</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.5</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          2-4-2</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          ?</td>
+        <td>
+          Scaler record</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          ?</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          ?</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          ?</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="3">
+          6-1</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.14.4</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          2-4</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          2-2</td>
+        <td>
+          Records used in databases</td>
+      </tr>
+      <tr>
+        <td rowspan="3">
+          5-5</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.13.7</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          1-10</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          1-3</td>
+        <td>
+          Records used in databases</td>
+      </tr>
+      <tr>
+        <td rowspan="3">
+          5-4</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.13.7</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          1-10</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          1-3</td>
+        <td>
+          Records used in databases</td>
+      </tr>
+      <tr>
+        <td rowspan="3">
+          5-3</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.13.3</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          1-8</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          1-2?</td>
+        <td>
+          Records used in databases</td>
+      </tr>
+      <tr>
+        <td rowspan="3">
+          5-2</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.13.3</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          mpf</td>
+        <td>
+          1-8</td>
+        <td>
+          Message passing</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          1-2?</td>
+        <td>
+          Records used in databases</td>
+      </tr>
+    </tbody>
+  </table>
+  <h2>
+    Installation and Building</h2>
+  <p>
+    After obtaining a copy of the distribution, it must be installed and built for use
+    at your site. These steps only need to be performed once for the site (unless versions
+    of the module running under different releases of EPICS and/or the other required
+    modules are needed).</p>
+  <ol>
+    <li>Create an installation directory for the module, usually this will end with<br />
+      <br />
+      <tt>.../support/</tt>
+      <br />
+    </li>
+    <li>Place the distribution file in this directory. Then issue the commands (Unix style)
+      <pre>
 gunzip mcaRX-Y.tar.gz
 
 tar xvf mcaRX-Y.tar
 </pre>
-where X-Y is the release.</li>
-<li>This creates a &lt;top&gt; application.<br>
-  <pre>.../support/mcaRX-Y
-</pre></li>
-<li>Edit the <tt>config[ure]/RELEASE</tt> file and set the paths to
-your installation of EPICS base and to your versions of other required support modules.</li>
-<li>Run <tt>gnumake</tt> in the top level directory and check for
-any compilation errors.</li>
-<li>Please email&nbsp; <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers</a>&nbsp; so that a record can be kept of which sites are
-using this software.</li>
-</ol>
-<h2>In Use</h2>
-This software was originally developed by Mark Rivers and Tim Mooney.
-<ul>
-<li>ANL/APS : In use at CARS, XOR, HP-CAT, UNICAT and many other beamlines.</li>
-<li>NSLS: In use at X-26A, X-17C, X-17B2, X-17B3 and several other beamlines</li>
-</ul>
+      where X-Y is the release.</li>
+    <li>This creates a &lt;top&gt; application.<br />
+      <pre>.../support/mcaRX-Y
+</pre>
+    </li>
+    <li>Edit the <tt>config[ure]/RELEASE</tt> file and set the paths to your installation
+      of EPICS base and to your versions of other required support modules.</li>
+    <li>Run <tt>gnumake</tt> in the top level directory and check for any compilation
+      errors.</li>
+    <li>Please email&nbsp; <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers</a>&nbsp;
+      so that a record can be kept of which sites are using this software.</li>
+  </ol>
+  <h2>
+    In Use</h2>
+  <p>
+    This software was originally developed by Mark Rivers and Tim Mooney.</p>
+  <ul>
+    <li>ANL/APS : In use at CARS, XOR, HP-CAT, UNICAT and many other beamlines.</li>
+    <li>NSLS: In use at X-26A, X-17C, X-17B2, X-17B3 and several other beamlines</li>
+  </ul>
 </body>
 </html>

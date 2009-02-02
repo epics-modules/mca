@@ -1,477 +1,515 @@
-<html>
-
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>mcaReleaseNotes</title>
+  <title>mcaReleaseNotes</title>
 </head>
-
 <body>
-
-<h1 align="center">mca Release Notes</h1>
-
-<h2 align="center">Release 6-11 (December 19, 2008)</h2>
-<ul>
-   <li>Force build to install Libnet and wpcap before building mcaAim.exe
-   <li>icb_user_subs.c: atoi -> strtol
-   <li>nmc_comm_subs_1.c: include if_arp.h only if USE_SOCKETS
-   <li>nmc_comm_subs_2.c: work around GCC bug
-   <li>Modified to depend on busy module, instead of sscan module
-   <li>Struck_settings.req - new file
-   <li>directory dependencies, to support multi-job build (gnumake -j)
-</ul>
-
-
-<h2 align="center">Release 6-10 (December 21, 2007)</h2>
-<ul>
-  <li> mcaSrc
+  <h1 style="text-align: center">
+    mca Release Notes</h1>
+  <h2 style="text-align: center">
+    Release 6-11 (2-Feb-2009)</h2>
   <ul>
-    <li> Fixed bug in MCA record.  The record must force a read of the data whenever
-         acquisition completes (.ACQG=1 changes to .ACQG=0).  In earlier versions
-         it could miss this transition if acquisition was complete by the time of the first
-         status poll.  The bug fix in R6-9 attempted to fix this, but it was inefficient and
-         not completely effective.  The new fix is for the record to force .ACQG=1 whenever 
-         acquisition is started, and not rely on the poll to set .ACQG to 1.
+    <li>CanberraSrc
+      <ul>
+        <li>Fixed bug in AIM communication on 68040 processors due to structure size being
+          reported wrong by sizeof() from compiler. This had been fixed long ago, but the
+          fix was lost in the conversion to LLC sockets.</li>
+        <li>Fixed bug with AIM socket initialization on vxWorks. </li>
+        <li>Force build to install Libnet and wpcap before building mcaAim.exe</li>
+        <li>icb_user_subs.c: atoi -> strtol</li>
+        <li>nmc_comm_subs_1.c: include if_arp.h only if USE_SOCKETS</li>
+      </ul>
+    </li>
+    <li>SIS3820
+      <ul>
+        <li>Fixed a bug introduced in asyn R4-9. The problem was deadlock when acquisition
+          completed and the ReadAll or StatusAll records were being periodically scanned.
+          The solution was to take the ReadCallback record out of the same lockset as the
+          ReadAll record. This was done by changing the FLNK in the ReadCallback record from
+          PP to CA.</li>
+        <li>Added mcaApp/Db/Struck_settings.req to save settings for top-level records in
+          Struck8.db and Struck32.db.</li>
+        <li>Fixed problems with autosave in iocBoot/iocVxWorks/.</li>
+      </ul>
+    </li>
+    <li>RontecSrc
+      <ul>
+        <li>New driver which uses the high-speed Bruker Megalink PC card, rather than the
+          serial interface. This driver was written by Jens Eden from PTB in Germany. This
+          driver has the following advantages:
+          <ul>
+            <li>Using the Bruker megalink PC-card is much faster than the serial interface</li>
+            <li>It works around the problem that the newer SVE III controller models don't accept
+              the RCL command $LS (elapsed life-time) and the livetime-presets any more. </li>
+            <li>Allows the Bruker GUI to run in parallel.</li>
+          </ul>
+          The drawback is that it compiles and runs on Windows only. You need to install the
+          Bruker QM100 Software and the Bruker Esprit API which contains the RTIfcClient.dll
+          to be able to use it.</li>
+      </ul>
+    </li>
+    <li>mcaSrc/drvFastSweep.c
+      <ul>
+        <li>Changed so that drvUser strings for the data and time interval are no longer hardcoded
+          to be DATA and SCAN_PERIOD. These strings are now parameters to the initFastSweep
+          command. But they default to DATA and SCAN_PERIOD for backwards compatibility. </li>
+      </ul>
+    </li>
+    <li>Modified to depend on busy module, instead of sscan module for busy record.</li>
+    <li>Added directory dependencies, to support multi-job build (gnumake -j)</li>
   </ul>
-  <li> CanberraSrc
+  <h2 style="text-align: center">
+    Release 6-10 (December 21, 2007)</h2>
   <ul>
-    <li> Changed the code to read data from the new AIM modules (556A, DSA2000) in uncompressed mode.  
-         This improves the performance by about a factor of 3 over the previous code which
-         used compressed mode for all AIM models. 
-         These newer models are very slow
-         to compress the data because they lack a co-processor.  
-         The older 556 modules are still read in compressed format, because it is faster.
-         With this change the time to acquire spectra quickly from the 556 and 556A is virtually
-         identical.
-    <li> Added code to use LLC sockets on vxWorks (rather than etherLib) and 
-         Linux (rather than libnet and libpcap).  Thanks to Peter Denision of DLS for
-         the initial version of this code.  This change is needed for vxWorks 5.5, because
-         the older etherHook functions are no longer supported.  It is also useful on Linux
-         because the IOC application does not need to be run as root.<br>
-         The vxWorks code must be built with muxLib
-         on vxWorks 5.4.2 and earlier, and muxTkLib on vxWorks 5.5 and later.  muxTkLib
-         does not work correctly on vxWorks 5.4.2, it kills all other protocols
-         when muxTkBind is called with MUX_PROTO_SNARF.
-         muxTkLib versus muxLib is selected via the flag USE_MUXTKLIB in CanberraSrc/Makefile.  <br>
-         Note that AIMConfig automatically registers and attaches to the LLC protocol
-         driver, unlike in the original version from Diamond.<br>
-         On Linux the new LLC code is selected by configuring USE_SOCKETS 
-         in CanberraSrc/Makefile.  This can only be used on Linux kernel versions 2.6.14
-         and later.  Earlier versions do not support LLC sockets correctly.
+    <li>mcaSrc
+      <ul>
+        <li>Fixed bug in MCA record. The record must force a read of the data whenever acquisition
+          completes (.ACQG=1 changes to .ACQG=0). In earlier versions it could miss this transition
+          if acquisition was complete by the time of the first status poll. The bug fix in
+          R6-9 attempted to fix this, but it was inefficient and not completely effective.
+          The new fix is for the record to force .ACQG=1 whenever acquisition is started,
+          and not rely on the poll to set .ACQG to 1.</li>
+      </ul>
+    </li>
+    <li>CanberraSrc
+      <ul>
+        <li>Changed the code to read data from the new AIM modules (556A, DSA2000) in uncompressed
+          mode. This improves the performance by about a factor of 3 over the previous code
+          which used compressed mode for all AIM models. These newer models are very slow
+          to compress the data because they lack a co-processor. The older 556 modules are
+          still read in compressed format, because it is faster. With this change the time
+          to acquire spectra quickly from the 556 and 556A is virtually identical.</li>
+        <li>Added code to use LLC sockets on vxWorks (rather than etherLib) and Linux (rather
+          than libnet and libpcap). Thanks to Peter Denision of DLS for the initial version
+          of this code. This change is needed for vxWorks 5.5, because the older etherHook
+          functions are no longer supported. It is also useful on Linux because the IOC application
+          does not need to be run as root.<br />
+          The vxWorks code must be built with muxLib on vxWorks 5.4.2 and earlier, and muxTkLib
+          on vxWorks 5.5 and later. muxTkLib does not work correctly on vxWorks 5.4.2, it
+          kills all other protocols when muxTkBind is called with MUX_PROTO_SNARF. muxTkLib
+          versus muxLib is selected via the flag USE_MUXTKLIB in CanberraSrc/Makefile.
+          <br />
+          Note that AIMConfig automatically registers and attaches to the LLC protocol driver,
+          unlike in the original version from Diamond.<br />
+          On Linux the new LLC code is selected by configuring USE_SOCKETS in CanberraSrc/Makefile.
+          This can only be used on Linux kernel versions 2.6.14 and later. Earlier versions
+          do not support LLC sockets correctly.</li>
+      </ul>
+    </li>
+    <li>RontecSrc
+      <ul>
+        <li>Removed WIN32 specific code, no longer needed.</li>
+        <li>Bug fix for Rontec driver. It was sometimes getting garbage for the elapsed real
+          time. (Thanks to Lewis Muir).</li>
+      </ul>
+    </li>
+    <li>iocBoot
+      <ul>
+        <li>Fixed example IOC for STR7201.</li>
+      </ul>
+    </li>
+    <li>op/adl
+      <ul>
+        <li>Added readback-rate control to xxIcbAdc.adl (thanks to Tim Mooney).</li>
+      </ul>
+    </li>
   </ul>
-  <li> RontecSrc
+  <h2 style="text-align: center">
+    Release 6-9 (December 5, 2006)</h2>
   <ul>
-    <li> Removed WIN32 specific code, no longer needed.
-    <li> Bug fix for Rontec driver.  It was sometimes getting garbage for the elapsed real time.
-         (Thanks to Lewis Muir).
+    <li>Added support for SIS3820 multi-scaler for both mca and scaler records.</li>
+    <li>Added example application (mcaSISTest) for SIS3801 (STR7201) and SIS3820 in SISSrc,
+      and added iocBoot/iocVxWorks/st_sis.cmd and /mcaApp/op/adl/SISTest.adl to test it.</li>
+    <li>Fixed bug with data type of mcaPresetCounts in devMcaAsyn.c</li>
+    <li>Fixed bug in mcaRecord.c. Need to force a read of the data when acquisition is
+      turned on. Without it a device that is done acquiring by the time the status is
+      read for the first time will never get the data read (because Read record in database
+      has scanned disabled if not acquiring).</li>
   </ul>
-  <li> iocBoot
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 6-8 (Sept. 5, 2006)</h2>
   <ul>
-    <li> Fixed example IOC for STR7201.
+    <li>Minor changes to drvFastSweep and drvIcbAsyn</li>
   </ul>
-  <li> op/adl
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 6-7 (July 10, 2006)</h2>
   <ul>
-    <li> Added readback-rate control to xxIcbAdc.adl (thanks to Tim Mooney).
-  </ul>
-</ul>
-
-<h2 align="center">Release 6-9 (December 5, 2006)</h2>
-<ul>
-<li> Added support for SIS3820 multi-scaler for both mca and scaler records.
-<li> Added example application (mcaSISTest) for SIS3801 (STR7201) and SIS3820 in SISSrc,
-     and added iocBoot/iocVxWorks/st_sis.cmd and /mcaApp/op/adl/SISTest.adl to test it.
-<li> Fixed bug with data type of mcaPresetCounts in devMcaAsyn.c</li>
-<li> Fixed bug in mcaRecord.c. Need to force a read of the data when acquisition is turned on.  
-     Without it a device that is done acquiring by the time the status is read for the first time
-     will never get the data read (because Read record in database has scanned disabled if not acquiring).
-
-</ul>
-<p></p>
-
-<h2 align="center">Release 6-8 (Sept. 5, 2006)</h2>
-<ul>
-<li> Minor changes to drvFastSweep and drvIcbAsyn</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 6-7 (July 10, 2006)</h2>
-<ul>
-  <li>Fixed timing bug in communication between record and device support.
-      In previous releases device support was setting the .ACQG field to 0 (Done)
-      before the final read of the device was complete.  This meant that channel access
-      clients that were doing cagets() of .ACQG to see when acquisition was complete
-      and then reading data immediately could get incorrect data.  Note that this problem did not
-      occur if clients were using monitors (callbacks), because the record did not
-      call dbPostEvents until the final read of data from the device was complete.
-      <p>
+    <li>Fixed timing bug in communication between record and device support. In previous
+      releases device support was setting the .ACQG field to 0 (Done) before the final
+      read of the device was complete. This meant that channel access clients that were
+      doing cagets() of .ACQG to see when acquisition was complete and then reading data
+      immediately could get incorrect data. Note that this problem did not occur if clients
+      were using monitors (callbacks), because the record did not call dbPostEvents until
+      the final read of data from the device was complete.
+      <br />
       The fix to this problem required re-writing the interface between the record and
       device support so that device support does not directly modify the .ACQG field.
-      Rather it now passes a structure with status information which the record uses
-      to modify the record fields, and it does not set the .ACQG field until the record contains
+      Rather it now passes a structure with status information which the record uses to
+      modify the record fields, and it does not set the .ACQG field until the record contains
       the latest data.
-      <p>
-      The record support, asyn device support (for all devices except Struck), and the Struck (SIS) 
-      device support were all modified.
-  <li>mcaRecord
-    <ul>
-      <li>Converted all DBF_FLOAT record fields to DBF_DOUBLE.
-      <li>Added the PSTATUS (private) field for status buffer.
-      <li>Removed the ACQP, DWLP, ERTP, ELTP and ACTP (private) fields which are
-          no longer needed because PSTATUS field replaces them.
-    </ul>
-   <li>Removed macro definitions with variable arguments (e.q. Debug) for portability.
-</ul>
-
-<h2 align="center">Release 6-6 (November 16, 2005)</h2>
-<ul>
-  <li>Added mcaApp/RontecSrc directory with support for the Rontec XFlash MCA.   
-      This works with any serial port with asyn support.
-  <li>Added support for Canberra AIM on Windows IOCs (using Cygwin).
-  <li>Fixed a bug in mcaRecord.  If a channel access put should have caused the record
+      <br />
+      The record support, asyn device support (for all devices except Struck), and the
+      Struck (SIS) device support were all modified.</li>
+    <li>mcaRecord
+      <ul>
+        <li>Converted all DBF_FLOAT record fields to DBF_DOUBLE.</li>
+        <li>Added the PSTATUS (private) field for status buffer.</li>
+        <li>Removed the ACQP, DWLP, ERTP, ELTP and ACTP (private) fields which are no longer
+          needed because PSTATUS field replaces them.</li>
+      </ul>
+    </li>
+    <li>Removed macro definitions with variable arguments (e.q. Debug) for portability.</li>
+  </ul>
+  <h2 style="text-align: center">
+    Release 6-6 (November 16, 2005)</h2>
+  <ul>
+    <li>Added mcaApp/RontecSrc directory with support for the Rontec XFlash MCA. This
+      works with any serial port with asyn support.</li>
+    <li>Added support for Canberra AIM on Windows IOCs (using Cygwin).</li>
+    <li>Fixed a bug in mcaRecord. If a channel access put should have caused the record
       to process again because it was busy (.RPRO field=1) it was not processing again
-      because the record only calls recGblFwdLink when acquisition completes.  Work around
+      because the record only calls recGblFwdLink when acquisition completes. Work around
       problem by checking RPRO at end of record processing and repeating processing loop
-      if RPRO=1 and acquisition is not complete.
-  <li>Fixed occasional timing problem with Canberra AIM on Linux not receiving first
-      inquiry response.
-  <li>Fixed problems with the iocLinux and iocVxWorks example IOCs.
-  <li>Added iocRontec example IOC.
-  <li>Added iocCygwin example IOC for Canberra on Cygwin.
-  <li>Added mcaApp/op/adl/mcaTest.adl medm screen for testing the example IOCs.
-  <li>Improved the documentation in mcaDoc.html and mcaRecord.html.
-  <li>Added the acquiring (.ACQG) field to 16element_time.adl.
-  <li>Things planned for future release:
-    <ul>
-      <li>
-        Add a calibrated X axis PV, so one can plot spectra versus energy in medm
-      <li>
-        Add ROI low and high PVs in calibrated units, so that users can define ROIs
-        in calibrated unit (e.g. energy), and copy ROIs from one MCA to another in
-        these calibrated units.
-      <li>
-        Add medm screen shots to the mcaDoc, mcaCanberra, and mcaStruck html files.
-    </ul>
-</ul>
-
-
-<h2 align="center">Release 6-5 (March 29, 2005)</h2>
-<ul>
-  <li>Changed behavior on the SIS (Struck) MCS with software_next.
-      In release 6-4 we never do a software channel advance ("software Next") when starting acquire in MCS mode
-      with external channel advance.  This has the side effect, documented in the 6-4 release
-      notes, that it takes one extra external pulse to arm the system, so
-      the unit does not count at all until the first external pulse arrives, and it
-      takes N+1 pulses before it gets to channel 2.
-      <p>There is thus a trade-off.  If the software does not issue a channel advance
-      then it takes one external pulse to start the system counting.  If the software does
-      issue a channel advance, then the module starts counting immediately, which leads
-      to "hot" first pixels.</p>
-      <p>It was decided to make the behavior be configurable in the startup script, so
-      that users can choose the behavior that best meets their needs.</p>
-      An additional argument was added to the STR7201Config command.  The new syntax is:
-      <pre>
-      # STR7201Config(int card, int maxSignals, int maxChans,
+      if RPRO=1 and acquisition is not complete.</li>
+    <li>Fixed occasional timing problem with Canberra AIM on Linux not receiving first
+      inquiry response.</li>
+    <li>Fixed problems with the iocLinux and iocVxWorks example IOCs.</li>
+    <li>Added iocRontec example IOC.</li>
+    <li>Added iocCygwin example IOC for Canberra on Cygwin.</li>
+    <li>Added mcaApp/op/adl/mcaTest.adl medm screen for testing the example IOCs.</li>
+    <li>Improved the documentation in mcaDoc.html and mcaRecord.html.</li>
+    <li>Added the acquiring (.ACQG) field to 16element_time.adl.</li>
+    <li>Things planned for future release:
+      <ul>
+        <li>Add a calibrated X axis PV, so one can plot spectra versus energy in medm</li>
+        <li>Add ROI low and high PVs in calibrated units, so that users can define ROIs in
+          calibrated unit (e.g. energy), and copy ROIs from one MCA to another in these calibrated
+          units.</li>
+        <li>Add medm screen shots to the mcaDoc, mcaCanberra, and mcaStruck html files.</li>
+      </ul>
+    </li>
+  </ul>
+  <h2 style="text-align: center">
+    Release 6-5 (March 29, 2005)</h2>
+  <ul>
+    <li>Changed behavior on the SIS (Struck) MCS with software_next. In release 6-4 we
+      never do a software channel advance ("software Next") when starting acquire in MCS
+      mode with external channel advance. This has the side effect, documented in the
+      6-4 release notes, that it takes one extra external pulse to arm the system, so
+      the unit does not count at all until the first external pulse arrives, and it takes
+      N+1 pulses before it gets to channel 2.
+      <br />
+      There is thus a trade-off. If the software does not issue a channel advance then
+      it takes one external pulse to start the system counting. If the software does issue
+      a channel advance, then the module starts counting immediately, which leads to "hot"
+      first pixels.
+      <br />
+      It was decided to make the behavior be configurable in the startup script, so that
+      users can choose the behavior that best meets their needs. An additional argument
+      was added to the STR7201Config command. The new syntax is:
+      <pre>      # STR7201Config(int card, int maxSignals, int maxChans,
       #               int 1=enable internal 25MHZ clock,
       #               int 1=enable initial software channel advance in MCS external advance mode)
       </pre>
-      By setting the last argument to 1 a software channel advance will be issued when acquisition starts.
-      Setting the argument to 0 or omitting it will lead to no software channel advance.
-  <li>Fixed several bugs in the Canberra ICB support, mostly dereferencing null pointers, found in Linux testing.</li>
-</ul>
-<p></p>
-
-
-<h2 align="center">Release 6-4 (March 24, 2005)</h2>
-<ul>
-  <li>Converted from mpf to asyn for device and driver support. This was a major re-write
+      By setting the last argument to 1 a software channel advance will be issued when
+      acquisition starts. Setting the argument to 0 or omitting it will lead to no software
+      channel advance.</li>
+    <li>Fixed several bugs in the Canberra ICB support, mostly dereferencing null pointers,
+      found in Linux testing.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 6-4 (March 24, 2005)</h2>
+  <ul>
+    <li>Converted from mpf to asyn for device and driver support. This was a major re-write
       of the mca device support, as well as all drivers.</li>
-  <li>Changed debugging to use asynTrace facility except for mcaRecord.</li>
-  <li>Converted device support from C++ to C.</li>
-  <li>Changed thread creation to use generic stack sizes, not absolute.</li>
-  <li>Canberra AIM support on Linux is no longer built by default, for those who
-      do not have libnet and libpcap.  Must edit CanberraSrc/Makefile to build it.</li>
-  <li>Changed device support for Canberra ICB modules to use generic asyn device support.</li>
-  <li>Fixed problems on the SIS (Struck) MCS with software_next.  
-      In the previous version we always did
-      a software_next when starting acquire.  This had the following problems:
+    <li>Changed debugging to use asynTrace facility except for mcaRecord.</li>
+    <li>Converted device support from C++ to C.</li>
+    <li>Changed thread creation to use generic stack sizes, not absolute.</li>
+    <li>Canberra AIM support on Linux is no longer built by default, for those who do
+      not have libnet and libpcap. Must edit CanberraSrc/Makefile to build it.</li>
+    <li>Changed device support for Canberra ICB modules to use generic asyn device support.</li>
+    <li>Fixed problems on the SIS (Struck) MCS with software_next. In the previous version
+      we always did a software_next when starting acquire. This had the following problems:
       <ul>
-        <li>In external channel advance mode the first dwell period was always a single
-            pulse, even if prescale was > 1.
-        <li>When using the EPICS scaler record it counted for .01 seconds longer than requested.
+        <li>In external channel advance mode the first dwell period was always a single pulse,
+          even if prescale was > 1.</li>
+        <li>When using the EPICS scaler record it counted for .01 seconds longer than requested.</li>
         <li>The scaler started counting immediately in external channel advance mode, leading
-            to "hot" first pixels.
+          to "hot" first pixels.</li>
       </ul>
-      Now we only do software_next for old firmware, or for internal channel advance
-      mode in MCS (not scaler) mode.
-      The new side-effect is that it takes one extra external pulse to arm the system.
-      The unit does not count at all until the first external pulse arrives, and it
-      takes N+1 pulses before it gets to channel 2.
-      We still give software_next in internal channel advance MCS mode, because
-      otherwise it misses one entire dwell period at the beginning.
-</ul>
-<p></p>
-
-<h2 align="center">Release 6-3 (May 12, 2004)</h2>
-<ul>
-  <li>Converted from using libnet 1.0.2a to 1.1.2.1 on non-vxWorks systems.
-      This release of libnet has a different API.</li>
-  <li>Fixed problems with dset definitions that did not work with EPICS 3.14.5.
-</ul>
-<p></p>
-
-<h2 align="center">Release 6-2 (March 4, 2004)</h2>
-<ul>
-  <li>Now depends on mpf, calc (transform record), sscan (busy record), std (scaler record),
-      and autosave (only for mca/iocBoot) modules</li>
-  <li>Reordered device support entries in mcaSupport.dbd so that soft support is the default</li>
-  <li>Added genSub-based support for summing spectra.  (Not built by default.)</li>
-  <li>Initial enum values for icb amp, adc, dsp no longer cause medm error</li>
-  <li>Fixed handling of non-existent ICB modules.</li>
-  <li>devIcbMpf.cc no longer directs ao record to convert RVAL to VAL.</li>
-  <li>CanberraSrc now builds on Darwin</li>
-  <li>Fixed memory leak in mcaAIMServer.cc</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 6-1 (November 5, 2003)</h2>
-<ul>
-  <li>First official release for EPICS 3.14.</li>
-  <li>Converted from vxWorks specific calls to OSI calls.
-  <li>Moved source files from src/ to new directories mcaSrc/, CanberraSrc/, SISSrc/.</li>
-  <li>Switched databases from ddfanout record to standard dfanout record now that data type is double.</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 5-5 (July 23, 2003)</h2>
-<ul>
-  <li>Force NUSE to be <= NMAX in mcaRecord.c</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 5-4 (May 26, 2003)</h2>
-<ul>
-  <li>Created abstract base class fastSweep.cc to simplify drivers like the Ip330 and quadEM.</li>
-  <li>Added .req files for save_restore.</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 5-3 (April 3, 2003</a></h2>
-<ul>
-  <li>This release requires at least MPF 1-10.</li>
-  <li>Modified devMcaMpf.cc and devIcbMpf.cc to work with MPF 1-10 by
-      adding &quot;bind&quot; call.</li>
-  <li>Fixed bug with 25MHz reference pulses in drvSTR7201.c</li>
-  <li>Added 9element .adl files and 4element_time.adl.</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 5-2 (July 29, 2002)</h2>
-
-<p>This new release has the following enhancements:</p>
-<ul>
-  <li>Increased number of ROIs from 10 to 32.</li>
-  <li>Added DTIM (dead-time) and IDTIM&nbsp; (instantaneous
-    dead-time) fields for dead time calculation.</li>
-  <li>Added alarm fields for high deadtime alarms.</li>
-  <li>Modified mcaRecord.c get_precision() to return 6 digits for calibration fields.</li>
-  <li>Added soft-channel device support</li>
-  <li>Made the elapsed live-time and real-time fields (ERTM and ELTM) writeable (removed
+      Now we only do software_next for old firmware, or for internal channel advance mode
+      in MCS (not scaler) mode. The new side-effect is that it takes one extra external
+      pulse to arm the system. The unit does not count at all until the first external
+      pulse arrives, and it takes N+1 pulses before it gets to channel 2. We still give
+      software_next in internal channel advance MCS mode, because otherwise it misses
+      one entire dwell period at the beginning.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 6-3 (May 12, 2004)</h2>
+  <ul>
+    <li>Converted from using libnet 1.0.2a to 1.1.2.1 on non-vxWorks systems. This release
+      of libnet has a different API.</li>
+    <li>Fixed problems with dset definitions that did not work with EPICS 3.14.5.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 6-2 (March 4, 2004)</h2>
+  <ul>
+    <li>Now depends on mpf, calc (transform record), sscan (busy record), std (scaler
+      record), and autosave (only for mca/iocBoot) modules</li>
+    <li>Reordered device support entries in mcaSupport.dbd so that soft support is the
+      default</li>
+    <li>Added genSub-based support for summing spectra. (Not built by default.)</li>
+    <li>Initial enum values for icb amp, adc, dsp no longer cause medm error</li>
+    <li>Fixed handling of non-existent ICB modules.</li>
+    <li>devIcbMpf.cc no longer directs ao record to convert RVAL to VAL.</li>
+    <li>CanberraSrc now builds on Darwin</li>
+    <li>Fixed memory leak in mcaAIMServer.cc</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 6-1 (November 5, 2003)</h2>
+  <ul>
+    <li>First official release for EPICS 3.14.</li>
+    <li>Converted from vxWorks specific calls to OSI calls.</li>
+    <li>Moved source files from src/ to new directories mcaSrc/, CanberraSrc/, SISSrc/.</li>
+    <li>Switched databases from ddfanout record to standard dfanout record now that data
+      type is double.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 5-5 (July 23, 2003)</h2>
+  <ul>
+    <li>Force NUSE to be <= NMAX in mcaRecord.c</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 5-4 (May 26, 2003)</h2>
+  <ul>
+    <li>Created abstract base class fastSweep.cc to simplify drivers like the Ip330 and
+      quadEM.</li>
+    <li>Added .req files for save_restore.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 5-3 (April 3, 2003)</h2>
+  <ul>
+    <li>This release requires at least MPF 1-10.</li>
+    <li>Modified devMcaMpf.cc and devIcbMpf.cc to work with MPF 1-10 by adding "bind"
+      call.</li>
+    <li>Fixed bug with 25MHz reference pulses in drvSTR7201.c</li>
+    <li>Added 9element .adl files and 4element_time.adl.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 5-2 (July 29, 2002)</h2>
+  <p>
+    This new release has the following enhancements:</p>
+  <ul>
+    <li>Increased number of ROIs from 10 to 32.</li>
+    <li>Added DTIM (dead-time) and IDTIM (instantaneous dead-time) fields for dead time
+      calculation.</li>
+    <li>Added alarm fields for high deadtime alarms.</li>
+    <li>Modified mcaRecord.c get_precision() to return 6 digits for calibration fields.</li>
+    <li>Added soft-channel device support</li>
+    <li>Made the elapsed live-time and real-time fields (ERTM and ELTM) writeable (removed
       SPC_NOMOD) for soft record support</li>
-  <li>Changed MCA record and ICB device support to pass messages
-      at init_record time to initialize hardware, rather than doing it in
-      connectIO in device support. This was made possible in version MPF version 1-8 which
-      allows waiting for the MPF server to connect and sending messages before iocInit is complete.
-      This is much cleaner, since device support no longer needs to know details
-      about the records.</li>
-</ul>
-<p></p>
-
-<h2 align="center">Release 5.02 (January 11, 2001)</h2>
-
-<p>This new release has the following enhancements:</p>
-<ul>
-  <li>This release completes the conversion to MPF of all software
-      which communicates with the AIM.&nbsp; All of the Instrument Control Bus (ICB)
-      modules now communicate via MPF.&nbsp; The ICB software includes the following
-      enhancements:
-    <ul>
-      <li>Improved support is provided for the ADC (9633 and 9635),&nbsp; amplifier (9615),
-          high-voltage power-supply (HVPS) (9641, 9645) and the amp/three-channel
-          analyzer (TCA) (2016) modules.&nbsp; Previously the support for these
-          modules used the EPICS subroutine record. This was very restrictive, 
-          since it limited the number of parameters which could be controlled, 
-          and more importantly prevented the use
-          of normal EPICS menus and graphical limits on analog values.
-          The new support uses standard EPICS records (ao,
-          mbbo, ai, mbbi), removing these restrictions. All of the software for
-          the ICB devices has been replaced (source code, databases and medm display
-          files). The database and medm files have the same names to simplify
-          the transition, but significant changes are required to the vxWorks startup
-          files. The changes are described below.</li>
-      <li>The previous support was synchronous, which meant that EPICS
-          scan tasks waited while sometimes lengthy communications took place between
-          the IOC and the AIM.&nbsp; This was not good EPICS programming
-          practice. The new device support is asynchronous, as it should be.</li>
-      <li>Bugs in the TCA device support have been fixed.&nbsp; The
-          TCA device support now works with the MCA record to automatically program
-          the TCA windows to the energies of the first three ROIs, which is very
-          simple and convenient.</li>
-    </ul>
-  </li>
-  <li>Device support is now provided to use the SIS 380x
-      multiscaler with the EPICS scaler record, in addition to the previous
-      support for the EPICS MCA record.&nbsp; This means that it is no longer
-      necessary to install a Joerger scaler in an IOCs which has an SIS scaler
-      installed.&nbsp; The only limitation of this device support is that the SIS
-      cannot actually count for a preset time or a preset number of counts on a
-      channel.&nbsp; Thus, the presets are handled in software, and the actual
-      count time will be &lt;=0.01 second greater than requested.&nbsp; The actual
-      count time is very accurate, it is just not exactly what was
-      requested.&nbsp; As part of this support it is now possible to enable the 25
-      MHz internal clock on the first scaler input channel.&nbsp; This is done by adding an
-      additional parameter to STR7201Config().&nbsp; This internal clock can be
-      used to count for a preset time without need for an external clock.&nbsp; It is
-      possible to use the SIS 380x as both an MCA and as a simple scaler without
-      rebooting the IOC.&nbsp; The only restriction is that it cannot be acquiring
-      in both modes simultaneously, i.e. scaler counting must complete before
-      starting MCA acquisition and visa-versa.</li>
-  <li>Databases and medm screens are now provided for 8-channel
-      and 32-channel versions of the SIS 380x multiscaler with the MCA
-      record.&nbsp; These screens control all channels of the SIS simultaneously,
-      but allow for displaying combined or individual spectra.</li>
-</ul>
-<h3 align="left">ICB source code organization</h3>
-<p align="left">The device support for the ICB modules is provided in four main
-files:</p>
-<ol>
-  <li>
-    <p align="left">devIcbMpf.cc&nbsp; This file provides support for the ao,
-    mbbo, ai and mbbi records for all ICB modules.&nbsp; It knows nothing about
-    any specific module, it simply passes messages to MPF with a parameter code
-    and value.</li>
-  <li>
-    <p align="left">icbServer.cc&nbsp; This is the MPF server software for the
-    ADC, amplifier and HVPS.</li>
-  <li>
-    <p align="left">icbTcaServer.cc&nbsp; This is the MPF server software for
-    the TCA.</li>
-  <li>
-    <p align="left">icbDspServer.cc&nbsp; This is the MPF server software for
-    the 9660 digital signal processor (DSP)</li>
-</ol>
-<p align="left">Each of the MPF servers can control any number of ICB modules of
-the specified type.&nbsp; Thus, a single icbServer can control any number of
-ADCs, amplifiers and HVPS units, a single icbTcaServer can control any number of
-TCA modules, etc.&nbsp; On the other hand it is also possible to use multiple
-MPF servers when talking to multiple ICB modules of the same family.&nbsp; The
-decision as to when to use more than one MPF servers is one of
-performance.&nbsp; This decision is made in the initialization commands in the
-vxWorks startup file.&nbsp; Each MPF server is synchronous, meaning that it must
-wait for a reply from the AIM before processing the next message.&nbsp; When
-using multiple AIMs, for example with a multi-element detector, it can make
-sense to use multiple MPF ICB servers so that some communication can be done in
-parallel.&nbsp; On the other hand, the ICB communications are typically low
-bandwidth and a single MPF server will often suffice.</p>
-<h3 align="left">vxWorks startup file</h3>
-<p align="left">The following lines must be added to the vxWorks startup
-file.&nbsp; Note that the lines which create MPF servers are new to this
-release, and the lines which load the databases must be modified for this
-release.</p>
-<pre>
-# Initialize local MPF connection
+    <li>Changed MCA record and ICB device support to pass messages at init_record time
+      to initialize hardware, rather than doing it in connectIO in device support. This
+      was made possible in version MPF version 1-8 which allows waiting for the MPF server
+      to connect and sending messages before iocInit is complete. This is much cleaner,
+      since device support no longer needs to know details about the records.</li>
+  </ul>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 5.02 (January 11, 2001)</h2>
+  <p>
+    This new release has the following enhancements:</p>
+  <ul>
+    <li>This release completes the conversion to MPF of all software which communicates
+      with the AIM. All of the Instrument Control Bus (ICB) modules now communicate via
+      MPF. The ICB software includes the following enhancements:
+      <ul>
+        <li>Improved support is provided for the ADC (9633 and 9635), amplifier (9615), high-voltage
+          power-supply (HVPS) (9641, 9645) and the amp/three-channel analyzer (TCA) (2016)
+          modules. Previously the support for these modules used the EPICS subroutine record.
+          This was very restrictive, since it limited the number of parameters which could
+          be controlled, and more importantly prevented the use of normal EPICS menus and
+          graphical limits on analog values. The new support uses standard EPICS records (ao,
+          mbbo, ai, mbbi), removing these restrictions. All of the software for the ICB devices
+          has been replaced (source code, databases and medm display files). The database
+          and medm files have the same names to simplify the transition, but significant changes
+          are required to the vxWorks startup files. The changes are described below.</li>
+        <li>The previous support was synchronous, which meant that EPICS scan tasks waited
+          while sometimes lengthy communications took place between the IOC and the AIM. This
+          was not good EPICS programming practice. The new device support is asynchronous,
+          as it should be.</li>
+        <li>Bugs in the TCA device support have been fixed. The TCA device support now works
+          with the MCA record to automatically program the TCA windows to the energies of
+          the first three ROIs, which is very simple and convenient.</li>
+      </ul>
+    </li>
+    <li>Device support is now provided to use the SIS 380x multiscaler with the EPICS
+      scaler record, in addition to the previous support for the EPICS MCA record. This
+      means that it is no longer necessary to install a Joerger scaler in an IOCs which
+      has an SIS scaler installed. The only limitation of this device support is that
+      the SIS cannot actually count for a preset time or a preset number of counts on
+      a channel. Thus, the presets are handled in software, and the actual count time
+      will be &lt;=0.01 second greater than requested. The actual count time is very accurate,
+      it is just not exactly what was requested. As part of this support it is now possible
+      to enable the 25 MHz internal clock on the first scaler input channel. This is done
+      by adding an additional parameter to STR7201Config(). This internal clock can be
+      used to count for a preset time without need for an external clock. It is possible
+      to use the SIS 380x as both an MCA and as a simple scaler without rebooting the
+      IOC. The only restriction is that it cannot be acquiring in both modes simultaneously,
+      i.e. scaler counting must complete before starting MCA acquisition and visa-versa.</li>
+    <li>Databases and medm screens are now provided for 8-channel and 32-channel versions
+      of the SIS 380x multiscaler with the MCA record. These screens control all channels
+      of the SIS simultaneously, but allow for displaying combined or individual spectra.</li>
+  </ul>
+  <h3 style="text-align: center">
+    ICB source code organization</h3>
+  <p>
+    The device support for the ICB modules is provided in four main files:</p>
+  <ol>
+    <li>devIcbMpf.cc This file provides support for the ao, mbbo, ai and mbbi records
+      for all ICB modules. It knows nothing about any specific module, it simply passes
+      messages to MPF with a parameter code and value.</li>
+    <li>icbServer.cc This is the MPF server software for the ADC, amplifier and HVPS.</li>
+    <li>icbTcaServer.cc This is the MPF server software for the TCA.</li>
+    <li>icbDspServer.cc This is the MPF server software for the 9660 digital signal processor
+      (DSP)</li>
+  </ol>
+  <p>
+    Each of the MPF servers can control any number of ICB modules of the specified type.
+    Thus, a single icbServer can control any number of ADCs, amplifiers and HVPS units,
+    a single icbTcaServer can control any number of TCA modules, etc. On the other hand
+    it is also possible to use multiple MPF servers when talking to multiple ICB modules
+    of the same family. The decision as to when to use more than one MPF servers is
+    one of performance. This decision is made in the initialization commands in the
+    vxWorks startup file. Each MPF server is synchronous, meaning that it must wait
+    for a reply from the AIM before processing the next message. When using multiple
+    AIMs, for example with a multi-element detector, it can make sense to use multiple
+    MPF ICB servers so that some communication can be done in parallel. On the other
+    hand, the ICB communications are typically low bandwidth and a single MPF server
+    will often suffice.</p>
+  <h3 style="text-align: center">
+    vxWorks startup file</h3>
+  <p>
+    The following lines must be added to the vxWorks startup file. Note that the lines
+    which create MPF servers are new to this release, and the lines which load the databases
+    must be modified for this release.</p>
+  <pre># Initialize local MPF connection
 routerInit
 localMessageRouterStart(0)
 
 # Create AIM MCA server, load MCA record
 # AIMConfig(mpfServer, ethernet_address, port, maxChans,
 #           maxSignals, maxSequences, ethernetDevice, queueSize)
-AIMConfig(&quot;AIM1/1&quot;, 0x59e, 1, 2048, 1, 4, &quot;dc0&quot;, 100)
-dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;, &quot;P=13LAB:,M=aim_adc1,DTYPE=MPF MCA,INP=#C0 S0 @AIM1/1,NCHAN=2048&quot;)
+AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 4, "dc0", 100)
+dbLoadRecords("share/mcaApp/Db/mca.db", "P=13LAB:,M=aim_adc1,DTYPE=MPF MCA,INP=#C0 S0 @AIM1/1,NCHAN=2048")
 
 # Create ICB server for ADC, amplifier and HVPS
 # picbServer = icbConfig(icbServer, maxModules, icbAddress, queueSize)
 # This creates the ICB server and allocates configures the first module, module 0.
 # Additional modules are added to this server with icbAddModule().
-picbServer = icbConfig(&quot;icb/1&quot;, 10, &quot;NI59E:5&quot;, 100)
+picbServer = icbConfig("icb/1", 10, "NI59E:5", 100)
 
 # In the dbLoadRecords commands CARD=(0,1) for (local/remote), SERVER=icbServer name from icbConfig, 
 # ADDR=module number from icbConfig() or icbAddModule().
-dbLoadRecords &quot;share/mcaApp/Db/icb_adc.db&quot;, &quot;P=13LAB:,ADC=adc1,CARD=0,SERVER=icb/1,ADDR=0&quot;
+dbLoadRecords "share/mcaApp/Db/icb_adc.db", "P=13LAB:,ADC=adc1,CARD=0,SERVER=icb/1,ADDR=0"
 
 #icbAddModule(picbServer, module, icbAddress)
-icbAddModule(picbServer, 1, &quot;NI59E:3&quot;)
-dbLoadRecords &quot;share/mcaApp/Db/icb_amp.db&quot;, &quot;P=13LAB:,AMP=amp1,CARD=0,SERVER=icb/1,ADDR=1&quot;
+icbAddModule(picbServer, 1, "NI59E:3")
+dbLoadRecords "share/mcaApp/Db/icb_amp.db", "P=13LAB:,AMP=amp1,CARD=0,SERVER=icb/1,ADDR=1"
 
-icbAddModule(picbServer, 2, &quot;NI59E:2&quot;)
-dbLoadRecords &quot;share/mcaApp/Db/icb_hvps.db&quot;,&quot;P=13LAB:,HVPS=hvps1,CARD=0,SERVER=icb/1,ADDR=2, LIMIT=1000&quot;
+icbAddModule(picbServer, 2, "NI59E:2")
+dbLoadRecords "share/mcaApp/Db/icb_hvps.db","P=13LAB:,HVPS=hvps1,CARD=0,SERVER=icb/1,ADDR=2, LIMIT=1000"
 
 # This creates the TCA server and allocates configures the first module, module 0.
 # Additional modules are added to this server with icbTcaAddModule().
 # ptcaServer = tcaConfig(tcaServer, maxModules, icbAddress, queueSize)
-icbTcaConfig(&quot;icbTca/1&quot;, 1, &quot;NI59E:8&quot;, 100)
-dbLoadRecords &quot;share/mcaApp/Db/icb_tca.db&quot;, &quot;P=13LAB:,TCA=tca1,MCA=aim_adc2,CARD=0,SERVER=icbTca/1,ADDR=0&quot;</pre>
-<pre># Struck MCS as 32-channel multi-element detector
+icbTcaConfig("icbTca/1", 1, "NI59E:8", 100)
+dbLoadRecords "share/mcaApp/Db/icb_tca.db", "P=13LAB:,TCA=tca1,MCA=aim_adc2,CARD=0,SERVER=icbTca/1,ADDR=0"</pre>
+  <pre># Struck MCS as 32-channel multi-element detector
 # STR7201Setup(maxCards, baseAddress, interruptVector, interruptLevel)
 STR7201Setup(1,0xA0000000,220,6)</pre>
-<pre># The ch1RefEnable parameter to STR7201Config is new.  1=enable internal 25MHz clock on first input.
+  <pre># The ch1RefEnable parameter to STR7201Config is new.  1=enable internal 25MHz clock on first input.
 # STR7201Config(card, maxSignals, maxChans, ch1RefEnable)
 STR7201Config(0, 32, 2048, 1)
-dbLoadRecords(&quot;share/mcaApp/Db/Struck32.db&quot;,&quot;P=13LAB:str:&quot;)
-dbLoadTemplate(&quot;Struck32.template&quot;)
+dbLoadRecords("share/mcaApp/Db/Struck32.db","P=13LAB:str:")
+dbLoadTemplate("Struck32.template")
 
 # Generic CAMAC record
-#dbLoadRecords(&quot;share/camacApp/Db/generic_camac.db&quot;,&quot;P=13LAB:,R=camac1,SIZE=2048&quot;)
+#dbLoadRecords("share/camacApp/Db/generic_camac.db","P=13LAB:,R=camac1,SIZE=2048")
 
 ### Scalers: Joerger VSC8/16
-dbLoadRecords(&quot;share/stdApp/Db/Jscaler.db&quot;,&quot;P=13LAB:,S=scaler1,C=0&quot;)
+dbLoadRecords("share/stdApp/Db/Jscaler.db","P=13LAB:,S=scaler1,C=0")
 
 ### Scalers: Struck/SIS as simple scaler
-dbLoadRecords(&quot;share/mcaApp/Db/STR7201scaler.db&quot;,&quot;P=13LAB:,S=scaler2,C=0&quot;)
+dbLoadRecords("share/mcaApp/Db/STR7201scaler.db","P=13LAB:,S=scaler2,C=0")
 </pre>
-<p align="left">Here is an example Struck32.template:</p>
-<pre>
-file share/mcaApp/Db/simple_mca.db
+  <p>
+    Here is an example Struck32.template:</p>
+  <pre>file share/mcaApp/Db/simple_mca.db
 {
 pattern
 {P,           M,          DTYP,           INP, PREC, CHANS}
-{13LAB:str:  mca1, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S0&quot;, 3,  2048}
-{13LAB:str:  mca2, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S1&quot;, 3,  2048}
-{13LAB:str:  mca3, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S2&quot;, 3,  2048}
-{13LAB:str:  mca4, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S3&quot;, 3,  2048}
-{13LAB:str:  mca5, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S4&quot;, 3,  2048}
-{13LAB:str:  mca6, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S5&quot;, 3,  2048}
-{13LAB:str:  mca7, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S6&quot;, 3,  2048}
-{13LAB:str:  mca8, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S7&quot;, 3,  2048}
-{13LAB:str:  mca9, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S8&quot;, 3,  2048}^M
-{13LAB:str:  mca10, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S9&quot;, 3,  2048}^M
-{13LAB:str:  mca11, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S10&quot;, 3,  2048}^M
-{13LAB:str:  mca12, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S11&quot;, 3,  2048}^M
-{13LAB:str:  mca13, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S12&quot;, 3,  2048}^M
-{13LAB:str:  mca14, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S13&quot;, 3,  2048}^M
-{13LAB:str:  mca15, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S14&quot;, 3,  2048}^M
-{13LAB:str:  mca16, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S15&quot;, 3,  2048}^M
-{13LAB:str:  mca17, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S16&quot;, 3,  2048}^M
-{13LAB:str:  mca18, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S17&quot;, 3,  2048}^M
-{13LAB:str:  mca19, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S18&quot;, 3,  2048}^M
-{13LAB:str:  mca20, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S19&quot;, 3,  2048}^M
-{13LAB:str:  mca21, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S20&quot;, 3,  2048}^M
-{13LAB:str:  mca22, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S21&quot;, 3,  2048}^M
-{13LAB:str:  mca23, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S22&quot;, 3,  2048}^M
-{13LAB:str:  mca24, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S23&quot;, 3,  2048}^M
-{13LAB:str:  mca25, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S24&quot;, 3,  2048}^M
-{13LAB:str:  mca26, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S25&quot;, 3,  2048}^M
-{13LAB:str:  mca27, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S26&quot;, 3,  2048}^M
-{13LAB:str:  mca28, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S27&quot;, 3,  2048}^M
-{13LAB:str:  mca29, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S28&quot;, 3,  2048}^M
-{13LAB:str:  mca30, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S29&quot;, 3,  2048}^M
-{13LAB:str:  mca31, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S30&quot;, 3,  2048}^M
-{13LAB:str:  mca32, &quot;Struck STR7201 MCS&quot;, &quot;#C0 S31&quot;, 3,  2048}^M
+{13LAB:str:  mca1, "Struck STR7201 MCS", "#C0 S0", 3,  2048}
+{13LAB:str:  mca2, "Struck STR7201 MCS", "#C0 S1", 3,  2048}
+{13LAB:str:  mca3, "Struck STR7201 MCS", "#C0 S2", 3,  2048}
+{13LAB:str:  mca4, "Struck STR7201 MCS", "#C0 S3", 3,  2048}
+{13LAB:str:  mca5, "Struck STR7201 MCS", "#C0 S4", 3,  2048}
+{13LAB:str:  mca6, "Struck STR7201 MCS", "#C0 S5", 3,  2048}
+{13LAB:str:  mca7, "Struck STR7201 MCS", "#C0 S6", 3,  2048}
+{13LAB:str:  mca8, "Struck STR7201 MCS", "#C0 S7", 3,  2048}
+{13LAB:str:  mca9, "Struck STR7201 MCS", "#C0 S8", 3,  2048}^M
+{13LAB:str:  mca10, "Struck STR7201 MCS", "#C0 S9", 3,  2048}^M
+{13LAB:str:  mca11, "Struck STR7201 MCS", "#C0 S10", 3,  2048}^M
+{13LAB:str:  mca12, "Struck STR7201 MCS", "#C0 S11", 3,  2048}^M
+{13LAB:str:  mca13, "Struck STR7201 MCS", "#C0 S12", 3,  2048}^M
+{13LAB:str:  mca14, "Struck STR7201 MCS", "#C0 S13", 3,  2048}^M
+{13LAB:str:  mca15, "Struck STR7201 MCS", "#C0 S14", 3,  2048}^M
+{13LAB:str:  mca16, "Struck STR7201 MCS", "#C0 S15", 3,  2048}^M
+{13LAB:str:  mca17, "Struck STR7201 MCS", "#C0 S16", 3,  2048}^M
+{13LAB:str:  mca18, "Struck STR7201 MCS", "#C0 S17", 3,  2048}^M
+{13LAB:str:  mca19, "Struck STR7201 MCS", "#C0 S18", 3,  2048}^M
+{13LAB:str:  mca20, "Struck STR7201 MCS", "#C0 S19", 3,  2048}^M
+{13LAB:str:  mca21, "Struck STR7201 MCS", "#C0 S20", 3,  2048}^M
+{13LAB:str:  mca22, "Struck STR7201 MCS", "#C0 S21", 3,  2048}^M
+{13LAB:str:  mca23, "Struck STR7201 MCS", "#C0 S22", 3,  2048}^M
+{13LAB:str:  mca24, "Struck STR7201 MCS", "#C0 S23", 3,  2048}^M
+{13LAB:str:  mca25, "Struck STR7201 MCS", "#C0 S24", 3,  2048}^M
+{13LAB:str:  mca26, "Struck STR7201 MCS", "#C0 S25", 3,  2048}^M
+{13LAB:str:  mca27, "Struck STR7201 MCS", "#C0 S26", 3,  2048}^M
+{13LAB:str:  mca28, "Struck STR7201 MCS", "#C0 S27", 3,  2048}^M
+{13LAB:str:  mca29, "Struck STR7201 MCS", "#C0 S28", 3,  2048}^M
+{13LAB:str:  mca30, "Struck STR7201 MCS", "#C0 S29", 3,  2048}^M
+{13LAB:str:  mca31, "Struck STR7201 MCS", "#C0 S30", 3,  2048}^M
+{13LAB:str:  mca32, "Struck STR7201 MCS", "#C0 S31", 3,  2048}^M
 }
 </pre>
-<h3 align="left">Building software</h3>
-<p align="left">The following lines should be added to Makefile.Vx in the
-application directory.&nbsp; This example contains the lines to build the
-latest versions of both mcaApp and ipApp.</p>
-<pre>
-include $(SHARE)/mcaApp/src/mcaLIBOBJS
+  <h3 style="text-align: center">
+    Building software</h3>
+  <p>
+    The following lines should be added to Makefile.Vx in the application directory.
+    This example contains the lines to build the latest versions of both mcaApp and
+    ipApp.</p>
+  <pre>include $(SHARE)/mcaApp/src/mcaLIBOBJS
 LIBOBJS += $(MCALIBOBJS)
 
 include $(SHARE)/ipApp/src/ipLIBOBJS
@@ -492,499 +530,422 @@ include $(TOP)/config/RULES.Vx
 mpfServLib: $(IPMPFSERVERLIBOBJS)
         $(LINK.c) $@ $(IPMPFSERVERLIBOBJS)
 </pre>
-
-<h2 align="center">&nbsp;</h2>
-
-<h2 align="center"><a name="Release 5.01 - October 3, 2000">Release
-5.01 - October 3, 2000</a></h2>
-
-<p align="left">The Struck STR7201/SIS 380x device support for the scaler record
-is improved so that acquisition terminates within 0.01 seconds of the preset
-time.&nbsp; The device support for the MCA record and scaler record are now
-compatible, so that it is possible to have scaler and MCA records which
-communicate with the device loaded in the IOC simultaneously.&nbsp; The only
-restriction is that the only one record type or the other should be
-communicating with the hardware at any one time.&nbsp; The Struck8.db database
-was modified so that presets work correctly.</p>
-
-<p align="left">A serious bug was fixed in drvSTR7201.c.&nbsp; Previously it was
-possible for multiple vxWorks tasks, including the interrupt handler, to be
-talking to the hardware simultaneously.&nbsp; This could cause bus errors when
-reading the FIFO and other nasty problems.&nbsp; A semaphore was added and
-interrupts were disabled at appropriate times to prevent such conflicts.</p>
-
-<p align="left">Changed the task priority of the nmc_status_dispatch and
-nmc_inquiry tasks in nmc_comm_subs_1.c to 100 from 50, so that they would be
-lower priority than tnetTask.</p>
-
-<p align="left">Added support for the Canberra 9660 DSP module.&nbsp;&nbsp; This
-module uses the devIcbMpf device support (same as the AIM MCA device support)
-and an MPF server, icbDspServer.cc.&nbsp; The device support uses standard EPICS
-records (ao, mbbo, ai, mbbi).</p>
-
-<p align="left">&nbsp;</p>
-
-<h2 align="center"><a name="Release 5.0 - September 9, 2000">Release
-5.0 - September 9, 2000</a></h2>
-
-<p align="left">This release of mcaApp is intended primarily to
-improve performance with the Canberra AIM MCA hardware.&nbsp; The main enhancements are:</p>
-
-<ol>
-    <li><p align="left">To make the low-level AIM support
-        routines able to send commands to multiple AIMs in
-        parallel, i.e. without waiting for the response from one
-        AIM before sending a command to another.&nbsp; This is
-        necessary to improve the performance of systems with
+  <h2 style="text-align: center">
+  </h2>
+  <h2 style="text-align: center">
+    Release 5.01 - October 3, 2000</h2>
+  <p>
+    The Struck STR7201/SIS 380x device support for the scaler record is improved so
+    that acquisition terminates within 0.01 seconds of the preset time. The device support
+    for the MCA record and scaler record are now compatible, so that it is possible
+    to have scaler and MCA records which communicate with the device loaded in the IOC
+    simultaneously. The only restriction is that the only one record type or the other
+    should be communicating with the hardware at any one time. The Struck8.db database
+    was modified so that presets work correctly.</p>
+  <p>
+    A serious bug was fixed in drvSTR7201.c. Previously it was possible for multiple
+    vxWorks tasks, including the interrupt handler, to be talking to the hardware simultaneously.
+    This could cause bus errors when reading the FIFO and other nasty problems. A semaphore
+    was added and interrupts were disabled at appropriate times to prevent such conflicts.</p>
+  <p>
+    Changed the task priority of the nmc_status_dispatch and nmc_inquiry tasks in nmc_comm_subs_1.c
+    to 100 from 50, so that they would be lower priority than tnetTask.</p>
+  <p>
+    Added support for the Canberra 9660 DSP module. This module uses the devIcbMpf device
+    support (same as the AIM MCA device support) and an MPF server, icbDspServer.cc.
+    The device support uses standard EPICS records (ao, mbbo, ai, mbbi).</p>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    Release 5.0 - September 9, 2000</h2>
+  <p>
+    This release of mcaApp is intended primarily to improve performance with the Canberra
+    AIM MCA hardware. The main enhancements are:</p>
+  <ol>
+    <li>
+      <p>
+        To make the low-level AIM support routines able to send commands to multiple AIMs
+        in parallel, i.e. without waiting for the response from one AIM before sending a
+        command to another. This is necessary to improve the performance of systems with
         multiple AIMs being used for multi-element detectors.</p>
     </li>
-    <li><p align="left">To make the device support for the AIM be
-        &quot;asynchronous&quot;.&nbsp; In previous versions the
-        AIM device support was &quot;synchronous&quot;, meaning
-        that the MCA record waited for a response from the AIM
-        before returning.&nbsp; Since the AIM can take 50-100
-        msec to respond to some commands, this was poor EPICS
-        programming practice.&nbsp; It would cause the EPICS scan
-        tasks to wait for extended periods of time, particularly
-        if many MCA records were being used.</p>
+    <li>
+      <p>
+        To make the device support for the AIM be "asynchronous". In previous versions the
+        AIM device support was "synchronous", meaning that the MCA record waited for a response
+        from the AIM before returning. Since the AIM can take 50-100 msec to respond to
+        some commands, this was poor EPICS programming practice. It would cause the EPICS
+        scan tasks to wait for extended periods of time, particularly if many MCA records
+        were being used.</p>
     </li>
-    <li><p align="left">To improve the performance of the AIM
-        device support when used with multiplexors, i.e. multiple
-        MCA records per AIM ADC port.</p>
+    <li>
+      <p>
+        To improve the performance of the AIM device support when used with multiplexors,
+        i.e. multiple MCA records per AIM ADC port.</p>
     </li>
-    <li><p align="left">To modify the multi-element detector
-        databases to process MCA records in parallel, taking
-        advantage of changes 1) and 2) above.</p>
+    <li>
+      <p>
+        To modify the multi-element detector databases to process MCA records in parallel,
+        taking advantage of changes 1) and 2) above.</p>
     </li>
-</ol>
-
-<p align="left">One result of these changes is that the overhead
-with multielement detector systems will be reduced proportionally
-by the number of AIMs in the system, e.g. a system with 4 AIMs
-should have 4 times less overhead than in previous
-versions.&nbsp; The overhead time to collect 13 spectra of 2048
-channels from a detector with 4 AIMs should now be about 0.25
-seconds.</p>
-
-<h3 align="left">Low level AIM support changes</h3>
-
-<p align="left">In the previous versions of the low-level AIM
-routines (nmc_comm_subs_1.c, nmc_comm_subs_2.c) there was a
-single system-wide interlock and message response queue for AIM
-communication.&nbsp; Once a message was sent to any AIM no
-further messages could be sent to any AIM until the response from
-the first AIM was received.&nbsp; This was a serious performance
-limitation when communicating with multiple AIMs.&nbsp; It is
-much more efficient to have separate interlocks and message
-response queues for each AIM, rather than a single one per
-IOC.&nbsp; The low-level AIM routines were re-written to
-implement this more efficient model which permits simultaneous
-communication with multiple AIM modules.</p>
-
-<h3 align="left">MCA record device support changes for the AIM</h3>
-
-<p align="left">Previous versions the AIM device support was
-&quot;synchronous&quot;, meaning that the MCA record waited for a
-response from the AIM before returning.&nbsp; Since the AIM can
-take 50-100 msec to respond to some commands, this was poor EPICS
-programming practice.&nbsp; It would cause the EPICS scan tasks
-to wait for extended periods of time, particularly if many MCA
-records were being used.&nbsp; However, the low-level AIM
-routines are necessarily synchronous since multiple transactions
-with the AIM can be required to implement a single high-level
-function (e.g. &quot;erase&quot;).</p>
-
-<p align="left">What is needed, therefore, is a separate vxWorks
-task for each AIM or AIM port.&nbsp; The record should call the
-AIM device support, which in turn sends a message to the
-appropriate task and then returns immediately.&nbsp; The task
-communicates synchronously with the AIM, and then issues a
-callback to record support when the AIM communication is
-complete.</p>
-
-<p align="left">The solution to this problem turned out to be
-quite simple, since this is exactly what the Message Passing
-Facility, MPF is intended to do.&nbsp; In fact there was already
-MPF device support for the MCA record for the Acromag IP330 ADC
-when used as a waveform digitizer.&nbsp; All that needed to be
-done was to take this device support (devMcaIp330.cc) and convert
-it to a general MCA device support interface.&nbsp; This layer
-does not need to know anything about the particular MCA device,
-its role is simply to pass messages from the MCA record to an MPF
-server.&nbsp; The new file devMcaMpf.cc implements this
-device-independent layer.&nbsp; All of the device dependent code
-is now in the specific MPF server.</p>
-
-<p align="left">For the Acromag IP330 ADC the existing
-Ip330SweepServer.cc was rewritten slightly to handle the more
-general messages from devMcaMpf.cc.&nbsp; Ip330Sweep.cc was
-rewritten slightly to handle live-time as well as real-time
-messages. This new version of ip330App must be used when
-upgrading to this release of mcaApp.&nbsp;</p>
-
-<p align="left">A new MPF server, mcaAIMServer.cc was written to
-communicate with AIM modules.&nbsp; There is one such server per
-AIM ADC port, e.g. up to two servers per AIM.&nbsp; This server
-is basically just a rewrite of the code which was previously in
-devMCA_AIM.c.&nbsp; The flow of control for communication with
-the AIM is now:</p>
-
-<ul>
-    <li><p align="left">mcaRecord processes, calling a function
-        in devMcaMpf</p>
+  </ol>
+  <p>
+    One result of these changes is that the overhead with multielement detector systems
+    will be reduced proportionally by the number of AIMs in the system, e.g. a system
+    with 4 AIMs should have 4 times less overhead than in previous versions. The overhead
+    time to collect 13 spectra of 2048 channels from a detector with 4 AIMs should now
+    be about 0.25 seconds.</p>
+  <h3 style="text-align: center">
+    Low level AIM support changes</h3>
+  <p>
+    In the previous versions of the low-level AIM routines (nmc_comm_subs_1.c, nmc_comm_subs_2.c)
+    there was a single system-wide interlock and message response queue for AIM communication.
+    Once a message was sent to any AIM no further messages could be sent to any AIM
+    until the response from the first AIM was received. This was a serious performance
+    limitation when communicating with multiple AIMs. It is much more efficient to have
+    separate interlocks and message response queues for each AIM, rather than a single
+    one per IOC. The low-level AIM routines were re-written to implement this more efficient
+    model which permits simultaneous communication with multiple AIM modules.</p>
+  <h3 style="text-align: center">
+    MCA record device support changes for the AIM</h3>
+  <p>
+    Previous versions the AIM device support was "synchronous", meaning that the MCA
+    record waited for a response from the AIM before returning. Since the AIM can take
+    50-100 msec to respond to some commands, this was poor EPICS programming practice.
+    It would cause the EPICS scan tasks to wait for extended periods of time, particularly
+    if many MCA records were being used. However, the low-level AIM routines are necessarily
+    synchronous since multiple transactions with the AIM can be required to implement
+    a single high-level function (e.g. "erase").</p>
+  <p>
+    What is needed, therefore, is a separate vxWorks task for each AIM or AIM port.
+    The record should call the AIM device support, which in turn sends a message to
+    the appropriate task and then returns immediately. The task communicates synchronously
+    with the AIM, and then issues a callback to record support when the AIM communication
+    is complete.</p>
+  <p>
+    The solution to this problem turned out to be quite simple, since this is exactly
+    what the Message Passing Facility, MPF is intended to do. In fact there was already
+    MPF device support for the MCA record for the Acromag IP330 ADC when used as a waveform
+    digitizer. All that needed to be done was to take this device support (devMcaIp330.cc)
+    and convert it to a general MCA device support interface. This layer does not need
+    to know anything about the particular MCA device, its role is simply to pass messages
+    from the MCA record to an MPF server. The new file devMcaMpf.cc implements this
+    device-independent layer. All of the device dependent code is now in the specific
+    MPF server.</p>
+  <p>
+    For the Acromag IP330 ADC the existing Ip330SweepServer.cc was rewritten slightly
+    to handle the more general messages from devMcaMpf.cc. Ip330Sweep.cc was rewritten
+    slightly to handle live-time as well as real-time messages. This new version of
+    ip330App must be used when upgrading to this release of mcaApp.
+  </p>
+  <p>
+    A new MPF server, mcaAIMServer.cc was written to communicate with AIM modules. There
+    is one such server per AIM ADC port, e.g. up to two servers per AIM. This server
+    is basically just a rewrite of the code which was previously in devMCA_AIM.c. The
+    flow of control for communication with the AIM is now:</p>
+  <ul>
+    <li>
+      <p>
+        mcaRecord processes, calling a function in devMcaMpf</p>
     </li>
-    <li><p align="left">devMcaMpf sends a message to mcaAIMServer
-        and returns to immediately to mcaRecord. mcaRecord
-        returns immediately to EPICS.</p>
+    <li>
+      <p>
+        devMcaMpf sends a message to mcaAIMServer and returns to immediately to mcaRecord.
+        mcaRecord returns immediately to EPICS.</p>
     </li>
-    <li><p align="left">mcaAIMServer, which runs as a separate
-        vxWorks task,&nbsp; sends one or more messages to the AIM
-        and waits for the replies.</p>
+    <li>
+      <p>
+        mcaAIMServer, which runs as a separate vxWorks task, sends one or more messages
+        to the AIM and waits for the replies.</p>
     </li>
-    <li><p align="left">When the replies are all received
-        mcaAIMServer sends a message back to
-        devMcaMpf.&nbsp;&nbsp;</p>
+    <li>
+      <p>
+        When the replies are all received mcaAIMServer sends a message back to devMcaMpf.
+      </p>
     </li>
-    <li><p align="left">devmcaMpf issues a callback to mcaRecord,
-        which calls devMcaMpf again to complete the operation.</p>
+    <li>
+      <p>
+        devmcaMpf issues a callback to mcaRecord, which calls devMcaMpf again to complete
+        the operation.</p>
     </li>
-</ul>
-
-<p align="left">This scheme properly implements asynchronous
-record processing, so that AIM communication no longer causes the
-EPICS scan tasks to wait.</p>
-
-<p align="left">mcaAIMServer.cc implements several optimizations
-to improve performance when used with multiplexors, typically
-used with multielement detectors.&nbsp; When a multiplexor is
-used there are multiple &quot;signals&quot; on a single AIM ADC
-port&nbsp;or mcaAIMServer. The following optimizations are now
-implemented:</p>
-
-<ul>
-    <li><p align="left">If an Erase command is sent for signal 0
-        then the AIM memory for <b>all</b> of the signals is
-        erased.&nbsp; This is done in a single message to the
-        AIM.&nbsp; This is significantly faster than sending
-        multiple messages to erase smaller blocks of AIM memory.
-        Multielement detector databases take advantage of this
-        optimization by only sending Erase commands for the <b>first</b>
-        signal (0) on each port.&nbsp; It is not necessary to
-        send erase commands for the other signals, because the
-        memory will be erased when signal 0 is erased. The
-        elapsed real time, elapsed live time and elapsed total
-        counts are common to all signals on each port, and these
-        will also be reset when an erase is sent to signal 0.</p>
+  </ul>
+  <p>
+    This scheme properly implements asynchronous record processing, so that AIM communication
+    no longer causes the EPICS scan tasks to wait.</p>
+  <p>
+    mcaAIMServer.cc implements several optimizations to improve performance when used
+    with multiplexors, typically used with multielement detectors. When a multiplexor
+    is used there are multiple "signals" on a single AIM ADC port or mcaAIMServer. The
+    following optimizations are now implemented:</p>
+  <ul>
+    <li>
+      <p>
+        If an Erase command is sent for signal 0 then the AIM memory for <b>all</b> of the
+        signals is erased. This is done in a single message to the AIM. This is significantly
+        faster than sending multiple messages to erase smaller blocks of AIM memory. Multielement
+        detector databases take advantage of this optimization by only sending Erase commands
+        for the <b>first</b> signal (0) on each port. It is not necessary to send erase
+        commands for the other signals, because the memory will be erased when signal 0
+        is erased. The elapsed real time, elapsed live time and elapsed total counts are
+        common to all signals on each port, and these will also be reset when an erase is
+        sent to signal 0.</p>
     </li>
-    <li><p align="left">The results of Read Status commands
-        (elapsed live time, elapsed real time, elapsed total
-        counts, and acquiring status) are cached in the
-        mcaAIMServer object.&nbsp; If a Read Status command is
-        received by mcaAIMServer then this will result in a
-        network message being sent to the AIM only if:</p>
-        <ul>
-            <li><p align="left">The Read Status command is for
-                signal 0</p>
-            </li>
-        </ul>
-        <p>or </p>
-        <ul>
-            <li><p align="left">The time since the most recent
-                Read Status command was sent to the AIM is more
-                than 0.1 seconds</p>
-            </li>
-        </ul>
-        <p>This optimization results in significantly fewer
-        network messages being sent to the AIM, since the status
-        for all signals is typically read in rapid succession,
-        and the cached value will generally be used for all but
-        signal 0. </p>
+    <li>
+      <p>
+        The results of Read Status commands (elapsed live time, elapsed real time, elapsed
+        total counts, and acquiring status) are cached in the mcaAIMServer object. If a
+        Read Status command is received by mcaAIMServer then this will result in a network
+        message being sent to the AIM only if:</p>
+      <ul>
+        <li>
+          <p>
+            The Read Status command is for signal 0</p>
+        </li>
+      </ul>
+      <p>
+        or
+      </p>
+      <ul>
+        <li>
+          <p>
+            The time since the most recent Read Status command was sent to the AIM is more than
+            0.1 seconds</p>
+        </li>
+      </ul>
+      <p>
+        This optimization results in significantly fewer network messages being sent to
+        the AIM, since the status for all signals is typically read in rapid succession,
+        and the cached value will generally be used for all but signal 0.
+      </p>
     </li>
-</ul>
-
-<h3>Struck/SIS Driver Changes</h3>
-
-<p>There was a problem in previous versions of drvSTR7201.c for
-the prescale feature of the SIS 380x. The internal prescale
-counter was not correctly reset when the prescale value was
-changed. This could be a serious problem when changing from a
-large prescale value to a small prescale value, since the first
-dwell period after the change could require many more channel
-advance pulses (internal or external) than it should. SIS has
-provided additional information on how to properly program the
-prescaler, and the problem is now fixed.</p>
-
-<h3>MCA record changes</h3>
-
-<p>A new field, .ERST (ERase/STart) was added to the
-mcaRecord.&nbsp; Writing a 1 to this field causes the record to
-execute an Erase and a Start in a single operation, rather than
-the two operations required if the .ERAS and .STRT fields are
-written to separately.&nbsp; Adding this field has two beneficial
-effects:</p>
-
-<ul>
-    <li>It significantly simplifies the databases (mca.db,
-        16element.db, etc.) because the logic for Erase/Start is
-        now very simple.</li>
-    <li>It significantly improves performance because it saves a
-        Read Status call to device support, which in the case of
-        the AIM would require a network message to the AIM.</li>
-</ul>
-
-<p>The <code>init_record </code>routine was changed to set flags
-which cause all of fields of interest to device support (.PRTM,
-.PLTM, .NUSE, etc.) to be sent to device support the first time
-the record processes.&nbsp; 
-In principle all databases which create MCA records should now
-set PINI=&quot;YES&quot; so that the MCA record processes once at iocInit 
-and all of these values are sent to device support at that time.
-<i>However</i> this does <i>not work</i> for MPF devices yet (AIM, IP330)
-because at record initialization the MPF server has typically not yet connected
-and it gets the message passing out of sync if PINI is YES.  For now we do not
-set PINI=YES in the MCA databases.  
-The MPF device support synchronizes the device
-with the record when the MPF server connects. Furthermore the record will
-synchronize again the first time the record processes.</p>
-
-<p>A logic bug was fixed which caused the record to misbehave if
-the .READ field was set while a Read callback was pending.</p>
-
-<h3>Database Changes</h3>
-
-<p>mca.db was simplified with the removal of a fanout and swait
-record because EraseStart now uses the .ERST field in the MCA
-record.&nbsp; The current version is mca_5.3.db.</p>
-
-<p>16element.db was modified as follows:</p>
-
-<ul>
-    <li>EraseStart now uses the .ERST field of the record and
-        only processes the records with signal=0.&nbsp; It no
-        longer links to StartAll and EraseAll.</li>
-    <li>All fanout links were changed from PP to CA links.&nbsp;
-        This is necessary to get EPICS to processes the linked
-        records in &quot;parallel&quot; rather than waiting for
-        each one to complete before starting the next.</li>
-    <li>A new Busy record, AcquireBusy, was added.&nbsp; This
-        record is needed for the scan record to work correctly
-        now that the fanout outputs are CA rather than PP.&nbsp;
-        This record is set to 1 when StartAll or EraseStart is
-        set to 1, and is cleared when Acquiring makes a
-        transition from 1 to 0.</li>
-    <li>The Acquiring record was changed to look at the acquire
-        status of all 16 MCAs, rather than just the 4 MCAs with
-        signal=0.&nbsp; The reason for this is that it is
-        possible that the records with signal=0 will all finish
-        and set .ACQG=0 before some record with signal!=0 has set
-        .ACQG=0.&nbsp; The record is only guaranteed to read the
-        data from the AIM when it sets .ACQG=0, and thus some
-        records might not have read their data yet if they are
-        not involved in the Acquiring calculation.&nbsp; When the
-        Acquiring record makes a transition from 1 to 0 it now
-        clears the AcquireBusy record as well as processing the
-        StopScaler record.</li>
-</ul>
-
-<p>A new database, simple_mca.db was created.&nbsp; It replaces
-simple_mca_aim.db and simple_mca_struck.db. Template files which
-call simple_mca.db must now pass DTYP, INP, and PREC.</p>
-
-<h3>Building applications</h3>
-
-<p>Because the AIM device support now requires MPF there are some
-changes required in building applications which use the AIM. When
-building an application directory &lt;myApp&gt;/src in the past
-it was only necessary to include in Makefile.Vx the lines:</p>
-
-<pre>include $(SHARE)/mcaApp/src/mcaLIBOBJS
+  </ul>
+  <h3>
+    Struck/SIS Driver Changes</h3>
+  <p>
+    There was a problem in previous versions of drvSTR7201.c for the prescale feature
+    of the SIS 380x. The internal prescale counter was not correctly reset when the
+    prescale value was changed. This could be a serious problem when changing from a
+    large prescale value to a small prescale value, since the first dwell period after
+    the change could require many more channel advance pulses (internal or external)
+    than it should. SIS has provided additional information on how to properly program
+    the prescaler, and the problem is now fixed.</p>
+  <h3>
+    MCA record changes</h3>
+  <p>
+    A new field, .ERST (ERase/STart) was added to the mcaRecord. Writing a 1 to this
+    field causes the record to execute an Erase and a Start in a single operation, rather
+    than the two operations required if the .ERAS and .STRT fields are written to separately.
+    Adding this field has two beneficial effects:</p>
+  <ul>
+    <li>It significantly simplifies the databases (mca.db, 16element.db, etc.) because
+      the logic for Erase/Start is now very simple.</li>
+    <li>It significantly improves performance because it saves a Read Status call to device
+      support, which in the case of the AIM would require a network message to the AIM.</li>
+  </ul>
+  <p>
+    The <code>init_record </code>routine was changed to set flags which cause all of
+    fields of interest to device support (.PRTM, .PLTM, .NUSE, etc.) to be sent to device
+    support the first time the record processes. In principle all databases which create
+    MCA records should now set PINI="YES" so that the MCA record processes once at iocInit
+    and all of these values are sent to device support at that time. <i>However</i>
+    this does <i>not work</i> for MPF devices yet (AIM, IP330) because at record initialization
+    the MPF server has typically not yet connected and it gets the message passing out
+    of sync if PINI is YES. For now we do not set PINI=YES in the MCA databases. The
+    MPF device support synchronizes the device with the record when the MPF server connects.
+    Furthermore the record will synchronize again the first time the record processes.</p>
+  <p>
+    A logic bug was fixed which caused the record to misbehave if the .READ field was
+    set while a Read callback was pending.</p>
+  <h3>
+    Database Changes</h3>
+  <p>
+    mca.db was simplified with the removal of a fanout and swait record because EraseStart
+    now uses the .ERST field in the MCA record. The current version is mca_5.3.db.</p>
+  <p>
+    16element.db was modified as follows:</p>
+  <ul>
+    <li>EraseStart now uses the .ERST field of the record and only processes the records
+      with signal=0. It no longer links to StartAll and EraseAll.</li>
+    <li>All fanout links were changed from PP to CA links. This is necessary to get EPICS
+      to processes the linked records in "parallel" rather than waiting for each one to
+      complete before starting the next.</li>
+    <li>A new Busy record, AcquireBusy, was added. This record is needed for the scan
+      record to work correctly now that the fanout outputs are CA rather than PP. This
+      record is set to 1 when StartAll or EraseStart is set to 1, and is cleared when
+      Acquiring makes a transition from 1 to 0.</li>
+    <li>The Acquiring record was changed to look at the acquire status of all 16 MCAs,
+      rather than just the 4 MCAs with signal=0. The reason for this is that it is possible
+      that the records with signal=0 will all finish and set .ACQG=0 before some record
+      with signal!=0 has set .ACQG=0. The record is only guaranteed to read the data from
+      the AIM when it sets .ACQG=0, and thus some records might not have read their data
+      yet if they are not involved in the Acquiring calculation. When the Acquiring record
+      makes a transition from 1 to 0 it now clears the AcquireBusy record as well as processing
+      the StopScaler record.</li>
+  </ul>
+  <p>
+    A new database, simple_mca.db was created. It replaces simple_mca_aim.db and simple_mca_struck.db.
+    Template files which call simple_mca.db must now pass DTYP, INP, and PREC.</p>
+  <h3>
+    Building applications</h3>
+  <p>
+    Because the AIM device support now requires MPF there are some changes required
+    in building applications which use the AIM. When building an application directory
+    &lt;myApp&gt;/src in the past it was only necessary to include in Makefile.Vx the
+    lines:</p>
+  <pre>include $(SHARE)/mcaApp/src/mcaLIBOBJS
 LIBOBJS += $(MCALIBOBJS)</pre>
-
-<p>and in &lt;APP&gt;Include.dbd the line</p>
-
-<pre>include &quot;mcaShare.dbd&quot;</pre>
-
-<p>Because MPF can pass messages across the network, including
-across the backplane to an auxilliary CPU, the user has choices
-as to where to actually run the mcaAIMServer MPF server. I
-recommend running it locally on the same CPU which is running the
-EPICS MCA record, since this will minimize the MPF communications
-overhead. In this case it is necessary to load the basic MPF
-server code and the mcaAimServer code onto this CPU. This may not
-be currently happening if the IOC is set up to run the MPF server
-code only on an auxilliary CPU. The solution I recommend is to
-build a separate MPF server library in &lt;myApp&gt;/src by
-adding the following lines to Makefile.Vx</p>
-
-<pre>include $(SHARE)/ipApp/src/mpfServerLIBOBJS
+  <p>
+    and in &lt;APP&gt;Include.dbd the line</p>
+  <pre>include "mcaShare.dbd"</pre>
+  <p>
+    Because MPF can pass messages across the network, including across the backplane
+    to an auxilliary CPU, the user has choices as to where to actually run the mcaAIMServer
+    MPF server. I recommend running it locally on the same CPU which is running the
+    EPICS MCA record, since this will minimize the MPF communications overhead. In this
+    case it is necessary to load the basic MPF server code and the mcaAimServer code
+    onto this CPU. This may not be currently happening if the IOC is set up to run the
+    MPF server code only on an auxilliary CPU. The solution I recommend is to build
+    a separate MPF server library in &lt;myApp&gt;/src by adding the following lines
+    to Makefile.Vx</p>
+  <pre>include $(SHARE)/ipApp/src/mpfServerLIBOBJS
 include $(SHARE)/mcaApp/src/mpfServerLIBOBJS
 
 #----------------------------------------
 # ADD RULES AFTER THIS LINE
 mpfServLib: $(MPFSERVERLIBOBJS)
 $(LINK.c) $@ $(MPFSERVERLIBOBJS)</pre>
-
-<p>This works by looking at the files ipApp/mpfServerLIBOBJS and
-mcaApp/mpfServerLIBOBJS to make a list of all the object files
-required to build mpfServerLib. Users may need to get the latest
-version of ipApp from Tim Mooney in order to get mpfServerLIBOBJS. If
-mpfServerLib is built this way and is loaded on a CPU which does
-not have IP slots (e.g. MV167 or PPC) then there is some unused
-code, but the memory cost is not large.</p>
-
-<p>There is a problem with the current version of DevMpf.cc in
-the MPF distribution. DevMpf prevents a record from sending
-multiple messages to device support during one record processing.
-This problem will be fixed in the next release of MPF. Meanwhile
-in order for the MCA record to work with MPF the following lines
-must be <strong>deleted</strong> from DevMpf::read_write in
-DevMpf.cc.</p>
-
-<pre>if(pcommon-&gt;pact==TRUE &amp;&amp; pdevMpf-&gt;replyMessage==0) {
-  if(DevMpfDebug) epicsPrintf(&quot;%s PACT true and no reply message\n&quot;);
+  <p>
+    This works by looking at the files ipApp/mpfServerLIBOBJS and mcaApp/mpfServerLIBOBJS
+    to make a list of all the object files required to build mpfServerLib. Users may
+    need to get the latest version of ipApp from Tim Mooney in order to get mpfServerLIBOBJS.
+    If mpfServerLib is built this way and is loaded on a CPU which does not have IP
+    slots (e.g. MV167 or PPC) then there is some unused code, but the memory cost is
+    not large.</p>
+  <p>
+    There is a problem with the current version of DevMpf.cc in the MPF distribution.
+    DevMpf prevents a record from sending multiple messages to device support during
+    one record processing. This problem will be fixed in the next release of MPF. Meanwhile
+    in order for the MCA record to work with MPF the following lines must be <strong>deleted</strong>
+    from DevMpf::read_write in DevMpf.cc.</p>
+  <pre>if(pcommon-&gt;pact==TRUE &amp;&amp; pdevMpf-&gt;replyMessage==0) {
+  if(DevMpfDebug) epicsPrintf("%s PACT true and no reply message\n");
   recGblSetSevr(pcommon,COMM_ALARM,INVALID_ALARM);
   return(MPF_NoConvert);
 }
 </pre>
-
-<h3>vxWorks Startup File</h3>
-
-<p>The vxWorks startup file must be changed to use the new AIM
-device support code.</p>
-
-<p>The following lines should be added near the beginning, after
-loading iocCore and all of your other support libraries:</p>
-
-<pre># Initialize local MPF connection
+  <h3>
+    vxWorks Startup File</h3>
+  <p>
+    The vxWorks startup file must be changed to use the new AIM device support code.</p>
+  <p>
+    The following lines should be added near the beginning, after loading iocCore and
+    all of your other support libraries:</p>
+  <pre># Initialize local MPF connection
 ld &lt; mpfServLib
 routerInit
 localMessageRouterStart(0)
 </pre>
-
-<p>Note that some or all of these lines may already exist in your
-startup file, depending upon whether you are currently running
-MPF at all, and/or are running a local MPF server.</p>
-
-<p>The following lines show the global variables to turn on
-debugging at various levels. aimDebug turns on debugging for the
-low level AIM routines, etc. Setting these flags to higher
-numbers (1-10) turns on increasingly more verbose debugging
-messages.</p>
-
-<pre>mcaRecordDebug = 0
+  <p>
+    Note that some or all of these lines may already exist in your startup file, depending
+    upon whether you are currently running MPF at all, and/or are running a local MPF
+    server.</p>
+  <p>
+    The following lines show the global variables to turn on debugging at various levels.
+    aimDebug turns on debugging for the low level AIM routines, etc. Setting these flags
+    to higher numbers (1-10) turns on increasingly more verbose debugging messages.</p>
+  <pre>mcaRecordDebug = 0
 devMcaMpfDebug = 0
 mcaAIMServerDebug = 0
 aimDebug = 0</pre>
-
-<p>The AIMSetup() command which was previously used to indicate
-the maximum number of AIMs in a system is no longer used.
-Allocation of structures for each AIM now happens in AIMConfig
-when the mcaAIMServer object is created.</p>
-
-<p>The format of the AIMConfig() command has changed. The syntax
-is now:</p>
-
-<pre>### AIMConfig(serverName, ethernetAddress, port, maxChans, maxSignals,
+  <p>
+    The AIMSetup() command which was previously used to indicate the maximum number
+    of AIMs in a system is no longer used. Allocation of structures for each AIM now
+    happens in AIMConfig when the mcaAIMServer object is created.</p>
+  <p>
+    The format of the AIMConfig() command has changed. The syntax is now:</p>
+  <pre>### AIMConfig(serverName, ethernetAddress, port, maxChans, maxSignals,
 ### maxSequences, ethernetDevice, queueSize)
-AIMConfig(&quot;AIM1/1&quot;, 0x6E6, 1, 2048, 1, 1, &quot;ei0&quot;, 100)
-AIMConfig(&quot;AIM1/2&quot;, 0x6E6, 2, 2048, 4, 1, &quot;ei0&quot;, 100)
+AIMConfig("AIM1/1", 0x6E6, 1, 2048, 1, 1, "ei0", 100)
+AIMConfig("AIM1/2", 0x6E6, 2, 2048, 4, 1, "ei0", 100)
 </pre>
-
-<p><font face="Times New Roman"><code>serverName</code></font>,
-the MPF server name, is arbitrary, it just must be the same in
-the AIMConfig and dbLoadRecords commands. The name of the vxWorks
-task will be the name of the MPF server with the letter
-&quot;t&quot; in front of it, e.g. <font face="Times New Roman"><code>tAIM1/1</code></font>
-in this case. </p>
-
-<p><font face="Times New Roman"><code>ethernetAddress</code></font>
-is the low order 16 bits of the AIM Ethernet address, which is
-printed on the front of the AIM.</p>
-
-<p><font face="Times New Roman"><code>port</code></font> is the
-AIM ADC port for this server, 1 or 2.</p>
-
-<p><font face="Times New Roman"><code>maxChans, maxSignals </code></font>and
-<font face="Times New Roman"><code>maxSequences</code></font> are
-the maximum number of channels, signals (used for multiplexors
-and Canberra MCS units) and sequences (used for time-resolved
-spectroscopy). The amount of memory required in the AIM is <font
-face="Times New Roman"><code>maxChans*maxSignals*maxSequences*4 </code></font>bytes.</p>
-
-<p><font face="Times New Roman"><code>ethernetDevice</code></font>
-is the name of the vxWorks Ethernet device for the network with
-this AIM. This is typically &quot;ei0&quot; for the Motorola 68K
-CPUs and &quot;dc0&quot; for the Motorola PowerPC CPUs.</p>
-
-<p><font face="Times New Roman"><code>queueSize</code></font> is
-the size of the MPF message queue for this server. 100 should be
-plenty.</p>
-
-<p>The format of the dbLoadRecords command has also changed:</p>
-
-<pre>
-dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;, &quot;P=13IDC:,M=aim_adc1,DTYPE=MPF MCA,INP=#C0 S0 @AIM1/1,NCHAN=2048&quot;)
-dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;, &quot;P=13IDC:,M=aim_mcs1,DTYPE=MPF MCA,INP=#C0 S0 @AIM1/2,NCHAN=2048&quot;)
+  <p>
+    <code>serverName</code>, the MPF server name, is arbitrary, it just must be the
+    same in the AIMConfig and dbLoadRecords commands. The name of the vxWorks task will
+    be the name of the MPF server with the letter "t" in front of it, e.g. <code>tAIM1/1</code>
+    in this case.
+  </p>
+  <p>
+    <code>ethernetAddress</code> is the low order 16 bits of the AIM Ethernet address,
+    which is printed on the front of the AIM.</p>
+  <p>
+    <code>port</code> is the AIM ADC port for this server, 1 or 2.</p>
+  <p>
+    <code>maxChans, maxSignals </code>and <code>maxSequences</code> are the maximum
+    number of channels, signals (used for multiplexors and Canberra MCS units) and sequences
+    (used for time-resolved spectroscopy). The amount of memory required in the AIM
+    is <code>maxChans*maxSignals*maxSequences*4 </code>bytes.</p>
+  <p>
+    <code>ethernetDevice</code> is the name of the vxWorks Ethernet device for the network
+    with this AIM. This is typically "ei0" for the Motorola 68K CPUs and "dc0" for the
+    Motorola PowerPC CPUs.</p>
+  <p>
+    <code>queueSize</code> is the size of the MPF message queue for this server. 100
+    should be plenty.</p>
+  <p>
+    The format of the dbLoadRecords command has also changed:</p>
+  <pre>dbLoadRecords("share/mcaApp/Db/mca.db", "P=13IDC:,M=aim_adc1,DTYPE=MPF MCA,INP=#C0 S0 @AIM1/1,NCHAN=2048")
+dbLoadRecords("share/mcaApp/Db/mca.db", "P=13IDC:,M=aim_mcs1,DTYPE=MPF MCA,INP=#C0 S0 @AIM1/2,NCHAN=2048")
 </pre>
-
-<p>The DTYPE field is now &quot;MPF MCA&quot; rather than
-&quot;Canberra AIM MCA&quot;. The &quot;card&quot; (#Cn) is now
-the identification number of the MPF server (e.g. 0=local MPF
-server, 1=remote MPF server) rather than a number specific to
-each AIM. The parm field is now @serverName to specify the MPF
-server for this AIM.</p>
-
-<p>Example multielement template file and command file.</p>
-
-<p>The following is an example of a vxWorks command file script
-to load everything for the GSECARS 16 element detector which uses
-2 AIMs with multiplexors. This file is invoked with
-&quot;&lt;16element.cmd&quot;.</p>
-
-<pre># AIMConfig(mpfServer, ethernet_address, port, maxChans,
+  <p>
+    The DTYPE field is now "MPF MCA" rather than "Canberra AIM MCA". The "card" (#Cn)
+    is now the identification number of the MPF server (e.g. 0=local MPF server, 1=remote
+    MPF server) rather than a number specific to each AIM. The parm field is now @serverName
+    to specify the MPF server for this AIM.</p>
+  <p>
+    Example multielement template file and command file.</p>
+  <p>
+    The following is an example of a vxWorks command file script to load everything
+    for the GSECARS 16 element detector which uses 2 AIMs with multiplexors. This file
+    is invoked with "&lt;16element.cmd".</p>
+  <pre># AIMConfig(mpfServer, ethernet_address, port, maxChans,
 # maxSignals, maxSequences, ethernetDevice, queueSize)
-AIMConfig(&quot;AIM1/1&quot;, 0x8d7, 1, 4096, 4, 1, &quot;ei0&quot;, 100)
-AIMConfig(&quot;AIM1/2&quot;, 0x8d7, 2, 4096, 4, 1, &quot;ei0&quot;, 100)
-AIMConfig(&quot;AIM2/1&quot;, 0x3ec, 1, 4096, 4, 1, &quot;ei0&quot;, 100)
-AIMConfig(&quot;AIM2/2&quot;, 0x3ec, 2, 4096, 4, 1, &quot;ei0&quot;, 100)
-dbLoadRecords(&quot;share/mcaApp/Db/16element.db&quot;,&quot;P=13GE1:med:&quot;)
-dbLoadTemplate(&quot;16element.template&quot;)
+AIMConfig("AIM1/1", 0x8d7, 1, 4096, 4, 1, "ei0", 100)
+AIMConfig("AIM1/2", 0x8d7, 2, 4096, 4, 1, "ei0", 100)
+AIMConfig("AIM2/1", 0x3ec, 1, 4096, 4, 1, "ei0", 100)
+AIMConfig("AIM2/2", 0x3ec, 2, 4096, 4, 1, "ei0", 100)
+dbLoadRecords("share/mcaApp/Db/16element.db","P=13GE1:med:")
+dbLoadTemplate("16element.template")
 
 ### Struck/SIS as simple scaler for ICR
 STR7201Setup(1,0xA0000000,220,6)
 STR7201Config(0, 16, 100)
-dbLoadRecords(&quot;share/mcaApp/Db/STR7201scaler.db&quot;,&quot;P=13GE1:med:, S=scaler1, C=0&quot;)
+dbLoadRecords("share/mcaApp/Db/STR7201scaler.db","P=13GE1:med:, S=scaler1, C=0")
 </pre>
-
-<p align="left">The following is the 16element.template file
-which the above file loads:</p>
-<div align="left">
-
-<pre>file share/mcaApp/Db/simple_mca.db
+  <p>
+    The following is the 16element.template file which the above file loads:</p>
+  <pre>file share/mcaApp/Db/simple_mca.db
 {
 pattern
 {    P,      M,     DTYP,        INP       PREC, CHANS}
-{13GE1:med: mca1 &quot;MPF MCA&quot;, &quot;#C0 S0 @AIM1/1&quot;, 3, 2048}
-{13GE1:med: mca2 &quot;MPF MCA&quot;, &quot;#C0 S1 @AIM1/1&quot;, 3, 2048}
-{13GE1:med: mca3 &quot;MPF MCA&quot;, &quot;#C0 S2 @AIM1/1&quot;, 3, 2048}
-{13GE1:med: mca4 &quot;MPF MCA&quot;, &quot;#C0 S3 @AIM1/1&quot;, 3, 2048}
-{13GE1:med: mca5 &quot;MPF MCA&quot;, &quot;#C0 S0 @AIM1/2&quot;, 3, 2048}
-{13GE1:med: mca6 &quot;MPF MCA&quot;, &quot;#C0 S1 @AIM1/2&quot;, 3, 2048}
-{13GE1:med: mca7 &quot;MPF MCA&quot;, &quot;#C0 S2 @AIM1/2&quot;, 3, 2048}
-{13GE1:med: mca8 &quot;MPF MCA&quot;, &quot;#C0 S3 @AIM1/2&quot;, 3, 2048}
-{13GE1:med: mca9 &quot;MPF MCA&quot;, &quot;#C0 S0 @AIM2/1&quot;, 3, 2048}
-{13GE1:med: mca10 &quot;MPF MCA&quot;, &quot;#C0 S1 @AIM2/1&quot;, 3, 2048}
-{13GE1:med: mca11 &quot;MPF MCA&quot;, &quot;#C0 S2 @AIM2/1&quot;, 3, 2048}
-{13GE1:med: mca12 &quot;MPF MCA&quot;, &quot;#C0 S3 @AIM2/1&quot;, 3, 2048}
-{13GE1:med: mca13 &quot;MPF MCA&quot;, &quot;#C0 S0 @AIM2/2&quot;, 3, 2048}
-{13GE1:med: mca14 &quot;MPF MCA&quot;, &quot;#C0 S1 @AIM2/2&quot;, 3, 2048}
-{13GE1:med: mca15 &quot;MPF MCA&quot;, &quot;#C0 S2 @AIM2/2&quot;, 3, 2048}
-{13GE1:med: mca16 &quot;MPF MCA&quot;, &quot;#C0 S3 @AIM2/2&quot;, 3, 2048}
+{13GE1:med: mca1 "MPF MCA", "#C0 S0 @AIM1/1", 3, 2048}
+{13GE1:med: mca2 "MPF MCA", "#C0 S1 @AIM1/1", 3, 2048}
+{13GE1:med: mca3 "MPF MCA", "#C0 S2 @AIM1/1", 3, 2048}
+{13GE1:med: mca4 "MPF MCA", "#C0 S3 @AIM1/1", 3, 2048}
+{13GE1:med: mca5 "MPF MCA", "#C0 S0 @AIM1/2", 3, 2048}
+{13GE1:med: mca6 "MPF MCA", "#C0 S1 @AIM1/2", 3, 2048}
+{13GE1:med: mca7 "MPF MCA", "#C0 S2 @AIM1/2", 3, 2048}
+{13GE1:med: mca8 "MPF MCA", "#C0 S3 @AIM1/2", 3, 2048}
+{13GE1:med: mca9 "MPF MCA", "#C0 S0 @AIM2/1", 3, 2048}
+{13GE1:med: mca10 "MPF MCA", "#C0 S1 @AIM2/1", 3, 2048}
+{13GE1:med: mca11 "MPF MCA", "#C0 S2 @AIM2/1", 3, 2048}
+{13GE1:med: mca12 "MPF MCA", "#C0 S3 @AIM2/1", 3, 2048}
+{13GE1:med: mca13 "MPF MCA", "#C0 S0 @AIM2/2", 3, 2048}
+{13GE1:med: mca14 "MPF MCA", "#C0 S1 @AIM2/2", 3, 2048}
+{13GE1:med: mca15 "MPF MCA", "#C0 S2 @AIM2/2", 3, 2048}
+{13GE1:med: mca16 "MPF MCA", "#C0 S3 @AIM2/2", 3, 2048}
 }
 </pre>
-</div><div align="left">
-
-<pre>file share/mcaApp/Db/icb_amp.db
+  <pre>file share/mcaApp/Db/icb_amp.db
 {
 pattern
 {P,         AMP,   ICB}
@@ -1005,10 +966,7 @@ pattern
 {13GE1:med: amp15 NI3EC:8}
 {13GE1:med: amp16 NI3EC:9}
 }</pre>
-</div><div align="left">
-
-<pre>
-file share/mcaApp/Db/icb_adc.db
+  <pre>file share/mcaApp/Db/icb_adc.db
 {
 pattern
 {P,         ADC,   ICB}
@@ -1025,204 +983,161 @@ pattern
 {13GE1:med: hvps1 NI3EC:A}
 }
 </pre>
-</div>
-
-<h2 align="center"><a name="August 22, 2000">August 22, 2000</a></h2>
-
-<p>drvSTR7201.c for the Struck 7201 and SIS 380x had some serious
-problems:</p>
-
-<ul>
-    <li>Things were not initialized to zero, and this could cause
-        problems.&nbsp; </li>
-    <li>There is a serious flaw in the SIS380x firmware. It does
-        not reset the prescaler counter to 0 when new prescale
-        value is written. This means, for example, that if one
-        were using internal channel advance with 0.1 second dwell
-        time (prescaler=1e6) and then switched to external
-        channel advance, it will take a random number between 0
-        and 1e6 external channel advance pulses before it counts
-        the first channel. This could take weeks! I have added a
-        workaround in the driver until the firmware is fixed.</li>
-    <li>Floating point registers were not being saved in
-        interrupt service routine</li>
-</ul>
-
-<p>Tim Mooney found and fixed a problem in the ICB routines which
-was causing crashes if an unknown ICB module, such as the TCA or
-DSP was present.</p>
-
-<p>Made changes to the AIM software to allow it to run on the
-PowerPC. </p>
-
-<p>Improved performance of the erase command in mcaRecord.c by
-not sending a read_data request to device support after an erase,
-just clear the array in the record and post a monitor on the VAL
-field.</p>
-
-<p>Previously the<font face="Times New Roman"><code>
-nmc_acqu_setelapsed</code></font> command (in <font
-face="Times New Roman"><code>nmc_user_subs_2.c)</code></font>
-always did the following: </p>
-
-<ul>
+  <h2 style="text-align: center">
+    August 22, 2000</h2>
+  <p>
+    drvSTR7201.c for the Struck 7201 and SIS 380x had some serious problems:</p>
+  <ul>
+    <li>Things were not initialized to zero, and this could cause problems. </li>
+    <li>There is a serious flaw in the SIS380x firmware. It does not reset the prescaler
+      counter to 0 when new prescale value is written. This means, for example, that if
+      one were using internal channel advance with 0.1 second dwell time (prescaler=1e6)
+      and then switched to external channel advance, it will take a random number between
+      0 and 1e6 external channel advance pulses before it counts the first channel. This
+      could take weeks! I have added a workaround in the driver until the firmware is
+      fixed.</li>
+    <li>Floating point registers were not being saved in interrupt service routine</li>
+  </ul>
+  <p>
+    Tim Mooney found and fixed a problem in the ICB routines which was causing crashes
+    if an unknown ICB module, such as the TCA or DSP was present.</p>
+  <p>
+    Made changes to the AIM software to allow it to run on the PowerPC.
+  </p>
+  <p>
+    Improved performance of the erase command in mcaRecord.c by not sending a read_data
+    request to device support after an erase, just clear the array in the record and
+    post a monitor on the VAL field.</p>
+  <p>
+    Previously the<code> nmc_acqu_setelapsed</code> command (in <code>nmc_user_subs_2.c)</code>
+    always did the following:
+  </p>
+  <ul>
     <li>Queried acquisition status </li>
     <li>Turned acquisition off (even if it was off) </li>
     <li>Set the elapsed times </li>
     <li>Turned acquisition back on if it had been on </li>
-</ul>
-
-<p><font face="Times New Roman"><code>nmc_acqu_setelapsed</code></font>
-cannot set the elapsed times if the AIM is acquiring. However,
-this method has a lot of extra overhead if the AIM is not
-acquiring. </p>
-
-<p>Moved the logic into device support. Only turn off acquisition
-if it is determined to be on by the ACQG field in the record.
-This improves performance. It also improves accuracy if the AIM
-is acquiring, because the erase and setelapsed will now both be
-done with acquisition off. </p>
-
-<p>&nbsp; </p>
-
-<h2 align="center"><a name="December 6, 1999">December 6, 1999</a></h2>
-
-<p align="left">This documents the changes made to mcaApp since
-synApps_R3.13.1.1. The changes have been substantial, and users
-must make a number of simultaneous changes in order to use the
-new release:</p>
-
-<ul>
+  </ul>
+  <p>
+    <code>nmc_acqu_setelapsed</code> cannot set the elapsed times if the AIM is acquiring.
+    However, this method has a lot of extra overhead if the AIM is not acquiring.
+  </p>
+  <p>
+    Moved the logic into device support. Only turn off acquisition if it is determined
+    to be on by the ACQG field in the record. This improves performance. It also improves
+    accuracy if the AIM is acquiring, because the erase and setelapsed will now both
+    be done with acquisition off.
+  </p>
+  <p>
+  </p>
+  <h2 style="text-align: center">
+    December 6, 1999</h2>
+  <p>
+    This documents the changes made to mcaApp since synApps_R3.13.1.1. The changes have
+    been substantial, and users must make a number of simultaneous changes in order
+    to use the new release:</p>
+  <ul>
     <li>Use the new mcaRecord (mcaRecord.dbd, mcaRecord.c)</li>
-    <li>Use the new databases (mca.db, 13element.db, 3element.db,
-        Struck8.db) </li>
-    <li>Use the new IDL code (mca__define.pro,
-        epics_mca__define.pro, med__define.pro,
-        epics_med__define.pro, mca_display__define.pro, etc.)</li>
-    <li>Use the new MEDM ADL files (mca.adl, mca_small.adl,
-        mcaSetup.adl, 13element.adl, 3element.adl, Struck8.adl,
-        etc.)</li>
-    <li>Modify startup files st.cmd, to use the INP parameter
-        rather than CARD and SIGNAL. This change is necessary in
-        order to accomodate new device support for the IP330 ADC
-        and the XIA DXP CAMAC module.</li>
-</ul>
-
-<p>The changes to mcaApp are described below in roughly
-decreasing order of significance.</p>
-
-<h3>Changes to databases</h3>
-
-<p>The databases mca.db, 3element.db and 13element.db have been
-changed significantly. A new database, Struck8.db has been added
-to support 8 channel data acquisition using the Struck ST7201 or
-SIS 380x multichannel scaler.</p>
-
-<ul>
-    <li>Previous versions of these databases had a PV called
-        $(P)Start. This PV acted like the .CNT field in the
-        Joerger scaler, i.e. it was 1 when the MCA was counting,
-        0 when it was done. Writing a 1 to this PV would erase
-        the spectra and start acquisition, while writing a 0
-        would stop acquisition. The PV would also automatically
-        change state if acquisition was started or stopped by any
-        other means, for example when the preset acquisition time
-        was reached. Implementation of this PV made the databases
-        quite complex, and subject to a number of race conditions
-        which made them unreliable. In order to simplify the
-        databases and make them much more robust the single
-        $(P)Start PV has been eliminated. It has been replaced by
-        several separate PVs in each database.<ul>
-            <li><font face="Times New Roman"><tt>$(P)EraseStart</tt></font>.
-                Processing this PV (i.e. writing anything to it)
-                causes the spectra to tbe erase and then
-                aquisition to start. It simply processes <font
-                face="Times New Roman"><tt>$(P)Erase</tt></font>
-                or <font face="Times New Roman"><tt>$(P)EraseAll </tt></font>and
-                then <font face="Times New Roman"><tt>$(P)Start </tt></font>or
-                <font face="Times New Roman"><tt>$(P)StartAll.</tt></font>
-                This is now the PV which should be used as a
-                detector trigger in the scan record.</li>
-            <li><font face="Times New Roman"><tt>$(P)Erase</tt></font>(in
-                mca.db) or <font face="Times New Roman"><tt>$(P)EraseAll</tt></font>
-                (in the multi-element databases 3element.db,
-                13element.db and Struck8.db). Processing this PV
-                (i.e. writing anything to it) causes the spectra
-                to be erased.</li>
-            <li><font face="Times New Roman"><tt>$(P)Start </tt></font>(in
-                mca.db) or <font face="Times New Roman"><tt>$(P)StartAll</tt></font>
-                (in the multi-element databases). Processing this
-                PV (i.e. writing anything to it) causes aqusition
-                to start without first erasing the spectra.</li>
-            <li><font face="Times New Roman"><tt>$(P)Stop </tt></font>(in
-                mca.db) or <font face="Times New Roman"><tt>$(P)StopAll</tt></font>
-                (in the multi-element databases). Processing this
-                PV (i.e. writing anything to it) causes aqusition
-                to stop.</li>
-        </ul>
-        <p>There MEDM .adl files (mca.adl, mca_small.adl,
-        13element.adl, etc.) have been changed to reflect these
-        changes in the databases.</p>
+    <li>Use the new databases (mca.db, 13element.db, 3element.db, Struck8.db) </li>
+    <li>Use the new IDL code (mca__define.pro, epics_mca__define.pro, med__define.pro,
+      epics_med__define.pro, mca_display__define.pro, etc.)</li>
+    <li>Use the new MEDM ADL files (mca.adl, mca_small.adl, mcaSetup.adl, 13element.adl,
+      3element.adl, Struck8.adl, etc.)</li>
+    <li>Modify startup files st.cmd, to use the INP parameter rather than CARD and SIGNAL.
+      This change is necessary in order to accomodate new device support for the IP330
+      ADC and the XIA DXP CAMAC module.</li>
+  </ul>
+  <p>
+    The changes to mcaApp are described below in roughly decreasing order of significance.</p>
+  <h3>
+    Changes to databases</h3>
+  <p>
+    The databases mca.db, 3element.db and 13element.db have been changed significantly.
+    A new database, Struck8.db has been added to support 8 channel data acquisition
+    using the Struck ST7201 or SIS 380x multichannel scaler.</p>
+  <ul>
+    <li>Previous versions of these databases had a PV called $(P)Start. This PV acted
+      like the .CNT field in the Joerger scaler, i.e. it was 1 when the MCA was counting,
+      0 when it was done. Writing a 1 to this PV would erase the spectra and start acquisition,
+      while writing a 0 would stop acquisition. The PV would also automatically change
+      state if acquisition was started or stopped by any other means, for example when
+      the preset acquisition time was reached. Implementation of this PV made the databases
+      quite complex, and subject to a number of race conditions which made them unreliable.
+      In order to simplify the databases and make them much more robust the single $(P)Start
+      PV has been eliminated. It has been replaced by several separate PVs in each database.<ul>
+        <li><tt>$(P)EraseStart</tt>. Processing this PV (i.e. writing anything to it) causes
+          the spectra to tbe erase and then aquisition to start. It simply processes <tt>$(P)Erase</tt>
+          or <tt>$(P)EraseAll </tt>and then <tt>$(P)Start </tt>or <tt>$(P)StartAll.</tt>This
+          is now the PV which should be used as a detector trigger in the scan record.</li>
+        <li><tt>$(P)Erase</tt>(in mca.db) or <tt>$(P)EraseAll</tt> (in the multi-element databases
+          3element.db, 13element.db and Struck8.db). Processing this PV (i.e. writing anything
+          to it) causes the spectra to be erased.</li>
+        <li><tt>$(P)Start </tt>(in mca.db) or <tt>$(P)StartAll</tt> (in the multi-element
+          databases). Processing this PV (i.e. writing anything to it) causes aqusition to
+          start without first erasing the spectra.</li>
+        <li><tt>$(P)Stop </tt>(in mca.db) or <tt>$(P)StopAll</tt> (in the multi-element databases).
+          Processing this PV (i.e. writing anything to it) causes aqusition to stop.</li>
+      </ul>
+      <p>
+        There MEDM .adl files (mca.adl, mca_small.adl, 13element.adl, etc.) have been changed
+        to reflect these changes in the databases.</p>
     </li>
-    <li>The previous version of mca.db used the parameters CARD
-        and SIGNAL to specify the hardware address of the input
-        for the AIM and Struck/SIS. However, these parameters are
-        not sufficient for the new Ip330Sweep and DXP device
-        support, which require additional addressing information.
-        Thus, these parameters were eliminated, and replaced by
-        the single INP parameter, which is used to provide
-        complete addressing information. Unfortunately this means
-        that all st.cmd files will need to be modified. For the
-        AIM replace lines like the following: <blockquote>
-            <p><font face="Times New Roman"><tt>dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;,
-            &quot;P=13BMD:, M=aim_adc1, DTYPE=Canberra AIM MCA,
-            CARD=0, SIGNAL=0, NCHAN=2048&quot;)</tt></font></p>
-            <p>with</p>
-            <p><font face="Times New Roman"><tt>dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;,
-            &quot;P=13BMD:, M=aim_adc1, DTYPE=Canberra AIM MCA,
-            INP=#C0 S0, NCHAN=2048&quot;)</tt></font></p>
-            <p>For the Struck/SIS replace lines like:</p>
-        </blockquote>
-        <blockquote>
-            <p><font face="Times New Roman"><tt>dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;,
-            &quot;P=13LAB:, M=mca_str2, DTYPE=Struck STR7201 MCS,
-            NCHAN=1024, CARD=0, SIGNAL=1&quot;)</tt></font></p>
-        </blockquote>
-        <blockquote>
-            <p>with</p>
-        </blockquote>
-        <blockquote>
-            <p><font face="Times New Roman"><tt>dbLoadRecords(&quot;share/mcaApp/Db/mca.db&quot;,
-            &quot;P=13LAB:, M=mca_str2, DTYPE=Struck STR7201 MCS,
-            NCHAN=1024, INP=#C0 S1&quot;)</tt></font></p>
-            <p>For the Ip330Sweep use lines like</p>
-            <p><font face="Times New Roman"><tt>dbLoadRecords(&quot;share/mcaApp/Db/mca_ip330.db&quot;,
-            &quot;P=13LAB:, M=mip330_1, DTYPE=ip330Sweep,
-            NCHAN=2048, INP=#C1 S0 @c-Ip330Sweep&quot;)</tt></font></p>
-        </blockquote>
+    <li>The previous version of mca.db used the parameters CARD and SIGNAL to specify
+      the hardware address of the input for the AIM and Struck/SIS. However, these parameters
+      are not sufficient for the new Ip330Sweep and DXP device support, which require
+      additional addressing information. Thus, these parameters were eliminated, and replaced
+      by the single INP parameter, which is used to provide complete addressing information.
+      Unfortunately this means that all st.cmd files will need to be modified. For the
+      AIM replace lines like the following:
+      <blockquote>
+        <p>
+          <tt>dbLoadRecords("share/mcaApp/Db/mca.db", "P=13BMD:, M=aim_adc1, DTYPE=Canberra
+            AIM MCA, CARD=0, SIGNAL=0, NCHAN=2048")</tt></p>
+        <p>
+          with</p>
+        <p>
+          <tt>dbLoadRecords("share/mcaApp/Db/mca.db", "P=13BMD:, M=aim_adc1, DTYPE=Canberra
+            AIM MCA, INP=#C0 S0, NCHAN=2048")</tt></p>
+        <p>
+          For the Struck/SIS replace lines like:</p>
+      </blockquote>
+      <blockquote>
+        <p>
+          <tt>dbLoadRecords("share/mcaApp/Db/mca.db", "P=13LAB:, M=mca_str2, DTYPE=Struck STR7201
+            MCS, NCHAN=1024, CARD=0, SIGNAL=1")</tt></p>
+      </blockquote>
+      <blockquote>
+        <p>
+          with</p>
+      </blockquote>
+      <blockquote>
+        <p>
+          <tt>dbLoadRecords("share/mcaApp/Db/mca.db", "P=13LAB:, M=mca_str2, DTYPE=Struck STR7201
+            MCS, NCHAN=1024, INP=#C0 S1")</tt></p>
+        <p>
+          For the Ip330Sweep use lines like</p>
+        <p>
+          <tt>dbLoadRecords("share/mcaApp/Db/mca_ip330.db", "P=13LAB:, M=mip330_1, DTYPE=ip330Sweep,
+            NCHAN=2048, INP=#C1 S0 @c-Ip330Sweep")</tt></p>
+      </blockquote>
     </li>
-    <li>The previous version of these databases had a PV called
-        IdlBusy. This PV was intended to be used to synchronize
-        with IDL running on a workstation. In particular it was
-        intended to be used to cause a scan to wait until IDL had
-        written spectral data to disk before continuing the scan.
-        However, IdlBusy was not correctly implemented in any of
-        these databases, and was not being used by the IDL
-        EPICS_MCA or EPICS_MED class libraries. The new databases
-        do implement this concept in a robust and general way.
-        The PV is no longer called IdlBusy, but rather is called
-        ClientWait. Each database contains records like the
-        following: <pre>
+    <li>The previous version of these databases had a PV called IdlBusy. This PV was intended
+      to be used to synchronize with IDL running on a workstation. In particular it was
+      intended to be used to cause a scan to wait until IDL had written spectral data
+      to disk before continuing the scan. However, IdlBusy was not correctly implemented
+      in any of these databases, and was not being used by the IDL EPICS_MCA or EPICS_MED
+      class libraries. The new databases do implement this concept in a robust and general
+      way. The PV is no longer called IdlBusy, but rather is called ClientWait. Each database
+      contains records like the following:
+      <pre>grecord(bo,"$(P)$(M)Start") {
 
-grecord(bo,&quot;$(P)$(M)Start&quot;) {
+        field(OMSL,"closed_loop")
 
-        field(OMSL,&quot;closed_loop&quot;)
+        field(DOL,"1")
 
-        field(DOL,&quot;1&quot;)
+        field(OUT,"$(P)$(M).STRT  CA MS")
 
-        field(OUT,&quot;$(P)$(M).STRT  CA MS&quot;)
-
-        field(FLNK,&quot;$(P)$(M)SetClientWait&quot;)
+        field(FLNK,"$(P)$(M)SetClientWait")
 
 }
 
@@ -1230,187 +1145,144 @@ grecord(bo,&quot;$(P)$(M)Start&quot;) {
 
 # These records are to synchronize with IDL or another client
 
-grecord(bo,&quot;$(P)$(M)EnableWait&quot;) {
+grecord(bo,"$(P)$(M)EnableWait") {
 
-      field(ZNAM,&quot;Disable&quot;)
+      field(ZNAM,"Disable")
 
-      field(ONAM,&quot;Enable&quot;)
-
-}
-
-
-
-grecord(bo,&quot;$(P)$(M)SetClientWait&quot;) {
-
-      field(DISV,&quot;0&quot;)
-
-      field(SDIS,&quot;$(P)$(M)EnableWait NPP NMS&quot;)
-
-      field(OMSL,&quot;closed_loop&quot;)
-
-      field(DOL,&quot;1&quot;)
-
-      field(OUT,&quot;$(P)$(M)ClientWait PP MS&quot;)
+      field(ONAM,"Enable")
 
 }
 
 
 
-grecord(busy,&quot;$(P)$(M)ClientWait&quot;) {}
+grecord(bo,"$(P)$(M)SetClientWait") {
+
+      field(DISV,"0")
+
+      field(SDIS,"$(P)$(M)EnableWait NPP NMS")
+
+      field(OMSL,"closed_loop")
+
+      field(DOL,"1")
+
+      field(OUT,"$(P)$(M)ClientWait PP MS")
+
+}
+
+
+
+grecord(busy,"$(P)$(M)ClientWait") {}
 
 </pre>
-        <p>The logic behind these records is quite simple. <font
-        face="Times New Roman"><tt>EnableWait</tt></font> is used
-        to enable or disable waiting for <font
-        face="Times New Roman"><tt>ClientWait</tt></font>. It is
-        disabled at iocInit, and can be enabled/disabled from
-        mcaSetup.adl. Each time acquisition is started via the
-        database <font face="Times New Roman"><tt>SetClientWait</tt></font>
-        is processed. If <font face="Times New Roman"><tt>EnableWait</tt></font>
-        is enabled, then <font face="Times New Roman"><tt>ClientWait</tt></font>
-        changes to 1. If a scan record detector trigger was what
-        caused acquisition to start, then the scan will wait
-        until <font face="Times New Roman"><tt>ClientWait</tt></font>
-        goes back to 0 before it moves the positioners to the
-        next point. IDL or another client can read the data from
-        the MCA record, write it to disk (or do anything else
-        with it) and then write 0 to <font face="Times New Roman"><tt>ClientWait</tt></font>
-        when it is OK for the scan to proceed. The IDL procedures
-        EPICS_MCA::WRITE_FILE and EPICS_MED::WRITE_FILE have been
-        changed to set <font face="Times New Roman"><tt>ClientWait</tt></font>
-        to 0 after the data are written to disk. There are two
-        minor limitations of this synchronization mechanism:</p>
-        <ul>
-            <li>If the user forgets to disable <font
-                face="Times New Roman"><tt>EnableWait </tt></font>and
-                an IDL or other client is not running, then the
-                scan will hang. However, there is a control in
-                mcaSetup.adl to manually clear (or set) <font
-                face="Times New Roman"><tt>ClientWait</tt></font>.</li>
-            <li>Since the IDL file writing procedures always
-                clear <font face="Times New Roman"><tt>ClientWait
-                </tt></font>it is important that this be done
-                last if there is a complex set of things to be
-                done by the client at each point in the scan.</li>
-        </ul>
+      <p>
+        The logic behind these records is quite simple. <tt>EnableWait</tt> is used to enable
+        or disable waiting for <tt>ClientWait</tt>. It is disabled at iocInit, and can be
+        enabled/disabled from mcaSetup.adl. Each time acquisition is started via the database
+        <tt>SetClientWait</tt> is processed. If <tt>EnableWait</tt> is enabled, then <tt>ClientWait</tt>
+        changes to 1. If a scan record detector trigger was what caused acquisition to start,
+        then the scan will wait until <tt>ClientWait</tt> goes back to 0 before it moves
+        the positioners to the next point. IDL or another client can read the data from
+        the MCA record, write it to disk (or do anything else with it) and then write 0
+        to <tt>ClientWait</tt> when it is OK for the scan to proceed. The IDL procedures
+        EPICS_MCA::WRITE_FILE and EPICS_MED::WRITE_FILE have been changed to set <tt>ClientWait</tt>to
+        0 after the data are written to disk. There are two minor limitations of this synchronization
+        mechanism:</p>
+      <ul>
+        <li>If the user forgets to disable <tt>EnableWait </tt>and an IDL or other client
+          is not running, then the scan will hang. However, there is a control in mcaSetup.adl
+          to manually clear (or set) <tt>ClientWait</tt>.</li>
+        <li>Since the IDL file writing procedures always clear <tt>ClientWait </tt>it is important
+          that this be done last if there is a complex set of things to be done by the client
+          at each point in the scan.</li>
+      </ul>
     </li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h3>Changes to MEDM .adl files</h3>
-
-<ul>
-    <li>Added new .adl files for the Struck8 database
-        (Struck8.adl, Struck8_plots.adl, Struck8_cal.adl
-        Struck8_ROI.adl)</li>
-    <li>Modified mca.adl, mca_small.adl, 13element.adl,
-        3element.adl to reflect the databases changes to <font
-        face="Times New Roman"><tt>Start, StartAll, EraseStart,</tt></font>
-        etc.</li>
-    <li>Added <font face="Times New Roman"><tt>EnableWait</tt></font>
-        and <font face="Times New Roman"><tt>ClientWait</tt></font>
-        to 13element.adl, 3element.adl and mcaSetup.adl</li>
-    <li>Added individual plot menus to 13element.adl and
-        3element.adl.</li>
-    <li>Changed format of <font face="Times New Roman"><tt>.DWEL</tt></font>
-        to exponential in mcaSetup.adl so that small dwell times
-        are legible.</li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h3>New device support - Ip330Sweep</h3>
-
-<p>New device support has been added for the Acromag IP-330 ADC
-acting as a waveform recorder/transient digitizer, i.e. the MCA
-spectrum contains voltage as a function of time. This device
-support allows one to capture up to 32 waveforms nearly
-simultaneously. Times per point as short as 100 microseconds are
-possible with up to 6 waveforms. The device support and
-documentation is not in mcaApp, but rather in mpf/ip330App. This
-device support requires MPF. It can run either on a single CPU
-(e.g. MVME162 running both EPICS and MPF) or on a multiple CPU
-system (e.g. MVME167 running EPICS and MVME162 running MPF).</p>
-
-<p>&nbsp;</p>
-
-<h3>Changes to mcaRecord.c and mcaRecord.dbd</h3>
-
-<ul>
-    <li>Added RTIM (read time) field. This is the time when the
-        data were last read from the hardware. It is used by
-        clients to accurately compute counts/second.</li>
+  </ul>
+  <p>
+  </p>
+  <h3>
+    Changes to MEDM .adl files</h3>
+  <ul>
+    <li>Added new .adl files for the Struck8 database (Struck8.adl, Struck8_plots.adl,
+      Struck8_cal.adl Struck8_ROI.adl)</li>
+    <li>Modified mca.adl, mca_small.adl, 13element.adl, 3element.adl to reflect the databases
+      changes to <tt>Start, StartAll, EraseStart,</tt> etc.</li>
+    <li>Added <tt>EnableWait</tt> and <tt>ClientWait</tt> to 13element.adl, 3element.adl
+      and mcaSetup.adl</li>
+    <li>Added individual plot menus to 13element.adl and 3element.adl.</li>
+    <li>Changed format of <tt>.DWEL</tt> to exponential in mcaSetup.adl so that small
+      dwell times are legible.</li>
+  </ul>
+  <p>
+  </p>
+  <h3>
+    New device support - Ip330Sweep</h3>
+  <p>
+    New device support has been added for the Acromag IP-330 ADC acting as a waveform
+    recorder/transient digitizer, i.e. the MCA spectrum contains voltage as a function
+    of time. This device support allows one to capture up to 32 waveforms nearly simultaneously.
+    Times per point as short as 100 microseconds are possible with up to 6 waveforms.
+    The device support and documentation is not in mcaApp, but rather in mpf/ip330App.
+    This device support requires MPF. It can run either on a single CPU (e.g. MVME162
+    running both EPICS and MPF) or on a multiple CPU system (e.g. MVME167 running EPICS
+    and MVME162 running MPF).</p>
+  <p>
+  </p>
+  <h3>
+    Changes to mcaRecord.c and mcaRecord.dbd</h3>
+  <ul>
+    <li>Added RTIM (read time) field. This is the time when the data were last read from
+      the hardware. It is used by clients to accurately compute counts/second.</li>
     <li>Trimmed the STIM field so precision is only .001 sec </li>
-    <li>Support asynchronous device support for read-status and
-        read-data. This is required by the IP-330 ADC device
-        support which is based on MPF. Added RDNS, ACQP, ERTP,
-        ELTP, ACTP, and DWLP fields.</li>
-    <li>Allowed device support to change DWEL to reflect actual,
-        vs requested, dwell time.</li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h3>Changes to devMCA_AIM.c</h3>
-
-<ul>
-    <li>Fixed bug with dwell time. Changes to dwell time were
-        changing instead the preset real time. The dwell time
-        should be ignorred, since the Canberra MCS hardware does
-        not support programmable dwell time.</li>
+    <li>Support asynchronous device support for read-status and read-data. This is required
+      by the IP-330 ADC device support which is based on MPF. Added RDNS, ACQP, ERTP,
+      ELTP, ACTP, and DWLP fields.</li>
+    <li>Allowed device support to change DWEL to reflect actual, vs requested, dwell time.</li>
+  </ul>
+  <p>
+  </p>
+  <h3>
+    Changes to devMCA_AIM.c</h3>
+  <ul>
+    <li>Fixed bug with dwell time. Changes to dwell time were changing instead the preset
+      real time. The dwell time should be ignorred, since the Canberra MCS hardware does
+      not support programmable dwell time.</li>
     <li>Minor fixes to eliminate compiler warnings.</li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h3>Changes to Makefile.Host</h3>
-
-<ul>
+  </ul>
+  <p>
+  </p>
+  <h3>
+    Changes to Makefile.Host</h3>
+  <ul>
     <li>Added mca.h to INC. Required so MPF can access it.</li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h3>Changes to Makefile.Vx and mcaLIBOBJS</h3>
-
-<ul>
-    <li>Added icbAdcSub.o, icbAmpSub.o, and icbHVPSSub.o to
-        mcaLibOBJS, removed as separate products in Makefile.Vx.</li>
-    <li>Added device support for Ip330Sweep, <font
-        face="Times New Roman"><tt>$(MPF_BIN)/devMcaIp330.o</tt></font></li>
-</ul>
-
-<p>&nbsp;</p>
-
-<h3>Changes to devSTR7201.c and drvSTR7201.c</h3>
-
-<ul>
-    <li>Fixed bug in drvSTR7201.c which caused the IOC to crash
-        if the first command after iocInit was a start acquire
-        command rather than an erase command.</li>
-    <li>Fixed minor bug in the elapsed time logic in
-        drvSTR7201.c. If acquisition was manually stopped and
-        then restarted the elapsed time was reset to zero. It now
-        continues to increase from the value it had when when
-        acquisition was stopped.</li>
-    <li>Changed <font face="Times New Roman"><tt>#include
-        &lt;file&gt;</tt></font> to <font face="Times New Roman"><tt>#include
-        &quot;file&quot;</tt></font> for some files so <font
-        face="Times New Roman"><tt>gnumake depends</tt></font>
-        works correctly. </li>
-</ul>
-
-<h3>Changes to icb_control_subs.c, icb_control_subs2.c,
-icb_handler_subs.c, icb_read_regs.c, icb_show_modules.c,
-nmc_comm_subs_2.c, nmc_test.c, icb_sys_defs.h</h3>
-
-<ul>
-    <li>Minor changes to eliminate compiler warnings. Main change
-        was to modify files to consistently use <font
-        face="Times New Roman"><tt>unsigned char</tt></font>
-        rather than <font face="Times New Roman"><tt>char</tt></font>.</li>
-</ul>
-
+  </ul>
+  <p>
+  </p>
+  <h3>
+    Changes to Makefile.Vx and mcaLIBOBJS</h3>
+  <ul>
+    <li>Added icbAdcSub.o, icbAmpSub.o, and icbHVPSSub.o to mcaLibOBJS, removed as separate
+      products in Makefile.Vx.</li>
+    <li>Added device support for Ip330Sweep, <tt>$(MPF_BIN)/devMcaIp330.o</tt> </li>
+  </ul>
+  <p>
+  </p>
+  <h3>
+    Changes to devSTR7201.c and drvSTR7201.c</h3>
+  <ul>
+    <li>Fixed bug in drvSTR7201.c which caused the IOC to crash if the first command after
+      iocInit was a start acquire command rather than an erase command.</li>
+    <li>Fixed minor bug in the elapsed time logic in drvSTR7201.c. If acquisition was
+      manually stopped and then restarted the elapsed time was reset to zero. It now continues
+      to increase from the value it had when when acquisition was stopped.</li>
+    <li>Changed <tt>#include &lt;file&gt;</tt> to <tt>#include "file"</tt> for some files
+      so <tt>gnumake depends</tt>works correctly. </li>
+  </ul>
+  <h3>
+    Changes to icb_control_subs.c, icb_control_subs2.c, icb_handler_subs.c, icb_read_regs.c,
+    icb_show_modules.c, nmc_comm_subs_2.c, nmc_test.c, icb_sys_defs.h</h3>
+  <ul>
+    <li>Minor changes to eliminate compiler warnings. Main change was to modify files
+      to consistently use <tt>unsigned char</tt> rather than <tt>char</tt>.</li>
+  </ul>
 </body>
 </html>
