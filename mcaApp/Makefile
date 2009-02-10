@@ -4,22 +4,18 @@ include $(TOP)/configure/CONFIG
 # Always built mcaSrc, device-independent
 DIRS += mcaSrc
 
+# Support libraries for Canberra under Cygwin
+DIRS += CanberraSupport
+
 # Support for Canberra Ethernet acquisition devices
-ifeq ($(EPICS_HOST_ARCH), cygwin-x86)
-ifeq ($(CYGWIN_NET_INSTALLED), YES)
-DIRS += CanberraSrc
-CanberraSrc_DEPEND_DIRS = mcaSrc
-endif
-else
 ifeq ($(EPICS_HOST_ARCH), linux-x86)
 ifeq ($(LINUX_NET_INSTALLED), YES)
 DIRS += CanberraSrc
-CanberraSrc_DEPEND_DIRS = mcaSrc
+CanberraSrc_DEPEND_DIRS = CanberraSupport mcaSrc
 endif
 else
 DIRS += CanberraSrc
-CanberraSrc_DEPEND_DIRS = mcaSrc
-endif
+CanberraSrc_DEPEND_DIRS = CanberraSupport mcaSrc
 endif
 
 # Support for SIS and Struck VME multiscalers
