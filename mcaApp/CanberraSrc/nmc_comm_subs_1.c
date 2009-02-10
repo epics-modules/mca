@@ -280,6 +280,9 @@ found:
 	 i->dest.sllc_arphrd = ARPHRD_ETHER;
 	 i->dest.sllc_sap = LLC_SNAP_LSAP;
 
+         /* Get our Ethernet address */
+         if((s=nmc_get_niaddr(device,i->sys_address)) == ERROR) goto signal;
+
 #else /* USE_SOCKETS */
 	 /* Set up libnet */
 	 if ((i->pIf=malloc(sizeof(struct libnet_ifnet))) == NULL) {
@@ -296,7 +299,8 @@ found:
 	     printf("Unable to detemine MAC-Address, error=%s\n",
 		    libnet_geterror(i->pIf->libnet));
 	 }
-
+         COPY_ENET_ADDR(i->pIf->hw_address->ether_addr_octet, i->sys_address);
+         
 	 i->response_sap = LLC_SNAP_LSAP;
 #endif
 	 i->status_sap = LLC_SNAP_LSAP; /* Outside ifdef for nmc_user_subs_2.c */
@@ -332,9 +336,6 @@ found:
 	 /* Define the size of the device dependent header */
 	 i->header_size = sizeof(struct enet_header) + sizeof(struct snap_header);
 #endif
-
-         /* Get our Ethernet address */
-         if((s=nmc_get_niaddr(device,i->sys_address)) == ERROR) goto signal;
 
          if (aimDebug > 0) errlogPrintf("(nmc_initialize): MAC=%2x:%2x:%2x:%2x:%2x:%2x\n", 
                    i->sys_address[0],
