@@ -67,10 +67,6 @@ mcaCanberra_LIBS += $(EPICS_BASE_IOC_LIBS)
 mcaCanberra_SYS_LIBS_cygwin32 += wpcap Libnet rpc
 mcaCanberra_SYS_LIBS_WIN32 += wpcap Libnet rpc
 
-LIB_INSTALLS_cygwin32 += ../Libnet.lib
-LIB_INSTALLS_cygwin32 += ../libwpcap.a
-BIN_INSTALLS_cygwin32 += ../Libnet.dll
-
 #==================================
 PROD_IOC_vxWorks += mcaAIM
 PROD_IOC_cygwin32 += mcaAIM
@@ -83,23 +79,12 @@ mcaAIM_SRCS_vxWorks += -nil-
 mcaAIM_LIBS += mca
 mcaAIM_LIBS += mcaCanberra
 mcaAIM_LIBS += calc autosave
-mcaAIM_LIBS += busy
+mcaAIM_LIBS += sscan busy
 mcaAIM_LIBS += asyn
 mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 mcaAIM_SYS_LIBS_cygwin32 += wpcap Libnet rpc
 mcaAIM_SYS_LIBS_WIN32 += wpcap Libnet rpc
-
-#===========================
-# These lines force make to install Libnet and wpcap BEFORE building mcaAIM.exe for Cygwin.
-ifneq ($(strip $(LIB_INSTALLS_$(OS_CLASS))),)
-LIB_INSTALLS+=$(subst -nil-,,$(LIB_INSTALLS_$(OS_CLASS)))
-mcaAIM$(EXE):libInstalls
-else
-ifdef LIB_INSTALLS_DEFAULT
-LIB_INSTALLS+=$(LIB_INSTALLS_DEFAULT)
-endif
-endif
 
 #=============================
 PROD_IOC_vxWorks += nmcTest
