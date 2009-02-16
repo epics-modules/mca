@@ -27,10 +27,11 @@ typedef enum {
     mcaAcquiring,              /* int32, read */
     mcaElapsedLiveTime,        /* float64, read */
     mcaElapsedRealTime,        /* float64, read */
-    mcaElapsedCounts           /* float64, read */
+    mcaElapsedCounts,          /* float64, read */
+    lastMcaCommand
 } mcaCommand;
 
-#define MAX_MCA_COMMANDS 24
+#define MAX_MCA_COMMANDS lastMcaCommand
 
 typedef struct {
     int acquiring;
