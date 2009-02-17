@@ -1,0 +1,441 @@
+# Database for control of MCA-type detectors using only standard EPICS records, 
+# not the MCA record itself.
+# Mark Rivers
+# Feb. 16, 2009
+
+###################################################################
+#  These records control  acquisition start and                   # 
+#  and stop                                                       #
+###################################################################
+
+record(busy, "$(P)$(R)Start") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_START_ACQUIRE")
+   field(ZNAM, "Done")
+   field(ONAM, "Acquire")
+}
+
+record(longin, "$(P)$(R)Start_RBV") {
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_START_ACQUIRE")
+   field(SCAN, "I/O Intr")
+}
+
+record(busy, "$(P)$(R)Stop") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_STOP_ACQUIRE")
+   field(ZNAM, "Done")
+   field(ONAM, "Acquire")
+}
+
+record(longin, "$(P)$(R)Stop_RBV") {
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_STOP_ACQUIRE")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control erasing the detector                     #
+###################################################################
+
+record(bo, "$(P)$(R)Erase") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ERASE")
+   field(ZNAM, "Done")
+   field(ONAM, "Erase")
+}
+
+record(bi, "$(P)$(R)Erase_RBV") {
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ERASE")
+   field(ZNAM, "Done")
+   field(ONAM, "Erase")
+   field(SCAN, "I/O Intr")
+}
+
+record(fanout,"$(P)$(R)EraseStart") {
+    field(LNK1,"$(P)$(R)Erase PP MS")
+    field(LNK2,"$(P)$(R)Start PP MS")
+}
+
+###################################################################
+#  These records control reading the detector data                #
+###################################################################
+
+record(bo,"$(P)$(R)Read") {
+    field(SCAN,"1 second")
+    field(DISV,"0")
+    field(SDIS,"$(P)$(R)Acquiring_RBV NPP NMS")
+    field(VAL, "1")
+    field(OUT,"$(P)$(R)Data.PROC PP MS")
+}
+
+record(waveform, "$(P)$(R)Data")
+{
+    field(DTYP, "asynInt32ArrayIn")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_DATA")
+    field(FTVL, "ULONG")
+    field(NELM, "$(NCHAN)")
+#    field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the channel advance source       #
+###################################################################
+record(mbbo, "$(P)$(R)ChannelAdvance")
+{
+   field(PINI, "1")
+   field(ZRST, "Internal")
+   field(ZRVL, "1")
+   field(ONST, "External")
+   field(ONVL, "2")
+}
+
+record(seq, "$(P)$(R)ChannelAdvanceSelect")
+{
+   field(PINI, "1")
+   field(SELM, "Specified")
+   field(SELL, "$(P)$(R)ChannelAdvance NPP NMS")
+   field(LNK1, "$(P)$(R)ChanAdvInternal PP MS")
+   field(LNK2, "$(P)$(R)ChanAdvExternal PP MS")
+}
+
+record(bo, "$(P)$(R)ChanAdvInternal") {
+   field(DTYP, "asynInt32")
+   field(VAL,  "1")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_CHAS_INTERNAL")
+}
+
+record(bo, "$(P)$(R)ChanAdvExternal") {
+   field(DTYP, "asynInt32")
+   field(VAL,  "1")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_CHAS_EXTERNAL")
+}
+
+###################################################################
+#  These records control setting the number of channels           #
+###################################################################
+
+record(longout, "$(P)$(R)NumChannels")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_NUM_CHANNELS")
+}
+
+record(longin, "$(P)$(R)NumChannels_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_NUM_CHANNELS")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting dwell time for internal MCS mode #
+###################################################################
+
+record(ao, "$(P)$(R)DwellTime")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_DWELL_TIME")
+   field(PREC, "3")
+}
+
+record(ai, "$(P)$(R)DwellTime_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_DWELL_TIME")
+   field(PREC, "3")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the preset live time             #
+###################################################################
+
+record(ao, "$(P)$(R)PresetLive")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_LIVE")
+   field(PREC, "3")
+}
+
+record(ai, "$(P)$(R)PresetLive_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_LIVE")
+   field(PREC, "3")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the preset real time             #
+###################################################################
+
+record(ao, "$(P)$(R)PresetReal")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_REAL")
+   field(PREC, "3")
+}
+
+record(ai, "$(P)$(R)PresetLive_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_REAL")
+   field(PREC, "3")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the preset counts                #
+###################################################################
+
+record(longout, "$(P)$(R)PresetCounts")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_COUNTS")
+   field(PREC, "3")
+}
+
+record(longin, "$(P)$(R)PresetCounts_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_COUNTS")
+   field(PREC, "3")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the preset low channel           #
+###################################################################
+
+record(longout, "$(P)$(R)PresetLowChannel")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_LOW_CHANNEL")
+}
+
+record(longin, "$(P)$(R)PresetLowChannel_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_LOW_CHANNEL")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the preset high channel          #
+###################################################################
+
+record(longout, "$(P)$(R)PresetHighChannel")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_HIGH_CHANNEL")
+}
+
+record(longin, "$(P)$(R)PresetHighChannel_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_HIGH_CHANNEL")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the preset sweeps                #
+###################################################################
+
+record(longout, "$(P)$(R)PresetSweeps")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_SWEEPS")
+}
+
+record(longin, "$(P)$(R)PresetSweeps_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESET_SWEEPS")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control the acquire mode                         # 
+###################################################################
+record(mbbo, "$(P)$(R)AcquireMode")
+{
+   field(PINI, "1")
+   field(ZRST, "PHA")
+   field(ZRVL, "1")
+   field(ONST, "MCS")
+   field(ONVL, "2")
+   field(TWST, "List")
+   field(TWVL, "3")
+}
+
+record(mbbi, "$(P)$(R)AcquireMode_RBV")
+{
+   field(PINI, "1")
+   field(ZRST, "PHA")
+   field(ZRVL, "1")
+   field(ONST, "MCS")
+   field(ONVL, "2")
+   field(TWST, "List")
+   field(TWVL, "3")
+}
+
+record(seq, "$(P)$(R)AcquireModeSelect")
+{
+   field(PINI, "1")
+   field(SELM, "Specified")
+   field(SELL, "$(P)$(R)AcquireMode NPP NMS")
+   field(LNK1, "$(P)$(R)ModePHA PP MS")
+   field(LNK2, "$(P)$(R)ModeMCS PP MS")
+   field(LNK3, "$(P)$(R)ModeList PP MS")
+}
+
+record(bo, "$(P)$(R)ModePHA")
+{
+   field(PINI, "1")
+   field(VAL,  "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_MODE_PHA")
+}
+
+record(bo, "$(P)$(R)ModeMCS")
+{
+   field(PINI, "1")
+   field(VAL,  "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_MODE_MCS")
+}
+
+record(bo, "$(P)$(R)ModeList")
+{
+   field(PINI, "1")
+   field(VAL,  "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_MODE_LIST")
+}
+
+###################################################################
+#  These records control setting the sequence number              #
+###################################################################
+
+record(longout, "$(P)$(R)Sequence")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_SEQUENCE")
+}
+
+record(longin, "$(P)$(R)Sequence_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_SEQUENCE")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records control setting the MCS prescaling               #
+###################################################################
+
+record(longout, "$(P)$(R)Prescale")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESCALE")
+}
+
+record(longin, "$(P)$(R)Prescale_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_PRESCALE")
+   field(SCAN, "I/O Intr")
+}
+
+###################################################################
+#  These records are the MCA status                               #
+###################################################################
+
+record(bo, "$(P)$(R)ReadStatus") {
+   field(SCAN,"1 second")
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_READ_STATUS")
+   field(ZNAM, "Done")
+   field(ONAM, "Read")
+   field(FLNK, "$(P)$(R)ReadStatusFanout.PROC PP MS")
+}
+
+# This record is not needed if the driver supports callbacks
+record(fanout, "$(P)$(R)ReadStatusFanout") {
+   field(LNK1, "$(P)$(R)Acquiring_RBV PP MS")
+   field(LNK2, "$(P)$(R)ElapsedLive_RBV PP MS")
+   field(LNK3, "$(P)$(R)ElapsedReal_RBV PP MS")
+   field(LNK4, "$(P)$(R)ElapsedCounts_RBV PP MS")
+}
+   
+record(bi, "$(P)$(R)ReadStatus_RBV") {
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_READ_STATUS")
+   field(ZNAM, "Done")
+   field(ONAM, "Read")
+   field(SCAN, "I/O Intr")
+}
+
+record(bi, "$(P)$(R)Acquiring_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ACQUIRING")
+   field(ZNAM, "Done")
+   field(ONAM, "Acquiring")
+#   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ElapsedLive_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ELAPSED_LIVE")
+   field(PREC, "3")
+#   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ElapsedReal_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ELAPSED_REAL")
+   field(PREC, "3")
+#   field(SCAN, "I/O Intr")
+}
+
+record(ai, "$(P)$(R)ElapsedCounts_RBV")
+{
+   field(PINI, "1")
+   field(DTYP, "asynFloat64")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))MCA_ELAPSED_COUNTS")
+   field(PREC, "3")
+#   field(SCAN, "I/O Intr")
+}
+
