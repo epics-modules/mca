@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/support/mca/6-6beta/mcaApp/op/adl/mcaTest.adl"
-	version=030000
+	name="/home/epics/devel/mca/6-11/mcaApp/op/adl/mcaTest.adl"
+	version=030102
 }
 display {
 	object {
@@ -128,6 +128,11 @@ display {
 		label="Canberra DSP 9660"
 		name="dsp9660Gain.adl"
 		args="P=mcaTest:, DSP=dsp1"
+	}
+	display[7] {
+		label="AIM #1 std records"
+		name="mcaStdRecords.adl"
+		args="P=mcaTest:, R=aim_adc1"
 	}
 	clr=14
 	bclr=4
