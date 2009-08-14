@@ -7,6 +7,8 @@ grecord(bo,"$(P)$(M)Erase") {
     field(OMSL,"closed_loop")
     field(DOL,"1")
     field(OUT,"$(P)$(M).ERAS  PP MS")
+    field(ONAM,"Erase")
+    field(ZNAM,"Done")
 }
 
 grecord(bo,"$(P)$(M)EraseStart") {
@@ -14,18 +16,24 @@ grecord(bo,"$(P)$(M)EraseStart") {
     field(DOL,"1")
     field(OUT,"$(P)$(M).ERST  PP MS")
     field(FLNK,"$(P)$(M)SetClientWait")
+    field(ONAM,"EraseStart")
+    field(ZNAM,"Done")
 }
 grecord(bo,"$(P)$(M)Start") {
     field(OMSL,"closed_loop")
     field(DOL,"1")
     field(OUT,"$(P)$(M).STRT  PP MS")
     field(FLNK,"$(P)$(M)SetClientWait")
+    field(ONAM,"Start")
+    field(ZNAM,"Done")
 }
 
 grecord(bo,"$(P)$(M)Stop") {
     field(OMSL,"closed_loop")
     field(DOL,"1")
     field(OUT,"$(P)$(M).STOP  CA MS")
+    field(ONAM,"Stop")
+    field(ZNAM,"Done")
 }
 
 
@@ -36,6 +44,8 @@ grecord(bo,"$(P)$(M)Read") {
     field(OMSL,"closed_loop")
     field(DOL,"1")
     field(OUT,"$(P)$(M).READ  CA NMS")
+    field(ONAM,"Read")
+    field(ZNAM,"Done")
 }
 
 grecord(bo,"$(P)$(M)Status") {
@@ -144,6 +154,8 @@ grecord(bo,"$(P)$(M)SetClientWait") {
     field(OMSL,"closed_loop")
     field(DOL,"1")
     field(OUT,"$(P)$(M)ClientWait PP MS")
+    field(ONAM,"SetClientWait")
+    field(ZNAM,"Done")
 }
 
 grecord(busy,"$(P)$(M)ClientWait") {
