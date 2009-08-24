@@ -459,7 +459,7 @@ We should shut down Status and Broadcast thread first */
    if (nmc_module_info != NULL) free(nmc_module_info);
    nmc_comm_info = NULL;
    nmc_module_info = NULL;
-   ellFree(&nmc_sem_list);
+   ellFree(&nmc_sem_list, free);
    if (nmc_global_mutex != NULL) {
      epicsMutexDestroy(nmc_global_mutex);
      nmc_global_mutex=NULL;
