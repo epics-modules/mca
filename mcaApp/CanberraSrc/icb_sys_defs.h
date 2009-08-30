@@ -414,7 +414,7 @@ typedef struct icb_module_info_struct {
 
         char valid;             /* flag: this entry is used */
         char address[10];       /* address specification of the module */
-        char module_type;       /* the type (i.e., ID register) of the module */
+        signed char module_type; /* the type (i.e., ID register) of the module */
         unsigned char registers[14];    /* copy of the modules's registers */
         int ni_module;          /* for NI based modules: the NI module number */
         char base_address;      /* the ICB address of the 1st register of the module */
@@ -425,11 +425,11 @@ typedef struct icb_module_info_struct {
         int (*handler)();       /* address of a routine that handles reset/svc rqst for this type of module */
         ICB_CCNIM_ANY  *pcache; /* Pointer to cache structure for this module */
         int module_sn;          /* the module serial number (unique to every module) */
-    char r0_read;               /* Bits read from module's register 0   */
-    char r0_write;              /* Bits to write to the module's register 0 */
+        signed char r0_read;    /* Bits read from module's register 0   */
+        signed char r0_write;   /* Bits to write to the module's register 0 */
         char was_reset;         /* Indicates that module has been reset */
-    char monitor_state; /* If set, requests that AICONTROL monitor the*/
-                                                /*  module's state                            */
+        char monitor_state;     /* If set, requests that AICONTROL monitor the*/
+                                /*  module's state                            */
         char state_change;      /* There has been a change in state */
 
 } ICB_MODULE_INFO;
