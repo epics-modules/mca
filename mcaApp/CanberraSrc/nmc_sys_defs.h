@@ -123,7 +123,7 @@ struct nmc_module_info_struct {
    char valid;                         /* allocation flag for this module number */
    char module_ownership_state;        /* module ownership state */
    char module_comm_state;             /* module communications status */
-   char module_type;                   /* module type */
+   signed char module_type;            /* module type */
    struct nmc_comm_info_struct *comm_device; /* Pointer to network link to module */
    unsigned char address[ETH_ALEN];   /* module network address */
    unsigned char owner_id[ETH_ALEN];  /* owner id of module */
