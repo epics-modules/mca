@@ -39,7 +39,7 @@ PROD_IOC_Linux += nmcDemo
 #USR_CFLAGS_Linux += -DUSE_SOCKETS
 # If LLC sockets are not being used on Linux, and libnet is being used instead, then
 # uncomment the following lines.
-USR_CFLAGS_linux-x86 += -g `libnet-config --defines` 
+USR_CFLAGS_Linux += -g `libnet-config --defines` 
 mcaCanberra_SYS_LIBS_Linux += net pcap
 mcaAIM_SYS_LIBS_Linux      += net pcap
 nmcDemo_SYS_LIBS_Linux     += net pcap
