@@ -48,7 +48,7 @@ typedef struct {
     int acquiring;
     char inputEos[10];
     int inputEosLen;
-    char mcaBuffer[RONTEC_MAXCHANS*4 + 4];
+    unsigned char mcaBuffer[RONTEC_MAXCHANS*4 + 4];
     asynUser *pasynUser;
     asynInterface common;
     asynInterface int32;
@@ -422,7 +422,8 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     mcaRontecPvt *pPvt = (mcaRontecPvt *)drvPvt;
     int signal;
     double timeout=10.0;
-    int nbytesOut, nbytesIn, eomReason, nread;
+    size_t nbytesOut, nbytesIn, nread;
+    int eomReason;
     char message[RONTEC_MESSAGE_SIZE];
     unsigned char *pin;
     int temp[4];
@@ -434,11 +435,11 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
              "drvMcaRontec::int32ArrayRead entry, signal=%d, maxChans=%d\n", 
              signal, maxChans);
 
-    sprintf(message, "$SS 0,%d,%d,%d", pPvt->binning, pPvt->binning, maxChans*pPvt->binning);
+    sprintf(message, "$SS 0,%d,%d,%ld", pPvt->binning, pPvt->binning, (long)maxChans*pPvt->binning);
     /* The MCA data from the Rontec are in binary format, need to turn off the input EOS processing */
     pasynOctetSyncIO->setInputEos(pPvt->pasynUser, "", 0);
     nread = 4 + 4*maxChans;  /* Rontec sends !SS<CR> followed by 4 bytes/channel */
-    pasynOctetSyncIO->writeRead(pPvt->pasynUser, message, strlen(message), pPvt->mcaBuffer, nread,
+    pasynOctetSyncIO->writeRead(pPvt->pasynUser, message, strlen(message), (char*)pPvt->mcaBuffer, nread,
                                timeout, &nbytesOut, &nbytesIn, &eomReason);
     pasynOctetSyncIO->setInputEos(pPvt->pasynUser, pPvt->inputEos, pPvt->inputEosLen);
     if (nbytesIn != nread) {
@@ -486,7 +487,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
                                 const char **pptypeName, size_t *psize)
 {
     int i;
-    char *pstring;
+    const char *pstring;
 
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
@@ -562,7 +563,8 @@ static asynStatus RontecDisconnect(void *drvPvt, asynUser *pasynUser)
 static int sendMessage(mcaRontecPvt *pPvt, char *output, char *input)
 {
    int status;
-   int nbytesIn=0, nbytesOut=0, eomReason=0;
+   size_t nbytesIn=0, nbytesOut=0;
+   int eomReason=0;
    char buffer[RONTEC_MESSAGE_SIZE];
 
    if (input == NULL) input=buffer;
