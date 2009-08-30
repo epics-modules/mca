@@ -162,7 +162,7 @@ static STATUS llcRestartRtn(void *pEND, /* the handle/ID installed at bind time 
 static void llcErrorRtn(void *netCallbackId, /* the handle/ID installed at bind time */
                         END_ERR *pError) /* pointer to struct containing error */
 #else
-static void llcErrorRtn(void *pEND, /* the handle/ID installed at bind time */
+static void llcErrorRtn(END_OBJ *pEND, /* the handle/ID installed at bind time */
                         END_ERR *pError, /* pointer to struct containing error */
                         void *extra)
 #endif
