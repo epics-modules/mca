@@ -178,15 +178,15 @@ static LONG hvps_flag_bits[] = {
 /* Define supported HVPS module types	*/
 /*--------------------------------------*/
 
-static CHAR *hvps_types_str[] = {
-			"ICB 9641",
-			"ICB 9645",
-			0};
+/* static CHAR *hvps_types_str[] = {*/
+/*			"ICB 9641",*/
+/*			"ICB 9645",*/
+/*			0};*/
 
-static LONG hvps_types_int[] = {
-			ICB_K_MTYPE_CI9641,	/* 2000 Volt supply	*/
-			ICB_K_MTYPE_CI9645,	/* 6000 Volt supply	*/
-			0};			/* End of list		*/
+/*static LONG hvps_types_int[] = {*/
+/*			ICB_K_MTYPE_CI9641,*/	/* 2000 Volt supply	*/
+/*			ICB_K_MTYPE_CI9645,*/	/* 6000 Volt supply	*/
+/*			0};*/			/* End of list		*/
 
 
 /*******************************************************************************
@@ -239,15 +239,15 @@ static LONG adc_flag_bits[] = {
 /* Define supported ADC module types	*/
 /*--------------------------------------*/
 
-static CHAR *adc_types_str[] = {
-			"ICB 9633",
-			"ICB 9635",
-			0};
+/*static CHAR *adc_types_str[] = {*/
+/*			"ICB 9633",*/
+/*			"ICB 9635",*/
+/*			0};*/
 
-static LONG adc_types_int[] = {
-			ICB_K_MTYPE_CI9633,	/* 16K chan ADC		*/
-			ICB_K_MTYPE_CI9635,	/* 8K chan ADC		*/
-			0};			/* End of list		*/
+/*static LONG adc_types_int[] = {*/
+/*			ICB_K_MTYPE_CI9633,*/	/* 16K chan ADC		*/
+/*			ICB_K_MTYPE_CI9635,*/	/* 8K chan ADC		*/
+/*			0};*/			/* End of list		*/
 
 /*******************************************************************************
 *
@@ -307,13 +307,13 @@ static LONG amp_flag_bits[] = {
 /* Define supported AMP module types	*/
 /*--------------------------------------*/
 
-static CHAR *amp_types_str[] = {
-			"ICB 9615",
-			0};
+/*static CHAR *amp_types_str[] = {*/
+/*			"ICB 9615",*/
+/*			0};*/
 
-static LONG amp_types_int[] = {
-			ICB_K_MTYPE_CI9615,	/* Standard Amp		*/
-			0};			/* End of list		*/
+/*static LONG amp_types_int[] = {*/
+/*			ICB_K_MTYPE_CI9615,*/	/* Standard Amp		*/
+/*			0};*/			/* End of list		*/
 
 
 /*------------------------------------------------*/
@@ -343,17 +343,19 @@ static REAL amp_shape_time[]  = {0.5, 1.0, 2.0,   4.0, 6.0,  12.0, 0.0};
 *******************************************************************************/
 
 
-static ICB_PARAM_LIST *icb_plist_summary[]  = {adc_param_list,
-						amp_param_list,
-						hvps_param_list, NULL};
+/*static ICB_PARAM_LIST *icb_plist_summary[]  = {adc_param_list,*/
+/*						amp_param_list,*/
+/*						hvps_param_list, NULL};*/
 
-static ICB_PARAM_LIST *icb_flist_summary[]  = {adc_flag_list,
-						amp_flag_list,
-						hvps_flag_list, NULL};
 
-static LONG (*icb_hdlr_summary[])()  = {icb_adc_hdlr,
-					icb_amp_hdlr,
-					icb_hvps_hdlr, NULL};
+/*static ICB_PARAM_LIST *icb_flist_summary[]  = {adc_flag_list,*/
+/*						amp_flag_list,*/
+/*						hvps_flag_list, NULL};*/
+
+
+/*static LONG (*icb_hdlr_summary[])()  = {icb_adc_hdlr,*/
+/*					icb_amp_hdlr,*/
+/*					icb_hvps_hdlr, NULL};*/
 
 
 /*
