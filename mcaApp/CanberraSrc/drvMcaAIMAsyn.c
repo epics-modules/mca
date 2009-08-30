@@ -568,7 +568,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
                                 const char **pptypeName, size_t *psize)
 {
     int i;
-    char *pstring;
+    const char *pstring;
 
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
