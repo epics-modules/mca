@@ -54,19 +54,6 @@ int icb_show_modules()
 	{CAM_L_AMPFLAGS,	0,	&ampflags},	/* Amplifier mode flags	      */
 	{0,			0,	0}};	/* End of list		      */
 
-	ICB_PARAM_LIST amp_flag_list[] = {
-	{CAM_L_AMPFDIFF,	0,	0},	/* Differential (vs normal) input */
-	{CAM_L_AMPFNEGPOL,	0,	0},	/* Negative (vs positive) polarity */
-	{CAM_L_AMPFCOMPINH,	0,	0},	/* Complement inhibit polarity */
-	{CAM_L_AMPFPUREJ,	0,	0},	/* Pileup reject (ena/dis)    */
-	{CAM_L_AMPFONLINE,	0,	0},	/* Amplifier on line	      */
-	{CAM_L_AMPFMOTRBUSY,	0,	0},	/* Amplifier motor busy	      */
-	{CAM_L_AMPFPZBUSY,	0,	0},	/* Amplifier pole zero busy   */
-	{CAM_L_AMPFATTEN,	0,	0},	/* Module requires attention  */
-	{CAM_L_AMPFPZSTART,	0,	0},	/* Start AMP auto pole zero   */
-	{CAM_L_AMPFPZFAIL,	0,	0},	/* AMP auto pole zero failed  */
-	{0,			0,	0}};	/* End of list		      */
-		
 	static long adcrange;
 	static long adcoffset;
 	static char adcacqmode[10];
@@ -86,16 +73,6 @@ int icb_show_modules()
 	{CAM_L_ADCFLAGS,0,	&adcflags}, /* ADC mode flags	      */
 	{0,			0,	0}};	/* End of list		      */
 
-	ICB_PARAM_LIST adc_flag_list[] = {
-	{CAM_L_ADCFANTIC,	0,	0},	/* Anti-coincidence mode      */
-	{CAM_L_ADCFLATEC,	0,	0},	/* Late (vs early) coinc mode */
-	{CAM_L_ADCFDELPK,	0,	0},	/* Delayed (vs auto) peak detect */
-	{CAM_L_ADCFCIMCAIF,	0,	0},	/* CI (vs ND) ADC interface   */
-	{CAM_L_ADCFNONOV,	0,	0},	/* Non-overlap transfer mode  */
-	{CAM_L_ADCFONLINE,	0,	0},	/* ADC on line		      */
-	{CAM_L_ADCFATTEN,	0,	0},	/* Module requires attention  */
-	{0,			0,	0}};	/* End of list		      */
-	
 	/* Initialize ICB data structures */
 	icb_initialize();
 	
