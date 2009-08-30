@@ -138,7 +138,7 @@ epicsEventId	gotModule;
 int nmc_initialize(char *device)
 {
    int s, id;
-   int pid;
+   long pid;
    struct nmc_comm_info_struct *i;
 #ifdef USE_SOCKETS
    struct sockaddr_llc saddr;
@@ -225,8 +225,8 @@ found:
 	  * and the address of the EPICS thread structure will do just
 	  * as well. There seems to be no OSI way to get the real PID.
 	  */
-         pid = (int)epicsThreadGetIdSelf();
-         if (aimDebug > 0) errlogPrintf("(nmc_initialize): task ID: 0x%8x\n", pid);
+         pid = (long)epicsThreadGetIdSelf();
+         if (aimDebug > 0) errlogPrintf("(nmc_initialize): task ID: 0x%8lx\n", pid);
 
 #ifdef USE_SOCKETS
 #ifdef vxWorks
@@ -266,7 +266,7 @@ found:
 	 saddr.sllc_family = AF_LLC;
 	 saddr.sllc_arphrd = ARPHRD_ETHER;
 	 saddr.sllc_sap = LLC_SNAP_LSAP;
-         nmc_get_niaddr(device, &saddr.sllc_mac);
+         nmc_get_niaddr(device, (unsigned char *)&saddr.sllc_mac);
 
 	 if (bind(i->sockfd, (struct sockaddr *)&saddr,
 		  sizeof(struct sockaddr_llc)) == -1) {
