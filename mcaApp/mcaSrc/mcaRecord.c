@@ -107,6 +107,7 @@
 #include    <recGbl.h>
 #include    <special.h>
 #include    <tsDefs.h>
+#include    <menuYesNo.h> 
 
 #define GEN_SIZE_OFFSET
 #include    "mcaRecord.h"
@@ -177,19 +178,21 @@ static long readValue();
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
 
-/* Support for Regions Of Interest */
+/* Support for Regions Of Interest
+ * CAUTION: This definition must EXACTLY match the equivalent structures in the record! */
 struct roi {
-    long lo;
-    long hi;
-    short nbg;
-    unsigned short isPreset;
+    epicsInt32 lo;
+    epicsInt32 hi;
+    epicsInt16 nbg;
+    epicsEnum16 isPreset;
 };
-/* The number of fields per ROI above */
+/* The number of fields per ROI above
+ * CAUTION: This definition must EXACTLY match the equivalent structures in the record! */
 #define FIELDS_PER_ROI 4
 struct roiSum {
-    double sum;
-    double net;
-    double preset;
+    epicsFloat64 sum;
+    epicsFloat64 net;
+    epicsFloat64 preset;
 };
 static long sum_ROIs(mcaRecord *pmca, short *preset_reached);
 #define NUM_ROI 32
@@ -1124,11 +1127,11 @@ static long readValue(mcaRecord *pmca)
     status = dbGetLink(&(pmca->siml), DBR_ENUM, &(pmca->simm), NULL, NULL);
     if (status) return(status);
 
-    if (pmca->simm == NO) {
+    if (pmca->simm == menuYesNoNO) {
         status = (*pdset->read_array)(pmca);
         return(status);
     }
-    if (pmca->simm == YES) {
+    if (pmca->simm == menuYesNoYES) {
         nRequest = pmca->nmax;
         status = dbGetLink(&(pmca->siol), pmca->ftvl, pmca->bptr,NULL, &nRequest);
         /* nord set only for db links: needed for old db_access */
