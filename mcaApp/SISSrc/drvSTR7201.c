@@ -78,6 +78,7 @@
 #include	<callback.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
+#include	<errlog.h>
 #include	<recSup.h>
 #include        <epicsExport.h>
 #include	<devSup.h>
@@ -226,7 +227,7 @@ static struct strCard {
 
 /* Function prototypes */
 static int csr_defaults(int firmWareVersion);
-static void interruptServiceRoutine(int card);
+static void interruptServiceRoutine(void *arg);
 static int readFIFO(int card);
 static int checkAcquireStatus(int card);
 static int updateElapsed(int card);
@@ -420,8 +421,9 @@ static int csr_defaults(int firmwareVersion)
 }
 
 
-static void interruptServiceRoutine(int card)
+static void interruptServiceRoutine(void *arg)
 {
+    int card = (int)arg;
     struct strCard *p = &strCard[card];
     int debugLevel;
 
