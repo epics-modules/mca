@@ -60,7 +60,7 @@ typedef struct {
 
 /* These are callback functions, called from driver */
 static void dataCallback(void *drvPvt, asynUser *pasynUser, epicsInt32 *data, 
-                         epicsUInt32 nelem);
+                         size_t nelem);
 static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds);
 
 /* These are private functions, not in any interface */
@@ -315,7 +315,7 @@ static void intervalCallback(void *drvPvt, asynUser *pasynUser, double seconds)
 }
 
 static void dataCallback(void *drvPvt, asynUser *pasynUser, 
-                         epicsInt32 *newData, epicsUInt32 nelem)
+                         epicsInt32 *newData, size_t nelem)
 {
     /* This is callback function that is called from the port-specific driver */
     fastSweepPvt *pPvt = (fastSweepPvt *)drvPvt;
@@ -569,7 +569,7 @@ static asynStatus drvUserCreate(void *drvPvt, asynUser *pasynUser,
                                 const char **pptypeName, size_t *psize)
 {
     int i;
-    char *pstring;
+    const char *pstring;
 
     for (i=0; i<MAX_MCA_COMMANDS; i++) {
         pstring = mcaCommands[i].commandString;
