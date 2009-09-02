@@ -55,7 +55,7 @@ typedef struct {
     void *asynFloat64Pvt;
     asynInt32Array *pasynInt32Array;
     void *asynInt32ArrayPvt;
-    int nread;
+    size_t nread;
     int *data;
     double elapsedLive;
     double elapsedReal;
@@ -68,7 +68,6 @@ static long init_record(mcaRecord *pmca);
 static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg);
 static long read_array(mcaRecord *pmca);
 static void asynCallback(asynUser *pasynUser);
-static void interruptCallback(void *drvPvt, asynUser *pasynUser, epicsInt32 value);
 
 typedef struct {
     long            number;
@@ -366,21 +365,5 @@ static long read_array(mcaRecord *pmca)
               "devMcaAsyn::read_value, record=%s, nord=%d\n",
               pmca->name, pmca->nord);
     return(0);
-}
-
-static void interruptCallback(void *drvPvt, asynUser *pasynUser,
-                epicsInt32 value)
-{
-    mcaAsynPvt *pPvt = (mcaAsynPvt *)drvPvt;
-    mcaRecord *pmca = pPvt->pmca;
-
-    asynPrint(pPvt->pasynUser, ASYN_TRACEIO_DEVICE,
-        "%s devMcaAsyn::interruptCallback new value=%d\n",
-        pmca->name, value);
-    /* Is this the correct way to do this?  Should we do a caput to the .READ field? */
-    dbScanLock((dbCommon *)pmca);
-    pmca->read = 1;
-    dbScanUnlock((dbCommon*)pmca);
-    scanOnce(pmca);
 }
 
