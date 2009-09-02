@@ -23,6 +23,7 @@
 #include	<alarm.h>
 #include	<dbDefs.h>
 #include	<dbAccess.h>
+#include	<errlog.h>
 #include	<recSup.h>
 #include	<devSup.h>
 #include	<link.h>
