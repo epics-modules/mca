@@ -8,15 +8,8 @@ DIRS += mcaSrc
 DIRS += CanberraSupport
 
 # Support for Canberra Ethernet acquisition devices
-ifeq ($(EPICS_HOST_ARCH), linux-x86)
-ifeq ($(LINUX_NET_INSTALLED), YES)
 DIRS += CanberraSrc
 CanberraSrc_DEPEND_DIRS = CanberraSupport mcaSrc
-endif
-else
-DIRS += CanberraSrc
-CanberraSrc_DEPEND_DIRS = CanberraSupport mcaSrc
-endif
 
 # Support for SIS and Struck VME multiscalers
 DIRS += SISSrc
