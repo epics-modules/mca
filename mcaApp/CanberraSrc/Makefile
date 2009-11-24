@@ -29,9 +29,11 @@ USR_CFLAGS_vxWorks += -DUSE_SOCKETS
 
 # To build for Linux system uncomment the following lines.  This requires libnet or
 # LLC sockets
+ifeq ($(LINUX_NET_INSTALLED), YES)
 LIBRARY_IOC_Linux += mcaCanberra
 PROD_IOC_Linux += mcaAIM
 PROD_IOC_Linux += nmcDemo
+endif
 
 # We can only use LLC sockets on Linux versions
 # more recent than 2.6.13 due to a show-shopper bug in the LLC socket
