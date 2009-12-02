@@ -28,6 +28,7 @@
 #include <epicsMutex.h>
 #include <epicsEvent.h>
 #include <epicsThread.h>
+#include <epicsString.h>
 
 #ifdef __cplusplus
   extern "C" {
@@ -46,9 +47,8 @@
   #include <sockLib.h>
   #include <net/if_llc.h>
   #include "llc.h"
-#elif defined (CYGWIN32)
-  #include <libnet_cygwin.h>
-  #include <wpcap.h>        /* This is a local copy of pcap.h from the WinPcap developer's pack */
+#elif defined (CYGWIN32) || defined(_WIN32)
+  #include <pcap.h>
 #else
   #ifdef USE_SOCKETS
    #include "linux-llc.h"
@@ -165,7 +165,7 @@ struct nmc_module_info_struct {
 #define NMC_K_MCS_REACHABLE 2       /* module is reachable */
 
 
-#ifndef USE_SOCKETS
+#ifdef USE_LIBNET
   /* We used to call this an ifnet structure.  That is OK on Linux, which does not define that structure,
      but it could lead to problems on BSD systems.  Use another name instead. */
   struct libnet_ifnet {
@@ -185,29 +185,29 @@ struct nmc_module_info_struct {
 struct nmc_comm_info_struct {
    char valid;                    /* structure entry valid */
    char type;                     /* Network device type */
-   char name[INTERFACE_NAME_SIZE]; /* Network device name */
+   char *name;                    /* Network device name */
    unsigned char sys_address[ETH_ALEN];  /* System network address */
    epicsThreadId status_pid;       /* Thread ID of status dispatch */
    epicsThreadId broadcast_pid;    /* Thread ID of broadcast poller  */
    epicsThreadId capture_pid;      /* Thread ID of ether capture thread */
-/* this was the no of ticks for timeout, it is float seconds now*/
    float timeout_time;            /* time in s */
    int header_size;               /* The size of the device dependent header */
    int max_msg_size;              /* Largest possible message size */
    int max_tries;                 /* Number of command retries allowed */
    epicsMessageQueueId statusQ;   /* Message queue for status messages */
+   unsigned char response_snap[SNAP_SIZE]; /* NI SNAP ID for normal messages */
+   unsigned char status_snap[SNAP_SIZE];  /* NI SNAP ID for status/event messages */
 #ifdef USE_SOCKETS
    int sockfd;                    /* Socket */
    struct sockaddr_llc dest;      /* addr struct for sending (address overwritten) */
-   unsigned char status_sap;      /* still here to keep nmc_user_subs_2.c happy */
 #else
+   pcap_t *pcap;		          /* Pointer to pcap structure */
+#endif
+#ifdef USE_LIBNET
+   struct libnet_ifnet *pIf;      /* Pointer to libnet_ifnet structure */
+#endif
    unsigned char response_sap;    /* NI SAP address for normal messages */
    unsigned char status_sap;      /* NI SAP address for status/event messages*/
-   struct libnet_ifnet *pIf;      /* Pointer to libnet_ifnet structure */
-   pcap_t *pcap;		  /* Pointer to pcap structure */
-#endif
-   unsigned char response_snap[SNAP_SIZE]; /* NI SNAP ID for normal messages */
-   unsigned char status_snap[SNAP_SIZE];  /* NI SNAP ID for status/event messages */
 };
 
 #define NMC_K_MAX_IDS 4                         /* Number of network devices */
