@@ -75,18 +75,22 @@
 #include <usrLib.h>
 #include <sockLib.h>
 #else
+#ifndef USE_WINPCAP
 #include <sys/types.h>
 #include <sys/socket.h>
 #endif
+#endif
 
+#ifndef USE_WINPCAP
 #include <sys/ioctl.h>
+#include <unistd.h>
+#endif
 #ifdef USE_SOCKETS
   #include <net/if_arp.h>
 #endif
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
 
 struct nmc_module_info_struct *nmc_module_info; /* Keeps info on modules */
@@ -159,6 +163,44 @@ int nmc_initialize(char *device)
       /* Initialize the linked list for event semaphores */
       ellInit(&nmc_sem_list);
    }
+   
+    /* On WinPcap print a list of all adapters, because these names can be difficult to determine */
+#ifdef USE_WINPCAP
+{
+    pcap_if_t *alldevs;
+    pcap_if_t *d;
+    int numInterfaces=0;
+    char errbuf[PCAP_ERRBUF_SIZE];
+    
+    /* Retrieve the device list from the local machine */
+    if (pcap_findalldevs(&alldevs, errbuf) == -1)
+    {
+        fprintf(stderr,"Error in pcap_findalldevs_ex: %s\n", errbuf);
+        exit(1);
+    }
+    
+    /* Print the list */
+    for(d= alldevs; d != NULL; d= d->next)
+    {
+        printf("%d. %s", ++numInterfaces, d->name);
+        if (d->description)
+            printf(" (%s)\n", d->description);
+        else
+            printf(" (No description available)\n");
+    }
+    
+    if (numInterfaces == 0)
+    {
+        printf("\nNo interfaces found! Make sure WinPcap is installed.\n");
+        return;
+    }
+
+    /* We don't need any more the device list. Free it */
+    pcap_freealldevs(alldevs);
+}
+#endif
+
+
 
    /*
     * If we have already been called for this device then return immediately
@@ -187,7 +229,7 @@ found:
    i->type = NMC_K_DTYPE_ETHERNET;
 
    /* Copy the device name of this network interface */
-   strncpy(i->name, device, sizeof(i->name));
+   i->name = epicsStrDup(device);
 
    /*
     * Call gethostname() to get sys_node_name.
@@ -283,7 +325,8 @@ found:
          /* Get our Ethernet address */
          if((s=nmc_get_niaddr(device,i->sys_address)) == ERROR) goto signal;
 
-#else /* USE_SOCKETS */
+#endif
+#ifdef USE_LIBNET
 	 /* Set up libnet */
 	 if ((i->pIf=malloc(sizeof(struct libnet_ifnet))) == NULL) {
 	     printf("Unable to alloc memory for libnet_ifnet\n");
@@ -301,9 +344,19 @@ found:
 	 }
          COPY_ENET_ADDR(i->pIf->hw_address->ether_addr_octet, i->sys_address);
          
-	 i->response_sap = LLC_SNAP_LSAP;
 #endif
-	 i->status_sap = LLC_SNAP_LSAP; /* Outside ifdef for nmc_user_subs_2.c */
+#ifdef USE_WINPCAP
+    /* TEMPORARILY HARDCODE OUR MAC ADDRESS UNTIL WE FIGURE OUT HOW TO OBTAIN IT */
+    i->sys_address[0] = 0x00;
+    i->sys_address[1] = 0x1C;
+    i->sys_address[2] = 0x23;
+    i->sys_address[3] = 0x4C;
+    i->sys_address[4] = 0x9C;
+    i->sys_address[5] = 0xD7;
+       
+#endif
+	 i->response_sap = LLC_SNAP_LSAP;
+	 i->status_sap = LLC_SNAP_LSAP;
 	 i->response_snap[0] = 0;
 	 i->response_snap[1] = 0;
 	 i->response_snap[2] = 0xAF;   /* Nuclear Data company code*/
@@ -367,7 +420,7 @@ found:
          /*
           *  Start the task which periodically multicasts inquiry messages
           *  The nmcInquiry thread waits for a semaphore indicating the
-	  *  nmcEthCap thread is ready before continuing.
+	      *  nmcEthCap thread is ready before continuing.
           */
          i->broadcast_pid = epicsThreadCreate("nmcInquiry", epicsThreadPriorityMedium,
                                                epicsThreadGetStackSize(epicsThreadStackMedium), 
@@ -375,7 +428,7 @@ found:
 
          /*
           * Wait for up to 3 seconds for the first multicast inquiry to go out
-	  * and for the response to come back. Once the module database is
+	      * and for the response to come back. Once the module database is
           * built, the event is signalled.
           */
 	 result=epicsEventWaitWithTimeout(gotModule, 3.0);
@@ -423,7 +476,7 @@ void nmc_cleanup()
        free if_name
        free if_struct
     */
-#ifndef USE_SOCKETS
+#ifdef USE_LIBNET
    libnet_destroy(i->pIf->libnet);
 #endif
 /* FIXME
@@ -498,31 +551,31 @@ void nmcEthCapture(struct nmc_comm_info_struct *i)
 #else
     char errbuf[PCAP_ERRBUF_SIZE];
     char *dev;
-    pcap_t* descr;
     struct bpf_program bpfprog;      /* hold compiled program     */
     bpf_u_int32 netp =0;           /* ip                        */
     char *bpfstr="ether[6]=0 and ether[7]=0 and ether[8]=0xaf"; /* first 3 bytes of source address */
 
+#if defined(USE_LIBNET)
     if (i->pIf == NULL) {
 	printf("nmcEthCapture: Invalid if_net structure\n");
 	return;
     }
-
-    dev=i->pIf->if_name;
+#endif
+    dev = i->name;
     errbuf[0]='\0';
     if (aimDebug > 4) errlogPrintf("(nmcEtherCapture): calling pcap_open_live, device=%s \n", dev);
-    descr = pcap_open_live(dev, NMC_K_CAPTURESIZE,0,-1,errbuf);
+    i->pcap = pcap_open_live(dev, NMC_K_CAPTURESIZE,0,-1,errbuf);
     if (errbuf[0]) {
 	printf("nmcEthCapture: pcap_open_live: %s\n",errbuf);   
     }
-    if (descr == NULL) return;
+    if (i->pcap == NULL) return;
 
-    if(pcap_compile(descr,&bpfprog,bpfstr,0,netp) == -1){ 
-	printf("nmcEthCapture: pcap_compile: %s \n",pcap_geterr(descr)); 
+    if(pcap_compile(i->pcap,&bpfprog,bpfstr,0,netp) == -1){ 
+	printf("nmcEthCapture: pcap_compile: %s \n",pcap_geterr(i->pcap)); 
 	return;
     }
-    if(pcap_setfilter(descr,&bpfprog) == -1){ 
-	printf("nmcEthCapture: pcap_setfilter: %s \n",pcap_geterr(descr)); 
+    if(pcap_setfilter(i->pcap,&bpfprog) == -1){ 
+	printf("nmcEthCapture: pcap_setfilter: %s \n",pcap_geterr(i->pcap)); 
 	return;
     }
 
@@ -530,21 +583,21 @@ void nmcEthCapture(struct nmc_comm_info_struct *i)
 
     /* ... and loop forever */ 
     if (aimDebug > 4) errlogPrintf("(nmcEtherCapture): beginning pcap_loop\n");
-#ifdef CYGWIN32
-    /* There seems to be a bug in Cygwin, it uses 100% of the CPU if pcap_loop is used.  
-     * Use pcap_dispatch instead */
+#ifdef USE_WINPCAP
+    /* There seems to be a bug in WinPcap, it uses 100% of the CPU if pcap_loop is used. 
+     * Use pcap_dispatch instead THIS NEEDS INVESTIGATING */
     while(1) {
-	pcap_dispatch(descr, -1, (pcap_handler) nmcEtherGrab,(unsigned char*)i);
+	pcap_dispatch(i->pcap, -1, (pcap_handler) nmcEtherGrab,(unsigned char*)i);
 	epicsThreadSleep(epicsThreadSleepQuantum());
     }
-#else
-    pcap_loop(descr, -1, (pcap_handler) nmcEtherGrab,(unsigned char*)i);
-#endif
+#else 
+    pcap_loop(i->pcap, -1, (pcap_handler) nmcEtherGrab,(unsigned char*)i);
+#endif /* USE_WINPCAP */
     /* we should never reach this */
-    printf("nmcEthCapture: pcap_loop: %s\n",pcap_geterr(descr));
+    printf("nmcEthCapture: pcap_loop: %s\n",pcap_geterr(i->pcap));
 
     return;
-#endif
+#endif /* USE_SOCKETS */
 }
 /******************************************************************************
 * nmcEtherGrab()
@@ -1023,7 +1076,7 @@ int nmc_flush_input(int module)
 
 int nmc_putmsg(int module, struct response_packet *pkt, int size)
 {
-   int ret, length;
+   int ret, length, packet_length=0;
    struct nmc_comm_info_struct *i;
 
    /* The module is known to be valid and reachable - checked in nmc_sendcmd */
@@ -1040,7 +1093,7 @@ int nmc_putmsg(int module, struct response_packet *pkt, int size)
        * Ethernet: Just send the message.
        */
       COPY_SNAP(i->response_snap, pkt->snap_header.snap_id);
-#ifdef USE_SOCKETS
+#if defined(USE_SOCKETS)
       /* Send from the snap ID. The socket code will do the rest */
       /* The length of the data part of the packet, including the SNAP header*/
       length = size + sizeof(pkt->snap_header.snap_id);
@@ -1051,19 +1104,17 @@ int nmc_putmsg(int module, struct response_packet *pkt, int size)
 		   (struct sockaddr *)&i->dest, sizeof(struct sockaddr_llc));
       if (aimDebug > 0) errlogPrintf("(nmc_putmsg): wrote %d bytes of %d\n",ret,length);
 #else
-      COPY_ENET_ADDR(nmc_module_info[module].address, pkt->enet_header.dest);
-      COPY_ENET_ADDR(i->pIf->hw_address->ether_addr_octet, pkt->enet_header.source); 
-      /* The length of the data part of the packet */
-      length = size + sizeof(struct snap_header);
-      pkt->enet_header.length = length;
       pkt->snap_header.dsap = i->response_sap;
       pkt->snap_header.ssap = i->response_sap;
       pkt->snap_header.control = 0x03;
-
+      /* The length of the data part of the packet */
+      length = size + sizeof(struct snap_header);
+#endif
+#ifdef USE_LIBNET
       libnet_clear_packet(i->pIf->libnet);
-      if ( libnet_build_ethernet(pkt->enet_header.dest,
-				 pkt->enet_header.source,
-				 pkt->enet_header.length, 
+      if ( libnet_build_ethernet(nmc_module_info[module].address,
+				 i->sys_address,
+				 length, 
                                  (unsigned char *)&(pkt->snap_header),
 				 length, i->pIf->libnet, 0) == -1) {
 	  printf("Error building ethernet packet, error=%s\n",
@@ -1074,8 +1125,26 @@ int nmc_putmsg(int module, struct response_packet *pkt, int size)
 		 libnet_geterror(i->pIf->libnet));
       }
       if (aimDebug > 0) errlogPrintf("(nmc_putmsg): wrote %d bytes of %d\n",ret,length+14);
+#elif defined(USE_WINPCAP)
+      COPY_ENET_ADDR(nmc_module_info[module].address, pkt->enet_header.dest);
+      COPY_ENET_ADDR(i->sys_address, pkt->enet_header.source); 
+      pkt->enet_header.length = length;
+      /* NOTE: the SSWAP and LSWAP macros do byte-swapping on big-endian hosts, because the
+       * AIM is little-endian.  But the enet_header.length must be in network byte-order, which 
+       * is big-endian, so on a little-endian host it must be swapped. */
+      SSWAP_LITTLE(pkt->enet_header.length);
+      packet_length = length + sizeof(pkt->enet_header);
+      ret = pcap_sendpacket(i->pcap, pkt, packet_length);
+	  if (ret != 0) printf("Error writing ethernet packet, error=%d\n", ret);
+      if (aimDebug > 0) errlogPrintf("(nmc_putmsg): wrote %d bytes\n", 
+        packet_length);
+/* {
+char buff[512];
+int j;
+memcpy(buff, pkt, packet_length);
+for (j=0; j<packet_length; j++) printf("%d 0x%x\n", j, buff[j]);
+} */
 #endif
-
       return OK;
    }
    /*
@@ -1292,12 +1361,12 @@ done:
 *******************************************************************************/
 int nmc_get_niaddr(char *device, unsigned char *address)
 {   
-#ifdef vxWorks
+#if defined(vxWorks)
     struct ifnet *ifPtr;
     ifPtr = ifunit(device);
     memcpy(address, ((struct arpcom *) ifPtr)->ac_enaddr, 6);
     return OK;
-#elif (defined linux) || (defined CYGWIN32)
+#elif defined(linux)
     struct ifreq req;
     int fd;
     fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -1308,7 +1377,7 @@ int nmc_get_niaddr(char *device, unsigned char *address)
     }
     memcpy(address, (char *)&req.ifr_hwaddr.sa_data, 6);
     return OK;
-#else
+#elif defined(USE_WINPCAP)
     /* If we ever need to do Native Windows, it might look something
        like this:
     PIP_ADAPTER_INFO pAdapterInfo;
