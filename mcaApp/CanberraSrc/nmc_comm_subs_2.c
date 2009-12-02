@@ -344,7 +344,7 @@ int nmc_broadcast_inq_task(struct nmc_comm_info_struct *i)
 
 int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
 {
-   int ret, module, length;
+   int ret, module;
    struct inquiry_packet ipkt;
    struct ncp_comm_header *h;
    struct ncp_comm_inquiry *p;
@@ -378,7 +378,7 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
 
    p = &ipkt.ncp_comm_inquiry;
    p->inquiry_type = inqtype;
-
+   
    /*
     * Now broadcast the message. Split up according to each network device type.
     */
@@ -397,45 +397,50 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
       COPY_ENET_ADDR(ni_broadcast_address, ipkt.enet_header.dest);
       /* put in the LSB of the multicast address */
       ipkt.enet_header.dest[5] = addr;
-      ipkt.enet_header.length = sizeof(ipkt) - sizeof(struct enet_header);
 #endif
-
       /* Change byte order */
       nmc_byte_order_out(&ipkt);
 
       if (aimDebug > 1) errlogPrintf("nmc_broadcast_inq, sending inquiry\n");
-      length=sizeof(ipkt);
-#ifdef USE_SOCKETS
+#if defined(USE_SOCKETS)
       /* There is a bug in the GCC compiler for the 68040.  The following statement
        * should be
-       *       length -= sizeof(struct enet_header) + sizeof(struct snap_header) - 5;
+       *       length = sizeof(ipkt) - sizeof(struct enet_header) - sizeof(struct snap_header) + 5;
        * However, the sizeof() operator is returning 1 too many on that platform
        * so we hardcode the value for now. */
-      length = 38;
       /* Send the packet, from the SNAP ID, without the LLC header */
-      ret = sendto(i->sockfd, ipkt.snap_header.snap_id, length, 0,
+      ret = sendto(i->sockfd, ipkt.snap_header.snap_id, 38, 0,
 		   (struct sockaddr *)&i->dest, sizeof(struct sockaddr_llc));
-#else
+#elif defined(USE_LIBNET)
       /* fill the ethernet header of ipkt */
       /* copy only addresses */
       libnet_clear_packet(i->pIf->libnet);
       if ( libnet_build_ethernet(ipkt.enet_header.dest,
-				 i->pIf->hw_address->ether_addr_octet,
-				 ipkt.enet_header.length,
+				 i->sys_address,
+				 sizeof(ipkt) - sizeof(struct enet_header),
 				 (unsigned char *)&ipkt.snap_header,
-				 sizeof(ipkt)-sizeof(struct enet_header), 
+				 sizeof(ipkt) - sizeof(struct enet_header), 
 				 i->pIf->libnet, 0) == -1) {
 	  printf("Error building ethernet packet, error=%s\n", 
 		 libnet_geterror(i->pIf->libnet));
       }
-      if ((ret=libnet_write(i->pIf->libnet)) != length) {
+      if ((ret=libnet_write(i->pIf->libnet)) != sizeof(ipkt)) {
 	  printf("Error writing ethernet broadcasting packet, error=%s\n",
 		 libnet_geterror(i->pIf->libnet));
       }
+#elif defined(USE_WINPCAP)
+     /* We put our MAC address in the header. */
+      COPY_ENET_ADDR(i->sys_address, ipkt.enet_header.source);
+      ipkt.enet_header.length = sizeof(ipkt) - sizeof(struct enet_header);
+      /* NOTE: the SSWAP and LSWAP macros do byte-swapping on big-endian hosts, because the
+       * AIM is little-endian.  But the enet_header.length must be in network byte-order, which 
+       * is big-endian, so on a little-endian host it must be swapped. */
+      SSWAP_LITTLE(ipkt.enet_header.length);
+      ret = pcap_sendpacket(i->pcap, &ipkt, sizeof(ipkt));
+      if (ret == 0) ret=sizeof(ipkt); else ret=0;
 #endif
 
-      if (aimDebug > 0) errlogPrintf("(nmc_broadcast_inq): wrote %d bytes of %d\n",ret,length);
-
+      if (aimDebug > 0) errlogPrintf("(nmc_broadcast_inq): wrote %d bytes of %d\n", ret, sizeof(ipkt));
       /*
        * If we sent one of the "conditional" inquiry messages, nothing to
        * do, else increment the "unanswered message" counter for each 
@@ -721,7 +726,7 @@ int nmc_byte_order_out(void *outpkt)
    
    int s, packet_code;
    
-   /* First fix the ncp_comm_header structure which is common to all
+   /* Fix the ncp_comm_header structure which is common to all
       packet types */
    pkt = (struct enet_packet *) outpkt;
    h = &pkt->ncp_comm_header;
