@@ -34,6 +34,11 @@
 * used in Ethernet messages.
 */
 
+#include <epicsEndian.h>
+
+/* Pack these structures on 1-byte boundaries */
+#pragma pack(1)
+
 struct ncp_comm_header {
 
         INT32 checkword;                         /* Unique number pattern (NCP_K_CHECKWORD) */
@@ -48,7 +53,7 @@ struct ncp_comm_header {
         UINT8 submessage_number;                /* Sequences multi-block commands */
         INT8 spares[2];                         /* Spares */
         UINT16 checksum;                        /* Header checksum ### */
-} __attribute__ ((packed));
+};
 
 /*
 * Define protocol_type. This field identifies the type/rev of the communications
@@ -85,7 +90,7 @@ struct ncp_comm_packet {
         INT16 packet_code;                      /* Packet command/response code */
                                                 /* Data starts here! */
 
-} __attribute__ ((packed));
+};
 
 /*
 * Define packet_type. This field makes sure that commands are not interpreted as
@@ -125,7 +130,7 @@ struct ncp_comm_mstatus {
         INT32 acq_memory;                       /* Amount of acquisition memory
                                                    in bytes */
         INT32 spares[4];                        /* spares */
-} __attribute__ ((packed));
+};
 
 /* Define contents of ncp_comm_status.module_type */
 
@@ -141,7 +146,7 @@ struct ncp_comm_inquiry {
 
         INT8 inquiry_type;                      /* Type of inquiry message */
 
-} __attribute__ ((packed));
+};
 
 /*
 * Define values for ncp_comm_inquiry.inquiry_type
@@ -161,7 +166,7 @@ struct ncp_comm_mevent {
         UINT8 event_type;                       /* Event type */
         INT32 event_id1;                        /* Event identifiers (type dependent) */
         INT32 event_id2;
-} __attribute__ ((packed));
+};
 
 /* Define contents of ncp_comm_mevent.event_type */
 
@@ -201,14 +206,14 @@ struct enet_header {
         UINT8 dest[6];
         UINT8 source[6];
         UINT16 length;
-} __attribute__ ((packed));
+};
 
 struct snap_header {
         UINT8 dsap;
         UINT8 ssap;
         UINT8 control;
         UINT8 snap_id[5];
-} __attribute__ ((packed));
+};
 
 /* Define the maximum header size for all network types (Ethernet, FDDI,etc.) */
 #define NCP_MAX_HEADER_SIZE (sizeof(struct enet_header)+sizeof(struct snap_header))
@@ -218,7 +223,7 @@ struct snap_header {
 struct llinfo {
         UINT8 source[6];
         UINT8 snap_id[5];
-} __attribute__ ((packed));
+};
 
 /* Define structure of a packet to/from an AIM module */
 struct enet_packet{
@@ -230,15 +235,15 @@ struct enet_packet{
            struct ncp_comm_packet  ncp_comm_packet;
            struct ncp_comm_inquiry ncp_comm_inquiry;
            struct ncp_comm_mevent  ncp_comm_mevent;
-        }  __attribute__ ((packed)) data;
-} __attribute__ ((packed));
+        }  data;
+};
 
 struct status_packet{
         struct enet_header enet_header;
         struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_mstatus ncp_comm_mstatus;
-} __attribute__ ((packed));
+};
 struct response_packet{
         struct enet_header enet_header;
         struct snap_header snap_header;
@@ -247,19 +252,22 @@ struct response_packet{
         UINT8 ncp_packet_data[NMC_K_MAX_NIMSG -
                                       sizeof(struct ncp_comm_header) -
                                       sizeof(struct ncp_comm_packet)];
-} __attribute__ ((packed));
+};
 struct inquiry_packet{
         struct enet_header enet_header;
         struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_inquiry ncp_comm_inquiry;
-} __attribute__ ((packed));
+};
 struct event_packet{
         struct enet_header enet_header;
         struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_mevent ncp_comm_mevent;
-} __attribute__ ((packed));
+};
+
+/* Revert to previous packing */
+#pragma pack()
 
 /* Number of seconds to multicast inquiry packets to the network */
 #define NCP_BROADCAST_PERIOD 20
@@ -353,9 +361,7 @@ struct event_packet{
         a[4] == b[4])
 
 /*
-   Byte swapping macros. NOTE: These macros require that the routines
-   which use them contain the following statement:
-        register UINT8 tmp, *p;
+   Byte swapping macros.
    These macros swap a short or long integer "in place", i.e. the result
    replaces the previous value.
 
@@ -363,19 +369,7 @@ struct event_packet{
 	VxWorks needs 1 underscore
 */
 
-#ifndef __BYTE_ORDER
-#define __BYTE_ORDER _BYTE_ORDER
-#endif
-
-#ifndef __BIG_ENDIAN
-#define __BIG_ENDIAN _BIG_ENDIAN
-#endif
-
-/* There is a serious bug in Cygin compiler.  
- * It sets __BYTE_ORDER == __BIG_ENDIAN when
- * it is really little endian! */
-#if (__BYTE_ORDER == __BIG_ENDIAN) && (!CYGWIN32)
-/* #warning "Big Endian" */
+#if (EPICS_BYTE_ORDER == EPICS_ENDIAN_BIG)
 /* Swap an INT16 or UINT16 integer */
 #define SSWAP(num) \
       { register UINT8 tmp, *p; \
@@ -394,9 +388,16 @@ struct event_packet{
         tmp = *(p+1); \
         *(p+1) = *(p+2); \
         *(p+2) = tmp; }
+#define SSWAP_LITTLE(num) /* Nothing to do */
 
 #else  /* Nothing to do, little-endian */
-/* #warning "Little Endian" */
+
 #define SSWAP(num)
 #define LSWAP(num)
+#define SSWAP_LITTLE(num) \
+      { register UINT8 tmp, *p; \
+        p = (UINT8 *) &num; \
+        tmp = *p; \
+        *p = *(p+1); \
+        *(p+1) = tmp; }
 #endif
