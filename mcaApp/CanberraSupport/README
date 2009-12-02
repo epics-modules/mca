@@ -1,13 +1,20 @@
 This directory contains files from the development version of WinPcap.
 
-They get installed before the CanberraSrc directory is built on Cygwin.
+They get installed before the CanberraSrc directory is built on Cygwin and
+WIN32.
 
-libwcap.a is from the Lib directory in WinPcap
+wpcap.lib and Packet.lib are from the Lib directory in WinPcap
 
-wpcap.h and wpcap-bpf.h are from the Inc directory.  
-They are renamed from pcap.h and pcap-bpf.h to avoid conflicts
-with system include files on Linux.  wpcap.h is also edited to
-change the include from pcap-bpf.h to wpcap-bpf.h.
+The files in os/WIN32 and os/cygwin32 are from the WinPcap Include/ Include/pcap directories. 
+They are put in these os/ specific directories to avoid name conflicts with Linux.  
+The pcap.h file has been edited to change the #include pcap/bpf.h to just bpf.h, 
+so we don't need a pcap/ subdirectory.
 
-The versions in this directory now are from the 4.0.2 release of WinPcap.
+The versions in this directory are from the 4.1.1 release of WinPcap.
+
+This directory provides all files necessary to build the CanberraSrc directory 
+on win32-x86 and cygwin-x86.  However, to run the resulting application (mcaAim.exe or other
+applications built with CanberraSrc) it is necessary to install the WinPcap package, because
+it installs a needed driver and DLLs that are not included in this CanberraSupport directory.
+It is not necessary to install the developers package for WinPcap.
 
