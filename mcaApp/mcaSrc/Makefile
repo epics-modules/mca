@@ -23,7 +23,6 @@ mca_SRCS += mcaRecord.c
 mca_SRCS += devMCA_soft.c
 mca_SRCS += devMcaAsyn.c
 mca_SRCS += drvFastSweep.c
-mca_LIBS += busy
 mca_LIBS += asyn
 mca_LIBS += $(EPICS_BASE_IOC_LIBS)
 
