@@ -47,33 +47,36 @@ typedef epicsFloat64		FLOAT64;
 * the normal module response code and structure structure.
 */
 
+/* Pack all structures on 1-byte boundaries */
+#pragma pack(1)
+
 #define NCP_K_HCMD_SETACQADDR   1               /* SET ACQUISITION ADDRESS */
 struct ncp_hcmd_setacqaddr {
         UINT16 adc;                             /* ADC number */
         UINT32 address;                         /* Acquisition address */
         UINT32 limit;                           /* Acquisition limit address */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETELAPSED   2               /* SET ELAPSED TIMES */
 struct ncp_hcmd_setelapsed {
         UINT16 adc;
         UINT32 live;                            /* Elapsed live time */
         UINT32 real;                            /*         real      */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETMEMORY    3               /* SET MEMORY */
 struct ncp_hcmd_setmemory {
         UINT32 address;                         /* Destination address of data */
         UINT32 size;                            /* Amount of data (bytes) */
                                                 /* Start of data */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETMEMCMP    4               /* SET MEMORY COMPRESSED */
 struct ncp_hcmd_setmemcmp {
         UINT32 address;                         /* Destination address of data */
         UINT32 size;                            /* Amount of data (bytes) */
                                                 /* Start of data */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETPRESETS   5               /* SET PRESETS */
 struct ncp_hcmd_setpresets {
@@ -84,79 +87,79 @@ struct ncp_hcmd_setpresets {
         UINT32 start;                    	/* Preset totals start channel */
         UINT32 end;                      	/*               end channel */
         UINT32 limit;                    	/* Preset limit */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETACQSTATUS 6               /* SET ACQUISITION STATUS */
 struct ncp_hcmd_setacqstate {
         UINT16 adc;
         INT8 status;                            /* New acquisition status (on/off) */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_ERASEMEM     7               /* ERASE MEMORY */
 struct ncp_hcmd_erasemem {
         UINT32 address;                  	/* Start address of memory to be erased */
         UINT32 size;                     	/* Number of bytes to be erased */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETACQMODE   8               /* SET ACQUISITION MODE */
 struct ncp_hcmd_setacqmode {
         UINT16 adc;
         INT8 mode;                              /* Acquisition mode; see NCP_C_AMODE_xxx */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETMEMORY    9               /* RETURN MEMORY */
 struct ncp_hcmd_retmemory {
         UINT32 address;                  	/* Start address of memory to return */
         UINT32 size;                     	/* Number of bytes of memory to return */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETMEMCMP    10              /* RETURN MEMORY COMPRESSED */
 struct ncp_hcmd_retmemcmp {
         UINT32 address;                  	/* Start address of memory to return */
         UINT32 size;                     	/* Number of bytes of memory to return */
-} __attribute__ ((packed));
+};
 #define NCP_K_MRESP_RETMEMCMP   227
 struct ncp_mresp_retmemcmp {
         UINT32 channels;                 	/* Number of channels of encoded data following */
                                                 /* Encoded data starts here */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETADCSTATUS 11              /* RETURN ADC STATUS */
 struct ncp_hcmd_retadcstatus {
         UINT16 adc;
-} __attribute__ ((packed));
+};
 #define NCP_K_MRESP_ADCSTATUS   35
 struct ncp_mresp_retadcstatus {
         INT8 status;                            /* ADC on/off status */
         UINT32 live;                     	/* Elapsed live time */
         UINT32 real;                     	/*         real      */
         UINT32 totals;                   	/*         total counts */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETHOSTMEM   13              /* SET HOST MEMORY */
 struct ncp_hcmd_sethostmem {
         UINT32 address;                  	/* Destination address of host data */
         UINT32 size;                     	/* Amount of data (bytes) */
                                                 /* Start of data */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETHOSTMEM   14              /* RETURN HOST MEMORY */
 struct ncp_hcmd_rethostmem {
         UINT32 address;                  	/* Start address of host memory to return */
         UINT32 size;                     	/* Number of bytes of memory to return */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETOWNER     15              /* SET OWNER */
 struct ncp_hcmd_setowner {
         UINT8 owner_id[6];              	/* New owner ID */
         INT8 owner_name[8];                     /* New owner name */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETOWNEROVER 16              /* SET OWNER OVERRIDE */
 struct ncp_hcmd_setownerover {
         UINT8 owner_id[6];              	/* New owner ID */
         INT8 owner_name[8];                     /* New owner name */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RESET        17              /* RESET MODULE */
 #define NCP_K_HCMD_SETDISPLAY   18              /* SET DISPLAY CHARACTERISTICS */
@@ -169,14 +172,14 @@ struct ncp_hcmd_sendicb {
         struct {
            UINT8 address;               	/* ICB address where data will be sent */
            UINT8 data;                  	/* data to write */
-        }  __attribute__ ((packed)) addresses[64];
-} __attribute__ ((packed));
+        }  addresses[64];
+};
 
 #define NCP_K_HCMD_RECVICB      22              /* RECEIVE FROM ICB */
 struct ncp_hcmd_recvicb {
         UINT32 registers;                	/* Number of addresses to read */
         UINT8 address[64];              	/* ICB addresses from which data is to be read */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETUPACQ     23              /* SETUP ACQUISITION */
 struct ncp_hcmd_setupacq {
@@ -192,12 +195,12 @@ struct ncp_hcmd_setupacq {
         UINT32 elive;                    	/* Elapsed live time */
         UINT32 ereal;                    	/*         real      */
         INT8 mode;                              /* Acquisition mode; see NCP_C_AMODE_xxx */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETACQSETUP  24              /* RETURN ACQUISITION SETUP INFO */
 struct ncp_hcmd_retacqsetup {
         UINT16 adc;
-} __attribute__ ((packed));
+};
 #define NCP_K_MRESP_RETACQSETUP 203
 struct ncp_mresp_retacqsetup {
         UINT32 address;                  	/* Acquisition address */
@@ -209,7 +212,7 @@ struct ncp_mresp_retacqsetup {
         UINT32 end;                      	/*               end channel */
         UINT32 plimit;                   	/* Preset limit */
         INT8 mode;
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_SETMODEVSAP  25              /* SET MODULE EVENT MESSAGE ADDRESSES*/
 struct ncp_hcmd_setmodevsap {
@@ -219,7 +222,7 @@ struct ncp_hcmd_setmodevsap {
         INT8    mev_dsap;                       /* dest. service access point */
         INT8    mev_ssap;                       /* sour. service access point */
         INT8    snap_id[5];                     /* SNAP protocol ID */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETLISTMEM   26              /* RETURN LIST BUFFER */
 struct ncp_hcmd_retlistmem {
@@ -227,18 +230,18 @@ struct ncp_hcmd_retlistmem {
         UINT32 offset;                   	/* byte offset from start of buffer of transfer start */
         UINT32 size;                     	/* number of bytes to return */
         INT8 buffer;                            /* 0 for "1st" buffer, 1 for "2nd" */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RELLISTMEM   27              /* RELEASE LIST BUFFER */
 struct ncp_hcmd_rellistmem {
         UINT16 adc;                     	/* adc number */
         INT8 buffer;                            /* 0 for "1st" buffer, 1 for "2nd" */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETLISTSTAT  28              /* RETURN LIST ACQ STATUS */
 struct ncp_hcmd_retliststat {
         UINT16 adc;                     	/* adc number */
-} __attribute__ ((packed));
+};
 #define NCP_K_MRESP_RETLISTSTAT 251
 struct ncp_mresp_retliststat {
         INT8 status;                            /* acquire on/off state */
@@ -247,7 +250,7 @@ struct ncp_mresp_retliststat {
         UINT32 offset_1;                 	/* number of bytes of data in 1st buffer */
         INT8 buffer_2_full;                     /* 2nd buffer status: 1 if full of data */
         UINT32 offset_2;                 	/* number of bytes of data in 2nd buffer */
-} __attribute__ ((packed));
+};
 
 #define NCP_K_HCMD_RETMEMSEP    29              /* RETURN MEMORY SEPARATED */
 struct ncp_hcmd_retmemsep {
@@ -255,13 +258,13 @@ struct ncp_hcmd_retmemsep {
         UINT32 size;                     	/* number of bytes per chunk */
         UINT32 offset;                   	/* byte offset between start of each chunk */
         UINT32 chunks;                   	/* number of chunks to return */
-} __attribute__ ((packed));                     /* Note: total bytes returned will be */
+};                     /* Note: total bytes returned will be */
                                                 /*      size*chunks */
 
 #define NCP_K_HCMD_RESETLIST    30              /* RESET LIST MODE */
 struct ncp_hcmd_resetlist {
         UINT16 adc;                     	/* adc number */
-} __attribute__ ((packed));
+};
 
 /*
 * Define format for host memory usage. This is used by hosts to store module
@@ -288,8 +291,8 @@ struct ncp_hcmd_resetlist {
                 UINT8 hour;             	/*                   hour */
                 UINT8 minute;           	/*                   minute */
                 UINT8 seconds;          	/*                   seconds */
-           } __attribute__ ((packed)) input[4];
-        } __attribute__ ((packed));
+           } input[4];
+        };
 
 /*
 * This structure defines the return argument from NMC_ACQU_GETACQSETUP; it
@@ -317,8 +320,12 @@ struct nmc_acqsetup_struct {
         INT32 live;                             /* elapsed live time */
         INT32 real;                             /*         real      */
         INT32 totals;                           /*         total counts */
-} __attribute__ ((packed));
+};
 
+
+/* Revert to previous packing */
+#pragma pack()
+
 /*
 * Miscellaneous definitions
 */
