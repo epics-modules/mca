@@ -1,4 +1,12 @@
-/* mca.h -- communication between record and device support for mca record */
+/* mca.h -- 
+ * Parameters for communication between mca record and mca device support.
+ * NOTE: These parameters must not be used by device support
+ * to set pasynUser->reason for asyn drivers.  
+ * Only the strings defined in drvMca.h should be used by device support, which must use the
+ * asynDrvUser->create() function to fetch the pasynUser->reason.
+ * Drivers that only implement the mca interface are free to use these values for pasynUser->reason,
+ * but they are not required to do so.
+ */
 
 #ifndef mcaH
 #define mcaH
