@@ -31,11 +31,13 @@
 #include <asynInt32.h>
 #include <asynInt32Array.h>
 #include <asynFloat64.h>
+#include <asynDrvUser.h>
 #include <asynEpicsUtils.h>
 #include <epicsExport.h>
 
 #include "mcaRecord.h"
 #include "mca.h"
+#include "drvMca.h"
 
 typedef enum {int32Type, float64Type, int32ArrayType} interfaceType;
 
@@ -55,6 +57,8 @@ typedef struct {
     void *asynFloat64Pvt;
     asynInt32Array *pasynInt32Array;
     void *asynInt32ArrayPvt;
+    asynDrvUser *pasynDrvUser;
+    void *asynDrvUserPvt;
     size_t nread;
     int *data;
     double elapsedLive;
@@ -62,12 +66,15 @@ typedef struct {
     double dwellTime;
     double totalCounts;
     int acquiring;
+    /* These are the pasynUser->reason values returned by the driver for each drvInfo string */
+    int driverReasons[MAX_MCA_COMMANDS];
 } mcaAsynPvt;
 
 static long init_record(mcaRecord *pmca);
 static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg);
 static long read_array(mcaRecord *pmca);
 static void asynCallback(asynUser *pasynUser);
+static long findDrvInfo(mcaRecord *pmca, asynUser *pasynUser, char *drvInfoString, int command);
 
 typedef struct {
     long            number;
@@ -162,9 +169,62 @@ static long init_record(mcaRecord *pmca)
     pPvt->pasynInt32Array = (asynInt32Array *)pasynInterface->pinterface;
     pPvt->asynInt32ArrayPvt = pasynInterface->drvPvt;
 
+    /* Get the asynDrvUser interface */
+    pasynInterface = pasynManager->findInterface(pasynUser, 
+                                                 asynDrvUserType, 1);
+    if (!pasynInterface) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "devMcaAsyn::init_record, %s find drvUser interface failed\n",
+                  pmca->name);
+        goto bad;
+    }
+    pPvt->pasynDrvUser = (asynDrvUser *)pasynInterface->pinterface;
+    pPvt->asynDrvUserPvt = pasynInterface->drvPvt;
+    
+    if (findDrvInfo(pmca, pasynUser, mcaDataString,                    mcaData)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaStartAcquireString,            mcaStartAcquire)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaStopAcquireString,             mcaStopAcquire)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaEraseString,                   mcaErase)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaReadStatusString,              mcaReadStatus)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaChannelAdvanceInternalString,  mcaChannelAdvanceInternal)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaChannelAdvanceExternalString,  mcaChannelAdvanceExternal)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaNumChannelsString,             mcaNumChannels)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaModePHAString,                 mcaModePHA)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaModeMCSString,                 mcaModeMCS)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaModeListString,                mcaModeList)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaSequenceString,                mcaSequence)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPrescaleString,                mcaPrescale)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPresetSweepsString,            mcaPresetSweeps)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPresetLowChannelString,        mcaPresetLowChannel)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPresetHighChannelString,       mcaPresetHighChannel)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaDwellTimeString,               mcaDwellTime)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPresetLiveTimeString,          mcaPresetLiveTime)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPresetRealTimeString,          mcaPresetRealTime)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaPresetCountsString,            mcaPresetCounts)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaAcquiringString,               mcaAcquiring)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaElapsedLiveTimeString,         mcaElapsedLiveTime)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaElapsedRealTimeString,         mcaElapsedRealTime)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaElapsedCountsString,           mcaElapsedCounts)) goto bad;
+
+
     return(0);
 bad:
     pmca->pact=1;
+    return(0);
+}
+
+static long findDrvInfo(mcaRecord *pmca, asynUser *pasynUser, char *drvInfoString, int command)
+{
+    mcaAsynPvt *pPvt = (mcaAsynPvt *)pmca->dpvt;
+
+    /* Look up the pasynUser->reason */
+    if (pPvt->pasynDrvUser->create(pPvt->asynDrvUserPvt, pasynUser, drvInfoString, NULL, NULL) != asynSuccess) {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+                  "devMcaAsyn::findDrvInfo, %s drvUserCreate failed for %s\n",
+                  pmca->name, drvInfoString);
+        return(-1);
+    }
+    pPvt->driverReasons[command] = pasynUser->reason;
     return(0);
 }
 
@@ -298,41 +358,38 @@ static void asynCallback(asynUser *pasynUser)
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "devMcaAsyn::asynCallback: %s command=%d, ivalue=%d, dvalue=%f\n",
               pmca->name, pmsg->command, pmsg->ivalue, pmsg->dvalue);
-    pasynUser->reason = pmsg->command;
+    pasynUser->reason = pPvt->driverReasons[pmsg->command];
 
-    switch (pmsg->command) {
-    case mcaData:
+    if (pmsg->command == mcaData) {
         /* Read data */
        pPvt->pasynInt32Array->read(pPvt->asynInt32ArrayPvt, pasynUser, 
                                    pPvt->data, pmca->nuse, &pPvt->nread);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);
-       break;
 
-    case mcaReadStatus:
+
+    } else if (pmsg->command == mcaReadStatus) {
         /* Read the current status of the device */
        pPvt->pasynInt32->write(pPvt->asynInt32Pvt, pasynUser, 0);
-       pasynUser->reason = mcaAcquiring;
+       pasynUser->reason = pPvt->driverReasons[mcaAcquiring];
        pPvt->pasynInt32->read(pPvt->asynInt32Pvt, pasynUser, &pPvt->acquiring);
-       pasynUser->reason = mcaElapsedLiveTime;
+       pasynUser->reason = pPvt->driverReasons[mcaElapsedLiveTime];
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->elapsedLive);
-       pasynUser->reason = mcaElapsedRealTime;;
+       pasynUser->reason = pPvt->driverReasons[mcaElapsedRealTime];
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->elapsedReal);
-       pasynUser->reason = mcaElapsedCounts;
+       pasynUser->reason = pPvt->driverReasons[mcaElapsedCounts];
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->totalCounts);
-       pasynUser->reason = mcaDwellTime;
+       pasynUser->reason = pPvt->driverReasons[mcaDwellTime];
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->dwellTime);
        dbScanLock((dbCommon *)pmca);
        (*prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);     
-       break;
-
-    default:
+    } else {
         if (pmsg->interface == int32Type) {
             pPvt->pasynInt32->write(pPvt->asynInt32Pvt, pasynUser,
                                     pmsg->ivalue);
@@ -340,7 +397,6 @@ static void asynCallback(asynUser *pasynUser)
             pPvt->pasynFloat64->write(pPvt->asynFloat64Pvt, pasynUser,
                                       pmsg->dvalue);
         }
-        break;
     }
     pasynManager->memFree(pmsg, sizeof(*pmsg));
     status = pasynManager->freeAsynUser(pasynUser);
