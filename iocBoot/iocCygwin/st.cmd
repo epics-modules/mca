@@ -9,19 +9,19 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
 #           maxSignals, maxSequences, ethernetDevice)
 # On Windows the ethernetDevice name is unique to each network card.  
-# You can get this number for your Window machine by
-# using the "regedit" utility, and doing an "export" of the key:
-# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards]
-# This should look like:
-# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards]
-#
-# [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards\2]
-# "ServiceName"="{15B576D2-6DF4-4C9F-B53C-DBF76B53194E}"
-# "Description"="3Com 3C920 Integrated Fast Ethernet Controller (3C905C-TX Compatible)"
-# The number that is needed in the ServiceName field.
-# Copy this number and paste into the AIMConfig command below
-AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{E9C3D739-42E6-4239-9E45-0763306D1802}")
-AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{E9C3D739-42E6-4239-9E45-0763306D1802}")
+# The simplest way to get this name is to run this startup script with the string
+# provided in the distribution.  This will fail, but the driver will then print
+# out a list of all the valid network device names on your system, along with
+# their descriptions.  Find the one that describes the network that your
+# Canberra hardware is attached to, and replace the string in the AIMConfig
+# commands below with that string.
+
+# This is my office computer
+AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-9340BE526C25}")
+AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-9340BE526C25}")
+# This is the lab computer
+#AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{864AA927-88D6-4407-96F5-A5DF9E43D684}")
+#AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{864AA927-88D6-4407-96F5-A5DF9E43D684}")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
 
