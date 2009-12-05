@@ -31,6 +31,39 @@
 #include <WTypes.h>
 #include <WinBase.h>
 
+
+typedef struct {
+    mcaCommand command;
+    char *commandString;
+} mcaCommandStruct;
+
+static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
+    {mcaStartAcquire,           mcaStartAcquireString},           /* int32, write */
+    {mcaStopAcquire,            mcaStopAcquireString},            /* int32, write */
+    {mcaErase,                  mcaEraseString},                  /* int32, write */
+    {mcaData,                   mcaDataString},                   /* int32Array, read/write */
+    {mcaReadStatus,             mcaReadStatusString},             /* int32, write */
+    {mcaChannelAdvanceInternal, mcaChannelAdvanceInternalString}, /* int32, write */
+    {mcaChannelAdvanceExternal, mcaChannelAdvanceExternalString}, /* int32, write */
+    {mcaNumChannels,            mcaNumChannelsString},            /* int32, write */
+    {mcaDwellTime,              mcaDwellTimeString},              /* float64, write */
+    {mcaPresetLiveTime,         mcaPresetLiveTimeString},         /* float64, write */
+    {mcaPresetRealTime,         mcaPresetRealTimeString},         /* float64, write */
+    {mcaPresetCounts,           mcaPresetCountsString},           /* float64, write */
+    {mcaPresetLowChannel,       mcaPresetLowChannelString},       /* int32, write */
+    {mcaPresetHighChannel,      mcaPresetHighChannelString},      /* int32, write */
+    {mcaPresetSweeps,           mcaPresetSweepsString},           /* int32, write */
+    {mcaModePHA,                mcaModePHAString},                /* int32, write */
+    {mcaModeMCS,                mcaModeMCSString},                /* int32, write */
+    {mcaModeList,               mcaModeListString},               /* int32, write */
+    {mcaSequence,               mcaSequenceString},               /* int32, write */
+    {mcaPrescale,               mcaPrescaleString},               /* int32, write */
+    {mcaAcquiring,              mcaAcquiringString},              /* int32, read */
+    {mcaElapsedLiveTime,        mcaElapsedLiveTimeString},        /* float64, read */
+    {mcaElapsedRealTime,        mcaElapsedRealTimeString},        /* float64, read */
+    {mcaElapsedCounts,          mcaElapsedCountsString}           /* float64, read */
+};
+
 struct TRTSpectrumHeader {
 	char 	Ident[26];
 	int		version;
