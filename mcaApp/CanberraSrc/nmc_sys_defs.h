@@ -85,22 +85,22 @@
 #ifdef vxWorks
 #else
   /* VxWorks has these definitions */
-  #define OK 			0
-  #define ERROR 		(-1)
+  #define OK                         0
+  #define ERROR                 (-1)
   #define FALSE       0
   #define TRUE            1
 
   #define IMPORT 
 
   #ifndef _EPICS_AIM_NMC_TYPE_REDEFINITIONS
-    typedef epicsInt8 		INT8;
-    typedef epicsUInt8		UINT8;
-    typedef epicsInt16		INT16;
-    typedef epicsUInt16		UINT16;
-    typedef epicsInt32		INT32;
-    typedef epicsUInt32		UINT32;
-    typedef epicsFloat32		FLOAT32;
-    typedef epicsFloat64		FLOAT64;
+    typedef epicsInt8                 INT8;
+    typedef epicsUInt8                UINT8;
+    typedef epicsInt16                INT16;
+    typedef epicsUInt16                UINT16;
+    typedef epicsInt32                INT32;
+    typedef epicsUInt32                UINT32;
+    typedef epicsFloat32                FLOAT32;
+    typedef epicsFloat64                FLOAT64;
     #define _EPICS_AIM_NMC_TYPE_REDEFINITIONS
   #endif /* _EPICS_AIM_NMC_TYPE_REDEFINITIONS */
 
@@ -170,10 +170,10 @@ struct nmc_module_info_struct {
      but it could lead to problems on BSD systems.  Use another name instead. */
   struct libnet_ifnet {
           char    *if_name;              /* interface name, e.g. eth0 */
-		  short   if_unit;       /* not used, always 0 */
-		  libnet_t *libnet;      /* libnet_t struct for packet injection */
+                  short   if_unit;       /* not used, always 0 */
+                  libnet_t *libnet;      /* libnet_t struct for packet injection */
                   char errbuf[LIBNET_ERRBUF_SIZE];
-		  struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
+                  struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
   };
 #endif
 
@@ -201,7 +201,7 @@ struct nmc_comm_info_struct {
    int sockfd;                    /* Socket */
    struct sockaddr_llc dest;      /* addr struct for sending (address overwritten) */
 #else
-   pcap_t *pcap;		          /* Pointer to pcap structure */
+   pcap_t *pcap;                          /* Pointer to pcap structure */
 #endif
 #ifdef USE_LIBNET
    struct libnet_ifnet *pIf;      /* Pointer to libnet_ifnet structure */
