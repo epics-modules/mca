@@ -38,8 +38,8 @@ static unsigned char ni_broadcast_address[6] = {1,0,0xaf,0,0,0};
 extern epicsMutexId nmc_global_mutex;           /* Mutual exclusion semaphore
                                                    to interlock access to
                                                    global variables */
-extern epicsEventId semStartup;			/* used for synchronising
-						   threads at startup */
+extern epicsEventId semStartup;                        /* used for synchronising
+                                                   threads at startup */
 
 extern char sys_node_name[9];                   /* our system's node name */
 
@@ -410,23 +410,23 @@ int nmc_broadcast_inq(struct nmc_comm_info_struct *i, int inqtype, int addr)
        * so we hardcode the value for now. */
       /* Send the packet, from the SNAP ID, without the LLC header */
       ret = sendto(i->sockfd, ipkt.snap_header.snap_id, 38, 0,
-		   (struct sockaddr *)&i->dest, sizeof(struct sockaddr_llc));
+                   (struct sockaddr *)&i->dest, sizeof(struct sockaddr_llc));
 #elif defined(USE_LIBNET)
       /* fill the ethernet header of ipkt */
       /* copy only addresses */
       libnet_clear_packet(i->pIf->libnet);
       if ( libnet_build_ethernet(ipkt.enet_header.dest,
-				 i->sys_address,
-				 sizeof(ipkt) - sizeof(struct enet_header),
-				 (unsigned char *)&ipkt.snap_header,
-				 sizeof(ipkt) - sizeof(struct enet_header), 
-				 i->pIf->libnet, 0) == -1) {
-	  printf("Error building ethernet packet, error=%s\n", 
-		 libnet_geterror(i->pIf->libnet));
+                                 i->sys_address,
+                                 sizeof(ipkt) - sizeof(struct enet_header),
+                                 (unsigned char *)&ipkt.snap_header,
+                                 sizeof(ipkt) - sizeof(struct enet_header), 
+                                 i->pIf->libnet, 0) == -1) {
+          printf("Error building ethernet packet, error=%s\n", 
+                 libnet_geterror(i->pIf->libnet));
       }
       if ((ret=libnet_write(i->pIf->libnet)) != sizeof(ipkt)) {
-	  printf("Error writing ethernet broadcasting packet, error=%s\n",
-		 libnet_geterror(i->pIf->libnet));
+          printf("Error writing ethernet broadcasting packet, error=%s\n",
+                 libnet_geterror(i->pIf->libnet));
       }
 #elif defined(USE_WINPCAP)
      /* We put our MAC address in the header. */
