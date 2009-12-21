@@ -18,7 +18,7 @@
 *
 *       20-Dec-1993     MLR     Modified from Nuclear Data source
 *       06-May-2000     MLR     Changed definitions to architecture-independent
-*                               types like INT32.  Defined structures to be
+*                               types like epicsInt32.  Defined structures to be
 *                               packed for architecture independence.
 *                               Defined LSWAP and SSWAP correctly depending
 *                               upon architecture.
@@ -41,18 +41,18 @@
 
 struct ncp_comm_header {
 
-        INT32 checkword;                         /* Unique number pattern (NCP_K_CHECKWORD) */
-        INT8 protocol_type;                     /* Protocol type */
-        UINT8 protocol_flags;                   /* Protocol flags */
-        UINT8 message_number;                   /* Message number */
-        INT8 message_type;                      /* Message type */
-        UINT8 owner_id[6];                      /* ID of owner of module */
-        INT8 owner_name[8];                     /* Name of owner of module */
-        UINT32 data_size;                       /* Size of message data area */
-        UINT8 module_id;                        /* Module ID number ### */
-        UINT8 submessage_number;                /* Sequences multi-block commands */
-        INT8 spares[2];                         /* Spares */
-        UINT16 checksum;                        /* Header checksum ### */
+        epicsInt32 checkword;                         /* Unique number pattern (NCP_K_CHECKWORD) */
+        epicsInt8 protocol_type;                     /* Protocol type */
+        epicsUInt8 protocol_flags;                   /* Protocol flags */
+        epicsUInt8 message_number;                   /* Message number */
+        epicsInt8 message_type;                      /* Message type */
+        epicsUInt8 owner_id[6];                      /* ID of owner of module */
+        epicsInt8 owner_name[8];                     /* Name of owner of module */
+        epicsUInt32 data_size;                       /* Size of message data area */
+        epicsUInt8 module_id;                        /* Module ID number ### */
+        epicsUInt8 submessage_number;                /* Sequences multi-block commands */
+        epicsInt8 spares[2];                         /* Spares */
+        epicsUInt16 checksum;                        /* Header checksum ### */
 };
 
 /*
@@ -84,10 +84,10 @@ struct ncp_comm_header {
 
 struct ncp_comm_packet {
 
-        UINT32 packet_size;                     /* Packet data area size */
-        INT8 packet_type;                       /* Packet type (command/response) */
-        UINT8 packet_flags;                     /* Packet flags */
-        INT16 packet_code;                      /* Packet command/response code */
+        epicsUInt32 packet_size;                     /* Packet data area size */
+        epicsInt8 packet_type;                       /* Packet type (command/response) */
+        epicsUInt8 packet_flags;                     /* Packet flags */
+        epicsInt16 packet_code;                      /* Packet command/response code */
                                                 /* Data starts here! */
 
 };
@@ -114,22 +114,22 @@ struct ncp_comm_packet {
 
 struct ncp_comm_mstatus {
 
-        UINT8 module_type;                      /* Module type ID */
-        UINT8 hw_revision;                      /* Module HW revision number */
-        UINT8 fw_revision;                      /* Module FW revision number */
-        UINT8 module_init;                      /* Module state: true if ever
+        epicsUInt8 module_type;                      /* Module type ID */
+        epicsUInt8 hw_revision;                      /* Module HW revision number */
+        epicsUInt8 fw_revision;                      /* Module FW revision number */
+        epicsUInt8 module_init;                      /* Module state: true if ever
                                                    has been initialized. */
-        INT32 comm_flags;                       /* Communications capability flags */
+        epicsInt32 comm_flags;                       /* Communications capability flags */
 
                                                 /* Module type specific info */
                                                 /* starts here! */
 
                 /* NAM (AIM) */
 
-        UINT8 num_inputs;                       /* Number of inputs (ADCs) */
-        INT32 acq_memory;                       /* Amount of acquisition memory
+        epicsUInt8 num_inputs;                       /* Number of inputs (ADCs) */
+        epicsInt32 acq_memory;                       /* Amount of acquisition memory
                                                    in bytes */
-        INT32 spares[4];                        /* spares */
+        epicsInt32 spares[4];                        /* spares */
 };
 
 /* Define contents of ncp_comm_status.module_type */
@@ -144,7 +144,7 @@ struct ncp_comm_mstatus {
 
 struct ncp_comm_inquiry {
 
-        INT8 inquiry_type;                      /* Type of inquiry message */
+        epicsInt8 inquiry_type;                      /* Type of inquiry message */
 
 };
 
@@ -163,9 +163,9 @@ struct ncp_comm_inquiry {
 
 struct ncp_comm_mevent {
 
-        UINT8 event_type;                       /* Event type */
-        INT32 event_id1;                        /* Event identifiers (type dependent) */
-        INT32 event_id2;
+        epicsUInt8 event_type;                       /* Event type */
+        epicsInt32 event_id1;                        /* Event identifiers (type dependent) */
+        epicsInt32 event_id2;
 };
 
 /* Define contents of ncp_comm_mevent.event_type */
@@ -203,16 +203,16 @@ struct ncp_comm_mevent {
 
 /* Define the structure of an IEEE 802 extended packet header */
 struct enet_header {
-        UINT8 dest[6];
-        UINT8 source[6];
-        UINT16 length;
+        epicsUInt8 dest[6];
+        epicsUInt8 source[6];
+        epicsUInt16 length;
 };
 
 struct snap_header {
-        UINT8 dsap;
-        UINT8 ssap;
-        UINT8 control;
-        UINT8 snap_id[5];
+        epicsUInt8 dsap;
+        epicsUInt8 ssap;
+        epicsUInt8 control;
+        epicsUInt8 snap_id[5];
 };
 
 /* Define the maximum header size for all network types (Ethernet, FDDI,etc.) */
@@ -221,8 +221,8 @@ struct snap_header {
 /* Link layer information passed at the start of each packet passed up to
    the higher layers, also including the SNAP header sent out in all packets */
 struct llinfo {
-        UINT8 source[6];
-        UINT8 snap_id[5];
+        epicsUInt8 source[6];
+        epicsUInt8 snap_id[5];
 };
 
 /* Define structure of a packet to/from an AIM module */
@@ -249,7 +249,7 @@ struct response_packet{
         struct snap_header snap_header;
         struct ncp_comm_header ncp_comm_header;
         struct ncp_comm_packet  ncp_comm_packet;
-        UINT8 ncp_packet_data[NMC_K_MAX_NIMSG -
+        epicsUInt8 ncp_packet_data[NMC_K_MAX_NIMSG -
                                       sizeof(struct ncp_comm_header) -
                                       sizeof(struct ncp_comm_packet)];
 };
@@ -370,18 +370,18 @@ struct event_packet{
 */
 
 #if (EPICS_BYTE_ORDER == EPICS_ENDIAN_BIG)
-/* Swap an INT16 or UINT16 integer */
+/* Swap an epicsInt16 or epicsUInt16 integer */
 #define SSWAP(num) \
-      { register UINT8 tmp, *p; \
-        p = (UINT8 *) &num; \
+      { register epicsUInt8 tmp, *p; \
+        p = (epicsUInt8 *) &num; \
         tmp = *p; \
         *p = *(p+1); \
         *(p+1) = tmp; }
 
-/* Swap an INT32 or UINT32 integer */
+/* Swap an epicsInt32 or epicsUInt32 integer */
 #define LSWAP(num) \
-      { register UINT8 tmp, *p; \
-        p = (UINT8 *) &num; \
+      { register epicsUInt8 tmp, *p; \
+        p = (epicsUInt8 *) &num; \
         tmp = *p; \
         *p = *(p+3); \
         *(p+3) = tmp; \
@@ -395,8 +395,8 @@ struct event_packet{
 #define SSWAP(num)
 #define LSWAP(num)
 #define SSWAP_LITTLE(num) \
-      { register UINT8 tmp, *p; \
-        p = (UINT8 *) &num; \
+      { register epicsUInt8 tmp, *p; \
+        p = (epicsUInt8 *) &num; \
         tmp = *p; \
         *p = *(p+1); \
         *(p+1) = tmp; }

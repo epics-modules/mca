@@ -15,6 +15,8 @@ DBD += mcaCanberraSupport.dbd
 
 INC_vxWorks += llc.h
 INC_Linux += linux-llc.h
+INC += nmc_sys_defs.h aim_comm_defs.h ncp_comm_defs.h 
+INC += nmcmsgdef.h icb_sys_defs.h ndtypes.h campardef.h
 
 # The configuration here is rather complex, because there is no OS-independent method of sending
 # and receiving arbitrary Ethernet packets.  We use different methods depending on the OS and version.

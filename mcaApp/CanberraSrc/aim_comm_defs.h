@@ -18,7 +18,7 @@
 *
 *       30-Dec-1993     MLR     Modified from Nuclear Data source
 *       06-May-2000     MLR     Changed definitions to architecture-independent
-*                               types like INT32.  Defined structures to be
+*                               types like epicsInt32.  Defined structures to be
 *                               packed for architecture independence.
 *
 *******************************************************************************/
@@ -26,20 +26,6 @@
 /*
 * Host to Module Command Definitions
 */
-#ifdef vxWorks
-#else
-#ifndef _EPICS_AIM_NMC_TYPE_REDEFINITIONS
-typedef epicsInt8 			INT8;
-typedef epicsUInt8			UINT8;
-typedef epicsInt16			INT16;
-typedef epicsUInt16			UINT16;
-typedef epicsInt32			INT32;
-typedef epicsUInt32			UINT32;
-typedef epicsFloat32		FLOAT32;
-typedef epicsFloat64		FLOAT64;
-#define _EPICS_AIM_NMC_TYPE_REDEFINITIONS
-#endif /* _EPICS_AIM_NMC_TYPE_REDEFINITIONS */
-#endif /* vxWorks */
 
 /*
 * The command codes are found in ncp_comm_packet.packet_code.
@@ -52,113 +38,113 @@ typedef epicsFloat64		FLOAT64;
 
 #define NCP_K_HCMD_SETACQADDR   1               /* SET ACQUISITION ADDRESS */
 struct ncp_hcmd_setacqaddr {
-        UINT16 adc;                             /* ADC number */
-        UINT32 address;                         /* Acquisition address */
-        UINT32 limit;                           /* Acquisition limit address */
+        epicsUInt16 adc;                             /* ADC number */
+        epicsUInt32 address;                         /* Acquisition address */
+        epicsUInt32 limit;                           /* Acquisition limit address */
 };
 
 #define NCP_K_HCMD_SETELAPSED   2               /* SET ELAPSED TIMES */
 struct ncp_hcmd_setelapsed {
-        UINT16 adc;
-        UINT32 live;                            /* Elapsed live time */
-        UINT32 real;                            /*         real      */
+        epicsUInt16 adc;
+        epicsUInt32 live;                            /* Elapsed live time */
+        epicsUInt32 real;                            /*         real      */
 };
 
 #define NCP_K_HCMD_SETMEMORY    3               /* SET MEMORY */
 struct ncp_hcmd_setmemory {
-        UINT32 address;                         /* Destination address of data */
-        UINT32 size;                            /* Amount of data (bytes) */
+        epicsUInt32 address;                         /* Destination address of data */
+        epicsUInt32 size;                            /* Amount of data (bytes) */
                                                 /* Start of data */
 };
 
 #define NCP_K_HCMD_SETMEMCMP    4               /* SET MEMORY COMPRESSED */
 struct ncp_hcmd_setmemcmp {
-        UINT32 address;                         /* Destination address of data */
-        UINT32 size;                            /* Amount of data (bytes) */
+        epicsUInt32 address;                         /* Destination address of data */
+        epicsUInt32 size;                            /* Amount of data (bytes) */
                                                 /* Start of data */
 };
 
 #define NCP_K_HCMD_SETPRESETS   5               /* SET PRESETS */
 struct ncp_hcmd_setpresets {
-        UINT16 adc;
-        UINT32 live;                            /* Preset live time */
-        UINT32 real;                            /*        real      */
-        UINT32 totals;                          /* Preset total counts */
-        UINT32 start;                    	/* Preset totals start channel */
-        UINT32 end;                      	/*               end channel */
-        UINT32 limit;                    	/* Preset limit */
+        epicsUInt16 adc;
+        epicsUInt32 live;                            /* Preset live time */
+        epicsUInt32 real;                            /*        real      */
+        epicsUInt32 totals;                          /* Preset total counts */
+        epicsUInt32 start;                    	/* Preset totals start channel */
+        epicsUInt32 end;                      	/*               end channel */
+        epicsUInt32 limit;                    	/* Preset limit */
 };
 
 #define NCP_K_HCMD_SETACQSTATUS 6               /* SET ACQUISITION STATUS */
 struct ncp_hcmd_setacqstate {
-        UINT16 adc;
-        INT8 status;                            /* New acquisition status (on/off) */
+        epicsUInt16 adc;
+        epicsInt8 status;                            /* New acquisition status (on/off) */
 };
 
 #define NCP_K_HCMD_ERASEMEM     7               /* ERASE MEMORY */
 struct ncp_hcmd_erasemem {
-        UINT32 address;                  	/* Start address of memory to be erased */
-        UINT32 size;                     	/* Number of bytes to be erased */
+        epicsUInt32 address;                  	/* Start address of memory to be erased */
+        epicsUInt32 size;                     	/* Number of bytes to be erased */
 };
 
 #define NCP_K_HCMD_SETACQMODE   8               /* SET ACQUISITION MODE */
 struct ncp_hcmd_setacqmode {
-        UINT16 adc;
-        INT8 mode;                              /* Acquisition mode; see NCP_C_AMODE_xxx */
+        epicsUInt16 adc;
+        epicsInt8 mode;                              /* Acquisition mode; see NCP_C_AMODE_xxx */
 };
 
 #define NCP_K_HCMD_RETMEMORY    9               /* RETURN MEMORY */
 struct ncp_hcmd_retmemory {
-        UINT32 address;                  	/* Start address of memory to return */
-        UINT32 size;                     	/* Number of bytes of memory to return */
+        epicsUInt32 address;                  	/* Start address of memory to return */
+        epicsUInt32 size;                     	/* Number of bytes of memory to return */
 };
 
 #define NCP_K_HCMD_RETMEMCMP    10              /* RETURN MEMORY COMPRESSED */
 struct ncp_hcmd_retmemcmp {
-        UINT32 address;                  	/* Start address of memory to return */
-        UINT32 size;                     	/* Number of bytes of memory to return */
+        epicsUInt32 address;                  	/* Start address of memory to return */
+        epicsUInt32 size;                     	/* Number of bytes of memory to return */
 };
 #define NCP_K_MRESP_RETMEMCMP   227
 struct ncp_mresp_retmemcmp {
-        UINT32 channels;                 	/* Number of channels of encoded data following */
+        epicsUInt32 channels;                 	/* Number of channels of encoded data following */
                                                 /* Encoded data starts here */
 };
 
 #define NCP_K_HCMD_RETADCSTATUS 11              /* RETURN ADC STATUS */
 struct ncp_hcmd_retadcstatus {
-        UINT16 adc;
+        epicsUInt16 adc;
 };
 #define NCP_K_MRESP_ADCSTATUS   35
 struct ncp_mresp_retadcstatus {
-        INT8 status;                            /* ADC on/off status */
-        UINT32 live;                     	/* Elapsed live time */
-        UINT32 real;                     	/*         real      */
-        UINT32 totals;                   	/*         total counts */
+        epicsInt8 status;                            /* ADC on/off status */
+        epicsUInt32 live;                     	/* Elapsed live time */
+        epicsUInt32 real;                     	/*         real      */
+        epicsUInt32 totals;                   	/*         total counts */
 };
 
 #define NCP_K_HCMD_SETHOSTMEM   13              /* SET HOST MEMORY */
 struct ncp_hcmd_sethostmem {
-        UINT32 address;                  	/* Destination address of host data */
-        UINT32 size;                     	/* Amount of data (bytes) */
+        epicsUInt32 address;                  	/* Destination address of host data */
+        epicsUInt32 size;                     	/* Amount of data (bytes) */
                                                 /* Start of data */
 };
 
 #define NCP_K_HCMD_RETHOSTMEM   14              /* RETURN HOST MEMORY */
 struct ncp_hcmd_rethostmem {
-        UINT32 address;                  	/* Start address of host memory to return */
-        UINT32 size;                     	/* Number of bytes of memory to return */
+        epicsUInt32 address;                  	/* Start address of host memory to return */
+        epicsUInt32 size;                     	/* Number of bytes of memory to return */
 };
 
 #define NCP_K_HCMD_SETOWNER     15              /* SET OWNER */
 struct ncp_hcmd_setowner {
-        UINT8 owner_id[6];              	/* New owner ID */
-        INT8 owner_name[8];                     /* New owner name */
+        epicsUInt8 owner_id[6];              	/* New owner ID */
+        epicsInt8 owner_name[8];                     /* New owner name */
 };
 
 #define NCP_K_HCMD_SETOWNEROVER 16              /* SET OWNER OVERRIDE */
 struct ncp_hcmd_setownerover {
-        UINT8 owner_id[6];              	/* New owner ID */
-        INT8 owner_name[8];                     /* New owner name */
+        epicsUInt8 owner_id[6];              	/* New owner ID */
+        epicsInt8 owner_name[8];                     /* New owner name */
 };
 
 #define NCP_K_HCMD_RESET        17              /* RESET MODULE */
@@ -168,102 +154,102 @@ struct ncp_hcmd_setownerover {
 
 #define NCP_K_HCMD_SENDICB      21              /* SEND TO ICB */
 struct ncp_hcmd_sendicb {
-        UINT32 registers;                	/* Number of address/data pairs to write */
+        epicsUInt32 registers;                	/* Number of address/data pairs to write */
         struct {
-           UINT8 address;               	/* ICB address where data will be sent */
-           UINT8 data;                  	/* data to write */
+           epicsUInt8 address;               	/* ICB address where data will be sent */
+           epicsUInt8 data;                  	/* data to write */
         }  addresses[64];
 };
 
 #define NCP_K_HCMD_RECVICB      22              /* RECEIVE FROM ICB */
 struct ncp_hcmd_recvicb {
-        UINT32 registers;                	/* Number of addresses to read */
-        UINT8 address[64];              	/* ICB addresses from which data is to be read */
+        epicsUInt32 registers;                	/* Number of addresses to read */
+        epicsUInt8 address[64];              	/* ICB addresses from which data is to be read */
 };
 
 #define NCP_K_HCMD_SETUPACQ     23              /* SETUP ACQUISITION */
 struct ncp_hcmd_setupacq {
-        UINT16 adc;
-        UINT32 address;                  	/* Acquisition address */
-        UINT32 alimit;                   	/* Acquisition limit address */
-        UINT32 plive;                    	/* Preset live time */
-        UINT32 preal;                    	/*        real      */
-        UINT32 ptotals;                  	/* Preset total counts */
-        UINT32 start;                    	/* Preset totals start channel */
-        UINT32 end;                      	/*               end channel */
-        UINT32 plimit;                   	/* Preset limit */
-        UINT32 elive;                    	/* Elapsed live time */
-        UINT32 ereal;                    	/*         real      */
-        INT8 mode;                              /* Acquisition mode; see NCP_C_AMODE_xxx */
+        epicsUInt16 adc;
+        epicsUInt32 address;                  	/* Acquisition address */
+        epicsUInt32 alimit;                   	/* Acquisition limit address */
+        epicsUInt32 plive;                    	/* Preset live time */
+        epicsUInt32 preal;                    	/*        real      */
+        epicsUInt32 ptotals;                  	/* Preset total counts */
+        epicsUInt32 start;                    	/* Preset totals start channel */
+        epicsUInt32 end;                      	/*               end channel */
+        epicsUInt32 plimit;                   	/* Preset limit */
+        epicsUInt32 elive;                    	/* Elapsed live time */
+        epicsUInt32 ereal;                    	/*         real      */
+        epicsInt8 mode;                              /* Acquisition mode; see NCP_C_AMODE_xxx */
 };
 
 #define NCP_K_HCMD_RETACQSETUP  24              /* RETURN ACQUISITION SETUP INFO */
 struct ncp_hcmd_retacqsetup {
-        UINT16 adc;
+        epicsUInt16 adc;
 };
 #define NCP_K_MRESP_RETACQSETUP 203
 struct ncp_mresp_retacqsetup {
-        UINT32 address;                  	/* Acquisition address */
-        UINT32 alimit;                   	/* Acquisition limit address */
-        UINT32 plive;                    	/* Preset live time */
-        UINT32 preal;                    	/*        real      */
-        UINT32 ptotals;                  	/* Preset total counts */
-        UINT32 start;                    	/* Preset totals start channel */
-        UINT32 end;                      	/*               end channel */
-        UINT32 plimit;                   	/* Preset limit */
-        INT8 mode;
+        epicsUInt32 address;                  	/* Acquisition address */
+        epicsUInt32 alimit;                   	/* Acquisition limit address */
+        epicsUInt32 plive;                    	/* Preset live time */
+        epicsUInt32 preal;                    	/*        real      */
+        epicsUInt32 ptotals;                  	/* Preset total counts */
+        epicsUInt32 start;                    	/* Preset totals start channel */
+        epicsUInt32 end;                      	/*               end channel */
+        epicsUInt32 plimit;                   	/* Preset limit */
+        epicsInt8 mode;
 };
 
 #define NCP_K_HCMD_SETMODEVSAP  25              /* SET MODULE EVENT MESSAGE ADDRESSES*/
 struct ncp_hcmd_setmodevsap {
-        UINT16  mevsource;              	/* 0-255 are reserved for    */
+        epicsUInt16  mevsource;              	/* 0-255 are reserved for    */
                                                 /* adc numbers. 255-65536    */
                                                 /* are types NCP_K_MEVSRC_   */
-        INT8    mev_dsap;                       /* dest. service access point */
-        INT8    mev_ssap;                       /* sour. service access point */
-        INT8    snap_id[5];                     /* SNAP protocol ID */
+        epicsInt8    mev_dsap;                       /* dest. service access point */
+        epicsInt8    mev_ssap;                       /* sour. service access point */
+        epicsInt8    snap_id[5];                     /* SNAP protocol ID */
 };
 
 #define NCP_K_HCMD_RETLISTMEM   26              /* RETURN LIST BUFFER */
 struct ncp_hcmd_retlistmem {
-        UINT16 adc;                     	/* adc number */
-        UINT32 offset;                   	/* byte offset from start of buffer of transfer start */
-        UINT32 size;                     	/* number of bytes to return */
-        INT8 buffer;                            /* 0 for "1st" buffer, 1 for "2nd" */
+        epicsUInt16 adc;                     	/* adc number */
+        epicsUInt32 offset;                   	/* byte offset from start of buffer of transfer start */
+        epicsUInt32 size;                     	/* number of bytes to return */
+        epicsInt8 buffer;                            /* 0 for "1st" buffer, 1 for "2nd" */
 };
 
 #define NCP_K_HCMD_RELLISTMEM   27              /* RELEASE LIST BUFFER */
 struct ncp_hcmd_rellistmem {
-        UINT16 adc;                     	/* adc number */
-        INT8 buffer;                            /* 0 for "1st" buffer, 1 for "2nd" */
+        epicsUInt16 adc;                     	/* adc number */
+        epicsInt8 buffer;                            /* 0 for "1st" buffer, 1 for "2nd" */
 };
 
 #define NCP_K_HCMD_RETLISTSTAT  28              /* RETURN LIST ACQ STATUS */
 struct ncp_hcmd_retliststat {
-        UINT16 adc;                     	/* adc number */
+        epicsUInt16 adc;                     	/* adc number */
 };
 #define NCP_K_MRESP_RETLISTSTAT 251
 struct ncp_mresp_retliststat {
-        INT8 status;                            /* acquire on/off state */
-        INT8 current_buffer;                    /* current acquire buffer: 0 for "1st" buffer, 1 for "2nd" */
-        INT8 buffer_1_full;                     /* 1st buffer status: 1 if full of data */
-        UINT32 offset_1;                 	/* number of bytes of data in 1st buffer */
-        INT8 buffer_2_full;                     /* 2nd buffer status: 1 if full of data */
-        UINT32 offset_2;                 	/* number of bytes of data in 2nd buffer */
+        epicsInt8 status;                            /* acquire on/off state */
+        epicsInt8 current_buffer;                    /* current acquire buffer: 0 for "1st" buffer, 1 for "2nd" */
+        epicsInt8 buffer_1_full;                     /* 1st buffer status: 1 if full of data */
+        epicsUInt32 offset_1;                 	/* number of bytes of data in 1st buffer */
+        epicsInt8 buffer_2_full;                     /* 2nd buffer status: 1 if full of data */
+        epicsUInt32 offset_2;                 	/* number of bytes of data in 2nd buffer */
 };
 
 #define NCP_K_HCMD_RETMEMSEP    29              /* RETURN MEMORY SEPARATED */
 struct ncp_hcmd_retmemsep {
-        UINT32 address;                  	/* start address of first chunk of memory to return*/
-        UINT32 size;                     	/* number of bytes per chunk */
-        UINT32 offset;                   	/* byte offset between start of each chunk */
-        UINT32 chunks;                   	/* number of chunks to return */
+        epicsUInt32 address;                  	/* start address of first chunk of memory to return*/
+        epicsUInt32 size;                     	/* number of bytes per chunk */
+        epicsUInt32 offset;                   	/* byte offset between start of each chunk */
+        epicsUInt32 chunks;                   	/* number of chunks to return */
 };                     /* Note: total bytes returned will be */
                                                 /*      size*chunks */
 
 #define NCP_K_HCMD_RESETLIST    30              /* RESET LIST MODE */
 struct ncp_hcmd_resetlist {
-        UINT16 adc;                     	/* adc number */
+        epicsUInt16 adc;                     	/* adc number */
 };
 
 /*
@@ -273,24 +259,24 @@ struct ncp_hcmd_resetlist {
 
         struct nam_hostmem_v0_struct {
 
-           INT8 initialized;                    /* True if host mem has been setup */
-           INT8 version;                        /* Version number of this structure */
-           INT32 acqmem_usage_map[4];           /* Map of 8K blocks of acq memory */
+           epicsInt8 initialized;                    /* True if host mem has been setup */
+           epicsInt8 version;                        /* Version number of this structure */
+           epicsInt32 acqmem_usage_map[4];           /* Map of 8K blocks of acq memory */
 
            struct {
-                INT8 used;                      /* This input is used */
-                INT8 name[29];                  /* Configuration name of the input */
-                INT8 owner[12];                 /* Name of input's owner */
-                INT32 channels;                 /* Number of channels assigned to input */
-                UINT16 rows;            	/*           rows */
-                UINT8 groups;           	/*           groups */
-                INT32 memory_start;             /* Start of acq mem for this input */
-                UINT8 year;             	/* Acquisition start year (base = 1900) */
-                UINT8 month;            	/*                   month */
-                UINT8 day;              	/*                   day */
-                UINT8 hour;             	/*                   hour */
-                UINT8 minute;           	/*                   minute */
-                UINT8 seconds;          	/*                   seconds */
+                epicsInt8 used;                      /* This input is used */
+                epicsInt8 name[29];                  /* Configuration name of the input */
+                epicsInt8 owner[12];                 /* Name of input's owner */
+                epicsInt32 channels;                 /* Number of channels assigned to input */
+                epicsUInt16 rows;            	/*           rows */
+                epicsUInt8 groups;           	/*           groups */
+                epicsInt32 memory_start;             /* Start of acq mem for this input */
+                epicsUInt8 year;             	/* Acquisition start year (base = 1900) */
+                epicsUInt8 month;            	/*                   month */
+                epicsUInt8 day;              	/*                   day */
+                epicsUInt8 hour;             	/*                   hour */
+                epicsUInt8 minute;           	/*                   minute */
+                epicsUInt8 seconds;          	/*                   seconds */
            } input[4];
         };
 
@@ -301,25 +287,25 @@ struct ncp_hcmd_resetlist {
 
 struct nmc_acqsetup_struct {
 
-        INT8 name[33];                          /* configuration name */
-        INT8 owner[12];                         /*               owner */
-        INT32 channels;
-        INT32 rows;
-        INT32 groups;
-        INT32 memory_start;                     /* acq memory start address */
-        INT32 plive;                            /* preset live time */
-        INT32 preal;                            /*        real      */
-        INT32 ptotals;                          /*        total counts */
-        INT32 start;                            /* preset totals start region */
-        INT32 end;                              /* preset totals end region */
-        INT32 plimit;                           /* preset limit */
-        INT32 mode;                             /* acquisition mode */
-        INT32 astime[2];                        /* acqusition start date/time */
-        INT32 agroup;                           /* acquire group */
-        INT32 status;                           /* acquire status */
-        INT32 live;                             /* elapsed live time */
-        INT32 real;                             /*         real      */
-        INT32 totals;                           /*         total counts */
+        epicsInt8 name[33];                          /* configuration name */
+        epicsInt8 owner[12];                         /*               owner */
+        epicsInt32 channels;
+        epicsInt32 rows;
+        epicsInt32 groups;
+        epicsInt32 memory_start;                     /* acq memory start address */
+        epicsInt32 plive;                            /* preset live time */
+        epicsInt32 preal;                            /*        real      */
+        epicsInt32 ptotals;                          /*        total counts */
+        epicsInt32 start;                            /* preset totals start region */
+        epicsInt32 end;                              /* preset totals end region */
+        epicsInt32 plimit;                           /* preset limit */
+        epicsInt32 mode;                             /* acquisition mode */
+        epicsInt32 astime[2];                        /* acqusition start date/time */
+        epicsInt32 agroup;                           /* acquire group */
+        epicsInt32 status;                           /* acquire status */
+        epicsInt32 live;                             /* elapsed live time */
+        epicsInt32 real;                             /*         real      */
+        epicsInt32 totals;                           /*         total counts */
 };
 
 
