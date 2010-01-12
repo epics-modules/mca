@@ -1,0 +1,131 @@
+grecord(calc,"$(P)$(M)CheckACQG") {
+    field(INPA,"$(P)$(M).ACQG NPP MS")
+    field(CALC,"a?1:2")
+}
+
+grecord(bo,"$(P)$(M)Erase") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).ERAS  PP MS")
+    field(ONAM,"Erase")
+    field(ZNAM,"Done")
+}
+
+grecord(bo,"$(P)$(M)EraseStart") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).ERST  PP MS")
+    field(FLNK,"$(P)$(M)SetClientWait")
+    field(ONAM,"EraseStart")
+    field(ZNAM,"Done")
+}
+grecord(bo,"$(P)$(M)Start") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).STRT  PP MS")
+    field(FLNK,"$(P)$(M)SetClientWait")
+    field(ONAM,"Start")
+    field(ZNAM,"Done")
+}
+
+grecord(bo,"$(P)$(M)Stop") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).STOP  CA MS")
+    field(ONAM,"Stop")
+    field(ZNAM,"Done")
+}
+
+
+grecord(bo,"$(P)$(M)Read") {
+    field(SCAN,"1 second")
+    field(DISV,"0")
+    field(SDIS,"$(P)$(M).ACQG  NPP NMS")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).READ  CA NMS")
+    field(ONAM,"Read")
+    field(ZNAM,"Done")
+}
+
+# Read command that completes when the mca record posts its VAL field,
+# which it always does after a successful read.  This command is for
+# scans in which the mca record is not stopped or erased between data points.
+# (Maybe we should also complete if the record posts NACK==1.)
+# tmm
+record(bo,"$(P)$(M)ReadNotify") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).READ  CA NMS")
+    field(ONAM,"Read")
+    field(ZNAM,"Done")
+	field(FLNK,"$(P)$(M)SetRdBsy")
+}
+record(bo,"$(P)$(M)SetRdBsy") {
+    field(OMSL,"closed_loop")
+	field(DOL,"1")
+	field(UDF,"0")
+	field(OUT,"$(P)$(M)RdBsy PP")
+}
+record(busy,"$(P)$(M)RdBsy") {
+}
+record(bo,"$(P)$(M)ClearRdBsy") {
+    field(OMSL,"closed_loop")
+	field(DOL,"0")
+	field(UDF,"0")
+	field(OUT,"$(P)$(M)RdBsy CA")
+}
+record(ai,"$(P)$(M)ClearOnVAL") {
+	field(INP,"$(P)$(M).VAL CP")
+	field(FLNK,"$(P)$(M)ClearRdBsy")
+}
+
+grecord(bo,"$(P)$(M)Status") {
+    field(SCAN,".1 second")
+    field(DISV,"0")
+    field(SDIS,"$(P)$(M).ACQG  NPP NMS")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M).PROC  CA NMS")
+}
+
+
+# These records are to synchronize with IDL or another client
+grecord(bo,"$(P)$(M)EnableWait") {
+    field(ZNAM,"Disable")
+    field(ONAM,"Enable")
+}
+
+grecord(bo,"$(P)$(M)SetClientWait") {
+    field(DISV,"0")
+    field(SDIS,"$(P)$(M)EnableWait NPP NMS")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M)ClientWait PP MS")
+    field(ONAM,"SetClientWait")
+    field(ZNAM,"Done")
+}
+
+grecord(busy,"$(P)$(M)ClientWait") {
+}
+
+# This is the MCA record itself
+grecord(mca,"$(P)$(M)") {
+    field(DTYP,"$(DTYP)")
+    field(FLNK,"0")
+    field(PINI,"YES")
+    field(NMAX,"$(NCHAN)")
+    field(PREC,"2")
+    field(NUSE,"$(NCHAN)")
+    field(INP,"$(INP)")
+# Alarm setpoints, severity and hysteresis for deadtime
+    field(HIHI,"70.")
+    field(HHSV,"MAJOR")
+    field(HIGH,"40.")
+    field(HSV,"MINOR")
+    field(LOLO,"0.")
+    field(LLSV,"NO_ALARM")
+    field(LOW,"0.")
+    field(LSV,"NO_ALARM")
+    field(HYST,"2.")
+}
