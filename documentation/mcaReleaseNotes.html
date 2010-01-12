@@ -13,6 +13,13 @@
         <li>Defined strings for ZNAM and ONAM fields of bo records in 
           *element*.db, Struck*.db, and mca.db, so that its possible for
           a sseq record to write to these fields.
+        <li>Added new database, mcaReadNotify.db, a modified copy of mca.db.
+          mcaReadNotify contains an additional record, $(P)$(M)ReadNotify, by
+          which the user can write to $(P)$(M).READ, causing a data read.  If
+          $(P)$(M)ReadNotify is written to by a ca_put_callback, the callback
+          will not come until the mca record has posted its VAL field.  This
+          permits the user to detect read completion while the mca is still
+          acquiring.
       </ul>
   </ul>
   <h2 style="text-align: center">
