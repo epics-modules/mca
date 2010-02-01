@@ -30,10 +30,6 @@
 #include <epicsThread.h>
 #include <epicsString.h>
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-
 #ifdef USE_SOCKETS
   #include <sys/socket.h>
   #include <net/if.h>
@@ -232,6 +228,9 @@ struct nmc_sem_node
 
 
 /* Function prototypes */
+#ifdef __cplusplus
+  extern "C" {
+#endif
 
 /* These routines are in nmc_comm_subs_1.c */
 void nmc_cleanup();
