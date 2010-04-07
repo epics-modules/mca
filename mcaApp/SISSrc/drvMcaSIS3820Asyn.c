@@ -1556,21 +1556,19 @@ static void setOpModeReg(mcaSIS3820Pvt *pPvt)
     operationRegister |= SIS3820_OP_MODE_SCALER;
   }
 
-  /* Check that input mode is in the allowable range. If so, shift the mode
+  /* Clip the input mode to the allowable range. Shift the mode
    * requested by the correct number of bits, and add to the register.
    */
 
-  if (pPvt->inputMode < 0 || pPvt->inputMode > 5)
-    pPvt->inputMode = 0;
+  pPvt->inputMode &= 0xF;
 
   operationRegister |= pPvt->inputMode << SIS3820_INPUT_MODE_SHIFT;
 
-  /* Check that output mode is in the allowable range. If so, shift the mode
+  /* Clip the output mode to the allowable range. Shift the mode
    * requested by the correct number of bits, and add to the register.
    */
 
-  if (pPvt->outputMode < 0 || pPvt->outputMode > 2)
-    pPvt->outputMode = 0;
+  pPvt->outputMode &= 0xF;
 
   operationRegister |= pPvt->outputMode << SIS3820_OUTPUT_MODE_SHIFT;
 
