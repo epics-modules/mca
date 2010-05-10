@@ -9,15 +9,17 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 6-12 (30-Apr-2010)</h2>
+    Release 6-12 (10-May-2010)</h2>
   <ul>
     <li>General
       <ul>
-        <li>Changed device support (devMcaAsyn) so that it no longer uses enum values for pasynUser->reason.
-        Rather, it uses asynDrvUser->create to fetch pasynUser->reason from the drvInfo strings published in
-        drvMca.h.  This change allows MCA drivers to implement the mca commands in addition to other commands,
-        because fixed (and potentially conflicting) enum values are no longer used.  All mca drivers were 
-        rewritten to make the association of drvInfo strings with pasynUser->reason values private to the drivers.</li>
+        <li>Changed device support (devMcaAsyn) so that it no longer uses enum values for
+          pasynUser->reason. Rather, it uses asynDrvUser->create to fetch pasynUser->reason
+          from the drvInfo strings published in drvMca.h. This change allows MCA drivers to
+          implement the mca commands in addition to other commands, because fixed (and potentially
+          conflicting) enum values are no longer used. All mca drivers were rewritten to make
+          the association of drvInfo strings with pasynUser->reason values private to the
+          drivers.</li>
         <li>Fixes for 64-bit compatibility.</li>
         <li>Fixes for EPICS R3.14.11 compatibility.</li>
       </ul>
@@ -25,9 +27,9 @@
     <li>Canberra driver
       <ul>
         <li>Added support for win32-x86 using WinPcap.</li>
-        <li>Converted Cygwin support from using both WinPcap (to receive packets) and libnet (to send packets)
-        to using just WinPcap, which can actually do both send and receive.  WinPcap is also win32-x86 compatible,
-        while libnet is not.</li>
+        <li>Converted Cygwin support from using both WinPcap (to receive packets) and libnet
+          (to send packets) to using just WinPcap, which can actually do both send and receive.
+          WinPcap is also win32-x86 compatible, while libnet is not.</li>
       </ul>
     </li>
     <li>SIS 3820 driver
@@ -37,6 +39,16 @@
           The previous version thus did not allow inputMode=6 or outputMode=3. It also did
           not allow setting the most significant bit of these 4-bit groups, which inverts
           the polarity of the signals.</li>
+        <li>Deleted obsolete files that were left over from time when MCA and scaler drivers
+          for SIS 3820 were separate. They have been combined into a single driver for a long
+          time, but the old files were still present, which was confusing.</li>
+      </ul>
+    </li>
+    <li>SIS 3801/STR7201 driver
+      <ul>
+        <li>Renamed mcaSISSupport.dbd to mcaSTR7201Support.dbd to avoid confusion with SIS
+          3820. This will require changes in applications that include this file. Renamed
+          mcaSISRegister.c to mcaSTR7201Register.c, also to avoid confusion.</li>
       </ul>
     </li>
     <li>Db
