@@ -5,7 +5,7 @@ include $(TOP)/configure/CONFIG
 #=============================
 
 # <name>.dbd will be created from <name>Include.dbd
-DBD += mcaSISSupport.dbd
+DBD += mcaSTR7201Support.dbd
 DBD += mcaSIS3820Support.dbd
 DBD += mcaSISTest.dbd
 
@@ -22,7 +22,7 @@ mcaSIS_SRCS += mcaSIS3820Register.c
 mcaSIS_SRCS_vxWorks += drvSTR7201.c
 mcaSIS_SRCS_vxWorks += devSTR7201.c
 mcaSIS_SRCS_vxWorks += devScalerSTR7201.c
-mcaSIS_SRCS_vxWorks += mcaSISRegister.c
+mcaSIS_SRCS_vxWorks += mcaSTR7201Register.c
 mcaSIS_LIBS += mca
 mcaSIS_LIBS += std
 mcaSIS_LIBS += busy
