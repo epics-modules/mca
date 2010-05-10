@@ -1,248 +1,192 @@
-<HTML>
-<HEAD>
-<TITLE>Struck STR7201 Device Device Support for the MCA Record</TITLE>
-</HEAD>
-<BODY>
-<H1>Struck STR7201 Device Device Support for the MCA Record</H1>
-
-<ADDRESS>Mark Rivers</ADDRESS>
-
-<HR>
-<H2>Contents</H2>
-<UL>
-<LI><A HREF="#Overview">Overview</A>
-<LI><A HREF="#Hardware">Hardware Configuration</A>
-<LI><A HREF="#Record">MCA Record Fields</A>
-<LI><A HREF="#Startup">vxWorks Startup Script</A>
-<LI><A HREF="#Files">Files</A>
-</UL>
-
-<A NAME="Overview">
-<H2>Overview</H2></A>
-<P>
-This device support works with both the Struck STR7201 and the SIS3801 VME
-modules.  The STR7201 is a module previously manufactured by Struck, and now by
-Bastian, which bought out Struck.  The SIS modules are manufactured by SIS,
-which is a new company run by former Struck employees.  Both are a VME modules
-with 32 (Struck 7201 and SIS3801) or 8 (SIS3808)) scaler input channels.  In
-this document the term STR7201 includes all of the above modules, except where
-explicitly noted.
-
-Each input can count at 100MHz or 200MHz depending on model.  It has an
-external channel advance input (called Next) which causes the the current
-scaler values to be copied to a FIFO, clears the scalers and resumes counting. 
-The scalers are implemented in a dual-bank design, so that the switching time
-is less than 4 nsec. <P>
-
-The device support for the MCA record is written to support the use of the
-STR7201 as a multichannel scaler.  Up to 32 records can be connected to each
-unit, each record corresponding to one of the signal inputs.
-<P>
-The STR7201 hardware itself is not a multichannel scaler in the conventional
-sense, since it simply contains a FIFO of scaler counts, rather than an
-array of memory locations which hold the counts for each dwell cycle.
-The device support for the STR7201 simulates a conventional MCS by allocating
-a memory buffer which contains the counts in each dwell period.  The device
-support copies the counts from the FIFO to this memory buffer.  
-<P>
-Each FIFO word
-contains the counts for one input signal for one dwell period.  Available FIFO
-chips can hold from 2K to 32K words.  
-The FIFO can thus buffer anywhere from 64 dwell cycles (32
-active inputs, 2K FIFO) to 32,768 dwell cycles (1 active input, 32K FIFO).  The
-minimum dwell time is in the range .5-4 microseconds, depending upon the number
-of active inputs.
-
-The present device support routines assume that something is causing at least
-one record attached to each card to process fast enough to prevent FIFO
-overflow.  In the near future VME interrupts will be implemented, so that FIFO
-readout will be done automatically when the FIFO is half full.  Even with
-interrupts there is a possibility of FIFO overflow with very short dwell times
-and small FIFO sizes.  Users whose applications require short dwell 
-times and a large
-number of active inputs should 
-purchase large FIFO chips to prevent this.  The FIFO chip can be replaced in the
-field. The device support determines the FIFO
-size automatically.  
-<P>
-<A NAME="Hardware">
-<H2>Hardware Configuration</H2></A>
-<P>
-Jumper J600 on the board must be set to select LCA file 2 (STR7201 Design 1) or
-LCA file 3 (STR7201 Design 2).  With Design 1 selected the scalers are 32 bits
-wide.  With Design 2 selected the scalers are 24 bits wide, and the upper 8
-bits of each data word contain information on the channel number, bank, and 2
-user bits.  The channel number and bank information are redundant since the
-device support sorts the FIFO output by channel number when copying the data to
-the buffer and then to the MCA record.  
-However, some applications may want to use the 2 user bits
-which are latched with each Next cycle, and Design 2 may be selected for those
-applications.
-<P>
-The device support requires that the board be configured for VME A32
-addressing, so jumper EN_A32 must be in place.  Address selection is done with
-jumper J_A11, and switches SW_A32U, SW_A32L, SW_A24 and SW_A16. 
-The software default address is 0xA0000000.  Note that the factory-default 
-address of 0x33508000 cannot be used since this part of the VME A32 address
-space is not accessible with the APS version of the vxWorks board support 
-package.  Each board takes up 2K bytes of A32 address space, so systems with
-multiple cards must configure card N at base address + 2K*N.  For example, if
-using the default base address of 0xA0000000 the second card would be set to
-address 0xA00000800 (jumper J_A11 removed).
-<P>
-The device support software configures the control inputs in Mode 2, which
-means:
-<UL>
-<LI> Input 1 = Next (External channel advance)
-<LI> Input 2 = EXT1 (External user bit 1)
-<LI> Input 3 = EXT2 (External user bit 2)
-<LI> Input 4 = DIS  (Disable counting)
-</UL>
-<P>
-<A NAME="Record">
-<H2>MCA Record Fields</H2></A>
-<P>
-The device support for the STR7201 defines the INP field to be type VME_IO,
-and uses the normal "card" and "signal" conventions.  A card is a single
-STR7201 module.  Each module supports up to 32 signals (0-31), corresponding 
-to the 32 inputs.  Each MCA record is connected to one of these signal inputs.
-<P>
-The STRT, STOP and ERAS fields act on <B>all</B> records which are
-connected to a particular card.  Thus it is only necessary to issue these
-commands to one record in order to start, stop or erase all other records.
-
-<P>
-Acqusition will be stopped for <B>all</B> records connected to a particular 
-card whenever one or more of the following conditions is satisfied:
-<UL>
-<LI> The STOP field of any record is set to 1.
-
-<LI> The preset time is reached. The preset time is defined as the larger of 
-PRTM or PLTM.  This condition is only checked if PRTM or PLTM is greater than
-0.
-
-<LI> The preset counts in a range of channels is reached. This condition is
-defined as the sum of the counts between channels 
-PCTL and PCTH <B>summed over all active inputs </B> being 
-greater than or equal to 
-PCT.  This condition is only checked if PCT is greater than zero.
-
-<LI> The preset number of "sweeps" (PSWP) is reached.  A "sweep" is defined as
-the receipt of NUSE Next pulses.  This condition is only checked if PSWP is
-greater than 0.
-
-</UL>
-
-<P>
-The CHAS field is not implemented, since the STR7201 only
-supports external channel advance.
-<P>
-The SEQ field is not implemented, since the device inherently has a fast time
-axis.
-<P> 
-The DWEL field will be implemented soon, when a new version of the firmware
-implements a built-in prescaler.
-<P> The MODE field is not implemented, since the STR7201 can only operate in
-MCS mode.
-<P>
-
-<A NAME="Startup">
-<H2>vxWorks Startup Script</H2></A>
-There are 2 functions which are intended to be called from the vxWorks 
-startup script before iocInit.
-<UL>
-
-<LI>
-<CODE>STR7201Setup(int numCards, int baseAddress, int interruptVector, int
-interruptLevel)</CODE>
-<P>
-<UL>
-<LI><CODE>numCards</CODE> is the maximum number of STR7201 cards in the 
-VME crate.  The
-default value is 4 and the memory usage for unused cards is very small.
-<LI><CODE>baseAddress</CODE> is the base address of the first STR7201.  The
-default is 0xA0000000.  The card must be configured to reside in the A32 
-VME address space.
-<LI><CODE>interruptVector</CODE> is the interrupt vector of the first
-STR7201.  The default is 220 (decimal).  
-<LI><CODE>interruptLevel</CODE> is the VME interrupt level. The default is 6.
-</UL>
-<P>
-If the default values of <CODE>numCards</CODE>,
-<CODE>baseAddress</CODE>, <CODE>interruptVector</CODE>, and 
-<CODE>interruptLevel</CODE> are all acceptable 
-then <CODE>STR7201Setup</CODE> does not have to
-be called from the vxWorks startup script.
-<P>
-<LI>
-<CODE>STR7201Config(int card, int maxSignals, int maxChans)</CODE>
-<P>
-This function <B>must</B> be called for each STR7201 card to configure it.
-<P>
-<UL>
-<LI><CODE>card</CODE> is the number of the card being configured, 
-in the range 0 to <CODE>numCards-1</CODE>.
-
-<LI><CODE>maxSignals</CODE> is the number of input signals 
-which will be used, in
-the range 1 to 32.  <CODE>maxSignals</CODE> controls how many scaler values
-will be copied to the FIFO each time a Next signal is received.  Set this
-value to the actual number of signals actually being used to conserve
-FIFO memory on the card and vxWorks buffer memory in the driver. 
-The number of MCA records which
-can be attached to this card is also controlled by <CODE>maxSignals</CODE>.
-
-<LI><CODE>maxChans</CODE> is the maximum number of channels (time points)
-which which will be used in any MCA record connected to this card.  The number
-of bytes of vxWorks buffer memory allocated by the driver for this card is 
-<CODE>maxChans * maxSignals * 4</CODE>, so set this value to the actual maximum
-number of channels to be used in any record to conserve memory.
-</UL>
-</UL>
-<A NAME="Files">
-<H2>Files</H2></A>
-STR7201 support is provided in 3 files, <CODE>devSTR7201.c</CODE>, 
-<CODE>drvSTR7201.c</CODE> and <CODE>drvSTR7201.h</CODE>.  
-These files can all be
-obtained in a 
-<A HREF="pub/SIS380x.tar">
-tar file</A>.  This file should be untarred in a top level
-application directory, <CODE>yourApp</CODE>.  There are only 2 files which are
-specific to the STR7201, but it does require a recent version of the MCA
-record, so I have also tarred up 
-<A HREF="pub/mcaApp.tar">
-the complete directory</A>.
-<P>
-<CODE>devSTR7201.c</CODE>
-contains the device support.  These functions have knowledge of
-the MCA record and of how to call the routines in <CODE>drvSTR7201.c</CODE> 
-They have no knowledge of the details of how the STR7201 works.
-<P>
-<CODE>drvSTR7201.c</CODE> is not a true EPICS driver, since it does not have a
-driver entry table, or init() and report() functions.  However, it is a 
-driver in the sense that it has no knowledge of the MCA record and its
-functions could be 
-called by device support from other records (e.g. waveform) if desired.  
-<P>
-The following lines must be added to <CODE>yourApp/src/Makefile.Vx</CODE>
-<PRE>
-LIBOBJS += drvSTR7201.o devSTR7201.o
-SRCS.c += ../drvSTR7201.c ../devSTR7201.c
-</PRE>
-
-The following lines must be added to <CODE>yourApp/src/yourApp.dbd</CODE>
-<PRE>
-device(mca,VME_IO,devSTR7201,"Struck STR7201 MCS")
-</PRE>
-<P>
-<HR>
-<ADDRESS>
-Suggestions and comments to: 
-<A HREF="mailto:rivers@cars.uchicago.edu">
-Mark Rivers </A> : (rivers@cars.uchicago.edu)
-<BR>
-Last modified: June 7, 2000
-</ADDRESS>
-
-</BODY>
-</HTML>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Struck STR7201 Device Device Support for the MCA Record</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type" />
+</head>
+<body>
+  <h1>
+    Struck STR7201 Device Device Support for the MCA Record</h1>
+  <address>
+    Mark Rivers</address>
+  <hr />
+  <h2>
+    Contents</h2>
+  <ul>
+    <li><a href="#Overview">Overview</a></li>
+    <li><a href="#Hardware">Hardware Configuration</a></li>
+    <li><a href="#MCA_Record">MCA Record Support</a></li>
+    <li><a href="#Scaler_Record">Scaler Record Support</a></li>
+    <li><a href="#Startup">vxWorks Startup Script</a></li>
+  </ul>
+  <h2 id="Overview">
+    Overview</h2>
+  <p>
+    This device support works with both the Struck STR7201 and the SIS3801 VME modules.
+    The STR7201 is a module previously manufactured by Struck, and now by Bastian, which
+    bought out Struck. The SIS modules are manufactured by SIS, which is a new company
+    run by former Struck employees. Both are a VME modules with 32 (Struck 7201 and
+    SIS3801) or 8 (SIS3808)) scaler input channels. In this document the term STR7201
+    includes all of the above modules, except where explicitly noted. Each input can
+    count at 100MHz or 200MHz depending on model. It has an external channel advance
+    input (called Next) which causes the the current scaler values to be copied to a
+    FIFO, clears the scalers and resumes counting. The scalers are implemented in a
+    dual-bank design, so that the switching time is less than 4 nsec.
+  </p>
+  <p>
+    The device support for the MCA record is written to support the use of the STR7201
+    as a multichannel scaler. Up to 32 records can be connected to each unit, each record
+    corresponding to one of the signal inputs.
+  </p>
+  <p>
+    The STR7201 hardware itself is not a multichannel scaler in the conventional sense,
+    since it simply contains a FIFO of scaler counts, rather than an array of memory
+    locations which hold the counts for each dwell cycle. The device support for the
+    STR7201 simulates a conventional MCS by allocating a memory buffer which contains
+    the counts in each dwell period. The device support copies the counts from the FIFO
+    to this memory buffer.
+  </p>
+  <p>
+    Each FIFO word contains the counts for one input signal for one dwell period. Available
+    FIFO chips can hold from 2K to 32K words. The FIFO can thus buffer anywhere from
+    64 dwell cycles (32 active inputs, 2K FIFO) to 32,768 dwell cycles (1 active input,
+    32K FIFO). The minimum dwell time is in the range .5-4 microseconds, depending upon
+    the number of active inputs.&nbsp; VME interrupts are implemented, so that FIFO
+    readout is done automatically when the FIFO is half full. Even with interrupts there
+    is a possibility of FIFO overflow with very short dwell times and small FIFO sizes.
+    Users whose applications require short dwell times and a large number of active
+    inputs should purchase large FIFO chips to prevent this. The FIFO chip can be replaced
+    in the field. The device support determines the FIFO size automatically.
+  </p>
+  <h2 id="Hardware">
+    Hardware Configuration</h2>
+  <p>
+    Jumper J600 on the board must be set to select LCA file 2 (STR7201 Design 1) or
+    LCA file 3 (STR7201 Design 2). With Design 1 selected the scalers are 32 bits wide.
+    With Design 2 selected the scalers are 24 bits wide, and the upper 8 bits of each
+    data word contain information on the channel number, bank, and 2 user bits. The
+    channel number and bank information are redundant since the device support sorts
+    the FIFO output by channel number when copying the data to the buffer and then to
+    the MCA record. However, some applications may want to use the 2 user bits which
+    are latched with each Next cycle, and Design 2 may be selected for those applications.</p>
+  <p>
+    The device support requires that the board be configured for VME A32 addressing,
+    so jumper EN_A32 must be in place. Address selection is done with jumper J_A11,
+    and switches SW_A32U, SW_A32L, SW_A24 and SW_A16. The software default address is
+    0xA0000000. Note that the factory-default address of 0x33508000 cannot be used with
+    the APS version of the vxWorks board support package since this part of the VME
+    A32 address space is not accessible. Each board takes up 2K bytes of A32 address
+    space, so systems with multiple cards must configure card N at base address + 2K*N.
+    For example, if using the default base address of 0xA0000000 the second card would
+    be set to address 0xA00000800 (jumper J_A11 removed).</p>
+  <p>
+    The device support software configures the control inputs in Mode 2, which means:</p>
+  <ul>
+    <li>Input 1 = Next (External channel advance)</li>
+    <li>Input 2 = EXT1 (External user bit 1)</li>
+    <li>Input 3 = EXT2 (External user bit 2)</li>
+    <li>Input 4 = DIS (Disable counting)</li>
+  </ul>
+  <h2 id="MCA_Record">
+    MCA Record Support</h2>
+  <p>
+    The device support for the STR7201 defines the INP field to be type VME_IO, and
+    uses the normal "card" and "signal" conventions. A card is a single STR7201 module.
+    Each module supports up to 32 signals (0-31), corresponding to the 32 inputs. Each
+    MCA record is connected to one of these signal inputs.</p>
+  <p>
+    The STRT, STOP and ERAS fields act on <b>all</b> records which are connected to
+    a particular card. Thus it is only necessary to issue these commands to one record
+    in order to start, stop or erase all other records.</p>
+  <p>
+    Acqusition will be stopped for <b>all</b> records connected to a particular card
+    whenever one or more of the following conditions is satisfied:</p>
+  <ul>
+    <li>The STOP field of any record is set to 1.</li>
+    <li>The preset time is reached. The preset time is defined as the larger of PRTM or
+      PLTM. This condition is only checked if PRTM or PLTM is greater than 0.</li>
+    <li>The preset counts in a range of channels is reached. This condition is defined
+      as the sum of the counts between channels PCTL and PCTH <b>summed over all active
+        inputs </b>being greater than or equal to PCT. This condition is only checked
+      if PCT is greater than zero.</li>
+    <li>The preset number of "sweeps" (PSWP) is reached. A "sweep" is defined as the receipt
+      of NUSE Next pulses. This condition is only checked if PSWP is greater than 0.</li>
+  </ul>
+  <p>
+    The CHAS field allows selecting internal or external channel advance.</p>
+  <p>
+    The SEQ field is not implemented, since the device inherently has a fast time axis.</p>
+  <p>
+    The DWEL field allows selecting the dwell time per channel when using internal channel
+    advance.</p>
+  <p>
+    The PSCL field allows selecting a pre-scale factor when using the external channel
+    advance.</p>
+  <p>
+    The MODE field is not implemented, since the STR7201 can only operate in MCS mode.</p>
+  <h2 id="Scaler_Record">
+    Scaler Record Support</h2>
+  <p>
+    In addition to support for the MCA record, the driver supports the EPICS scaler
+    record. Switching between scaler mode and MCA mode is handled automatically. It
+    is important, however, that when acquiring in one mode that acquisition be allowed
+    to complete before starting acquisition in the other mode. It is also important
+    when acquiring in MCA mode to disable AutoCount in scaler mode, or else the MCA
+    acquisition may be interrupted.</p>
+  <h2 id="Startup">
+    vxWorks Startup Script</h2>
+  <p>
+    The mca/iocBoot/iocVxWorks contains example vxWorks startup scripts for the SIS3801/STR7201.</p>
+  <p>
+    There are 2 functions which are intended to be called from the vxWorks startup script
+    before iocInit.</p>
+  <ul>
+    <li><code>STR7201Setup(int numCards, int baseAddress, int interruptVector, int interruptLevel)</code>
+      <ul>
+        <li><code>numCards</code> is the maximum number of STR7201 cards in the VME crate.
+          The default value is 4 and the memory usage for unused cards is very small.</li>
+        <li><code>baseAddress</code> is the base address of the first STR7201. The default
+          is 0xA0000000. The card must be configured to reside in the A32 VME address space.</li>
+        <li><code>interruptVector</code> is the interrupt vector of the first STR7201. The
+          default is 220 (decimal). </li>
+        <li><code>interruptLevel</code> is the VME interrupt level. The default is 6.</li>
+      </ul>
+      If the default values of <code>numCards</code>, <code>baseAddress</code>, <code>interruptVector</code>,
+      and <code>interruptLevel</code> are all acceptable then <code>STR7201Setup</code>
+      does not have to be called from the vxWorks startup script. </li>
+    <li><code>STR7201Config(int card, int maxSignals, int maxChans, int ch1RefEnable,
+      int softAdvance)</code>
+      <br />
+      This function <b>must</b> be called for each STR7201 card to configure it.
+      <ul>
+        <li><code>card</code> is the number of the card being configured, in the range 0 to
+          <code>numCards-1</code>.</li>
+        <li><code>maxSignals</code> is the number of input signals which will be used, in
+          the range 1 to 32. <code>maxSignals</code> controls how many scaler values will
+          be copied to the FIFO each time a Next signal is received. Set this value to the
+          actual number of signals actually being used to conserve FIFO memory on the card
+          and vxWorks buffer memory in the driver. The number of MCA records which can be
+          attached to this card is also controlled by <code>maxSignals</code>.</li>
+        <li><code>maxChans</code> is the maximum number of channels (time points) which which
+          will be used in any MCA record connected to this card. The number of bytes of vxWorks
+          buffer memory allocated by the driver for this card is <code>maxChans * maxSignals
+            * 4</code> , so set this value to the actual maximum number of channels to be
+          used in any record to conserve memory.</li>
+        <li><code>ch1RefEnable</code> is used to enable (1) or disable (0) the internal reference
+          clock on channel 1.</li>
+        <li><code>softAdvance</code> is used to enable a software channel advance when acquisition
+          is started. If enabled then pulses are counted immediately into the first bin when
+          acquisition is started. If disabled it requires a channel advance signal before
+          counting begins.</li>
+      </ul>
+    </li>
+  </ul>
+  <hr />
+  <address>
+    Suggestions and comments to: <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers
+    </a>: (rivers@cars.uchicago.edu)
+    <br />
+  </address>
+</body>
+</html>
