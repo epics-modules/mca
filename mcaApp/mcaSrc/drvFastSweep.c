@@ -300,8 +300,8 @@ int initFastSweep(const char *portName, const char *inputName,
     int32ArrayPvt = pasynInterface->drvPvt;
 
     /* Configure the asynUser for data command */
-    pdrvUser->create(drvUserPvt, pasynUser, pPvt->dataString, &ptypeName, &psize);
-    if (strcmp(ptypeName, pPvt->dataString) != 0) {
+    status = pdrvUser->create(drvUserPvt, pasynUser, pPvt->dataString, &ptypeName, &psize);
+    if (status) {
         asynPrint(pasynUser, ASYN_TRACE_ERROR,
                   "initFastSweep, error in drvUser for %s\n", pPvt->dataString);
         return(-1);
@@ -323,8 +323,8 @@ int initFastSweep(const char *portName, const char *inputName,
     pfloat64 = (asynFloat64 *)pasynInterface->pinterface;
     float64Pvt = pasynInterface->drvPvt;
     /* Configure the asynUser for callback interval command */
-    pdrvUser->create(drvUserPvt, pasynUser, pPvt->intervalString, &ptypeName, &psize);
-    if (strcmp(ptypeName, pPvt->intervalString) != 0) {
+    status = pdrvUser->create(drvUserPvt, pasynUser, pPvt->intervalString, &ptypeName, &psize);
+    if (status) {
         /* This driver does not support this command.  Just set numAverage=1 */
         pPvt->numAverage = 1;
     } else {
