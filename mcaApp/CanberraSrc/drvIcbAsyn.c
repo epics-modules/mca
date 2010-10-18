@@ -20,7 +20,6 @@
 #include <errlog.h>
 
 #include <iocsh.h>
-#include <epicsExport.h>
 #include <asynDriver.h>
 #include <asynInt32.h>
 #include <asynFloat64.h>
@@ -37,6 +36,7 @@
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
 #include "campardef.h"
+#include <epicsExport.h>
 
 typedef struct {
     int command;
