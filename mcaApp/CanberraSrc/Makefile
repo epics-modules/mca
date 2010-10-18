@@ -87,6 +87,7 @@ mcaCanberra_LIBS += asyn
 mcaCanberra_LIBS += $(EPICS_BASE_IOC_LIBS)
 mcaCanberra_LIBS_cygwin32 += wpcap Packet
 mcaCanberra_LIBS_WIN32    += wpcap Packet
+mcaCanberra_SYS_LIBS_WIN32 += ws2_32
 mcaCanberra_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 
 #==================================
