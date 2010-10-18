@@ -14,7 +14,6 @@
 #include <cantProceed.h>
 #include <epicsString.h>
 #include <epicsTime.h>
-#include <epicsExport.h>
 #include <asynDriver.h>
 #include <asynInt32.h>
 #include <asynFloat64.h>
@@ -24,6 +23,7 @@
 
 #include "mca.h"
 #include "drvMca.h"
+#include <epicsExport.h>
 
 #define RONTEC_MAXCHANS 4096
 #define RONTEC_MESSAGE_SIZE 100

@@ -17,7 +17,6 @@
 #include <cantProceed.h>
 #include <epicsString.h>
 #include <epicsTime.h>
-#include <epicsExport.h>
 #include <asynDriver.h>
 #include <asynInt32.h>
 #include <asynFloat64.h>
@@ -30,6 +29,7 @@
 
 #include <WTypes.h>
 #include <WinBase.h>
+#include <epicsExport.h>
 
 
 typedef struct {
