@@ -87,7 +87,7 @@ mcaCanberra_LIBS += asyn
 mcaCanberra_LIBS += $(EPICS_BASE_IOC_LIBS)
 mcaCanberra_LIBS_cygwin32 += wpcap Packet
 mcaCanberra_LIBS_WIN32    += wpcap Packet
-mcaCanberra_SYS_LIBS_cygwin32 += rpc
+mcaCanberra_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 
 #==================================
 PROD_IOC_vxWorks  += mcaAIM
@@ -107,7 +107,7 @@ mcaAIM_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 mcaAIM_LIBS_cygwin32 += wpcap Packet
 mcaAIM_LIBS_WIN32    += wpcap Packet
-mcaAIM_SYS_LIBS_cygwin32 += rpc
+mcaAIM_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 
 #=============================
 PROD_IOC_vxWorks += nmcTest
