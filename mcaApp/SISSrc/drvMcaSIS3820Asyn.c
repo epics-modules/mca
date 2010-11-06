@@ -1312,7 +1312,7 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
           "drvMcaSIS3820Asyn::readFIFO, making pint32Interrupt->Callback\n");
         pint32Interrupt->callback(pint32Interrupt->userPvt,
             pint32Interrupt->pasynUser,
-            0);
+            1);
       }
       pNode = (interruptNode *)ellNext(&pNode->node);
     }
