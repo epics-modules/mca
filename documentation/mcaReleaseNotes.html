@@ -9,6 +9,33 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 6-12-2 (7-Nov-2010)</h2>
+  <ul>
+    <li>drvMcaSIS3820Asyn.c
+      <ul>
+        <li>Bug fix. The callback to scaler record device support was passing a value of 0
+          when acquisition completes, but it must pass 1. This caused the scaler record to
+          hang in the "counting" state after the preset was reached.</li>
+      </ul>
+    </li>
+    <li>SIS3820.db
+      <ul>
+        <li>Bug fix. Changed the drvInfo string ACQUIRING to MCA_ACQUIRING.</li>
+      </ul>
+    </li>
+    <li>Many C files
+      <ul>
+        <li>Minor changes to allow building DLLs on WIN32.</li>
+      </ul>
+    </li>
+    <li>Makefiles
+      <ul>
+        <li>Minor change for compatibility with Cygwin 1.7.7.</li>
+        <li>Minor changes to allow building DLLs on WIN32.</li>
+      </ul>
+    </li>
+  </ul>
+  <h2 style="text-align: center">
     Release 6-12-1 (12-May-2010)</h2>
   <ul>
     <li>drvFastSweep
