@@ -1211,6 +1211,7 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
   int signal, i, j;
   epicsTimeStamp now;
   int reason;
+  int doneValue;
   ELLLIST *pclientList;
   interruptNode *pNode;
   asynInt32Interrupt *pint32Interrupt;
@@ -1308,11 +1309,14 @@ static int readFIFO(mcaSIS3820Pvt *pPvt, asynUser *pasynUser)
       if (((pPvt->acquireMode == MCS_MODE)     && (reason == mcaAcquiring)) || 
           ((pPvt->acquireMode == SCALER_MODE)  && (reason == scalerDoneCommand)))
       {
+        /* scalerDoneCommand has value=1 for done, the mcaAcquiring has value=0 for done */
+        if (reason == scalerDoneCommand) doneValue = 1;
+        if (reason == mcaAcquiring)      doneValue = 0;
         asynPrint(pasynUser, ASYN_TRACE_FLOW, 
           "drvMcaSIS3820Asyn::readFIFO, making pint32Interrupt->Callback\n");
         pint32Interrupt->callback(pint32Interrupt->userPvt,
             pint32Interrupt->pasynUser,
-            1);
+            doneValue);
       }
       pNode = (interruptNode *)ellNext(&pNode->node);
     }
