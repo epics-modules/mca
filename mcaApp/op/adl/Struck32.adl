@@ -1,14 +1,14 @@
 
 file {
-	name="j:\epics\R3.13.1\share\mcaApp\op\adl\Struck32.adl"
-	version=020306
+	name="/home/epics/devel/mca/mcaApp/op/adl/Struck32.adl"
+	version=030102
 }
 display {
 	object {
-		x=172
-		y=415
-		width=555
-		height=330
+		x=170
+		y=478
+		width=625
+		height=385
 	}
 	clr=14
 	bclr=4
@@ -89,171 +89,21 @@ display {
 }
 text {
 	object {
-		x=26
-		y=112
-		width=90
-		height=18
-	}
-	"basic attribute" {
-		clr=18
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)Acquiring"
-	}
-	textix="Acquiring"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=26
-		y=112
-		width=90
-		height=18
-	}
-	"basic attribute" {
-		clr=21
-	}
-	"dynamic attribute" {
-		vis="if zero"
-		chan="$(P)Acquiring"
-	}
-	textix="Done"
-	align="horiz. centered"
-}
-text {
-	object {
-		x=380
-		y=272
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Wait for client"
-}
-text {
-	object {
-		x=380
-		y=297
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Client Wait"
-}
-"text update" {
-	object {
-		x=13
-		y=137
-		width=103
-		height=18
-	}
-	monitor {
-		chan="$(P)ElapsedReal"
-		clr=54
-		bclr=4
-	}
-	align="horiz. right"
-	limits {
-	}
-}
-text {
-	object {
-		x=126
-		y=137
-		width=172
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Elapsed real time"
-}
-menu {
-	object {
-		x=16
-		y=268
-		width=100
-		height=20
-	}
-	control {
-		chan="$(P)StatusAll.SCAN"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=126
-		y=272
-		width=110
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Status rate"
-}
-text {
-	object {
 		x=217
 		y=68
 		width=60
-		height=16
+		height=20
 	}
 	"basic attribute" {
 		clr=14
 	}
 	textix="Acquire"
 }
-text {
-	object {
-		x=126
-		y=113
-		width=60
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Status"
-}
-"text entry" {
-	object {
-		x=16
-		y=162
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)PresetReal"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=126
-		y=166
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Preset real time"
-}
 rectangle {
 	object {
 		x=4
 		y=40
-		width=275
+		width=300
 		height=280
 	}
 	"basic attribute" {
@@ -261,111 +111,6 @@ rectangle {
 		fill="outline"
 		width=2
 	}
-}
-menu {
-	object {
-		x=16
-		y=293
-		width=100
-		height=20
-	}
-	control {
-		chan="$(P)ReadAll.SCAN"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=126
-		y=296
-		width=110
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Read rate"
-}
-"text entry" {
-	object {
-		x=16
-		y=189
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)Dwell"
-		clr=14
-		bclr=51
-	}
-	format="exponential"
-	limits {
-	}
-}
-text {
-	object {
-		x=126
-		y=194
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Dwell time"
-}
-menu {
-	object {
-		x=16
-		y=243
-		width=100
-		height=20
-	}
-	control {
-		chan="$(P)ChannelAdvance"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=126
-		y=247
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Channel Advance"
-}
-"text entry" {
-	object {
-		x=16
-		y=216
-		width=100
-		height=22
-	}
-	control {
-		chan="$(P)Prescale"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-text {
-	object {
-		x=126
-		y=221
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Ext. prescale"
 }
 rectangle {
 	object {
@@ -440,486 +185,9 @@ rectangle {
 	label="Stop"
 	press_msg="1"
 }
-rectangle {
-	object {
-		x=285
-		y=40
-		width=260
-		height=280
-	}
-	"basic attribute" {
-		clr=54
-		fill="outline"
-		width=2
-	}
-}
-"text entry" {
-	object {
-		x=295
-		y=243
-		width=80
-		height=22
-	}
-	control {
-		chan="$(P)NuseAll"
-		clr=14
-		bclr=51
-	}
-	limits {
-	}
-}
-menu {
-	object {
-		x=295
-		y=268
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)EnableClientWait"
-		clr=14
-		bclr=51
-	}
-}
-menu {
-	object {
-		x=295
-		y=293
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)ClientWait"
-		clr=14
-		bclr=51
-	}
-}
-"related display" {
-	object {
-		x=293
-		y=47
-		width=60
-		height=20
-	}
-	display[0] {
-		label="ROI 0"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=0"
-	}
-	display[1] {
-		label="ROI 1"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=1"
-	}
-	display[2] {
-		label="ROI 2"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=2"
-	}
-	display[3] {
-		label="ROI 3"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=3"
-	}
-	display[4] {
-		label="ROI 4"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=4"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=72
-		width=60
-		height=20
-	}
-	display[0] {
-		label="ROI 5"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=5"
-	}
-	display[1] {
-		label="ROI 6"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=6"
-	}
-	display[2] {
-		label="ROI 7"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=7"
-	}
-	display[3] {
-		label="ROI 8"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=8"
-	}
-	display[4] {
-		label="ROI 9"
-		name="Struck8_ROI.adl"
-		args="P=$(P), R=9"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=97
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Calibration"
-		name="Struck32_cal.adl"
-		args="P=$(P)"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=122
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Inputs 1-8"
-		name="Struck8_plots.adl"
-		args="P=$(P)mca,A=1,B=2,C=3,D=4,E=5,F=6,G=7,H=8"
-	}
-	display[1] {
-		label="Inputs 9-16"
-		name="Struck8_plots.adl"
-		args="P=$(P)mca,A=9,B=10,C=11,D=12,E=13,F=14,G=15,H=16"
-	}
-	display[2] {
-		label="Inputs 17-24"
-		name="Struck8_plots.adl"
-		args="P=$(P)mca,A=17,B=18,C=19,D=20,E=21,F=22,G=23,H=24"
-	}
-	display[3] {
-		label="Inputs 25-32"
-		name="Struck8_plots.adl"
-		args="P=$(P)mca,A=25,B=26,C=27,D=28,E=29,F=30,G=31,H=32"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=147
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Channel 1"
-		name="mca_small.adl"
-		args="P=$(P), M=mca1"
-	}
-	display[1] {
-		label="Channel 2"
-		name="mca_small.adl"
-		args="P=$(P), M=mca2"
-	}
-	display[2] {
-		label="Channel 3"
-		name="mca_small.adl"
-		args="P=$(P), M=mca3"
-	}
-	display[3] {
-		label="Channel 4"
-		name="mca_small.adl"
-		args="P=$(P), M=mca4"
-	}
-	display[4] {
-		label="Channel 5"
-		name="mca_small.adl"
-		args="P=$(P), M=mca5"
-	}
-	display[5] {
-		label="Channel 6"
-		name="mca_small.adl"
-		args="P=$(P), M=mca6"
-	}
-	display[6] {
-		label="Channel 7"
-		name="mca_small.adl"
-		args="P=$(P), M=mca7"
-	}
-	display[7] {
-		label="Channel 8"
-		name="mca_small.adl"
-		args="P=$(P), M=mca8"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=171
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Channel 9"
-		name="mca_small.adl"
-		args="P=$(P), M=mca9"
-	}
-	display[1] {
-		label="Channel 10"
-		name="mca_small.adl"
-		args="P=$(P), M=mca10"
-	}
-	display[2] {
-		label="Channel 11"
-		name="mca_small.adl"
-		args="P=$(P), M=mca11"
-	}
-	display[3] {
-		label="Channel 12"
-		name="mca_small.adl"
-		args="P=$(P), M=mca12"
-	}
-	display[4] {
-		label="Channel 13"
-		name="mca_small.adl"
-		args="P=$(P), M=mca13"
-	}
-	display[5] {
-		label="Channel 4"
-		name="mca_small.adl"
-		args="P=$(P), M=mca14"
-	}
-	display[6] {
-		label="Channel 15"
-		name="mca_small.adl"
-		args="P=$(P), M=mca15"
-	}
-	display[7] {
-		label="Channel 16"
-		name="mca_small.adl"
-		args="P=$(P), M=mca16"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=195
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Channel 17"
-		name="mca_small.adl"
-		args="P=$(P), M=mca17"
-	}
-	display[1] {
-		label="Channel 18"
-		name="mca_small.adl"
-		args="P=$(P), M=mca18"
-	}
-	display[2] {
-		label="Channel 19"
-		name="mca_small.adl"
-		args="P=$(P), M=mca19"
-	}
-	display[3] {
-		label="Channel 20"
-		name="mca_small.adl"
-		args="P=$(P), M=mca20"
-	}
-	display[4] {
-		label="Channel 21"
-		name="mca_small.adl"
-		args="P=$(P), M=mca21"
-	}
-	display[5] {
-		label="Channel 22"
-		name="mca_small.adl"
-		args="P=$(P), M=mca22"
-	}
-	display[6] {
-		label="Channel 23"
-		name="mca_small.adl"
-		args="P=$(P), M=mca23"
-	}
-	display[7] {
-		label="Channel 24"
-		name="mca_small.adl"
-		args="P=$(P), M=mca24"
-	}
-	clr=14
-	bclr=4
-}
-"related display" {
-	object {
-		x=293
-		y=219
-		width=60
-		height=20
-	}
-	display[0] {
-		label="Channel 25"
-		name="mca_small.adl"
-		args="P=$(P), M=mca25"
-	}
-	display[1] {
-		label="Channel 26"
-		name="mca_small.adl"
-		args="P=$(P), M=mca26"
-	}
-	display[2] {
-		label="Channel 27"
-		name="mca_small.adl"
-		args="P=$(P), M=mca27"
-	}
-	display[3] {
-		label="Channel 28"
-		name="mca_small.adl"
-		args="P=$(P), M=mca28"
-	}
-	display[4] {
-		label="Channel 29"
-		name="mca_small.adl"
-		args="P=$(P), M=mca29"
-	}
-	display[5] {
-		label="Channel 30"
-		name="mca_small.adl"
-		args="P=$(P), M=mca30"
-	}
-	display[6] {
-		label="Channel 31"
-		name="mca_small.adl"
-		args="P=$(P), M=mca31"
-	}
-	display[7] {
-		label="Channel 32"
-		name="mca_small.adl"
-		args="P=$(P), M=mca32"
-	}
-	clr=14
-	bclr=4
-}
-text {
-	object {
-		x=380
-		y=247
-		width=160
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="# channels to use"
-}
-text {
-	object {
-		x=357
-		y=151
-		width=180
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Individual Plots 1-8"
-}
-text {
-	object {
-		x=357
-		y=175
-		width=180
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Individual Plots 9-16"
-}
-text {
-	object {
-		x=357
-		y=199
-		width=180
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Individual Plots 17-24"
-}
-text {
-	object {
-		x=357
-		y=223
-		width=180
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Individual Plots 25-32"
-}
-text {
-	object {
-		x=357
-		y=49
-		width=120
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ROIs 0-4"
-}
-text {
-	object {
-		x=357
-		y=74
-		width=120
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="ROIs 5-9"
-}
-text {
-	object {
-		x=357
-		y=99
-		width=120
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Calibration"
-}
-text {
-	object {
-		x=357
-		y=124
-		width=120
-		height=16
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Combined Plots"
-}
 composite {
 	object {
-		x=92
+		x=127
 		y=5
 		width=370
 		height=26
@@ -928,7 +196,7 @@ composite {
 	children {
 		rectangle {
 			object {
-				x=92
+				x=127
 				y=5
 				width=370
 				height=25
@@ -939,7 +207,7 @@ composite {
 		}
 		text {
 			object {
-				x=109
+				x=144
 				y=6
 				width=336
 				height=25
@@ -948,6 +216,1023 @@ composite {
 				clr=0
 			}
 			textix="Struck 32-Channel MCS Control"
+		}
+	}
+}
+rectangle {
+	object {
+		x=320
+		y=40
+		width=300
+		height=340
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+composite {
+	object {
+		x=26
+		y=112
+		width=160
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=26
+				y=112
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=18
+			}
+			"dynamic attribute" {
+				vis="if not zero"
+				chan="$(P)Acquiring"
+			}
+			textix="Acquiring"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=26
+				y=112
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=21
+			}
+			"dynamic attribute" {
+				vis="if zero"
+				chan="$(P)Acquiring"
+			}
+			textix="Done"
+			align="horiz. centered"
+		}
+		text {
+			object {
+				x=126
+				y=112
+				width=60
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Status"
+		}
+	}
+}
+composite {
+	object {
+		x=13
+		y=137
+		width=285
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=13
+				y=137
+				width=103
+				height=20
+			}
+			monitor {
+				chan="$(P)ElapsedReal"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=126
+				y=137
+				width=172
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Elapsed real time"
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=162
+		width=270
+		height=22
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=16
+				y=162
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)PresetReal"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=126
+				y=163
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Preset real time"
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=189
+		width=270
+		height=22
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=126
+				y=190
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Dwell time"
+		}
+		"text entry" {
+			object {
+				x=16
+				y=189
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)Dwell"
+				clr=14
+				bclr=51
+			}
+			format="exponential"
+			limits {
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=243
+		width=270
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=16
+				y=243
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)ChannelAdvance"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=126
+				y=243
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Channel Advance"
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=268
+		width=220
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=16
+				y=268
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)StatusAll.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=126
+				y=268
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Status rate"
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=293
+		width=220
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=126
+				y=293
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Read rate"
+		}
+		menu {
+			object {
+				x=16
+				y=293
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)ReadAll.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=16
+		y=216
+		width=270
+		height=22
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=16
+				y=216
+				width=100
+				height=22
+			}
+			control {
+				chan="$(P)Prescale"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=126
+				y=217
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Ext. prescale"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=48
+		width=184
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=394
+				y=48
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ROIs 0-4"
+		}
+		"related display" {
+			object {
+				x=330
+				y=48
+				width=60
+				height=20
+			}
+			display[0] {
+				label="ROI 0"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=0"
+			}
+			display[1] {
+				label="ROI 1"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=1"
+			}
+			display[2] {
+				label="ROI 2"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=2"
+			}
+			display[3] {
+				label="ROI 3"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=3"
+			}
+			display[4] {
+				label="ROI 4"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=4"
+			}
+			clr=14
+			bclr=4
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=73
+		width=184
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=394
+				y=73
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="ROIs 5-9"
+		}
+		"related display" {
+			object {
+				x=330
+				y=73
+				width=60
+				height=20
+			}
+			display[0] {
+				label="ROI 5"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=5"
+			}
+			display[1] {
+				label="ROI 6"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=6"
+			}
+			display[2] {
+				label="ROI 7"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=7"
+			}
+			display[3] {
+				label="ROI 8"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=8"
+			}
+			display[4] {
+				label="ROI 9"
+				name="Struck8_ROI.adl"
+				args="P=$(P), R=9"
+			}
+			clr=14
+			bclr=4
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=98
+		width=184
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=394
+				y=98
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Calibration"
+		}
+		"related display" {
+			object {
+				x=330
+				y=98
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Calibration"
+				name="Struck32_cal.adl"
+				args="P=$(P)"
+			}
+			clr=14
+			bclr=4
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=123
+		width=184
+		height=20
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=330
+				y=123
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Inputs 1-8"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=1,B=2,C=3,D=4,E=5,F=6,G=7,H=8"
+			}
+			display[1] {
+				label="Inputs 9-16"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=9,B=10,C=11,D=12,E=13,F=14,G=15,H=16"
+			}
+			display[2] {
+				label="Inputs 17-24"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=17,B=18,C=19,D=20,E=21,F=22,G=23,H=24"
+			}
+			display[3] {
+				label="Inputs 25-32"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=25,B=26,C=27,D=28,E=29,F=30,G=31,H=32"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=123
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Combined Plots"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=148
+		width=244
+		height=20
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=330
+				y=148
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 1"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca1"
+			}
+			display[1] {
+				label="Channel 2"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca2"
+			}
+			display[2] {
+				label="Channel 3"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca3"
+			}
+			display[3] {
+				label="Channel 4"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca4"
+			}
+			display[4] {
+				label="Channel 5"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca5"
+			}
+			display[5] {
+				label="Channel 6"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca6"
+			}
+			display[6] {
+				label="Channel 7"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca7"
+			}
+			display[7] {
+				label="Channel 8"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca8"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=148
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 1-8"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=173
+		width=244
+		height=20
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=330
+				y=173
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 9"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca9"
+			}
+			display[1] {
+				label="Channel 10"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca10"
+			}
+			display[2] {
+				label="Channel 11"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca11"
+			}
+			display[3] {
+				label="Channel 12"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca12"
+			}
+			display[4] {
+				label="Channel 13"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca13"
+			}
+			display[5] {
+				label="Channel 4"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca14"
+			}
+			display[6] {
+				label="Channel 15"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca15"
+			}
+			display[7] {
+				label="Channel 16"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca16"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=173
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 9-16"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=198
+		width=244
+		height=20
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=330
+				y=198
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 17"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca17"
+			}
+			display[1] {
+				label="Channel 18"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca18"
+			}
+			display[2] {
+				label="Channel 19"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca19"
+			}
+			display[3] {
+				label="Channel 20"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca20"
+			}
+			display[4] {
+				label="Channel 21"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca21"
+			}
+			display[5] {
+				label="Channel 22"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca22"
+			}
+			display[6] {
+				label="Channel 23"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca23"
+			}
+			display[7] {
+				label="Channel 24"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca24"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=198
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 17-24"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=223
+		width=244
+		height=20
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=330
+				y=223
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 25"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca25"
+			}
+			display[1] {
+				label="Channel 26"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca26"
+			}
+			display[2] {
+				label="Channel 27"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca27"
+			}
+			display[3] {
+				label="Channel 28"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca28"
+			}
+			display[4] {
+				label="Channel 29"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca29"
+			}
+			display[5] {
+				label="Channel 30"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca30"
+			}
+			display[6] {
+				label="Channel 31"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca31"
+			}
+			display[7] {
+				label="Channel 32"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca32"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=223
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 25-32"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=248
+		width=245
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=330
+				y=248
+				width=80
+				height=20
+			}
+			monitor {
+				chan="$(P)mca1.NMAX"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=415
+				y=248
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Max. # of channels"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=273
+		width=245
+		height=22
+	}
+	"composite name"=""
+	children {
+		"text entry" {
+			object {
+				x=330
+				y=273
+				width=80
+				height=22
+			}
+			control {
+				chan="$(P)NuseAll"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=415
+				y=273
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="# channels to use"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=300
+		width=245
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=330
+				y=300
+				width=80
+				height=20
+			}
+			monitor {
+				chan="$(P)mca1.NORD"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=415
+				y=300
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="# channels read"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=325
+		width=245
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=330
+				y=325
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)EnableClientWait"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=415
+				y=325
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Wait for client"
+		}
+	}
+}
+composite {
+	object {
+		x=330
+		y=350
+		width=245
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=330
+				y=350
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)ClientWait"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=415
+				y=350
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Client Wait"
 		}
 	}
 }
