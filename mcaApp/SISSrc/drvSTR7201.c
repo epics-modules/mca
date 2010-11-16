@@ -521,7 +521,7 @@ int drvSTR7201Erase(int card)
     return (OK);
 }
 
-int drvSTR7201Read(int card, int signal, int nchans, long *buff)
+int drvSTR7201Read(int card, int signal, int maxChans, int *numChans, long *buff)
 {
     struct strCard *p = &strCard[card];
     long *in=p->buffer+signal, *out=buff;
@@ -529,17 +529,19 @@ int drvSTR7201Read(int card, int signal, int nchans, long *buff)
 
     if (p->exists == 0) return (ERROR);
 
+    *numChans = p->nextChan;
+    if (*numChans > maxChans) *numChans = maxChans;
     INTERLOCK_ON;
     if (drvSTR7201Debug >= 1) {
         printf("%s(%d):",__FILE__,__LINE__);
-        printf("drvSTR7201Read: card=%d, signal=%d, nchans=%d, maxSignals=%d\n",
-               card, signal, nchans, p->maxSignals);
+        printf("drvSTR7201Read: card=%d, signal=%d, numChans=%d, maxSignals=%d\n",
+               card, signal, *numChans, p->maxSignals);
     }
     readFIFO(card);
     Debug(1, "%s", "drvSTR7201Read: readFIFO OK\n");
     checkAcquireStatus(card);
     Debug(1, "%s", "drvSTR7201Read: checkAcquireStatus OK\n");
-    for (i=0; i<nchans; i++) {
+    for (i=0; i<*numChans; i++) {
         *out++ = *in;
         in += p->maxSignals;
     }

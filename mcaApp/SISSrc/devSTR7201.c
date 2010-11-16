@@ -216,12 +216,12 @@ static long read_array(mcaRecord *pmca)
 {
     int card = pmca->inp.value.vmeio.card;
     int signal = pmca->inp.value.vmeio.signal;
-    int s, nuse = pmca->nuse;
+    int s, nuse = pmca->nuse, nord;
     long *lptr = (long *)pmca->bptr;
 
-    s = drvSTR7201Read(card, signal, nuse, lptr);
+    s = drvSTR7201Read(card, signal, nuse, &nord, lptr);
     Debug(5, "devSTR7201(read_array): %d\n", s);
-    pmca->nord = nuse;
+    pmca->nord = nord;
     return(0);
 }
 

@@ -34,5 +34,5 @@ int drvSTR7201SetChannelAdvance(int card, int source, int prescale);
 int drvSTR7201GetAcqStatus(int card, int signal, float *elapsed_time, 
                             long *elapsed_counts, int *acq_status);
 int drvSTR7201Erase(int card);
-int drvSTR7201Read(int card, int signal, int nchans, long *buff);
+int drvSTR7201Read(int card, int signal, int maxChans, int *numChans, long *buff);
 int drvSTR7201SetNChans(int card, int nchans);
