@@ -238,6 +238,7 @@ field to all listeners.  monitor() does this.
 #define M_RDNS      0x00002000
 #define M_DTIM      0x00004000
 #define M_IDTIM     0x00008000
+#define M_NORD      0x00010000
 
 /* These bits are in the mmap and newv fields */
 #define M_ERAS      0x00004000
@@ -618,6 +619,9 @@ reprocess:
             tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY,
                            pmca->stim);
 
+            /* Reset NORD */
+            pmca->nord = 0;
+            MARK(M_NORD);
             /* Trim STIM to 25 characters = .001 sec precision */
             pmca->stim[25]='\0';
             MARK(M_STIM);
@@ -1048,6 +1052,7 @@ static void monitor(mcaRecord *pmca)
     if (MARKED(M_DWEL)) db_post_events(pmca,&pmca->dwel,monitor_mask);
     if (MARKED(M_DTIM)) db_post_events(pmca,&pmca->dtim,monitor_mask);
     if (MARKED(M_IDTIM)) db_post_events(pmca,&pmca->idtim,monitor_mask);
+    if (MARKED(M_NORD)) db_post_events(pmca,&pmca->nord,monitor_mask);
     
     for (i=0; i<NUM_ROI; i++) {
        if (ROI_MARKED(M_R0 << i)) {
@@ -1121,6 +1126,7 @@ static long readValue(mcaRecord *pmca)
     long status;
     struct mcaDSET *pdset = (struct mcaDSET *) (pmca->dset);
     long nRequest = 1;
+    int nord_prev;
 
     NEWR_MARK(M_ROI_ALL);  /* Mark all ROI's for recalculation. */
 
@@ -1128,7 +1134,10 @@ static long readValue(mcaRecord *pmca)
     if (status) return(status);
 
     if (pmca->simm == menuYesNoNO) {
+        /* Device support can change the NORD field, we need to detect this */
+        nord_prev = pmca->nord;
         status = (*pdset->read_array)(pmca);
+        if (pmca->nord != nord_prev) MARK(M_NORD);
         return(status);
     }
     if (pmca->simm == menuYesNoYES) {
