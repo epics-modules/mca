@@ -9,6 +9,37 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 6-12-3 (03-Dec-2010)</h2>
+  <ul>
+    <li>mcaRecord
+      <ul>
+        <li>Bug fix. The record was not posting monitors on the NORD field when it changed,
+          and was not setting NORD to 0 on erase operation.</li>
+      </ul>
+    </li>
+    <li>SIS3801
+      <ul>
+        <li>Bug fix. Was not returning the number of channels read in drvSTR7201Read, which
+          prevented NORD from being set.</li>
+      </ul>
+    </li>
+    <li>medm adl files
+      <ul>
+        <li>Added new simple_mca.adl, simple_mca_small.adl, and simple_mcaSetup.adl. These
+          are like mca.adl, mca_small.adl and mcaSetup.adl except they only contain PVs that
+          are in the mca record itself. They work with the simple_mca.db database, rather
+          than the mca.db database. The simple_mca.db database is what is loaded for multi-channel
+          systems like the SIS multichannel scalers and the DXP multielement detector systems.
+          This change avoids the white fields in medm screens which were present when the
+          non-simple adl screens were used with simple_mca.db.</li>
+        <li>Added NORD to mcaSetup.adl.</li>
+        <li>Modified Struck8.adl and Struck32.adl to use the simple_mca screens. Also added
+          mca1.NMAX and mca1.NORD to these screens so the maximum number of channels and the
+          number of channels read so far is visible.</li>
+      </ul>
+    </li>
+  </ul>
+  <h2 style="text-align: center">
     Release 6-12-2 (7-Nov-2010)</h2>
   <ul>
     <li>drvMcaSIS3820Asyn.c
