@@ -1,0 +1,88 @@
+# Database for Rontec XFlash MCA.  This is for miscellaneous control
+# such as temperature and spectroscopy amplifier
+
+record(asyn,"$(P)$(R)ReadTemperature")
+{
+	field(PORT,"$(PORT)")
+        field(AOUT,"$DT")
+        field(SCAN,"1 second")
+        field(FLNK,"$(P)$(R)Temperature")
+}
+record(scalcout,"$(P)$(R)Temperature")
+{
+	field(INAA,"$(P)$(R)ReadTemperature.AINP NPP MS")
+        field(CALC,"$S(AA,'%*4c%d')/10.")
+        field(PREC,"1")
+        field(FLNK,"$(P)$(R)ReadCurrent")
+}
+
+record(asyn,"$(P)$(R)ReadCurrent")
+{
+        field(PORT,"$(PORT)")
+        field(AOUT,"$PI")
+        field(FLNK,"$(P)$(R)Current")
+}
+record(scalcout,"$(P)$(R)Current")
+{
+        field(INAA,"$(P)$(R)ReadCurrent.AINP NPP MS")
+        field(CALC,"$S(AA,'%*4c%d')")
+        field(FLNK,"$(P)$(R)ReadState")
+}
+
+record(asyn,"$(P)$(R)ReadState")
+{
+        field(PORT,"$(PORT)")
+        field(AOUT,"$DR")
+        field(FLNK,"$(P)$(R)State")
+}
+record(scalcout,"$(P)$(R)State")
+{
+        field(INAA,"$(P)$(R)ReadState.AINP NPP MS")
+        field(CALC,"AA[4,4]=='-'?'COOL MAX':'Stable'")
+        field(FLNK,"$(P)$(R)ReadMode")
+}
+
+record(asyn,"$(P)$(R)ReadMode")
+{
+        field(PORT,"$(PORT)")
+        field(AOUT,"$DF")
+        field(FLNK,"$(P)$(R)ModeValue")
+}
+record(scalcout,"$(P)$(R)ModeValue")
+{
+        field(INAA,"$(P)$(R)ReadMode.AINP NPP MS")
+        field(CALC,"$S(AA,'%*4c%d')")
+        field(FLNK,"$(P)$(R)Mode")
+}
+record(mbbi,"$(P)$(R)Mode")
+{
+        field(INP,"$(P)$(R)ModeValue NPP MS")
+        field(ZRVL,"0")
+        field(ZRST,"Peltier Off")
+        field(ONVL,"1")
+        field(ONST,"Thermostat mode")
+        field(TWVL,"2")
+        field(TWST,"Maximum current")
+}
+
+record(mbbo,"$(P)$(R)SetMode")
+{
+        field(ZRVL,"0")
+        field(ZRST,"Peltier Off")
+        field(ONVL,"1")
+        field(ONST,"Thermostat mode")
+        field(TWVL,"2")
+        field(TWST,"Maximum current")
+        field(FLNK,"$(P)$(R)WriteModeCalc")
+}
+record(scalcout,"$(P)$(R)WriteModeCalc")
+{
+        field(INPA,"$(P)$(R)SetMode.VAL NPP MS")
+        field(CALC,"$P('$DK %d', A)")
+        field(OUT,"$(P)$(R)WriteMode.AOUT PP MS")
+}
+record(asyn,"$(P)$(R)WriteMode")
+{
+        field(PORT,"$(PORT)")
+}
+

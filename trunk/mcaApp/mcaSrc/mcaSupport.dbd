@@ -1,0 +1,15 @@
+################
+# RECORD SUPPORT
+################
+include "mcaRecord.dbd"
+ 
+################
+# DEVICE SUPPORT
+################
+# soft mca record
+device(mca,CONSTANT,devMCA_soft,"Soft Channel")
+device(mca,INST_IO,devMcaAsyn,"asynMCA")
+
+registrar(fastSweepRegister)
+
+variable("mcaRecordDebug", int)

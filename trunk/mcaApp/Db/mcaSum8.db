@@ -1,0 +1,422 @@
+grecord(bo,"$(P)mcaSumEnable") {
+	field(DESC,"mcaSum Enable")
+	field(DTYP,"Soft Channel")
+	field(ONAM,"Disable")
+	field(ZNAM,"Enable")
+}
+grecord(longout,"$(P)mcaSumNDets") {
+	field(DESC,"mcaSum # of detectors")
+	field(DTYP,"Soft Channel")
+	field(DOL,"8")
+}
+grecord(genSub,"$(P)mcaSum") {
+	field(SDIS,"$(P)mcaSumEnable.VAL  NPP MS")
+	field(DISV,"1")
+	field(PREC,"3")
+	field(EFLG,"ALWAYS")
+	field(INAM,"mcaSum_init")
+	field(SNAM,"mcaSum_do")
+	field(INPA,"$(P)mca1.VAL  NPP MS")
+	field(FTA,"FLOAT")
+	field(NOA,"$(N)")
+	field(INPB,"$(P)mca2.VAL  NPP MS")
+	field(FTB,"FLOAT")
+	field(NOB,"$(N)")
+	field(INPC,"$(P)mca3.VAL  NPP MS")
+	field(FTC,"FLOAT")
+	field(NOC,"$(N)")
+	field(INPD,"$(P)mca4.VAL  NPP MS")
+	field(FTD,"FLOAT")
+	field(NOD,"$(N)")
+	field(INPE,"$(P)mca5.VAL  NPP MS")
+	field(FTE,"FLOAT")
+	field(NOE,"$(N)")
+	field(INPF,"$(P)mca6.VAL  NPP MS")
+	field(FTF,"FLOAT")
+	field(NOF,"$(N)")
+	field(INPG,"$(P)mca7.VAL  NPP MS")
+	field(FTG,"FLOAT")
+	field(NOG,"$(N)")
+	field(INPH,"$(P)mca8.VAL  NPP MS")
+	field(FTH,"FLOAT")
+	field(NOH,"$(N)")
+	field(INPU,"$(P)mcaSumNDets.VAL  NPP MS")
+	field(FTU,"LONG")
+	field(NOU,"1")
+	field(FTVN,"FLOAT")
+	field(NOVN,"$(N)")
+	field(OUTN,"$(P)mca0.VAL  NPP NMS")
+	field(FLNK, "$(P)mcaSumEtc")
+}
+grecord(seq, "$(P)mcaSumEtc") {
+	field(DOL1, "$(P)mca1.ERTM  NPP MS")
+	field(LNK1, "$(P)mca0.ERTM  NPP MS")
+	field(DOL2, "$(P)mca1.ELTM  NPP MS")
+	field(LNK2, "$(P)mca0.ELTM  NPP MS")
+	field(DOL3, "1")
+	field(LNK3, "$(P)mca0.READ  PP MS")
+}
+grecord(genSub,"$(P)mcaSum_shift") {
+	field(PINI,"YES")
+	field(INAM,"mcaSum_do_shift")
+	field(SNAM,"mcaSum_do_shift")
+	field(INPA,"$(P)mcaSum_shift_1.VAL  NPP MS")
+	field(INPB,"$(P)mcaSum_shift_2.VAL  NPP MS")
+	field(INPC,"$(P)mcaSum_shift_3.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_4.VAL  NPP MS")
+	field(INPE,"$(P)mcaSum_shift_5.VAL  NPP MS")
+	field(INPF,"$(P)mcaSum_shift_6.VAL  NPP MS")
+	field(INPG,"$(P)mcaSum_shift_7.VAL  NPP MS")
+	field(INPH,"$(P)mcaSum_shift_8.VAL  NPP MS")
+	field(FTA,"DOUBLE")
+	field(FTB,"DOUBLE")
+	field(FTC,"DOUBLE")
+	field(FTD,"DOUBLE")
+	field(FTE,"DOUBLE")
+	field(FTF,"DOUBLE")
+	field(FTG,"DOUBLE")
+	field(FTH,"DOUBLE")
+	field(NOA,"1")
+	field(NOB,"1")
+	field(NOC,"1")
+	field(NOD,"1")
+	field(NOE,"1")
+	field(NOF,"1")
+	field(NOG,"1")
+	field(NOH,"1")
+	field(FTVN,"DOUBLE")
+	field(NOVN,"1")
+	field(INPU,"$(P)mcaSumNDets.VAL  NPP MS")
+	field(FTU,"LONG")
+	field(NOU,"1")
+    field(FLNK,"$(P)mcaSum.PROC")
+}
+grecord(ao,"$(P)mcaSum_shift_1") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_2") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_3") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_4") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_5") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_6") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_7") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_shift_8") {
+    field(FLNK,"$(P)mcaSum_shift.PROC")
+    field(PREC,"2")
+}
+grecord(genSub,"$(P)mcaSum_op") {
+	field(PINI,"YES")
+	field(INAM,"mcaSum_do_op")
+	field(SNAM,"mcaSum_do_op")
+	field(INPA,"$(P)mcaSum_op_1.VAL  NPP MS")
+	field(INPB,"$(P)mcaSum_op_2.VAL  NPP MS")
+	field(INPC,"$(P)mcaSum_op_3.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_op_4.VAL  NPP MS")
+	field(INPE,"$(P)mcaSum_op_5.VAL  NPP MS")
+	field(INPF,"$(P)mcaSum_op_6.VAL  NPP MS")
+	field(INPG,"$(P)mcaSum_op_7.VAL  NPP MS")
+	field(INPH,"$(P)mcaSum_op_8.VAL  NPP MS")
+	field(FTA,"SHORT")
+	field(FTB,"SHORT")
+	field(FTC,"SHORT")
+	field(FTD,"SHORT")
+	field(FTE,"SHORT")
+	field(FTF,"SHORT")
+	field(FTG,"SHORT")
+	field(FTH,"SHORT")
+	field(NOA,"1")
+	field(NOB,"1")
+	field(NOC,"1")
+	field(NOD,"1")
+	field(NOE,"1")
+	field(NOF,"1")
+	field(NOG,"1")
+	field(NOH,"1")
+	field(FTVN,"LONG")
+	field(NOVN,"1")
+	field(INPU,"$(P)mcaSumNDets.VAL  NPP MS")
+	field(FTU,"LONG")
+	field(NOU,"1")
+    field(FLNK,"$(P)mcaSum.PROC")
+}
+
+grecord(mbbo,"$(P)mcaSum_op_1") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_2") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_3") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_4") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_5") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_6") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_7") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(mbbo,"$(P)mcaSum_op_8") {
+    field(DOL,"1")
+    field(ZRST,"NOP")
+    field(ONST," + ")
+    field(FLNK,"$(P)mcaSum_op.PROC")
+}
+grecord(genSub,"$(P)mcaSum_fact") {
+	field(PINI,"YES")
+	field(INAM,"mcaSum_do_fact")
+	field(SNAM,"mcaSum_do_fact")
+	field(INPA,"$(P)mcaSum_fact_1.VAL  NPP MS")
+	field(INPB,"$(P)mcaSum_fact_2.VAL  NPP MS")
+	field(INPC,"$(P)mcaSum_fact_3.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_fact_4.VAL  NPP MS")
+	field(INPE,"$(P)mcaSum_fact_5.VAL  NPP MS")
+	field(INPF,"$(P)mcaSum_fact_6.VAL  NPP MS")
+	field(INPG,"$(P)mcaSum_fact_7.VAL  NPP MS")
+	field(INPH,"$(P)mcaSum_fact_8.VAL  NPP MS")
+	field(FTA,"DOUBLE")
+	field(FTB,"DOUBLE")
+	field(FTC,"DOUBLE")
+	field(FTD,"DOUBLE")
+	field(FTE,"DOUBLE")
+	field(FTF,"DOUBLE")
+	field(FTG,"DOUBLE")
+	field(FTH,"DOUBLE")
+	field(NOA,"1")
+	field(NOB,"1")
+	field(NOC,"1")
+	field(NOD,"1")
+	field(NOE,"1")
+	field(NOF,"1")
+	field(NOG,"1")
+	field(NOH,"1")
+	field(FTVN,"DOUBLE")
+	field(NOVN,"1")
+	field(INPU,"$(P)mcaSumNDets.VAL  NPP MS")
+	field(FTU,"LONG")
+	field(NOU,"1")
+    field(FLNK,"$(P)mcaSum.PROC")
+}
+grecord(ao,"$(P)mcaSum_fact_1") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_2") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_3") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_4") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_5") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_6") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_7") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+grecord(ao,"$(P)mcaSum_fact_8") {
+    field(FLNK,"$(P)mcaSum_fact.PROC")
+    field(DOL,"1.0")
+    field(PREC,"2")
+}
+
+
+grecord(ao,"$(P)mcaSum_tweakVal_1") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_1") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_1.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_1.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_1.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_1.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_1.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_2") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_2") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_2.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_2.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_2.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_2.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_2.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_3") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_3") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_3.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_3.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_3.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_3.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_3.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_4") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_4") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_4.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_4.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_4.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_4.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_4.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_5") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_5") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_5.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_5.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_5.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_5.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_5.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_6") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_6") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_6.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_6.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_6.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_6.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_6.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_7") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_7") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_7.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_7.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_7.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_7.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_7.A  NPP MS")
+	field(PREC,"2")
+}
+
+grecord(ao,"$(P)mcaSum_tweakVal_8") {
+	field(DTYP,"Soft Channel")
+	field(PREC,"2")
+	field(DOL,"1")
+}
+grecord(transform,"$(P)mcaSum_tweak_8") {
+	field(CLCE,"a?d+c:b?d-c:d")
+	field(CLCF,"0")
+	field(CLCG,"0")
+	field(INPC,"$(P)mcaSum_tweakVal_8.VAL  NPP MS")
+	field(INPD,"$(P)mcaSum_shift_8.VAL  NPP MS")
+	field(OUTE,"$(P)mcaSum_shift_8.VAL  PP MS")
+	field(OUTF,"$(P)mcaSum_tweak_8.B  NPP MS")
+	field(OUTG,"$(P)mcaSum_tweak_8.A  NPP MS")
+	field(PREC,"2")
+}
+
