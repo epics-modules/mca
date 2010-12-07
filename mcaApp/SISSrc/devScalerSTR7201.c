@@ -212,6 +212,7 @@ STATIC long scaler_read(scalerRecord *psr, long *val)
     devScalerPvt *dpvt = psr->dpvt;
     int card = dpvt->card;
     int i;
+    int numRead;
     float etime;
     long ecounts;
     int counting;
@@ -222,7 +223,7 @@ STATIC long scaler_read(scalerRecord *psr, long *val)
     }
     if ((card+1) > scaler_total_cards) return(ERROR);
     for (i=0; i < scaler_state[card]->num_channels; i++) {
-        drvSTR7201Read(card, i, 1, &val[i]);
+        drvSTR7201Read(card, i, 1, &numRead, &val[i]);
         if(devScalerSTR7201Debug >= 10) {
             printf("%s(%d):",__FILE__,__LINE__);
             printf("scaler_read: ...(chan %d = %ld)\n", i, val[i]);
