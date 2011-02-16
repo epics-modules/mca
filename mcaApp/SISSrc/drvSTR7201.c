@@ -529,7 +529,8 @@ int drvSTR7201Read(int card, int signal, int maxChans, int *numChans, long *buff
 
     if (p->exists == 0) return (ERROR);
 
-    *numChans = p->nextChan;
+    if (p->mode == MULTICHANNEL_SCALER_MODE) *numChans = p->nextChan;
+    else if (p->mode == SIMPLE_SCALER_MODE) *numChans = p->nChans;
     if (*numChans > maxChans) *numChans = maxChans;
     INTERLOCK_ON;
     if (drvSTR7201Debug >= 1) {
