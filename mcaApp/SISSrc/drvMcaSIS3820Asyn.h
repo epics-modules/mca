@@ -1,4 +1,4 @@
-/* File: 	  drvMcaSIS3820Asyn.h
+/* File:    drvMcaSIS3820Asyn.h
  * Author:  Wayne Lewis
  * Date:    04-sep-2006
  *
@@ -83,6 +83,9 @@
 /* FIFO information */
 #define SIS3820_FIFO_SIZE 0x800000
 
+/* VME memory size */
+#define SIS3820_VME_MEMORY_SIZE 0x01000000
+
 #ifndef ERROR
 #define ERROR -1
 #endif
@@ -157,8 +160,9 @@ typedef volatile struct {
   epicsUInt32 copy_disable_reg;           /* Offset = 0x104 */
   epicsUInt32 lne_channel_select_reg;     /* Offset = 0x108 */
   epicsUInt32 preset_channel_select_reg;  /* Offset = 0x10c */
+  epicsUInt32 mux_out_channel_select_reg; /* Offset = 0x110 */
 
-  epicsUInt32 unused110_1fc[60];
+  epicsUInt32 unused110_1fc[59];
   
   epicsUInt32 count_disable_reg;          /* Offset = 0x200 */
   epicsUInt32 count_clear_reg;            /* Offset = 0x204 */
@@ -214,7 +218,7 @@ typedef volatile struct {
 
 typedef struct mcaSIS3820Pvt {
   char *portName;
-  epicsUInt32 *vmeBaseAddress;
+  epicsUInt32 vmeBaseAddress;
   int exists;
   int moduleID;
   int firmwareVersion;
@@ -262,6 +266,8 @@ typedef struct mcaSIS3820Pvt {
   void *float64InterruptPvt;
   asynInterface int32Array;
   void *int32ArrayInterruptPvt;
+  asynInterface uint32Digital;
+  void *uint32DigitalInterruptPvt;
   asynInterface drvUser;
   
   epicsEventId intEventId;
@@ -280,6 +286,7 @@ int mcaSIS3820Config(char *portName,
                       int maxSignals, 
                       int inputMode, 
                       int outputMode, 
-                      int lnePrescale);
+                      int lnePrescale,
+                      int ch1Reference);
 #endif
 
