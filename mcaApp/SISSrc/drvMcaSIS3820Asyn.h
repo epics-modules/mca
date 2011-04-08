@@ -276,8 +276,8 @@ typedef struct mcaSIS3820Pvt {
 int mcaSIS3820Setup(int baseAddress, int intVector, int intLevel);
 int mcaSIS3820Config(char *portName,
                       int card, 
-                      int maxSignals, 
                       int maxChans, 
+                      int maxSignals, 
                       int inputMode, 
                       int outputMode, 
                       int lnePrescale);
