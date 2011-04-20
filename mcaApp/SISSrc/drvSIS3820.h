@@ -46,7 +46,6 @@
 #ifndef DRVMCASIS3820ASYN_H
 #define DRVMCASIS3820ASYN_H
 
-
 /************/
 /* Includes */
 /************/
@@ -55,6 +54,9 @@
 #include <asynPortDriver.h>
 #include <epicsEvent.h>
 #include <epicsTypes.h>
+
+// My temporary file
+#include <vmeDMA.h>
 
 
 /***************/
@@ -68,6 +70,12 @@
 
 #define SIS3820_MAX_SIGNALS 32
 #define SIS3820_MAX_CARDS 4
+
+#define MIN_DMA_TRANSFERS   256
+
+/* FIFO information */
+#define SIS3820_FIFO_BYTE_SIZE    0x800000
+#define SIS3820_FIFO_WORD_SIZE    0x200000
 
 #define MULTICHANNEL_SCALER_MODE 0
 #define SIMPLE_SCALER_MODE       1
@@ -95,9 +103,6 @@
 /* Bit shifts */
 #define SIS3820_INPUT_MODE_SHIFT 16
 #define SIS3820_OUTPUT_MODE_SHIFT 20
-
-/* FIFO information */
-#define SIS3820_FIFO_SIZE 0x800000
 
 /* VME memory size */
 #define SIS3820_VME_MEMORY_SIZE 0x01000000
@@ -219,29 +224,30 @@ class drvSIS3820 : public asynPortDriver
   public:
   drvSIS3820(const char *portName, int baseAddress, int interruptVector, int interruptLevel, 
              int maxChans, int maxSignals, int inputMode, int outputMode, 
-             int lnePrescale, int ch1Reference);
+             bool useDma, int fifoBufferWords);
 
   // These are the methods we override from asynPortDriver
   asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
   asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
-  asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
   asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *data, 
                             size_t maxChans, size_t *nactual);
   void report(FILE *fp, int details);
-  void intFunc(); // Should be private, but called from C callback function
-  void intTask(); // Should be private, but called from C callback function
+  void intFunc();        // Should be private, but called from C callback function
+  void readFIFOThread(); // Should be private, but called from C callback function
+  void dmaCallback();    // Should be private, but called from C callback function
 
 
   private:
   void enableInterrupts();
   void disableInterrupts();
   void setControlStatusReg();
+  void resetFIFO();
   void setOpModeReg();
   void setIrqControlStatusReg();
   void setAcquireMode(SIS3820AcquireMode acquireMode);
   void clearScalerPresets();
   void setScalerPresets();
-  void readFIFO();
+  bool checkDone();
   void erase();
 
    #define FIRST_SIS3820_PARAM mcaStartAcquire_
@@ -262,6 +268,8 @@ class drvSIS3820 : public asynPortDriver
   int mcaPresetSweeps_;
   int mcaModePHA_;
   int mcaModeMCS_;
+  int mcaModeList_;
+  int mcaSequence_;
   int mcaPrescale_;
   int mcaAcquiring_;
   int mcaElapsedLiveTime_;
@@ -289,8 +297,6 @@ class drvSIS3820 : public asynPortDriver
   SIS3820AcquireMode acquireMode_;
   int maxSignals_;
   int maxChans_;
-  int nextChan_;
-  int nextSignal_;
   int inputMode_;
   int outputMode_;
   epicsTimeStamp startTime_;
@@ -300,11 +306,19 @@ class drvSIS3820 : public asynPortDriver
   int lneSource_;
   int lnePrescale_;
   int softAdvance_;
-  epicsUInt32 *buffer_;  /* maxSignals * maxChans */
-  epicsUInt32 *buffPtr_;
+  epicsUInt32 *mcsBuffer_;  /* maxSignals * maxChans */
+  int nextChan_;
+  int nextSignal_;
+  epicsUInt32 *fifoBuffer_;
+  int fifoBufferWords_;
+  epicsUInt32 *fifoBuffPtr_;
   bool acquiring_;
   bool prevAcquiring_;
-  epicsEventId interruptEventId_;
+  epicsEventId readFIFOEventId_;
+  bool useDma_;
+  DMA_ID dmaId_;
+  epicsEventId dmaDoneEventId_;
+  epicsMutexId fifoLockId_;
 };
 
 #define NUM_SIS3820_PARAMS (int)(&LAST_SIS3820_PARAM - &FIRST_SIS3820_PARAM + 1)
@@ -317,7 +331,7 @@ class drvSIS3820 : public asynPortDriver
 extern "C" {
 int drvSIS3820Config(const char *portName, int baseAddress, int interruptVector, int interruptLevel, 
                      int maxChans, int maxSignals, int inputMode, int outputMode, 
-                     int lnePrescale, int ch1RefEnable);
+                     int useDma, int fifoBufferWords);
 }
 #endif
 
