@@ -1,4 +1,4 @@
-program SIS_SNL("P=SIS:3820, MCA=mca, numMCAs=2")
+program SIS38XX_SNL("P=SIS:3820, MCA=mca, numMCAs=2")
 
 /*  This sequencer program works with SIS3820.template 
  *  It supports multi-element MCA operations
