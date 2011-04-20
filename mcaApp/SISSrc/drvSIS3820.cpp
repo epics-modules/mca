@@ -87,8 +87,10 @@
 #include "sis3820.h"
 
 static const char *driverName="drvSIS3820";
-static void intTaskC(void *drvPvt);
 static void intFuncC(void *drvPvt);
+static void readFIFOThreadC(void *drvPvt);
+static void dmaCallbackC(void *drvPvt);
+
 
 /***************/
 /* Definitions */
@@ -97,15 +99,16 @@ static void intFuncC(void *drvPvt);
 /*Constructor */
 drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVector, int interruptLevel, 
                        int maxChans, int maxSignals, int inputMode, int outputMode, 
-                       int lnePrescale, int ch1RefEnable)
+                       bool useDma, int fifoBufferWords)
   :  asynPortDriver(portName, maxSignals, NUM_SIS3820_PARAMS, 
+                    asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynDrvUserMask,
                     asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask,
-                    asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask,
-                    ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0),
+//                    ASYN_MULTIDEVICE | ASYN_CANBLOCK, 1, 0, 0),
+                    ASYN_MULTIDEVICE, 1, 0, 0),
      exists_(false), maxSignals_(maxSignals), maxChans_(maxChans),
-     nextChan_(0), nextSignal_(0),
      inputMode_(inputMode), outputMode_(outputMode),
-     acquiring_(false), prevAcquiring_(false)
+     acquiring_(false), prevAcquiring_(false),
+     useDma_(useDma)
 {
   int status;
   epicsUInt32 controlStatusReg;
@@ -113,9 +116,9 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   static const char* functionName="SIS3820";
   
   // Uncomment this line to enable asynTraceFlow during the constructor
-  pasynTrace->setTraceMask(pasynUserSelf, 0x11);
+  //pasynTrace->setTraceMask(pasynUserSelf, 0x11);
   
-  createParam(mcaStartAcquireString,          asynParamInt32, &mcaStartAcquire_);
+  createParam(mcaStartAcquireString,                asynParamInt32, &mcaStartAcquire_);
   createParam(mcaStopAcquireString,                 asynParamInt32, &mcaStopAcquire_);            /* int32, write */
   createParam(mcaEraseString,                       asynParamInt32, &mcaErase_);                  /* int32, write */
   createParam(mcaDataString,                        asynParamInt32, &mcaData_);                   /* int32Array, read/write */
@@ -132,6 +135,8 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   createParam(mcaPresetSweepsString,                asynParamInt32, &mcaPresetSweeps_);           /* int32, write */
   createParam(mcaModePHAString,                     asynParamInt32, &mcaModePHA_);                /* int32, write */
   createParam(mcaModeMCSString,                     asynParamInt32, &mcaModeMCS_);                /* int32, write */
+  createParam(mcaModeListString,                    asynParamInt32, &mcaModeList_);               /* int32, write */
+  createParam(mcaSequenceString,                    asynParamInt32, &mcaSequence_);               /* int32, write */
   createParam(mcaPrescaleString,                    asynParamInt32, &mcaPrescale_);               /* int32, write */
   createParam(mcaAcquiringString,                   asynParamInt32, &mcaAcquiring_);              /* int32, read */
   createParam(mcaElapsedLiveTimeString,           asynParamFloat64, &mcaElapsedLiveTime_);        /* float64, read */
@@ -151,11 +156,14 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   // Default values of some parameters
   setIntegerParam(mcaNumChannels_, maxChans);
   setIntegerParam(mcaAcquiring_, 0);
-  for (i=0; i<maxSignals; i++) {
-    setDoubleParam(i, mcaElapsedCounts_, 0);
-  }
+  setIntegerParam(scalerDone_, 1);
   setIntegerParam(scalerChannels_, maxSignals);
-
+  for (i=0; i<maxSignals; i++) {
+    setDoubleParam(i, mcaElapsedCounts_, 0.0);
+    setDoubleParam(i, mcaElapsedRealTime_, 0.0);
+    setDoubleParam(i, mcaElapsedLiveTime_, 0.0);
+    callParamCallbacks(i);
+  }
 
   /* Call devLib to get the system address that corresponds to the VME
    * base address of the board.
@@ -166,8 +174,7 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
                                SIS3820_BOARD_SIZE,
                                (volatile void **)&registers_);
 
-  if (status)
-  {
+  if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: %s, Can't register VME address %p\n", 
               driverName, functionName, portName, baseAddress);
@@ -177,34 +184,26 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
             "%s:%s: Registered VME address: %p to local address: %p size: 0x%X\n", 
             driverName, functionName, baseAddress, registers_, SIS3820_BOARD_SIZE);
 
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: local address=%p\n", registers_);
-
   /* Call devLib to get the system address that corresponds to the VME
    * FIFO address of the board.
    */
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: Registering FIFO base addr: %p\n", 
-            driverName, functionName, baseAddress + SIS3820_FIFO_BASE);
   status = devRegisterAddress("drvSIS3820",
                               SIS3820_ADDRESS_TYPE,
                               (size_t)(baseAddress + SIS3820_FIFO_BASE),
-                              SIS3820_FIFO_SIZE,
-                              (volatile void **)fifo_base_);
+                              SIS3820_FIFO_BYTE_SIZE,
+                              (volatile void **)&fifo_base_);
 
-  if (status)
-  {
+  if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: %s, Can't register FIFO address %p\n", 
               driverName, functionName, portName, baseAddress + SIS3820_FIFO_BASE);
     return;
   }
-  printf("Registered VME FIFO address: %p to local address: %p size: 0x%X\n", 
-      (void*)(baseAddress + SIS3820_FIFO_BASE), fifo_base_, SIS3820_FIFO_SIZE);
 
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: FIFO address=%p\n", 
-            driverName, functionName, fifo_base_);
+            "%s:%s: Registered VME FIFO address: %p to local address: %p size: 0x%X\n", 
+            driverName, functionName, baseAddress + SIS3820_FIFO_BASE, 
+            fifo_base_, SIS3820_FIFO_BYTE_SIZE);
 
   /* Probe VME bus to see if card is there */
   status = devReadProbe(4, (char *) registers_->control_status_reg,
@@ -230,29 +229,48 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   lneSource_ = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
   softAdvance_ = 1;
 
-  /* If no prescale is set, use a 1 second channel advance to avoid flooding the
-   * memory
-   */
-  if (lnePrescale == 0)
-    lnePrescale = 10000000;
-  lnePrescale_ = lnePrescale;
+  // Set a default value of lnePrescale for 1 second
+  lnePrescale_ = 10000000;
 
-  /* Route the reference pulser into channel 1 
-   * Choose either to use internal 50MHz reference (1)
-   * or external reference (0)*/
-  ch1RefEnable = (ch1RefEnable == 0) ? 0 : 1;
-  setIntegerParam(SIS3820Ch1RefEnable_, ch1RefEnable);
+  /* Enable channel 1 reference pulses by default */
+  setIntegerParam(SIS3820Ch1RefEnable_, 1);
 
   /* Allocate sufficient memory space to hold all of the data collected from the
    * SIS3820.
    */
-  buffer_ = (epicsUInt32 *)malloc(maxSignals*maxChans*sizeof(epicsUInt32));
+  mcsBuffer_ = (epicsUInt32 *)malloc(maxSignals*maxChans*sizeof(epicsUInt32));
+  if (mcsBuffer_ == NULL) {
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+              "%s:%s: malloc failure for mcsBuffer_\n", 
+              driverName, functionName);
+    return;
+  }
 
-  /* Initialise the buffer pointer to the start of the buffer area */
-  buffPtr_ = buffer_;
-
-  /* Create the EPICS event used to wake up the interrupt task */
-  interruptEventId_ = epicsEventCreate(epicsEventFull);
+  /* Initialise the pointers to the start of the buffer area */
+  nextChan_ = 0;
+  nextSignal_ = 0;
+  
+  // Allocate FIFO readout buffer
+  // fifoBufferWords input argument is in words, must be less than SIS3820_FIFO_WORD_SIZE
+  if (fifoBufferWords == 0) fifoBufferWords = SIS3820_FIFO_WORD_SIZE;
+  if (fifoBufferWords > SIS3820_FIFO_WORD_SIZE) fifoBufferWords = SIS3820_FIFO_WORD_SIZE;
+  fifoBufferWords_ = fifoBufferWords;
+  fifoBuffer_ = (epicsUInt32*) memalign(8, fifoBufferWords_*sizeof(epicsUInt32));
+  if (fifoBuffer_ == NULL) {
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+              "%s:%s: posix_memalign failure for fifoBuffer_ = %d\n", 
+              driverName, functionName, status);
+    return;
+  }
+  
+  /* Create the EPICS event used to wake up the readFIFOThread */
+  readFIFOEventId_ = epicsEventCreate(epicsEventEmpty);
+  
+  dmaId_ = sysDmaCreate(dmaCallbackC, (void*)this);
+  dmaDoneEventId_ = epicsEventCreate(epicsEventEmpty);
+  
+  // Create the mutex used to lock access to the FIFO
+  fifoLockId_ = epicsMutexCreate();
 
   /* Reset card */
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
@@ -264,7 +282,7 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
            "%s:%s: clearing FIFO\n",
            driverName, functionName);
-  registers_->key_fifo_reset_reg= 1;
+  resetFIFO();
 
   /* Initialize board in MCS mode */
   setAcquireMode(MCS_MODE);
@@ -275,8 +293,7 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
             driverName, functionName, intFuncC);
 
   status = devConnectInterruptVME(interruptVector, intFuncC, this);
-  if (status) 
-  {
+  if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: Can't connect to vector % d\n", 
               driverName, functionName, interruptVector);
@@ -317,11 +334,11 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
             "m%s:%s: irq config register after enabling interrupts= 0x%08x\n", 
             driverName, functionName, registers_->irq_config_reg);
 
-  /* Create the interrupt handling task in its own thread */
-  if (epicsThreadCreate("mcaSIS3820intTask",
-                         epicsThreadPriorityHigh,
+  /* Create the thread that reads the FIFO */
+  if (epicsThreadCreate("SIS3820FIFOThread",
+                         epicsThreadPriorityLow,
                          epicsThreadGetStackSize(epicsThreadStackMedium),
-                         (EPICSTHREADFUNC)intTaskC,
+                         (EPICSTHREADFUNC)readFIFOThreadC,
                          this) == NULL) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: epicsThreadCreate failure\n", 
@@ -364,7 +381,7 @@ asynStatus drvSIS3820::writeInt32(asynUser *pasynUser, epicsInt32 value)
   int i;
   int nChans;
   asynStatus status=asynError;
-  static const char* functionName = "writeValue";
+  static const char* functionName = "writeInt32";
 
   disableInterrupts();
   pasynManager->getAddr(pasynUser, &signal);
@@ -392,13 +409,15 @@ asynStatus drvSIS3820::writeInt32(asynUser *pasynUser, epicsInt32 value)
     setIntegerParam(mcaAcquiring_, 1);
     prevAcquiring_ = true;
     erased_ = 0;
-printf("Clearing erased, signal=%d\n", signal);
 
     setAcquireMode(MCS_MODE);
     setOpModeReg();
 
     /* Set the number of channels to acquire */
     registers_->acq_preset_reg = nChans;
+
+    /* Set the acquisition start time */
+    epicsTimeGetCurrent(&startTime_);
 
     if (lneSource_ == SIS3820_LNE_SOURCE_INTERNAL_10MHZ) {
       /* The SIS3820 requires the value in the LNE prescale register to be one
@@ -443,15 +462,14 @@ printf("Clearing erased, signal=%d\n", signal);
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "%s:%s: fifo_word_threshold_reg = %d\n", 
               driverName, functionName, registers_->fifo_word_threshold_reg);
-    /* Set the acquisition start time */
-    epicsTimeGetCurrent(&startTime_);
+
+    epicsEventSignal(readFIFOEventId_);
   }
     
   else if (command == mcaStopAcquire_) {
     /* stop data acquisition */
     registers_->key_op_disable_reg = 1;
-    readFIFO();
-    setIntegerParam(mcaAcquiring_, 0);
+    acquiring_ = false;
   }
 
   else if (command == mcaErase_) {
@@ -468,7 +486,6 @@ printf("Clearing erased, signal=%d\n", signal);
               "%s:%s: [%s signal=%d]: erased\n",
               driverName, functionName, portName, signal);
 
-printf("mcaErase: signal=%d\n", signal);
     /* Erase the buffer in the private data structure */
     erase();
 
@@ -482,14 +499,13 @@ printf("mcaErase: signal=%d\n", signal);
         registers_->key_op_enable_reg = 1;
       else
         registers_->key_op_arm_reg = 1;
+      erased_ = 0;
     }
   }
 
   else if (command == mcaReadStatus_) {
-    /* Read the FIFO.  This is needed to see if acquisition is complete and to update the
-     * elapsed times.
+    /* No-op?
      */
-    readFIFO();
   }
 
   else if (command == mcaChannelAdvanceInternal_) {
@@ -527,9 +543,9 @@ printf("mcaErase: signal=%d\n", signal);
   else if (command == scalerReset_) {
     /* Reset scaler */
     registers_->key_op_disable_reg = 1;
-    registers_->key_fifo_reset_reg = 1;
+    resetFIFO();
     registers_->key_counter_clear = 1;
-    setIntegerParam(mcaAcquiring_, 0);
+    acquiring_ = false;
     /* Clear all of the presets */
     for (i=0; i<maxSignals_; i++) {
       setIntegerParam(i, scalerPresets_, 0);
@@ -542,12 +558,13 @@ printf("mcaErase: signal=%d\n", signal);
     if (value != 0) {
       setScalerPresets();
       registers_->key_op_enable_reg = 1;
-      acquiring_ = 1;
-      prevAcquiring_ = 1;
+      acquiring_ = true;
+      prevAcquiring_ = true;
     } else {
       registers_->key_op_disable_reg = 1;
-      registers_->key_fifo_reset_reg = 1;
+      resetFIFO();
     }
+    setIntegerParam(scalerDone_, 0);
   }
 
   else if (command == SIS3820LED_) {
@@ -584,12 +601,7 @@ printf("mcaErase: signal=%d\n", signal);
               "%s:%s: scalerMuxOutCommand channel %d=%d\n", 
               driverName, functionName, signal, value);
   }
-  
-  else {  
-      asynPrint(pasynUser, ASYN_TRACE_ERROR, 
-                "%s:%s: port %s got illegal command %d\n",
-                driverName, functionName, portName, command);
-  }
+
   status = asynSuccess;
   done:
   callParamCallbacks(signal);
@@ -597,7 +609,8 @@ printf("mcaErase: signal=%d\n", signal);
   return status;
 }
 
-
+
+
 asynStatus drvSIS3820::readInt32(asynUser *pasynUser, epicsInt32 *value)
 {
   int command = pasynUser->reason;
@@ -617,22 +630,22 @@ asynStatus drvSIS3820::readInt32(asynUser *pasynUser, epicsInt32 *value)
   else if (command == SIS3820MuxOut_) {
     *value = registers_->mux_out_channel_select_reg + 1;
   }
+  else {
+    status = asynPortDriver::readInt32(pasynUser, value);
+  }
   enableInterrupts();
   return status;
 }
 
+
+
 asynStatus drvSIS3820::readInt32Array(asynUser *pasynUser, epicsInt32 *data, 
-                                      size_t maxChans, size_t *nactual)
+                                      size_t numRead, size_t *numActual)
 {
   int signal;
-  int numSamples;
   int command = pasynUser->reason;
   asynStatus status = asynSuccess;
-  epicsInt32 *pBuff = data;
-  epicsUInt32 *pPvtBuff;
-  volatile epicsUInt32 *in;
-  epicsInt32 *out;
-  int i;
+  size_t i;
   static const char* functionName="readInt32Array";
 
   disableInterrupts();
@@ -640,7 +653,7 @@ asynStatus drvSIS3820::readInt32Array(asynUser *pasynUser, epicsInt32 *data,
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s:%s: entry, signal=%d, maxChans=%d\n", 
-            driverName, functionName, signal, maxChans);
+            driverName, functionName, signal, numRead);
 
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s:%s: fifo word count = %d\n", 
@@ -651,43 +664,41 @@ asynStatus drvSIS3820::readInt32Array(asynUser *pasynUser, epicsInt32 *data,
             driverName, functionName, registers_->control_status_reg);
 
   if (command == mcaData_) {
-    /* Update the private data buffer by reading the data from the FIFO memory */
-    readFIFO();
-
     /* Transfer the data from the private driver structure to the supplied data
      * buffer. The private data structure will have the information for all the
      * signals, so we need to just extract the signal being requested.
      */
-    for (pPvtBuff = buffer_ + signal, numSamples = 0; 
-           pPvtBuff < buffPtr_; 
-           pPvtBuff += maxSignals_, numSamples++)
-    {
-      *pBuff++ = (epicsInt32) *pPvtBuff;
-    }
-
+    int nChans;
+    int numCopy;
+    getIntegerParam(mcaNumChannels_, &nChans);
+    numCopy = numRead;
+    if (numCopy > nChans) numCopy = nChans;
+    // We copy all the channels but we only report nchans
+    // This ensures the entire array is correct even if it was not set to zero at the start
+    memcpy(data, mcsBuffer_ + signal*maxChans_, *numActual*sizeof(epicsInt32));
+    *numActual = numRead;
+    if ((int)*numActual > nextChan_) *numActual = nextChan_;
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-              "%s:%s: [signal=%d]: read %d chans\n",  
-              driverName, functionName, signal, numSamples);
-
-    *nactual = numSamples;
+              "%s:%s: [signal=%d]: read %d chans (numRead=%d, numCopy=%d, nextChan=%d, nChans=%d)\n",  
+              driverName, functionName, signal, *numActual, numRead, numCopy, nextChan_, nChans);
     }
-    else if (command == scalerRead_) {
-      if ((int)maxChans > maxSignals_) maxChans = maxSignals_;
-      in = registers_->counter_regs;
-      out = data;
-      for (i=0; i<maxChans_; i++) {
-        *out++ = *in++;
-      }
-      *nactual = maxChans;
-      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-                "%s:%s: scalerReadCommand: read %d chans, channel[0]=%d\n", 
-                driverName, functionName, maxChans, data[0]);
-   }
-   else {
-      asynPrint(pasynUser, ASYN_TRACE_ERROR,
-                "%s:%s: got illegal command %d\n",
-                driverName, functionName, command);
-      status = asynError;
+  else if (command == scalerRead_) {
+    for (i=0; (i<numRead && i<(size_t)maxSignals_); i++) {
+      data[i] = registers_->counter_regs[i];
+    }
+    for (i=maxSignals_; i<numRead; i++) {
+      data[i] = 0;
+    }
+    *numActual = numRead;
+    asynPrint(pasynUser, ASYN_TRACE_FLOW, 
+              "%s:%s: scalerReadCommand: read %d chans, channel[0]=%d\n", 
+              driverName, functionName, numRead, data[0]);
+  }
+  else {
+    asynPrint(pasynUser, ASYN_TRACE_ERROR,
+              "%s:%s: got illegal command %d\n",
+              driverName, functionName, command);
+    status = asynError;
   }
   enableInterrupts();
   return status;
@@ -717,7 +728,28 @@ void drvSIS3820::report(FILE *fp, int details)
     fprintf(fp, "  acquiring        = %d\n",   acquiring_);
     fprintf(fp, "  prev acquiring   = %d\n",   prevAcquiring_);
   }
-  // Call the base class method
+  if (details > 1) {
+    fprintf(fp, "  Registers:\n");
+    fprintf(fp, "    control_status_reg         = 0x%x\n",   registers_->control_status_reg);
+    fprintf(fp, "    moduleID_reg               = 0x%x\n",   registers_->moduleID_reg);
+    fprintf(fp, "    irq_config_reg             = 0x%x\n",   registers_->irq_config_reg);
+    fprintf(fp, "    irq_control_status_reg     = 0x%x\n",   registers_->irq_control_status_reg);
+    fprintf(fp, "    acq_preset_reg             = 0x%x\n",   registers_->acq_preset_reg);
+    fprintf(fp, "    acq_count_reg              = 0x%x\n",   registers_->acq_count_reg);
+    fprintf(fp, "    lne_prescale_factor_reg    = 0x%x\n",   registers_->lne_prescale_factor_reg);
+    fprintf(fp, "    preset_group1_reg          = 0x%x\n",   registers_->preset_group1_reg);
+    fprintf(fp, "    preset_group2_reg          = 0x%x\n",   registers_->preset_group2_reg);
+    fprintf(fp, "    preset_enable_reg          = 0x%x\n",   registers_->preset_enable_reg);
+    fprintf(fp, "    cblt_setup_reg             = 0x%x\n",   registers_->cblt_setup_reg);
+    fprintf(fp, "    sdram_page_reg             = 0x%x\n",   registers_->sdram_page_reg);
+    fprintf(fp, "    fifo_word_count_reg        = 0x%x\n",   registers_->fifo_word_count_reg);
+    fprintf(fp, "    fifo_word_threshold_reg    = 0x%x\n",   registers_->fifo_word_threshold_reg);
+    fprintf(fp, "    hiscal_start_preset_reg    = 0x%x\n",   registers_->hiscal_start_preset_reg);
+    fprintf(fp, "    hiscal_start_counter_reg   = 0x%x\n",   registers_->hiscal_start_counter_reg);
+    fprintf(fp, "    hiscal_last_acq_count_reg  = 0x%x\n",   registers_->hiscal_last_acq_count_reg);
+    fprintf(fp, "    op_mode_reg                = 0x%x\n",   registers_->op_mode_reg);
+  }
+      // Call the base class method
   asynPortDriver::report(fp, details);
 }
 
@@ -738,25 +770,22 @@ void drvSIS3820::erase()
     return;
   }
   erased_ = 1;
-printf("Setting erased=1\n");
 
   getIntegerParam(mcaNumChannels_, &nChans);
   epicsTimeGetCurrent(&begin);
   /* Erase buffer in driver */
-  buffPtr_ = buffer_;
-  memset(buffer_, 0, maxSignals_ * nChans * sizeof(*buffer_));
+  memset(mcsBuffer_, 0, maxSignals_ * nChans * sizeof(epicsUInt32));
   epicsTimeGetCurrent(&end);
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: cleared local buffer (%d) in %fs\n",
             driverName, functionName, maxSignals_*nChans, epicsTimeDiffInSeconds(&end, &begin));
 
-  /* Reset buffer pointer to start of buffer */
-  buffPtr_ = buffer_;
+  /* Reset pointers to start of buffer */
   nextChan_ = 0;
   nextSignal_ = 0;
 
   /* Erase FIFO and counters on board */
-  registers_->key_fifo_reset_reg = 1;
+  resetFIFO();
   registers_->key_counter_clear = 1;
 
   /* Reset elapsed times */
@@ -765,7 +794,10 @@ printf("Setting erased=1\n");
 
   /* Reset the elapsed counts */
   for (i=0; i<maxSignals_; i++) {
+    setDoubleParam(i, mcaElapsedLiveTime_, 0.0);
+    setDoubleParam(i, mcaElapsedRealTime_, 0.0);
     setDoubleParam(i, mcaElapsedCounts_, 0.0);
+    callParamCallbacks(i);
   }
 
   /* Reset the start time.  This is necessary here because we may be
@@ -777,67 +809,32 @@ printf("Setting erased=1\n");
 }
 
 
-void drvSIS3820::readFIFO()
+bool drvSIS3820::checkDone()
 {
-  /* Read the data stored in the FIFO to the buffer in the private driver data
-   * structure.
-   */
-
-  epicsUInt32 *pBuff;
-  epicsUInt32 *endBuff;
-  int count;
-  int signal, i, j;
-  epicsTimeStamp now, end;
-  int fifoCount;
+  int signal;
+  int i;
+  epicsTimeStamp now;
   int nChans;
+  bool mcaDone;
+  epicsUInt32 *pData;
   double presetLive, presetReal, presetCounts, elapsedCounts;
   int presetStartChan, presetEndChan;
-  static const char* functionName="readFIFO";
+  static const char* functionName="checkDone";
 
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: entering\n",
-            driverName, functionName);
+            "%s:%s: enter: acquiring=%d, prevAcquiring=%d\n",
+            driverName, functionName, acquiring_, prevAcquiring_);
 
   getIntegerParam(mcaNumChannels_, &nChans);
-  getDoubleParam(mcaNumChannels_, &presetLive);
-  getDoubleParam(mcaNumChannels_, &presetReal);
+  getDoubleParam(mcaPresetLiveTime_, &presetLive);
+  getDoubleParam(mcaPresetRealTime_, &presetReal);
   getDoubleParam(mcaPresetCounts_, &presetCounts);
 
-  /* Current end of buffer stored in the private data structure */
-  pBuff = buffPtr_;
-  endBuff = buffer_ + (maxSignals_ * nChans);
-
-  fifoCount = registers_->fifo_word_count_reg;
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: enter: fifo word count = %d, irq_csr=%x, acquiring=%d, prevAcquiring=%d\n",
-            driverName, functionName,
-            registers_->fifo_word_count_reg,
-            registers_->irq_control_status_reg,
-            acquiring_,
-            prevAcquiring_);
-
   epicsTimeGetCurrent(&now);
-
-  /* Check if the FIFO actually contains anything. If so, read out the FIFO to
-   * the local buffer.  Put a sanity check on output pointer so we don't
-   * overwrite memory.
-   */
-  count = 0;
-  for (count=0; count<fifoCount && pBuff<endBuff; count++)
-  {
-    *pBuff = *fifo_base_;
-    pBuff++;
-  }
-
-  epicsTimeGetCurrent(&end);
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: read FIFO (%d) in %fs\n",
-            driverName, functionName, count, epicsTimeDiffInSeconds(&end, &now));
-
   if (acquiring_) {
     elapsedTime_ = epicsTimeDiffInSeconds(&now, &startTime_);
     if ((presetReal > 0) && (elapsedTime_ >= presetReal)) {
-      acquiring_ = 0;
+      acquiring_ = false;
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
                 "%s:%s:, stopped acquisition by preset real time\n",
                 driverName, functionName);
@@ -846,22 +843,22 @@ void drvSIS3820::readFIFO()
 
   if (acquiring_) {
     if ((presetLive > 0) && (elapsedTime_ >= presetLive)) {
-      acquiring_ = 0;
+      acquiring_ = false;
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
                 "%s:%s:, stopped acquisition by preset live time\n",
                 driverName, functionName);
     }
   }
 
-  /* Check that acquisition is complete by buffer pointer.  This ensures
+  /* Check that acquisition is complete by nextChan and nextSignal.  This ensures
    * that it will be detected even if interrupts are disabled.
    */
   if (acquiring_) {
-    if (pBuff >= endBuff) {
-      acquiring_ = 0;
+    if (nextChan_ >= maxChans_) {
+      acquiring_ = false;
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                "%s:%s:, stopped acquisition by buffer pointer = %p\n",
-                driverName, functionName, endBuff);
+                "%s:%s:, stopped acquisition by nextChan = %d\n",
+                driverName, functionName, nextChan_);
     }
   }
 
@@ -873,14 +870,12 @@ void drvSIS3820::readFIFO()
       getIntegerParam(signal, mcaPresetHighChannel_, &presetEndChan);
       if (presetCounts > 0) {
         elapsedCounts = 0;
-        for (i = presetStartChan,
-             j = presetStartChan * maxSignals_ + signal;
-             i <= presetEndChan;
-             i++, j += maxSignals_) {
-               elapsedCounts += buffer_[j];
+        pData = mcsBuffer_ + signal*maxChans_;
+        for (i=presetStartChan; i<=presetEndChan; i++) {
+          elapsedCounts += pData[i];
         }
         if (elapsedCounts >= presetCounts) {
-          acquiring_=0;
+          acquiring_ = false;
           asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
                     "%s:%s:, stopped acquisition by preset counts\n",
                     driverName, functionName);
@@ -888,37 +883,51 @@ void drvSIS3820::readFIFO()
       }
     }
   }
- 
+
   /* If acquisition just stopped then ... */
-  if ((prevAcquiring_ == 1) && (acquiring_ == 0)) {
+  if ((prevAcquiring_ == true) && (acquiring_ == false)) {
+    epicsTimeGetCurrent(&now);
+    elapsedTime_ = epicsTimeDiffInSeconds(&now, &startTime_);
     /* Turn off hardware acquisition */
     registers_->key_op_disable_reg = 1;
-    elapsedTime_ = epicsTimeDiffInSeconds(&now, &startTime_);
-    if (acquireMode_ == MCS_MODE) setIntegerParam(mcaAcquiring_, 0);
-    if (acquireMode_ == SCALER_MODE) setIntegerParam(scalerDone_, 1);
-    callParamCallbacks();
   }
 
-  /* Re-enable FIFO threshold and FIFO almost full interrupts */
-  /* NOTE: WE ARE NOT USING FIFO THRESHOLD INTERRUPTS FOR NOW */
-  /* registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE1_ENABLE; */
-  registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE4_ENABLE;
+  // Set elapsed times
+  for (signal=0; signal<maxSignals_; signal++) {
+    setDoubleParam(signal, mcaElapsedRealTime_, elapsedTime_);
+    setDoubleParam(signal, mcaElapsedLiveTime_, elapsedTime_);
+ }
 
-  /* Save the new pointer to the start of the empty section of the data buffer */
-  buffPtr_ = pBuff;
+  // Do callbacks on acquiring status when acquisition completes
+  if ((acquiring_ == false) && (acquireMode_ == SCALER_MODE)) {
+    setIntegerParam(scalerDone_, 1);
+  }
+  // We only set mcaAcquiring to 0 if acquiring_=false and count=0, which tells the MCA
+  // records to process
+  mcaDone = ((acquiring_ == false) && 
+             (acquireMode_ == MCS_MODE) && 
+             (registers_->fifo_word_count_reg==0));
+  if (mcaDone) {
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+               "%s:%s:, acquisition complete, doing callbacks on mcaAcquiring\n",
+               driverName, functionName);
+    for (signal=0; signal<maxSignals_; signal++) {
+      setIntegerParam(signal, mcaAcquiring_, 0);
+    }
+  }
 
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: exit: fifo word count = %d, irq_csr=%x, acquiring=%d, prevAcquiring=%d\n",
-            driverName, functionName,
-            registers_->fifo_word_count_reg,
-            registers_->irq_control_status_reg,
-            acquiring_,
-            prevAcquiring_);
+  // Do callbacks on all channels
+  for (signal=0; signal<maxSignals_; signal++) {
+    callParamCallbacks(signal);
+  }
 
   /* Save the acquisition status */
   prevAcquiring_ = acquiring_;
 
-  return;
+  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+            "%s:%s: exit: acquiring=%d, prevAcquiring=%d\n",
+            driverName, functionName, acquiring_, prevAcquiring_);
+  return acquiring_ || prevAcquiring_;
 }
 
 
@@ -997,7 +1006,8 @@ void drvSIS3820::setAcquireMode(SIS3820AcquireMode acquireMode)
    * 1 in all higher order bits.
    */
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-      "%s:%s: setting readout channels=%d\n",maxSignals_);
+            "%s:%s: setting readout channels=%d\n",
+            driverName, functionName, maxSignals_);
   for (i = 0; i < maxSignals_; i++)
   {
     channelDisableRegister <<= 1;
@@ -1254,7 +1264,7 @@ void drvSIS3820::intFunc()
   {
     /* Reset the interrupt source */
     registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE2_CLEAR;
-    acquiring_ = 0;
+    acquiring_ = false;
   }
 
   /* Check for the FIFO almost full interrupt */
@@ -1270,48 +1280,152 @@ void drvSIS3820::intFunc()
   }
 
   /* Send an event to intTask to read the FIFO and perform any requested callbacks */
-  epicsEventSignal(interruptEventId_);
+  epicsEventSignal(readFIFOEventId_);
 
   /* Reenable interrupts */
   registers_->irq_config_reg |= SIS3820_IRQ_ENABLE;
 
 }
 
-void intTaskC(void *drvPvt)
+/**********************/
+/* DMA handling       */
+/**********************/
+
+static void dmaCallbackC(void *drvPvt)
 {
   drvSIS3820 *pSIS3820 = (drvSIS3820*)drvPvt;
-  pSIS3820->intTask();
+  pSIS3820->dmaCallback();
 }
 
-
-void drvSIS3820::intTask()
+void drvSIS3820::dmaCallback()
 {
+  epicsEventSignal(dmaDoneEventId_);
+}
+
+void drvSIS3820::resetFIFO()
+{
+  epicsMutexLock(fifoLockId_);
+  registers_->key_fifo_reset_reg= 1;
+  epicsMutexUnlock(fifoLockId_);
+}  
+
+void readFIFOThreadC(void *drvPvt)
+{
+  drvSIS3820 *pSIS3820 = (drvSIS3820*)drvPvt;
+  pSIS3820->readFIFOThread();
+}
+
+/** This thread is woken up by an interrupt or a request to read status
+  * It loops calling readFIFO until acquiring_ goes to false.
+  * readFIFO only reads a limited amount of FIFO data at once in order
+  * to avoid blocking the device support threads. */
+void drvSIS3820::readFIFOThread()
+{
+  bool acquiring;
+  int status;
+  int count;
+  int signal;
+  int chan;
+  int i;
+  epicsUInt32 *pIn, *pOut;
+  epicsTimeStamp t1, t2, t3;
+  static const char* functionName="readFIFOThread";
 
   while(true)
   {
-    epicsEventWait(interruptEventId_);
-    static const char* functionName="intTask";
+    epicsEventWait(readFIFOEventId_);
+    acquiring = true;
+    while (acquiring) {
+      disableInterrupts();
+      lock();
+      signal = nextSignal_;
+      chan = nextChan_;
+      // This block of code can be slow and does not require the asynPortDriver lock because we are not
+      // accessing object data that could change.  
+      // It does require the FIFO lock so no one resets the FIFO while it executes
+      epicsMutexLock(fifoLockId_);
+      unlock();
+      count = registers_->fifo_word_count_reg;
+      if (count > fifoBufferWords_) count = fifoBufferWords_;
+      epicsTimeGetCurrent(&t1);
+      if (useDma_ && (count >= MIN_DMA_TRANSFERS)) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+                  "%s:%s: doing DMA transfer, fifoBuffer=%p, fifo_base=%p, count=%d\n",
+                  driverName, functionName, fifoBuffer_, fifo_base_, count);
+        status = sysDmaFromVme(dmaId_, fifoBuffer_, (int)fifo_base_, VME_AM_EXT_SUP_D64BLT, (count)*sizeof(int), 8);
+        if (status) {
+          asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
+                    "%s:%s: doing DMA transfer, error calling sysDmaFromVme, status=%d, buff=%p, fifo_base=%p, count=%d\n",
+                    driverName, functionName, status, fifoBuffer_, fifo_base_, count);
+        } 
+        else {
+          epicsEventWait(dmaDoneEventId_);
+          status = sysDmaStatus(dmaId_);
+          if (status)
+             asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
+                       "%s:%s: DMA error, errno=%d, message=%s\n",
+                       driverName, functionName, errno, strerror(errno));
+        }
+      } else {    
+        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+                  "%s:%s: memcpy transfer, count=%d\n",
+                  driverName, functionName, count);
+        memcpy(fifoBuffer_, fifo_base_, count*sizeof(int));
+      }
+      epicsTimeGetCurrent(&t2);
 
-    /* Read the accumulated data from the FIFO */
-    disableInterrupts();
-    lock();
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-              "%s:%s:, got interrupt event, irq_csr in intFunc=%x, now=%x\n", 
-              driverName, functionName, irqStatusReg_, registers_->irq_control_status_reg);
-    readFIFO();
-    unlock();
-    enableInterrupts();
+      asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+                "%s:%s: read FIFO (%d) in %fs, fifo word count after=%d\n",
+                driverName, functionName, count, epicsTimeDiffInSeconds(&t2, &t1), registers_->fifo_word_count_reg);
+      // Release the FIFO lock, we are done accessing the FIFO
+      epicsMutexUnlock(fifoLockId_);
+      
+      // Copy the data from the FIFO buffer to the mcsBuffer
+      pOut = mcsBuffer_ + signal*maxChans_ + chan;
+      pIn = fifoBuffer_;
+      for (i=0; i<count; i++) {
+        *pOut = *pIn++;
+        signal++;
+        if (signal == maxSignals_) {
+          signal = 0;
+          chan++;
+          pOut = mcsBuffer_ + chan;
+        } else {
+          pOut += maxChans_;
+        }
+      }
+      
+      epicsTimeGetCurrent(&t2);
+      // Take the lock since we are now changing object data
+      lock();
+      nextChan_ = chan;
+      nextSignal_ = signal;
+      asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+                "%s:%s: copied data to mcsBuffer in %fs, nextChan=%d, nextSignal=%d\n",
+                driverName, functionName, epicsTimeDiffInSeconds(&t3, &t3), nextChan_, nextSignal_);
+
+      acquiring = checkDone();
+      /* Re-enable FIFO threshold and FIFO almost full interrupts */
+      /* NOTE: WE ARE NOT USING FIFO THRESHOLD INTERRUPTS FOR NOW */
+      /* registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE1_ENABLE; */
+      registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE4_ENABLE;
+
+      // Release the lock and sleep for a short time
+      unlock();
+      enableInterrupts();
+      epicsThreadSleep(epicsThreadSleepQuantum());
+    }
   }
 }
 
 extern "C" {
 int drvSIS3820Config(const char *portName, int baseAddress, int interruptVector, int interruptLevel, 
                      int maxChans, int maxSignals, int inputMode, int outputMode, 
-                     int lnePrescale, int ch1RefEnable)
+                     int useDma, int fifoBufferWords)
 {
   drvSIS3820 *pSIS3820 = new drvSIS3820(portName, baseAddress, interruptVector, interruptLevel,
                                         maxChans, maxSignals, inputMode, outputMode, 
-                                        lnePrescale, ch1RefEnable);
+                                        useDma, fifoBufferWords);
   pSIS3820 = NULL;
   return 0;
 }
@@ -1325,8 +1439,8 @@ static const iocshArg drvSIS3820ConfigArg4 = { "MaxChannels",      iocshArgInt};
 static const iocshArg drvSIS3820ConfigArg5 = { "MaxSignals",       iocshArgInt};
 static const iocshArg drvSIS3820ConfigArg6 = { "InputMode",        iocshArgInt};
 static const iocshArg drvSIS3820ConfigArg7 = { "OutputMode",       iocshArgInt};
-static const iocshArg drvSIS3820ConfigArg8 = { "LNEPrescale",      iocshArgInt};
-static const iocshArg drvSIS3820ConfigArg9 = { "Ch 1 ref enable",  iocshArgInt};
+static const iocshArg drvSIS3820ConfigArg8 = { "Use DMA",          iocshArgInt};
+static const iocshArg drvSIS3820ConfigArg9 = { "FIFO buffer words", iocshArgInt};
 
 static const iocshArg * const drvSIS3820ConfigArgs[] = 
 { &drvSIS3820ConfigArg0,
@@ -1338,7 +1452,8 @@ static const iocshArg * const drvSIS3820ConfigArgs[] =
   &drvSIS3820ConfigArg6,
   &drvSIS3820ConfigArg7,
   &drvSIS3820ConfigArg8,
-  &drvSIS3820ConfigArg9 };
+  &drvSIS3820ConfigArg9
+};
 
 static const iocshFuncDef drvSIS3820ConfigFuncDef = 
   {"drvSIS3820Config",10,drvSIS3820ConfigArgs};
