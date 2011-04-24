@@ -186,12 +186,9 @@ static long init_record(mcaRecord *pmca)
     if (findDrvInfo(pmca, pasynUser, mcaStopAcquireString,             mcaStopAcquire)) goto bad;
     if (findDrvInfo(pmca, pasynUser, mcaEraseString,                   mcaErase)) goto bad;
     if (findDrvInfo(pmca, pasynUser, mcaReadStatusString,              mcaReadStatus)) goto bad;
-    if (findDrvInfo(pmca, pasynUser, mcaChannelAdvanceInternalString,  mcaChannelAdvanceInternal)) goto bad;
-    if (findDrvInfo(pmca, pasynUser, mcaChannelAdvanceExternalString,  mcaChannelAdvanceExternal)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaChannelAdvanceSourceString,    mcaChannelAdvanceSource)) goto bad;
     if (findDrvInfo(pmca, pasynUser, mcaNumChannelsString,             mcaNumChannels)) goto bad;
-    if (findDrvInfo(pmca, pasynUser, mcaModePHAString,                 mcaModePHA)) goto bad;
-    if (findDrvInfo(pmca, pasynUser, mcaModeMCSString,                 mcaModeMCS)) goto bad;
-    if (findDrvInfo(pmca, pasynUser, mcaModeListString,                mcaModeList)) goto bad;
+    if (findDrvInfo(pmca, pasynUser, mcaAcquireModeString,             mcaAcquireMode)) goto bad;
     if (findDrvInfo(pmca, pasynUser, mcaSequenceString,                mcaSequence)) goto bad;
     if (findDrvInfo(pmca, pasynUser, mcaPrescaleString,                mcaPrescale)) goto bad;
     if (findDrvInfo(pmca, pasynUser, mcaPresetSweepsString,            mcaPresetSweeps)) goto bad;
@@ -297,9 +294,7 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         pmca->rdns = 1;
         pmca->pact = 1;
         break;
-    case mcaChannelAdvanceInternal:
-        break;
-    case mcaChannelAdvanceExternal:
+    case mcaChannelAdvanceSource:
         break;
     case mcaNumChannels:
         break;
@@ -313,6 +308,7 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         pmsg->interface = float64Type;
         break;
     case mcaPresetCounts:
+        pmsg->interface = float64Type;
         break;
     case mcaPresetLowChannel:
         break;
@@ -320,11 +316,7 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
         break;
     case mcaPresetSweeps:
         break;
-    case mcaModePHA:
-        break;
-    case mcaModeMCS:
-        break;
-    case mcaModeList:
+    case mcaAcquireMode:
         break;
     case mcaSequence:
         break;
