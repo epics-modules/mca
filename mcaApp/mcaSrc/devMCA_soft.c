@@ -84,12 +84,8 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		/* start read operation */
 		/* This is a no-op. Read-array does everything. */
 		break;
-	case mcaChannelAdvanceInternal:
-		/* set channel advance source to internal (timed) */
-		/* This is a NOOP for current MCS hardware - done manually */
-		break;
-	case mcaChannelAdvanceExternal:
-		/* set channel advance source to external */
+	case mcaChannelAdvanceSource:
+		/* set channel advance source */
 		/* This is a NOOP for current MCS hardware - done manually */
 		break;
 	case mcaNumChannels:
@@ -130,16 +126,8 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		/* set number of sweeps (for MCS mode) */
 		/* This is a NOOP on current version of MCS */
 		break;
-	case mcaModePHA:
-		/* set mode to Pulse Height Analysis */
-		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
-		break;
-	case mcaModeMCS:
-		/* set mode to MultiChannel Scaler */
-		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
-		break;
-	case mcaModeList:
-		/* set mode to LIST (record each incoming event) */
+	case mcaAcquireMode:
+		/* set acquire mode to Pulse Height Analysis, MCS, or List */
 		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaReadStatus:
