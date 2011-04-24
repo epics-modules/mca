@@ -1,0 +1,1110 @@
+
+file {
+	name="/home/epics/devel/mca/mcaApp/op/adl/SIS38XX.adl"
+	version=030102
+}
+display {
+	object {
+		x=29
+		y=402
+		width=625
+		height=500
+	}
+	clr=14
+	bclr=4
+	cmap=""
+	gridSpacing=5
+	gridOn=0
+	snapToGrid=0
+}
+"color map" {
+	ncolors=65
+	colors {
+		ffffff,
+		ececec,
+		dadada,
+		c8c8c8,
+		bbbbbb,
+		aeaeae,
+		9e9e9e,
+		919191,
+		858585,
+		787878,
+		696969,
+		5a5a5a,
+		464646,
+		2d2d2d,
+		000000,
+		00d800,
+		1ebb00,
+		339900,
+		2d7f00,
+		216c00,
+		fd0000,
+		de1309,
+		be190b,
+		a01207,
+		820400,
+		5893ff,
+		597ee1,
+		4b6ec7,
+		3a5eab,
+		27548d,
+		fbf34a,
+		f9da3c,
+		eeb62b,
+		e19015,
+		cd6100,
+		ffb0ff,
+		d67fe2,
+		ae4ebc,
+		8b1a96,
+		610a75,
+		a4aaff,
+		8793e2,
+		6a73c1,
+		4d52a4,
+		343386,
+		c7bb6d,
+		b79d5c,
+		a47e3c,
+		7d5627,
+		58340f,
+		99ffff,
+		73dfff,
+		4ea5f9,
+		2a63e4,
+		0a00b8,
+		ebf1b5,
+		d4db9d,
+		bbc187,
+		a6a462,
+		8b8239,
+		73ff6b,
+		52da3b,
+		3cb420,
+		289315,
+		1a7309,
+	}
+}
+text {
+	object {
+		x=217
+		y=68
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Acquire"
+}
+rectangle {
+	object {
+		x=4
+		y=40
+		width=310
+		height=450
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+rectangle {
+	object {
+		x=12
+		y=47
+		width=200
+		height=60
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+"message button" {
+	object {
+		x=113
+		y=79
+		width=90
+		height=20
+	}
+	control {
+		chan="$(P)EraseAll"
+		clr=14
+		bclr=51
+	}
+	label="Erase"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=18
+		y=79
+		width=90
+		height=20
+	}
+	control {
+		chan="$(P)EraseStart"
+		clr=14
+		bclr=51
+	}
+	label="Erase/Start"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=18
+		y=54
+		width=90
+		height=20
+	}
+	control {
+		chan="$(P)StartAll"
+		clr=14
+		bclr=51
+	}
+	label="Start"
+	press_msg="1"
+}
+"message button" {
+	object {
+		x=113
+		y=54
+		width=90
+		height=20
+	}
+	control {
+		chan="$(P)StopAll"
+		clr=14
+		bclr=51
+	}
+	label="Stop"
+	press_msg="1"
+}
+rectangle {
+	object {
+		x=127
+		y=5
+		width=370
+		height=25
+	}
+	"basic attribute" {
+		clr=54
+	}
+}
+text {
+	object {
+		x=144
+		y=6
+		width=336
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="SIS3820/3801 MCS Control"
+}
+rectangle {
+	object {
+		x=320
+		y=40
+		width=300
+		height=420
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+text {
+	object {
+		x=65
+		y=112
+		width=90
+		height=20
+	}
+	"basic attribute" {
+		clr=18
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)Acquiring"
+	}
+	textix="Acquiring"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=115
+		y=112
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=21
+	}
+	"dynamic attribute" {
+		vis="if zero"
+		chan="$(P)Acquiring"
+	}
+	textix="Done"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=160
+		y=112
+		width=60
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Status"
+}
+"text update" {
+	object {
+		x=52
+		y=137
+		width=103
+		height=20
+	}
+	monitor {
+		chan="$(P)ElapsedReal"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=160
+		y=137
+		width=120
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Elapsed time"
+}
+composite {
+	object {
+		x=330
+		y=55
+		width=265
+		height=272
+	}
+	"composite name"=""
+	children {
+		"related display" {
+			object {
+				x=330
+				y=55
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Inputs 1-8"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=1,B=2,C=3,D=4,E=5,F=6,G=7,H=8"
+			}
+			display[1] {
+				label="Inputs 9-16"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=9,B=10,C=11,D=12,E=13,F=14,G=15,H=16"
+			}
+			display[2] {
+				label="Inputs 17-24"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=17,B=18,C=19,D=20,E=21,F=22,G=23,H=24"
+			}
+			display[3] {
+				label="Inputs 25-32"
+				name="Struck8_plots.adl"
+				args="P=$(P)mca,A=25,B=26,C=27,D=28,E=29,F=30,G=31,H=32"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=55
+				width=120
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Combined Plots"
+		}
+		"related display" {
+			object {
+				x=330
+				y=80
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 1"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca1"
+			}
+			display[1] {
+				label="Channel 2"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca2"
+			}
+			display[2] {
+				label="Channel 3"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca3"
+			}
+			display[3] {
+				label="Channel 4"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca4"
+			}
+			display[4] {
+				label="Channel 5"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca5"
+			}
+			display[5] {
+				label="Channel 6"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca6"
+			}
+			display[6] {
+				label="Channel 7"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca7"
+			}
+			display[7] {
+				label="Channel 8"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca8"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=80
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 1-8"
+		}
+		"related display" {
+			object {
+				x=330
+				y=105
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 9"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca9"
+			}
+			display[1] {
+				label="Channel 10"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca10"
+			}
+			display[2] {
+				label="Channel 11"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca11"
+			}
+			display[3] {
+				label="Channel 12"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca12"
+			}
+			display[4] {
+				label="Channel 13"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca13"
+			}
+			display[5] {
+				label="Channel 4"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca14"
+			}
+			display[6] {
+				label="Channel 15"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca15"
+			}
+			display[7] {
+				label="Channel 16"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca16"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=105
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 9-16"
+		}
+		"related display" {
+			object {
+				x=330
+				y=130
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 17"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca17"
+			}
+			display[1] {
+				label="Channel 18"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca18"
+			}
+			display[2] {
+				label="Channel 19"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca19"
+			}
+			display[3] {
+				label="Channel 20"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca20"
+			}
+			display[4] {
+				label="Channel 21"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca21"
+			}
+			display[5] {
+				label="Channel 22"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca22"
+			}
+			display[6] {
+				label="Channel 23"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca23"
+			}
+			display[7] {
+				label="Channel 24"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca24"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=130
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 17-24"
+		}
+		"related display" {
+			object {
+				x=330
+				y=155
+				width=60
+				height=20
+			}
+			display[0] {
+				label="Channel 25"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca25"
+			}
+			display[1] {
+				label="Channel 26"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca26"
+			}
+			display[2] {
+				label="Channel 27"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca27"
+			}
+			display[3] {
+				label="Channel 28"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca28"
+			}
+			display[4] {
+				label="Channel 29"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca29"
+			}
+			display[5] {
+				label="Channel 30"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca30"
+			}
+			display[6] {
+				label="Channel 31"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca31"
+			}
+			display[7] {
+				label="Channel 32"
+				name="simple_mca_small.adl"
+				args="P=$(P), M=mca32"
+			}
+			clr=14
+			bclr=4
+		}
+		text {
+			object {
+				x=394
+				y=155
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Individual Plots 25-32"
+		}
+		"text update" {
+			object {
+				x=330
+				y=180
+				width=80
+				height=20
+			}
+			monitor {
+				chan="$(P)mca1.NMAX"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=415
+				y=180
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Max. # of channels"
+		}
+		"text entry" {
+			object {
+				x=330
+				y=205
+				width=80
+				height=22
+			}
+			control {
+				chan="$(P)NuseAll"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=415
+				y=205
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="# channels to use"
+		}
+		"text update" {
+			object {
+				x=330
+				y=232
+				width=80
+				height=20
+			}
+			monitor {
+				chan="$(P)mca1.NORD"
+				clr=14
+				bclr=51
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=415
+				y=232
+				width=180
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="# channels current"
+		}
+		menu {
+			object {
+				x=330
+				y=257
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)EnableClientWait"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=415
+				y=257
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Wait for client"
+		}
+		menu {
+			object {
+				x=330
+				y=282
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)ClientWait"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=415
+				y=282
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Client Wait"
+		}
+		"related display" {
+			object {
+				x=331
+				y=307
+				width=80
+				height=20
+			}
+			display[0] {
+				label="asyn record"
+				name="asynRecord.adl"
+				args="P=$(P), R=Asyn"
+			}
+			clr=14
+			bclr=51
+		}
+		text {
+			object {
+				x=415
+				y=307
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Asyn record"
+		}
+	}
+}
+composite {
+	object {
+		x=325
+		y=345
+		width=235
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=325
+				y=345
+				width=130
+				height=20
+			}
+			monitor {
+				chan="$(P)SNL_Connected"
+				clr=0
+				bclr=14
+			}
+			clrmod="alarm"
+			align="horiz. centered"
+			format="string"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=460
+				y=345
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="SNL Status"
+		}
+	}
+}
+composite {
+	object {
+		x=14
+		y=465
+		width=240
+		height=20
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=164
+				y=465
+				width=90
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Read rate"
+		}
+		menu {
+			object {
+				x=59
+				y=465
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)ReadAll.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
+		"message button" {
+			object {
+				x=14
+				y=465
+				width=40
+				height=20
+			}
+			control {
+				chan="$(P)DoReadAll.VAL"
+				clr=14
+				bclr=51
+			}
+			label="Read"
+			press_msg="1"
+		}
+	}
+}
+menu {
+	object {
+		x=36
+		y=269
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)Ch1RefEnable"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=149
+		y=268
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Ch. 1 source"
+}
+menu {
+	object {
+		x=36
+		y=295
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)UserLED"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=149
+		y=294
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="User output/LED"
+}
+text {
+	object {
+		x=149
+		y=243
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Channel advance"
+}
+menu {
+	object {
+		x=36
+		y=243
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)ChannelAdvance"
+		clr=14
+		bclr=51
+	}
+}
+"text entry" {
+	object {
+		x=36
+		y=216
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)Prescale"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=149
+		y=217
+		width=141
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Ext. prescale"
+}
+"text entry" {
+	object {
+		x=36
+		y=189
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)Dwell"
+		clr=14
+		bclr=51
+	}
+	format="exponential"
+	limits {
+	}
+}
+text {
+	object {
+		x=149
+		y=190
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Dwell time"
+}
+text {
+	object {
+		x=149
+		y=163
+		width=110
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Preset time"
+}
+"text entry" {
+	object {
+		x=36
+		y=162
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)PresetReal"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+"text entry" {
+	object {
+		x=36
+		y=323
+		width=100
+		height=22
+	}
+	control {
+		chan="$(P)MUXOutput"
+		clr=14
+		bclr=51
+	}
+	limits {
+	}
+}
+text {
+	object {
+		x=149
+		y=324
+		width=141
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="MUX output(1-32)"
+}
+text {
+	object {
+		x=149
+		y=354
+		width=141
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Mode"
+}
+"text update" {
+	object {
+		x=36
+		y=354
+		width=100
+		height=20
+	}
+	monitor {
+		chan="$(P)Mode"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+text {
+	object {
+		x=149
+		y=384
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Input mode"
+}
+menu {
+	object {
+		x=36
+		y=384
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)InputMode"
+		clr=14
+		bclr=51
+	}
+}
+text {
+	object {
+		x=149
+		y=417
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Output mode"
+}
+menu {
+	object {
+		x=36
+		y=417
+		width=100
+		height=20
+	}
+	control {
+		chan="$(P)OutputMode"
+		clr=14
+		bclr=51
+	}
+}
