@@ -118,8 +118,7 @@ static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
     {mcaErase,                  mcaEraseString},                  /* int32, write */
     {mcaData,                   mcaDataString},                   /* int32Array, read/write */
     {mcaReadStatus,             mcaReadStatusString},             /* int32, write */
-    {mcaChannelAdvanceInternal, mcaChannelAdvanceInternalString}, /* int32, write */
-    {mcaChannelAdvanceExternal, mcaChannelAdvanceExternalString}, /* int32, write */
+    {mcaChannelAdvanceSource,   mcaChannelAdvanceSourceString},   /* int32, write */
     {mcaNumChannels,            mcaNumChannelsString},            /* int32, write */
     {mcaDwellTime,              mcaDwellTimeString},              /* float64, write */
     {mcaPresetLiveTime,         mcaPresetLiveTimeString},         /* float64, write */
@@ -128,9 +127,7 @@ static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
     {mcaPresetLowChannel,       mcaPresetLowChannelString},       /* int32, write */
     {mcaPresetHighChannel,      mcaPresetHighChannelString},      /* int32, write */
     {mcaPresetSweeps,           mcaPresetSweepsString},           /* int32, write */
-    {mcaModePHA,                mcaModePHAString},                /* int32, write */
-    {mcaModeMCS,                mcaModeMCSString},                /* int32, write */
-    {mcaModeList,               mcaModeListString},               /* int32, write */
+    {mcaAcquireMode,            mcaAcquireModeString},            /* int32, write */
     {mcaSequence,               mcaSequenceString},               /* int32, write */
     {mcaPrescale,               mcaPrescaleString},               /* int32, write */
     {mcaAcquiring,              mcaAcquiringString},              /* int32, read */
@@ -720,23 +717,18 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       readFIFO(pPvt, pasynUser);
       break;
 
-    case mcaChannelAdvanceInternal:
+    case mcaChannelAdvanceSource:
+      if (ivalue == mcaChannelAdvance_Internal) {
       /* set channel advance source to internal (timed) */
       /* Just cache this setting here, set it when acquisition starts */
-      pPvt->lneSource = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+        pPvt->lneSource = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+      } else if (ivalue == mcaChannelAdvance_External) {
+        pPvt->lneSource = SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
+      }
       asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "drvMcaSIS3820Asyn::SIS3820Write(mcaChannelAdvanceInternal) pPvt-lneSource = 0x%x\n", 
+          "drvMcaSIS3820Asyn::SIS3820Write(mcaChannelAdvanceSource) pPvt-lneSource = 0x%x\n", 
           pPvt->lneSource);
 
-      break;
-
-    case mcaChannelAdvanceExternal:
-      /* set channel advance source to external */
-      /* Just cache this setting here, set it when acquisition starts */
-      pPvt->lneSource = SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
-      asynPrint(pasynUser, ASYN_TRACE_FLOW, 
-          "drvMcaSIS3820Asyn::SIS3820Write(mcaChannelAdvanceExternal) pPvt-lneSource = 0x%x\n", 
-          pPvt->lneSource);
       break;
 
     case mcaNumChannels:
@@ -755,21 +747,11 @@ static asynStatus SIS3820Write(void *drvPvt, asynUser *pasynUser,
       }
       break;
 
-    case mcaModePHA:
-      /* set mode to Pulse Height Analysis */
+    case mcaAcquireMode:
+      /* set acquire mode to PHA, MCS, or List */
       /* This is a NOOP for the SIS3820 */
       /* To make sure, we set the mode to MCS anyway */
       pPvt->acquireMode = MCS_MODE;
-      break;
-
-    case mcaModeMCS:
-      /* set mode to MultiChannel Scaler */
-      pPvt->acquireMode = MCS_MODE;
-      break;
-
-    case mcaModeList:
-      /* set mode to LIST (record each incoming event) */
-      /* This is a NOOP for the SIS3820 */
       break;
 
     case mcaSequence:
