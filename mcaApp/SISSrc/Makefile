@@ -19,6 +19,7 @@ LIBRARY_IOC_RTEMS += mcaSIS
 # If your version of Linux has support for VME devLib uncomment following line
 #LIBRARY_IOC_Linux += mcaSIS
 
+mcaSIS_SRCS += drvSIS38XX.cpp
 mcaSIS_SRCS += drvSIS3820.cpp
 mcaSIS_SRCS += SIS38XX_SNL.st
 mcaSIS_SRCS += drvMcaSIS3820Asyn.c
