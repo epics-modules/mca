@@ -37,8 +37,7 @@ static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
     {mcaErase,                  mcaEraseString},                  /* int32, write */
     {mcaData,                   mcaDataString},                   /* int32Array, read/write */
     {mcaReadStatus,             mcaReadStatusString},             /* int32, write */
-    {mcaChannelAdvanceInternal, mcaChannelAdvanceInternalString}, /* int32, write */
-    {mcaChannelAdvanceExternal, mcaChannelAdvanceExternalString}, /* int32, write */
+    {mcaChannelAdvanceSource,   mcaChannelAdvanceSourceString},   /* int32, write */
     {mcaNumChannels,            mcaNumChannelsString},            /* int32, write */
     {mcaDwellTime,              mcaDwellTimeString},              /* float64, write */
     {mcaPresetLiveTime,         mcaPresetLiveTimeString},         /* float64, write */
@@ -47,9 +46,7 @@ static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
     {mcaPresetLowChannel,       mcaPresetLowChannelString},       /* int32, write */
     {mcaPresetHighChannel,      mcaPresetHighChannelString},      /* int32, write */
     {mcaPresetSweeps,           mcaPresetSweepsString},           /* int32, write */
-    {mcaModePHA,                mcaModePHAString},                /* int32, write */
-    {mcaModeMCS,                mcaModeMCSString},                /* int32, write */
-    {mcaModeList,               mcaModeListString},               /* int32, write */
+    {mcaAcquireMode,            mcaAcquireModeString},            /* int32, write */
     {mcaSequence,               mcaSequenceString},               /* int32, write */
     {mcaPrescale,               mcaPrescaleString},               /* int32, write */
     {mcaAcquiring,              mcaAcquiringString},              /* int32, read */
@@ -379,12 +376,8 @@ static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
                           pPvt->portName, signal, status);
                 epicsTimeGetCurrent(&pPvt->statusTime);
             }
-        case mcaChannelAdvanceInternal:
-            /* set channel advance source to internal (timed) */
-            /* This is a NOOP for current MCS hardware - done manually */
-            break;
-        case mcaChannelAdvanceExternal:
-            /* set channel advance source to external */
+        case mcaChannelAdvanceSource:
+            /* set channel advance source */
             /* This is a NOOP for current MCS hardware - done manually */
             break;
         case mcaNumChannels:
@@ -397,19 +390,10 @@ static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
             }
             status = sendAIMSetup(pPvt);
             break;
-        case mcaModePHA:
-            /* set mode to Pulse Height Analysis */
-            pPvt->acqmod = 1;
-            status = sendAIMSetup(pPvt);
-            break;
-        case mcaModeMCS:
-            /* set mode to MultiChannel Scaler */
-            pPvt->acqmod = 1;
-            status = sendAIMSetup(pPvt);
-            break;
-        case mcaModeList:
-            /* set mode to LIST (record each incoming event) */
-            pPvt->acqmod = 3;
+        case mcaAcquireMode:
+            if (ivalue == mcaAcquireMode_PHA)  pPvt->acqmod = 1;
+            if (ivalue == mcaAcquireMode_MCS)  pPvt->acqmod = 1;
+            if (ivalue == mcaAcquireMode_List) pPvt->acqmod = 3;
             status = sendAIMSetup(pPvt);
             break;
         case mcaSequence:
@@ -463,7 +447,7 @@ static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
             break;
         case mcaPresetCounts:
             /* set preset counts */
-            pPvt->ptotal = ivalue;
+            pPvt->ptotal = dvalue;
             status = sendAIMSetup(pPvt);
             break;
         default:
