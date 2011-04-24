@@ -124,12 +124,8 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                 /* start read operation */
                 /* This is a no-op. Read-array does everything. */
                 break;
-        case mcaChannelAdvanceInternal:
+        case mcaChannelAdvanceSource:
                 /* set channel advance source to internal (timed) */
-                sendSetup(pmca);
-                break;
-        case mcaChannelAdvanceExternal:
-                /* set channel advance source to external */
                 sendSetup(pmca);
                 break;
         case mcaNumChannels:
@@ -166,16 +162,8 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
                  * software in the future
                  */
                 break;
-        case mcaModePHA:
-                /* set mode to pulse height analysis */
-                /* This is a NOOP for STR7201 */
-                break;
-        case mcaModeMCS:
-                /* set mode to MultiChannel Scaler */
-                /* This is a NOOP for STR7201 */
-                break;
-        case mcaModeList:
-                /* set mode to LIST (record each incoming event) */
+        case mcaAcquireMode:
+                /* set mode to PHA, MCS, or List */
                 /* This is a NOOP for STR7201 */
                 break;
         case mcaReadStatus:
