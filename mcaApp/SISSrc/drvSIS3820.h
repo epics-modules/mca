@@ -1,45 +1,13 @@
-/* File:    drvMcaSIS3820Asyn.h
- * Author:  Wayne Lewis
- * Date:    04-sep-2006
+/* File:    drvSIS3820.h
+ * Author:  Mark Rivers
+ * Date:    22-Apr-2011
  *
  * Purpose: 
  * This module provides the driver support for the MCA asyn device support layer
- * for the SIS3820 multichannel scaler.
+ * for the SIS3820 and SIS3801 multichannel scalers.  This is the SIS3920 class.
  *
  * Acknowledgements:
- * This driver module is based heavily on drvMcaSIS3820Asyn.c by Mark Rivers.
- *
- * Revisions:
- * 0.1  Wayne Lewis               Original version
- * 0.2  Mark Rivers               Modifications for vxWorks, external channel advance, etc.
- *
- * Copyright (c) 2006, Australian Synchrotron
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- * Neither the name of the Australian Synchrotron nor the names of its
- * contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE ARE DISCLSIS3820ED. IN NO EVENT SHALL THE
- * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
- * OF THE POSSIBILITY OF SUCH DAMAGE.
+ * This driver module is based on previous versions by Wayne Lewis and Ulrik Pedersen.
  *
  */
 
@@ -55,6 +23,8 @@
 #include <epicsEvent.h>
 #include <epicsTypes.h>
 
+#include "drvSIS38XX.h"
+
 // My temporary file
 #include <vmeDMA.h>
 
@@ -62,23 +32,12 @@
 /***************/
 /* Definitions */
 /***************/
-
-#define SIS3820LEDString          "SIS3820_LED"
-#define SIS3820MuxOutString       "SIS3820_MUX_OUT"
-#define SIS3820Ch1RefEnableString "SIS3820_CH1_REF_ENABLE"
-#define SIS3820ModeString         "SIS3820_MODE"
-
-#define SIS3820_MAX_SIGNALS 32
-#define SIS3820_MAX_CARDS 4
-
 #define MIN_DMA_TRANSFERS   256
 
 /* FIFO information */
 #define SIS3820_FIFO_BYTE_SIZE    0x800000
 #define SIS3820_FIFO_WORD_SIZE    0x200000
 
-#define MULTICHANNEL_SCALER_MODE 0
-#define SIMPLE_SCALER_MODE       1
 #define SIS3820_LNE_CHANNEL 32
 #define SIS3820_INTERNAL_CLOCK 50000000  /* The internal clock on the SIS38xx */
 #define SIS3820_10MHZ_CLOCK 10000000  /* The internal LNE clock on the SIS38xx */
@@ -106,20 +65,6 @@
 
 /* VME memory size */
 #define SIS3820_VME_MEMORY_SIZE 0x01000000
-
-#ifndef ERROR
-#define ERROR -1
-#endif
-#ifndef OK
-#define OK 0
-#endif
-
-
-typedef enum {
-    UNDEFINED_MODE,
-    MCS_MODE,
-    SCALER_MODE
-} SIS3820AcquireMode;
 
 /**************/
 /* Structures */
@@ -218,7 +163,7 @@ typedef volatile struct {
   */
 } SIS3820_REGS;
 
-class drvSIS3820 : public asynPortDriver
+class drvSIS3820 : public drvSIS38XX
 {
   
   public:
@@ -226,102 +171,44 @@ class drvSIS3820 : public asynPortDriver
              int maxChans, int maxSignals, int inputMode, int outputMode, 
              bool useDma, int fifoBufferWords);
 
-  // These are the methods we override from asynPortDriver
-  asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-  asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
-  asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *data, 
-                            size_t maxChans, size_t *nactual);
+  // Public methods we override from SIS38XX
   void report(FILE *fp, int details);
+  // Public methods new to this class
   void intFunc();        // Should be private, but called from C callback function
   void readFIFOThread(); // Should be private, but called from C callback function
-  void dmaCallback();    // Should be private, but called from C callback function
 
 
-  private:
+  protected:
+  // Protected methods we override from SIS38XX
+  void erase();
+  // Protected pure virtual functions that we must implement
+  void stopMCSAcquire();
+  void startMCSAcquire();
+  void setChannelAdvanceSource();
   void enableInterrupts();
   void disableInterrupts();
-  void setControlStatusReg();
-  void resetFIFO();
-  void setOpModeReg();
-  void setIrqControlStatusReg();
-  void setAcquireMode(SIS3820AcquireMode acquireMode);
+  void setAcquireMode(SIS38XXAcquireMode acquireMode);
+  void resetScaler();
+  void startScaler();
+  void stopScaler();
+  void readScalers();
   void clearScalerPresets();
   void setScalerPresets();
-  bool checkDone();
-  void erase();
+  void setOutputMode();
+  void setInputMode();
+  void setLED();
+  int getLED();
+  void setMuxOut();
+  int getMuxOut();
 
-   #define FIRST_SIS3820_PARAM mcaStartAcquire_
-  int mcaStartAcquire_;
-  int mcaStopAcquire_;
-  int mcaErase_;
-  int mcaData_;
-  int mcaReadStatus_;
-  int mcaChannelAdvanceInternal_;
-  int mcaChannelAdvanceExternal_;
-  int mcaNumChannels_;
-  int mcaDwellTime_;
-  int mcaPresetLiveTime_;
-  int mcaPresetRealTime_;
-  int mcaPresetCounts_;
-  int mcaPresetLowChannel_;
-  int mcaPresetHighChannel_;
-  int mcaPresetSweeps_;
-  int mcaModePHA_;
-  int mcaModeMCS_;
-  int mcaModeList_;
-  int mcaSequence_;
-  int mcaPrescale_;
-  int mcaAcquiring_;
-  int mcaElapsedLiveTime_;
-  int mcaElapsedRealTime_;
-  int mcaElapsedCounts_;
-  int scalerReset_;
-  int scalerChannels_;
-  int scalerRead_;
-  int scalerPresets_;
-  int scalerArm_;
-  int scalerDone_;
-  int SIS3820LED_;
-  int SIS3820MuxOut_;
-  int SIS3820Ch1RefEnable_;
-  int SIS3820Mode_;
-  #define LAST_SIS3820_PARAM SIS3820Mode_
-
-  epicsUInt32 vmeBaseAddress_;
-  bool exists_;
-  int moduleID_;
-  int firmwareVersion_;
+  private:
+  void resetFIFO();
+  void setOpModeReg();
+  void setControlStatusReg();
+  void setIrqControlStatusReg();
   SIS3820_REGS *registers_;
-  epicsUInt32 *fifo_base_;
-  epicsUInt32 irqStatusReg_;
-  SIS3820AcquireMode acquireMode_;
-  int maxSignals_;
-  int maxChans_;
-  int inputMode_;
-  int outputMode_;
-  epicsTimeStamp startTime_;
-  double elapsedTime_;
-  double elapsedPrevious_;
-  bool erased_;
-  int lneSource_;
-  int lnePrescale_;
-  int softAdvance_;
-  epicsUInt32 *mcsBuffer_;  /* maxSignals * maxChans */
-  int nextChan_;
-  int nextSignal_;
-  epicsUInt32 *fifoBuffer_;
-  int fifoBufferWords_;
-  epicsUInt32 *fifoBuffPtr_;
-  bool acquiring_;
-  bool prevAcquiring_;
-  epicsEventId readFIFOEventId_;
-  bool useDma_;
-  DMA_ID dmaId_;
-  epicsEventId dmaDoneEventId_;
-  epicsMutexId fifoLockId_;
 };
 
-#define NUM_SIS3820_PARAMS (int)(&LAST_SIS3820_PARAM - &FIRST_SIS3820_PARAM + 1)
 /***********************/
 /* Function prototypes */
 /***********************/
