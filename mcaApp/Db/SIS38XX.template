@@ -1,0 +1,283 @@
+record(bi,"$(P)SNL_Connected") {
+  field(ZNAM, "Not connected")
+  field(ZSV,  "MAJOR")
+  field(ONAM, "Connected")
+  field(OSV,  "NO_ALARM")
+}
+
+record(bo,"$(P)EraseAll") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_ERASE")
+  field(ZNAM, "Done")
+  field(ONAM, "Erase")
+  field(VAL,  "1")
+  field(FLNK, "$(P)ReadAllOnce")
+}
+
+record(bo,"$(P)EraseStart") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_ERASE")
+  field(ZNAM, "Done")
+  field(ONAM, "Erase")
+  field(VAL,  "1")
+  field(FLNK, "$(P)StartAll.PROC")
+}
+
+record(bo,"$(P)StartAll") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_START_ACQUIRE")
+  field(ZNAM, "Done")
+  field(ONAM, "Start")
+  field(VAL,  "1")
+  field(FLNK, "$(P)SetAcquiring.PROC")
+}
+
+record(bo,"$(P)SetAcquiring") {
+  field(OUT,  "$(P)Acquiring PP MS")
+  field(ZNAM, "Done")
+  field(ONAM, "Set")
+  field(VAL,  "1")
+  field(FLNK, "$(P)SetClientWait.PROC")
+}
+
+record(busy,"$(P)Acquiring") {
+  field(ZNAM, "Done")
+  field(ONAM, "Acquiring")
+}
+
+record(bo,"$(P)StopAll") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_STOP_ACQUIRE")
+  field(ZNAM, "Done")
+  field(ONAM, "Stop")
+  field(VAL,  "1")
+}
+
+record(ao,"$(P)PresetReal") {
+  field(PINI, "YES")
+  field(DTYP, "asynFloat64")
+  field(OUT,  "@asyn($(PORT),0)MCA_PRESET_REAL")
+  field(VAL,  "0.0")
+  field(PREC, "2")
+}
+
+record(bi,"$(P)HardwareAcquiring") {
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),0)MCA_ACQUIRING")
+  field(ZNAM, "Done")
+  field(ONAM, "Acquiring")
+  field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)ElapsedReal") {
+  field(DTYP, "asynFloat64")
+  field(INP,  "@asyn($(PORT),0)MCA_ELAPSED_REAL")
+  field(PREC, "2")
+  field(SCAN, "I/O Intr")
+}
+
+record(bo,"$(P)StatusAll") {
+  field(SCAN, ".5 second")
+  field(DISV, "0")
+  field(SDIS, "$(P)Acquiring NPP NMS")
+  field(ZNAM, "Done")
+  field(ONAM, "Status")
+  field(VAL,  "1")
+  field(OUT, "$(P)DoStatusAll.VAL PP MS")
+}
+
+record(bo,"$(P)DoStatusAll") {
+  field(ZNAM,"Done")
+  field(ONAM,"Status")
+}
+
+record(bo,"$(P)ReadAll") {
+  field(SCAN, "1 second")
+  field(DISV, "0")
+  field(SDIS, "$(P)Acquiring NPP NMS")
+  field(ZNAM, "Done")
+  field(ONAM, "Read")
+  field(FLNK, "$(P)ReadAllOnce")
+}
+
+record(bo,"$(P)ReadAllOnce") {
+  field(VAL,  "1")
+  field(OUT,  "$(P)DoReadAll.VAL PP MS")
+}
+
+record(bo,"$(P)DoReadAll") {
+  field(ZNAM, "Done")
+  field(ONAM, "Read")
+}
+
+record(longout,"$(P)NuseAll") {
+  field(PINI, "YES")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_NUM_CHANNELS")
+}
+
+record(ao,"$(P)Dwell") {
+  field(PINI, "YES")
+  field(DTYP, "asynFloat64")
+  field(OUT,  "@asyn($(PORT),0)MCA_DWELL_TIME")
+  field(VAL, "0.1")
+  field(PREC, "3")
+}
+
+record(ao,"$(P)PresetReal") {
+  field(PINI, "YES")
+  field(DTYP, "asynFloat64")
+  field(OUT,  "@asyn($(PORT),0)MCA_PRESET_REAL")
+  field(VAL,  "0")
+  field(PREC, "3")
+}
+
+record(mbbo,"$(P)ChannelAdvance") {
+  field(PINI, "YES")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_CH_ADV_SOURCE")
+  field(ZRVL, "0")
+  field(ZRST, "Internal")
+  field(ONVL, "1")
+  field(ONST, "External")
+}
+
+record(longout,"$(P)Prescale") {
+  field(PINI,"YES")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)MCA_PRESCALE")
+  field(VAL,"1")
+}
+
+record(bo,"$(P)EnableClientWait") {
+  field(ZNAM,"Disable")
+  field(ONAM,"Enable")
+}
+
+record(bo,"$(P)SetClientWait") {
+  field(DISV,"0")
+  field(SDIS,"$(P)EnableClientWait NPP NMS")
+  field(OMSL,"closed_loop")
+  field(DOL,"1")
+  field(OUT,"$(P)ClientWait PP MS")
+  field(ONAM,"SetClientWait")
+  field(ZNAM,"Done")
+}
+
+record(busy,"$(P)ClientWait") {
+}
+
+#
+# This record reflect the current mode of the
+# driver.
+# Can be either MCA or SCALER (or UNDEFINED).
+# Use it to disable the autocount feature of the 
+# scaler record when in MCA mode.
+record(mbbi, "$(P)Mode") {
+  field(DESC, "SIS38XX driver mode")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) 0)SIS38XX_ACQUIRE_MODE")
+  field(ZRVL, "0")
+  field(ONVL, "1")
+  field(ZRST, "MCA")
+  field(ONST, "Scaler")
+  field(SCAN, "I/O Intr")
+  field(FLNK, "$(P)DisableAutoCount.PROC CA MS")
+}
+
+record(calcout, "$(P)DisableAutoCount") {
+  field(CALC, "A==1?0:1")
+  field(INPA, "$(P)Mode")
+  field(OUT,  "$(SCALER).CONT")
+  field(OOPT, "Transition To Zero")
+}
+
+# MUXOUT analogue record to enable switching
+# of the multiplexed output on output 7.
+record(ao, "$(P)MUXOutput") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_MUX_OUT")
+  field(HOPR, "32")
+  field(LOPR, "0")
+  field(VAL,  "3")
+  field(DESC, "Route to output 7")
+}
+
+
+# Binary record to enable switching input 1
+# between internal 50MHz reference clock and
+# and external source 
+record(bo, "$(P)Ch1RefEnable") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_CH1_REF_ENABLE")
+  field(ZNAM, "External")
+  field(ONAM, "Int. 50MHz")
+}
+
+# Toggle the USER LED which also toggles the
+# control output signal 8.
+record(bo, "$(P)UserLED") {
+  field(DESC, "Flash user LED")
+  field(DTYP, "asynInt32")
+  field(SCAN, "Passive")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_LED")
+  field(ZNAM, "Low/Off")
+  field(ONAM, "High/On")
+}
+
+record(mbbo, "$(P)InputMode") {
+  field(PINI, "YES")
+  field(DESC, "SIS38XX input mode")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_INPUT_MODE")
+  field(ZRVL, "0")
+  field(ONVL, "1")
+  field(TWVL, "2")
+  field(THVL, "3")
+  field(FRVL, "4")
+  field(FVVL, "5")
+  field(SXVL, "6")
+  field(ZRST, "Mode 0")
+  field(ONST, "Mode 1")
+  field(TWST, "Mode 2")
+  field(THST, "Mode 3")
+  field(FRST, "Mode 4")
+  field(FVST, "Mode 5")
+  field(SXST, "Mode 6")
+  field(VAL,  "3")
+}
+
+record(mbbo, "$(P)OutputMode") {
+  field(PINI, "YES")
+  field(DESC, "SIS38XX output mode")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_OUTPUT_MODE")
+  field(ZRVL, "0")
+  field(ONVL, "1")
+  field(TWVL, "2")
+  field(THVL, "3")
+  field(ZRST, "Mode 0")
+  field(ONST, "Mode 1")
+  field(TWST, "Mode 2")
+  field(THST, "Mode 3")
+  field(VAL,  "3")
+}
+
+record(stringin,"$(P)Model") {
+  field(DTYP, "asynOctetRead")
+  field(INP,  "@asyn($(PORT),0)SIS38XX_MODEL")
+  field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)Firmware") {
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),0)SIS38XX_FIRMWARE")
+  field(SCAN, "I/O Intr")
+}
+
+
+
+# asyn record for debugging
+record(asyn, "$(P)Asyn") {
+  field(PORT, "$(PORT)")
+}
