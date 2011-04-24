@@ -17,12 +17,9 @@ typedef enum {
     mcaStopAcquire,            /* int32, write */
     mcaErase,                  /* int32, write */
     mcaReadStatus,             /* int32, write */
-    mcaChannelAdvanceInternal, /* int32, write */
-    mcaChannelAdvanceExternal, /* int32, write */
+    mcaChannelAdvanceSource,   /* int32, write */
     mcaNumChannels,            /* int32, write */
-    mcaModePHA,                /* int32, write */
-    mcaModeMCS,                /* int32, write */
-    mcaModeList,               /* int32, write */
+    mcaAcquireMode,            /* int32, write */
     mcaSequence,               /* int32, write */
     mcaPrescale,               /* int32, write */
     mcaPresetSweeps,           /* int32, write */
