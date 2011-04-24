@@ -459,8 +459,7 @@ static long init_record(mcaRecord *pmca, int pass)
     }
     /* Initialize hardware to agree with the record */
     status = (*pdset->send_msg)
-                (pmca, (pmca->chas==mcaCHAS_Internal) ?
-                mcaChannelAdvanceInternal : mcaChannelAdvanceExternal, NULL);
+                (pmca, mcaChannelAdvanceSource, (void*)(&pmca->chas));
     status = (*pdset->send_msg)
                 (pmca,  mcaNumChannels, (void *)(&pmca->nuse));
     status = (*pdset->send_msg)
@@ -481,18 +480,8 @@ static long init_record(mcaRecord *pmca, int pass)
                 (pmca,  mcaPresetHighChannel, (void *)(&pmca->pcth));
     status = (*pdset->send_msg)
                 (pmca,  mcaPresetSweeps, (void *)(&pmca->pswp));
-    switch (pmca->mode) {
-      case mcaMODE_PHA:
-      default:
-         status = (*pdset->send_msg) (pmca, mcaModePHA, NULL);
-         break;
-      case mcaMODE_MCS:
-         status = (*pdset->send_msg) (pmca, mcaModeMCS, NULL);
-         break;
-      case mcaMODE_List:
-         status = (*pdset->send_msg) (pmca, mcaModeList, NULL);
-         break;
-    }
+    status = (*pdset->send_msg) 
+                (pmca, mcaAcquireMode, (void *)(&pmca->mode));
     return(0);
 }
 
@@ -534,8 +523,7 @@ reprocess:
         if (NEWV_MARKED(M_CHAS)) {
             MARK(M_CHAS);
             status = (*pdset->send_msg)
-                (pmca, (pmca->chas==mcaCHAS_Internal) ?
-                mcaChannelAdvanceInternal : mcaChannelAdvanceExternal, NULL);
+                (pmca, mcaChannelAdvanceSource, (void *)(&pmca->chas), NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_CHAS);
         }
@@ -643,18 +631,7 @@ reprocess:
         }
         if (NEWV_MARKED(M_MODE)) {
             MARK(M_MODE);
-            switch (pmca->mode) {
-            case mcaMODE_PHA:
-            default:
-                status = (*pdset->send_msg) (pmca, mcaModePHA, NULL);
-                break;
-            case mcaMODE_MCS:
-                status = (*pdset->send_msg) (pmca, mcaModeMCS, NULL);
-                break;
-            case mcaMODE_List:
-                status = (*pdset->send_msg) (pmca, mcaModeList, NULL);
-                break;
-            }
+            status = (*pdset->send_msg) (pmca, pmca->mode, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_MODE);
         }
