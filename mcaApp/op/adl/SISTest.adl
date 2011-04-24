@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/mca/6-8/mcaApp/op/adl/SISTest.adl"
-	version=030000
+	name="/home/epics/devel/mca/mcaApp/op/adl/SISTest.adl"
+	version=030102
 }
 display {
 	object {
@@ -112,9 +112,9 @@ text {
 		args="P=SIS:3801:"
 	}
 	display[1] {
-		label="SIS3820 MCA"
-		name="Struck32.adl"
-		args="P=SIS:3820:"
+		label="SIS3820 MCS"
+		name="SIS38XX.adl"
+		args="P=SIS:3820:, M=mca"
 	}
 	display[2] {
 		label="SIS3801 Scaler"
