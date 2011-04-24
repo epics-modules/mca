@@ -69,8 +69,7 @@ static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
     {mcaErase,                  mcaEraseString},                  /* int32, write */
     {mcaData,                   mcaDataString},                   /* int32Array, read/write */
     {mcaReadStatus,             mcaReadStatusString},             /* int32, write */
-    {mcaChannelAdvanceInternal, mcaChannelAdvanceInternalString}, /* int32, write */
-    {mcaChannelAdvanceExternal, mcaChannelAdvanceExternalString}, /* int32, write */
+    {mcaChannelAdvanceSource,   mcaChannelAdvanceSourceString},   /* int32, write */
     {mcaNumChannels,            mcaNumChannelsString},            /* int32, write */
     {mcaDwellTime,              mcaDwellTimeString},              /* float64, write */
     {mcaPresetLiveTime,         mcaPresetLiveTimeString},         /* float64, write */
@@ -79,9 +78,7 @@ static mcaCommandStruct mcaCommands[MAX_MCA_COMMANDS] = {
     {mcaPresetLowChannel,       mcaPresetLowChannelString},       /* int32, write */
     {mcaPresetHighChannel,      mcaPresetHighChannelString},      /* int32, write */
     {mcaPresetSweeps,           mcaPresetSweepsString},           /* int32, write */
-    {mcaModePHA,                mcaModePHAString},                /* int32, write */
-    {mcaModeMCS,                mcaModeMCSString},                /* int32, write */
-    {mcaModeList,               mcaModeListString},               /* int32, write */
+    {mcaAcquireMode,            mcaAcquireModeString},            /* int32, write */
     {mcaSequence,               mcaSequenceString},               /* int32, write */
     {mcaPrescale,               mcaPrescaleString},               /* int32, write */
     {mcaAcquiring,              mcaAcquiringString},              /* int32, read */
@@ -447,10 +444,7 @@ static asynStatus fastSweepWrite(void *drvPvt, asynUser *pasynUser,
         case mcaReadStatus:
             /* No-op for fastSweep */
             break;
-        case mcaChannelAdvanceInternal:
-            /* No-op for fastSweep */
-            break;
-        case mcaChannelAdvanceExternal:
+        case mcaChannelAdvanceSource:
             /* No-op for fastSweep */
             break;
         case mcaNumChannels:
@@ -459,13 +453,7 @@ static asynStatus fastSweepWrite(void *drvPvt, asynUser *pasynUser,
             else
                 pPvt->numPoints = ivalue;
             break;
-        case mcaModePHA:
-            /* No-op for fastSweep */
-            break;
-        case mcaModeMCS:
-            /* No-op for fastSweep */
-            break;
-        case mcaModeList:
+        case mcaAcquireMode:
             /* No-op for fastSweep */
             break;
         case mcaSequence:
