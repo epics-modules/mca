@@ -6,8 +6,6 @@
 # This currently is supported only on vxWorks.
 #save_restoreSet_NFSHost("oxygen", "164.54.52.4")
 
-# status-PV prefix
-save_restoreSet_status_prefix("mcaTest:")
 # Debug-output level
 save_restoreSet_Debug(0)
 
@@ -38,5 +36,3 @@ set_requestfile_path(autosave, "asApp/Db")
 set_requestfile_path(calc,     "calcApp/Db")
 set_requestfile_path(mca,      "mcaApp/Db")
 set_requestfile_path(sscan,    "sscanApp/Db")
-
-dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=mcaTest:")
