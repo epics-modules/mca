@@ -1,3 +1,7 @@
+# SIS38XX.template
+# Mark Rivers
+# April 29, 2011
+
 record(bi,"$(P)SNL_Connected") {
   field(ZNAM, "Not connected")
   field(ZSV,  "MAJOR")
@@ -76,21 +80,6 @@ record(ai,"$(P)ElapsedReal") {
   field(SCAN, "I/O Intr")
 }
 
-record(bo,"$(P)StatusAll") {
-  field(SCAN, ".5 second")
-  field(DISV, "0")
-  field(SDIS, "$(P)Acquiring NPP NMS")
-  field(ZNAM, "Done")
-  field(ONAM, "Status")
-  field(VAL,  "1")
-  field(OUT, "$(P)DoStatusAll.VAL PP MS")
-}
-
-record(bo,"$(P)DoStatusAll") {
-  field(ZNAM,"Done")
-  field(ONAM,"Status")
-}
-
 record(bo,"$(P)ReadAll") {
   field(SCAN, "1 second")
   field(DISV, "0")
@@ -116,11 +105,17 @@ record(longout,"$(P)NuseAll") {
   field(OUT,  "@asyn($(PORT),0)MCA_NUM_CHANNELS")
 }
 
+record(longin,"$(P)CurrentChannel") {
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),0)SIS38XX_CURRENT_CHANNEL")
+  field(SCAN, "I/O Intr")
+}
+
 record(ao,"$(P)Dwell") {
   field(PINI, "YES")
   field(DTYP, "asynFloat64")
   field(OUT,  "@asyn($(PORT),0)MCA_DWELL_TIME")
-  field(VAL, "0.1")
+  field(VAL,  "0.1")
   field(PREC, "3")
 }
 
@@ -132,14 +127,38 @@ record(ao,"$(P)PresetReal") {
   field(PREC, "3")
 }
 
-record(mbbo,"$(P)ChannelAdvance") {
+record(bo,"$(P)ChannelAdvance") {
   field(PINI, "YES")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(PORT),0)MCA_CH_ADV_SOURCE")
-  field(ZRVL, "0")
-  field(ZRST, "Internal")
-  field(ONVL, "1")
-  field(ONST, "External")
+  field(ZNAM, "Internal")
+  field(ONAM, "External")
+}
+
+record(bo,"$(P)InitialChannelAdvance") {
+  field(PINI, "YES")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)SIS38XX_INITIAL_CHANNEL_ADVANCE")
+  field(ZNAM, "No")
+  field(ONAM, "Yes")
+}
+
+record(bo,"$(P)SoftwareChannelAdvance") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT),0)SIS38XX_SOFTWARE_CHANNEL_ADVANCE")
+  field(ZNAM, "No")
+  field(ONAM, "Yes")
+  field(VAL,  "1")
+}
+
+# Binary record to enable switching input 1
+# between internal 50MHz reference clock and
+# and external source 
+record(bo, "$(P)Channel1Source") {
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_CHANNEL1_SOURCE")
+  field(ZNAM, "Int. 50MHz")
+  field(ONAM, "External")
 }
 
 record(longout,"$(P)Prescale") {
@@ -173,13 +192,13 @@ record(busy,"$(P)ClientWait") {
 # Can be either MCA or SCALER (or UNDEFINED).
 # Use it to disable the autocount feature of the 
 # scaler record when in MCA mode.
-record(mbbi, "$(P)Mode") {
-  field(DESC, "SIS38XX driver mode")
+record(mbbi, "$(P)AcquireMode") {
+  field(DESC, "SIS38XX acquire mode")
   field(DTYP, "asynInt32")
   field(INP,  "@asyn($(PORT) 0)SIS38XX_ACQUIRE_MODE")
   field(ZRVL, "0")
   field(ONVL, "1")
-  field(ZRST, "MCA")
+  field(ZRST, "MCS")
   field(ONST, "Scaler")
   field(SCAN, "I/O Intr")
   field(FLNK, "$(P)DisableAutoCount.PROC CA MS")
@@ -203,16 +222,6 @@ record(ao, "$(P)MUXOutput") {
   field(DESC, "Route to output 7")
 }
 
-
-# Binary record to enable switching input 1
-# between internal 50MHz reference clock and
-# and external source 
-record(bo, "$(P)Ch1RefEnable") {
-  field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(PORT) 0)SIS38XX_CH1_REF_ENABLE")
-  field(ZNAM, "External")
-  field(ONAM, "Int. 50MHz")
-}
 
 # Toggle the USER LED which also toggles the
 # control output signal 8.
@@ -263,16 +272,27 @@ record(mbbo, "$(P)OutputMode") {
   field(VAL,  "3")
 }
 
-record(stringin,"$(P)Model") {
-  field(DTYP, "asynOctetRead")
-  field(INP,  "@asyn($(PORT),0)SIS38XX_MODEL")
-  field(SCAN, "I/O Intr")
+record(mbbi, "$(P)Model") {
+  field(PINI, "YES")
+  field(DESC, "SIS38XX model")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT) 0)SIS38XX_MODEL")
+  field(ZRVL, "0")
+  field(ONVL, "1")
+  field(ZRST, "SIS3801")
+  field(ONST, "SIS3820")
 }
 
 record(longin,"$(P)Firmware") {
+  field(PINI, "YES")
   field(DTYP, "asynInt32")
   field(INP,  "@asyn($(PORT),0)SIS38XX_FIRMWARE")
-  field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)MaxChannels") {
+  field(PINI, "YES")
+  field(DTYP, "asynInt32")
+  field(INP,  "@asyn($(PORT),0)SIS38XX_MAX_CHANNELS")
 }
 
 
