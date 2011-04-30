@@ -1,5 +1,5 @@
 /* File:    drvSIS38XX.cpp
- * Author:  Mark Rivers
+ * Author:  Mark Rivers, University of Chicago
  * Date:    22-Apr-2011
  *
  * Purpose: 
@@ -42,8 +42,6 @@
 #include "devScalerAsyn.h"
 #include "drvSIS38XX.h"
 
-static void dmaCallbackC(void *drvPvt);
-
 static const char *driverName="drvSIS38XX";
 /***************/
 /* Definitions */
@@ -52,11 +50,11 @@ static const char *driverName="drvSIS38XX";
 /*Constructor */
 drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
   :  asynPortDriver(portName, maxSignals, NUM_SIS38XX_PARAMS, 
-                    asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynOctetMask | asynDrvUserMask,
-                    asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynOctetMask,
+                    asynInt32Mask | asynFloat64Mask | asynInt32ArrayMask | asynDrvUserMask,
+                    asynInt32Mask | asynFloat64Mask,
                     ASYN_MULTIDEVICE, 1, 0, 0),
      exists_(false), maxSignals_(maxSignals), maxChans_(maxChans),
-     acquiring_(false), prevAcquiring_(false)
+     acquiring_(false)
 {
   int i;
   static const char* functionName="SIS38XX";
@@ -93,34 +91,21 @@ drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
   createParam(SCALER_DONE_COMMAND_STRING,           asynParamInt32, &scalerDone_);                /* int32, read */
   createParam(SIS38XXLEDString,                     asynParamInt32, &SIS38XXLED_);                /* int32, write */
   createParam(SIS38XXMuxOutString,                  asynParamInt32, &SIS38XXMuxOut_);             /* int32, write */
-  createParam(SIS38XXCh1RefEnableString,            asynParamInt32, &SIS38XXCh1RefEnable_);       /* int32, write */
+  createParam(SIS38XXMaxChannelsString,             asynParamInt32, &SIS38XXMaxChannels_);        /* int32, read */
+  createParam(SIS38XXChannel1SourceString,          asynParamInt32, &SIS38XXChannel1Source_);     /* int32, write */
+  createParam(SIS38XXCurrentChannelString,          asynParamInt32, &SIS38XXCurrentChannel_);     /* int32, read */
   createParam(SIS38XXAcquireModeString,             asynParamInt32, &SIS38XXAcquireMode_);        /* int32, write */
   createParam(SIS38XXInputModeString,               asynParamInt32, &SIS38XXInputMode_);          /* int32, write */
   createParam(SIS38XXOutputModeString,              asynParamInt32, &SIS38XXOutputMode_);         /* int32, write */
-  createParam(SIS38XXModelString,                   asynParamOctet, &SIS38XXModel_);              /* octet, read */
+  createParam(SIS38XXSoftwareChannelAdvanceString,  asynParamInt32, &SIS38XXSoftwareChannelAdvance_); /* int32, write */
+  createParam(SIS38XXInitialChannelAdvanceString,   asynParamInt32, &SIS38XXInitialChannelAdvance_);  /* int32, write */
+  createParam(SIS38XXModelString,                   asynParamInt32, &SIS38XXModel_);              /* int32, read */
   createParam(SIS38XXFirmwareString,                asynParamInt32, &SIS38XXFirmware_);           /* int32, read */
-
-  // Default values of some parameters
-  setIntegerParam(mcaNumChannels_, maxChans);
-  setIntegerParam(mcaAcquiring_, 0);
-  setIntegerParam(scalerDone_, 1);
-  setIntegerParam(scalerChannels_, maxSignals);
-  setIntegerParam(SIS38XXInputMode_, 3);
-  setIntegerParam(SIS38XXOutputMode_, 0);
-  for (i=0; i<maxSignals; i++) {
-    setDoubleParam(i, mcaElapsedCounts_, 0.0);
-    setDoubleParam(i, mcaElapsedRealTime_, 0.0);
-    setDoubleParam(i, mcaElapsedLiveTime_, 0.0);
-    callParamCallbacks(i);
-  }
-
-  /* Enable channel 1 reference pulses by default */
-  setIntegerParam(SIS38XXCh1RefEnable_, 1);
 
   /* Allocate sufficient memory space to hold all of the data collected from the
    * SIS38XX.
    */
-  mcsData_ = (epicsUInt32 *)malloc(maxSignals*maxChans*sizeof(epicsUInt32));
+  mcsData_ = (epicsUInt32 *)calloc(maxSignals*maxChans, sizeof(epicsUInt32));
   if (mcsData_ == NULL) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: malloc failure for mcsData_\n", 
@@ -128,7 +113,7 @@ drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
     return;
   }
   
-  scalerData_ = (epicsUInt32 *)malloc(maxSignals*sizeof(epicsUInt32));
+  scalerData_ = (epicsUInt32 *)calloc(maxSignals, sizeof(epicsUInt32));
   if (scalerData_ == NULL) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: malloc failure for scalerData_\n", 
@@ -143,12 +128,30 @@ drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
   /* Create the EPICS event used to wake up the readFIFOThread */
   readFIFOEventId_ = epicsEventCreate(epicsEventEmpty);
   
-  dmaId_ = sysDmaCreate(dmaCallbackC, (void*)this);
-  dmaDoneEventId_ = epicsEventCreate(epicsEventEmpty);
-  
   // Create the mutex used to lock access to the FIFO
   fifoLockId_ = epicsMutexCreate();
 
+  // Default values of some parameters
+  setIntegerParam(scalerDone_, 1);
+  setIntegerParam(scalerChannels_, maxSignals);
+  /* Enable channel 1 reference pulses by default */
+  setIntegerParam(SIS38XXChannel1Source_, CHANNEL1_SOURCE_INTERNAL);
+  setIntegerParam(SIS38XXInitialChannelAdvance_, 0);
+  setIntegerParam(SIS38XXInputMode_, 3);
+  setIntegerParam(SIS38XXOutputMode_, 0);
+  setIntegerParam(SIS38XXMaxChannels_, maxChans_);
+  elapsedPrevious_ = 0.;
+  for (i=0; i<maxSignals; i++) {
+    setIntegerParam(i, mcaChannelAdvanceSource_, mcaChannelAdvance_Internal);
+    setIntegerParam(i, mcaNumChannels_, maxChans);
+    setIntegerParam(i, mcaAcquiring_, 0);
+    setDoubleParam(i, mcaElapsedCounts_, 0.0);
+    setDoubleParam(i, mcaElapsedRealTime_, 0.0);
+    setDoubleParam(i, mcaElapsedLiveTime_, 0.0);
+    setIntegerParam(i, scalerPresets_, 0);
+    callParamCallbacks(i);
+  }
+  
   return;
 }
 
@@ -165,7 +168,6 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
   if (!exists_) return asynError;
   
-  disableInterrupts();
   pasynManager->getAddr(pasynUser, &signal);
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s:%s: entry, command=%d, signal=%d, value=%d\n", 
@@ -176,12 +178,12 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   
   getIntegerParam(mcaNumChannels_, &nChans);
 
-
+  // MCA commands
   if (command == mcaStartAcquire_) {
     /* Start acquisition. */
     /* Nothing to do if we are already acquiring. */
     if (acquiring_) goto done;
-    setAcquireMode(MCS_MODE);
+    setAcquireMode(ACQUIRE_MODE_MCS);
 
     /* If the MCS is set to use internal channel advance, just start
      * collection. If it is set to use an external channel advance, arm
@@ -190,7 +192,6 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
     acquiring_ = true;
     setIntegerParam(mcaAcquiring_, 1);
-    prevAcquiring_ = true;
     erased_ = 0;
     // Set the acquisition start time
     epicsTimeGetCurrent(&startTime_);
@@ -231,16 +232,6 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
   }
 
-  else if (command == mcaReadStatus_) {
-    /* No-op?
-     */
-  }
-
-  else if (command == mcaChannelAdvanceSource_) {
-    setChannelAdvanceSource();
-  }
-
-
   else if (command == mcaNumChannels_) {
     /* Terminology warning:
      * This is the number of channels that are to be acquired. Channels
@@ -255,30 +246,36 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
   }
 
+  // Scaler commands
   else if (command == scalerReset_) {
     /* Reset scaler */
    resetScaler();
    acquiring_ = false;
-    /* Clear all of the presets */
+    /* Clear all of the presets and counts*/
     for (i=0; i<maxSignals_; i++) {
+      scalerData_[i] = 0;
       setIntegerParam(i, scalerPresets_, 0);
     }
   }
 
   else if (command == scalerArm_) {
     /* Arm or disarm scaler */
-    setAcquireMode(SCALER_MODE);
+    setAcquireMode(ACQUIRE_MODE_SCALER);
     setScalerPresets();
     if (value != 0) {
       startScaler();
       acquiring_ = true;
-      prevAcquiring_ = true;
     } else {
       stopScaler();
     }
     setIntegerParam(scalerDone_, 0);
   }
 
+  // SIS38XX specific commands
+  else if (command == SIS38XXSoftwareChannelAdvance_) {
+    softwareChannelAdvance();
+  }
+  
   else if (command == SIS38XXLED_) {
     setLED();
   }
@@ -298,7 +295,6 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   status = asynSuccess;
   done:
   callParamCallbacks(signal);
-  enableInterrupts();
   return status;
 }
 
@@ -318,7 +314,6 @@ asynStatus drvSIS38XX::readInt32(asynUser *pasynUser, epicsInt32 *value)
             "%s:%s: entry, command=%d, signal=%d, &value=%p\n", 
             driverName, functionName, command, signal, value);
 
-  disableInterrupts();
   if (command == scalerRead_) {
     readScalers();
     /* Read a single scaler channel */
@@ -333,7 +328,6 @@ asynStatus drvSIS38XX::readInt32(asynUser *pasynUser, epicsInt32 *value)
   else {
     status = asynPortDriver::readInt32(pasynUser, value);
   }
-  enableInterrupts();
   return status;
 }
 
@@ -350,7 +344,6 @@ asynStatus drvSIS38XX::readInt32Array(asynUser *pasynUser, epicsInt32 *data,
 
   if (!exists_) return asynError;
 
-  disableInterrupts();
   pasynManager->getAddr(pasynUser, &signal);
   asynPrint(pasynUser, ASYN_TRACE_FLOW, 
             "%s:%s: entry, command=%d, signal=%d, numRead=%d, &data=%p\n", 
@@ -368,9 +361,11 @@ asynStatus drvSIS38XX::readInt32Array(asynUser *pasynUser, epicsInt32 *data,
     if (numCopy > nChans) numCopy = nChans;
     // We copy all the channels but we only report nchans
     // This ensures the entire array is correct even if it was not set to zero at the start
-    memcpy(data, mcsData_ + signal*maxChans_, *numActual*sizeof(epicsInt32));
+    memcpy(data, mcsData_ + signal*maxChans_, numCopy*sizeof(epicsInt32));
     *numActual = numRead;
     if ((int)*numActual > nextChan_) *numActual = nextChan_;
+    // Make it set NORD non-zero?
+    if (*numActual == 0) *numActual = 1;
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "%s:%s: [signal=%d]: read %d chans (numRead=%d, numCopy=%d, nextChan=%d, nChans=%d)\n",  
               driverName, functionName, signal, *numActual, numRead, numCopy, nextChan_, nChans);
@@ -394,15 +389,14 @@ asynStatus drvSIS38XX::readInt32Array(asynUser *pasynUser, epicsInt32 *data,
               driverName, functionName, command);
     status = asynError;
   }
-  enableInterrupts();
   return status;
 }
 
 /* Report  parameters */
 void drvSIS38XX::report(FILE *fp, int details)
 {
+  int i, nprint;
   if (details > 0) {
-    fprintf(fp, "  moduleID         = %d\n",   moduleID_);
     fprintf(fp, "  acquire mode     = %d\n",   acquireMode_);
     fprintf(fp, "  max signals      = %d\n",   maxSignals_);
     fprintf(fp, "  max channels     = %d\n",   maxChans_);
@@ -410,11 +404,13 @@ void drvSIS38XX::report(FILE *fp, int details)
     fprintf(fp, "  next signal      = %d\n",   nextSignal_);
     fprintf(fp, "  elapsed previous = %f\n",   elapsedPrevious_);
     fprintf(fp, "  erased           = %d\n",   erased_);
-    fprintf(fp, "  LNE source       = %d\n",   lneSource_);
-    fprintf(fp, "  LNE prescale     = %d\n",   lnePrescale_);
-    fprintf(fp, "  soft advance     = %d\n",   softAdvance_);
     fprintf(fp, "  acquiring        = %d\n",   acquiring_);
-    fprintf(fp, "  prev acquiring   = %d\n",   prevAcquiring_);
+    nprint = maxChans_;
+    if (nprint > 10) nprint = 10;
+    for (i=0; i<nprint; i++) fprintf(fp,
+                "    mcsData[%d]    = %d\n", i, mcsData_[i]);             
+    for (i=0; i<maxSignals_; i++) fprintf(fp,
+                "    scalerData[%d] = %d\n", i, scalerData_[i]);         
   }
   // Call the base class method
   asynPortDriver::report(fp, details);
@@ -449,11 +445,9 @@ void drvSIS38XX::erase()
   nextChan_ = 0;
   nextSignal_ = 0;
 
-  /* Reset elapsed times */
-  elapsedTime_ = 0.;
+  /* Reset the elapsed time and counts */
   elapsedPrevious_ = 0.;
-
-  /* Reset the elapsed counts */
+  setIntegerParam(SIS38XXCurrentChannel_, 0);
   for (i=0; i<maxSignals_; i++) {
     setDoubleParam(i, mcaElapsedLiveTime_, 0.0);
     setDoubleParam(i, mcaElapsedRealTime_, 0.0);
@@ -470,43 +464,29 @@ void drvSIS38XX::erase()
 }
 
 
-bool drvSIS38XX::checkDone(int fifoCount)
+void drvSIS38XX::checkMCSDone()
 {
   int signal;
-  int i;
   epicsTimeStamp now;
   int nChans;
-  bool mcaDone;
-  epicsUInt32 *pData;
-  double presetLive, presetReal, presetCounts, elapsedCounts;
-  int presetStartChan, presetEndChan;
+  double presetReal, elapsedTime;
   static const char* functionName="checkDone";
 
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: enter: acquiring=%d, prevAcquiring=%d\n",
-            driverName, functionName, acquiring_, prevAcquiring_);
 
-  getIntegerParam(mcaNumChannels_, &nChans);
-  getDoubleParam(mcaPresetLiveTime_, &presetLive);
-  getDoubleParam(mcaPresetRealTime_, &presetReal);
-  getDoubleParam(mcaPresetCounts_, &presetCounts);
+  getIntegerParam(mcaNumChannels_,    &nChans);
+  getDoubleParam(mcaPresetRealTime_,  &presetReal);
+  getDoubleParam(mcaElapsedRealTime_, &elapsedTime);
+  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+            "%s:%s: enter: acquiring=%d, nextChan=%d, nextSignal=%d, nChans=%d\n",
+            driverName, functionName, acquiring_, nextChan_, nextSignal_, nChans);
 
   epicsTimeGetCurrent(&now);
   if (acquiring_) {
-    elapsedTime_ = epicsTimeDiffInSeconds(&now, &startTime_);
-    if ((presetReal > 0) && (elapsedTime_ >= presetReal)) {
+    elapsedTime = epicsTimeDiffInSeconds(&now, &startTime_);
+    if ((presetReal > 0) && (elapsedTime >= presetReal)) {
       acquiring_ = false;
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
                 "%s:%s:, stopped acquisition by preset real time\n",
-                driverName, functionName);
-    }
-  }
-
-  if (acquiring_) {
-    if ((presetLive > 0) && (elapsedTime_ >= presetLive)) {
-      acquiring_ = false;
-      asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                "%s:%s:, stopped acquisition by preset live time\n",
                 driverName, functionName);
     }
   }
@@ -515,55 +495,33 @@ bool drvSIS38XX::checkDone(int fifoCount)
    * that it will be detected even if interrupts are disabled.
    */
   if (acquiring_) {
-    if (nextChan_ >= maxChans_) {
+    if (nextChan_ >= nChans) {
       acquiring_ = false;
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                "%s:%s:, stopped acquisition by nextChan = %d\n",
-                driverName, functionName, nextChan_);
-    }
-  }
-
-  /* Check that acquisition is complete by preset counts */
-  if (acquiring_) {
-    for (signal=0; signal<maxSignals_; signal++) {
-      getDoubleParam(signal, mcaPresetCounts_, &presetCounts);
-      getIntegerParam(signal, mcaPresetLowChannel_, &presetStartChan);
-      getIntegerParam(signal, mcaPresetHighChannel_, &presetEndChan);
-      if (presetCounts > 0) {
-        elapsedCounts = 0;
-        pData = mcsData_ + signal*maxChans_;
-        for (i=presetStartChan; i<=presetEndChan; i++) {
-          elapsedCounts += pData[i];
-        }
-        if (elapsedCounts >= presetCounts) {
-          acquiring_ = false;
-          asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                    "%s:%s:, stopped acquisition by preset counts\n",
-                    driverName, functionName);
-        }
-      }
+                "%s:%s:, stopped acquisition by nextChan=%d, nChans=%d\n",
+                driverName, functionName, nextChan_, nChans);
     }
   }
 
   /* If acquisition just stopped then ... */
-  if ((prevAcquiring_ == true) && (acquiring_ == false)) {
+  if (!acquiring_) {
     epicsTimeGetCurrent(&now);
-    elapsedTime_ = epicsTimeDiffInSeconds(&now, &startTime_);
+    elapsedTime = epicsTimeDiffInSeconds(&now, &startTime_);
     /* Turn off hardware acquisition */
     stopMCSAcquire();
   }
 
   // Set elapsed times
   for (signal=0; signal<maxSignals_; signal++) {
-    setDoubleParam(signal, mcaElapsedRealTime_, elapsedTime_);
-    setDoubleParam(signal, mcaElapsedLiveTime_, elapsedTime_);
- }
+    setDoubleParam(signal, mcaElapsedRealTime_, elapsedTime);
+    setDoubleParam(signal, mcaElapsedLiveTime_, elapsedTime);
+  }
+  
+  // Set current channel
+  setIntegerParam(SIS38XXCurrentChannel_, nextChan_);
 
-  // We only set mcaAcquiring to 0 if acquiring_=false and count=0, which tells the MCA
-  // records to process
-  mcaDone = ((acquiring_ == false) && 
-             (fifoCount == 0));
-  if (mcaDone) {
+  if (!acquiring_) {
+    // Do callbacks on mcaAcquiring
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
                "%s:%s:, acquisition complete, doing callbacks on mcaAcquiring\n",
                driverName, functionName);
@@ -577,27 +535,8 @@ bool drvSIS38XX::checkDone(int fifoCount)
     callParamCallbacks(signal);
   }
 
-  /* Save the acquisition status */
-  prevAcquiring_ = acquiring_;
-
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: exit: acquiring=%d, prevAcquiring=%d\n",
-            driverName, functionName, acquiring_, prevAcquiring_);
-  return acquiring_ || prevAcquiring_;
+            "%s:%s: exit: acquiring=%d\n",
+            driverName, functionName, acquiring_);
+  return;
 }
-
-/**********************/
-/* DMA handling       */
-/**********************/
-
-static void dmaCallbackC(void *drvPvt)
-{
-  drvSIS38XX *pSIS38XX = (drvSIS38XX*)drvPvt;
-  pSIS38XX->dmaCallback();
-}
-
-void drvSIS38XX::dmaCallback()
-{
-  epicsEventSignal(dmaDoneEventId_);
-}
-
