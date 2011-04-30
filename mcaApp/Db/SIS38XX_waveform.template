@@ -1,0 +1,8 @@
+# Waveform record to be used for MCS data, rather than MCA record.
+
+record(waveform, "$(P)$(R)") {
+  field(DTYP, "asynInt32ArrayIn")
+  field(INP,  "$(INP)MCA_DATA")
+  field(FTVL, "LONG")
+  field(NELM, "$(CHANS)")
+}
