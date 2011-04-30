@@ -1,5 +1,5 @@
 /* File:    drvSIS3820.h
- * Author:  Mark Rivers
+ * Author:  Mark Rivers, University of Chicago
  * Date:    22-Apr-2011
  *
  * Purpose: 
@@ -28,7 +28,6 @@
 // My temporary file
 #include <vmeDMA.h>
 
-
 /***************/
 /* Definitions */
 /***************/
@@ -40,27 +39,27 @@
 
 #define SIS3820_LNE_CHANNEL 32
 #define SIS3820_INTERNAL_CLOCK 50000000  /* The internal clock on the SIS38xx */
-#define SIS3820_10MHZ_CLOCK 10000000  /* The internal LNE clock on the SIS38xx */
+#define SIS3820_10MHZ_CLOCK    10000000  /* The internal LNE clock on the SIS38xx */
 
 #define SIS3820_ADDRESS_TYPE atVMEA32
 #define SIS3820_BOARD_SIZE 0x400000
 
 /* Additional SIS3820 flags */
-#define SIS3820_IRQ_ENABLE 0x800
-#define SIS3820_IRQ_ROAK 0x1000
+#define SIS3820_IRQ_ENABLE 0x0800
+#define SIS3820_IRQ_ROAK   0x1000
 
 /* Bit masks */
-#define SIS3820_IRQ_LEVEL_MASK 0x00000700
+#define SIS3820_IRQ_LEVEL_MASK  0x00000700
 #define SIS3820_IRQ_VECTOR_MASK 0x000000ff
-#define SIS3820_FOUR_BIT_MASK 0x0000000f
+#define SIS3820_FOUR_BIT_MASK   0x0000000f
 
-#define SIS3820_OP_MODE_REG_LNE_MASK 0x70
+#define SIS3820_OP_MODE_REG_LNE_MASK  0x00000070
 #define SIS3820_OP_MODE_REG_MODE_MASK 0x70000000
 
 #define SIS3820_CHANNEL_DISABLE_MASK 0xffffffff;
 
 /* Bit shifts */
-#define SIS3820_INPUT_MODE_SHIFT 16
+#define SIS3820_INPUT_MODE_SHIFT  16
 #define SIS3820_OUTPUT_MODE_SHIFT 20
 
 /* VME memory size */
@@ -136,7 +135,7 @@ typedef volatile struct {
   epicsUInt32 key_test_pulse_reg;         /* Offset = 0x408 */
   epicsUInt32 key_counter_clear;          /* Offset = 0x40c */
 
-  epicsUInt32 key_lne_clock_reg;          /* Offset = 0x410 */
+  epicsUInt32 key_lne_pulse_reg;          /* Offset = 0x410 */
   epicsUInt32 key_op_arm_reg;             /* Offset = 0x414 */
   epicsUInt32 key_op_enable_reg;          /* Offset = 0x418 */
   epicsUInt32 key_op_disable_reg;         /* Offset = 0x41c */
@@ -165,29 +164,28 @@ typedef volatile struct {
 
 class drvSIS3820 : public drvSIS38XX
 {
-  
   public:
   drvSIS3820(const char *portName, int baseAddress, int interruptVector, int interruptLevel, 
-             int maxChans, int maxSignals, int inputMode, int outputMode, 
-             bool useDma, int fifoBufferWords);
+             int maxChans, int maxSignals, bool useDma, int fifoBufferWords);
 
-  // Public methods we override from SIS38XX
+  // Public methods we override from drvSIS38XX
   void report(FILE *fp, int details);
   // Public methods new to this class
   void intFunc();        // Should be private, but called from C callback function
   void readFIFOThread(); // Should be private, but called from C callback function
+  virtual void dmaCallback();    // Should be private, but called from C callback function
 
 
   protected:
-  // Protected methods we override from SIS38XX
+  // Protected methods we override from drvSIS38XX
   void erase();
-  // Protected pure virtual functions that we must implement
+  // Protected pure virtual functions from drvSIS38XX that we implement
   void stopMCSAcquire();
   void startMCSAcquire();
   void setChannelAdvanceSource();
   void enableInterrupts();
   void disableInterrupts();
-  void setAcquireMode(SIS38XXAcquireMode acquireMode);
+  void setAcquireMode(SIS38XXAcquireMode_t acquireMode);
   void resetScaler();
   void startScaler();
   void stopScaler();
@@ -196,6 +194,7 @@ class drvSIS3820 : public drvSIS38XX
   void setScalerPresets();
   void setOutputMode();
   void setInputMode();
+  void softwareChannelAdvance();
   void setLED();
   int getLED();
   void setMuxOut();
@@ -207,6 +206,9 @@ class drvSIS3820 : public drvSIS38XX
   void setControlStatusReg();
   void setIrqControlStatusReg();
   SIS3820_REGS *registers_;
+  bool useDma_;
+  DMA_ID dmaId_;
+  epicsEventId dmaDoneEventId_;
 };
 
 /***********************/
@@ -217,8 +219,7 @@ class drvSIS3820 : public drvSIS38XX
 /* iocsh functions */
 extern "C" {
 int drvSIS3820Config(const char *portName, int baseAddress, int interruptVector, int interruptLevel, 
-                     int maxChans, int maxSignals, int inputMode, int outputMode, 
-                     int useDma, int fifoBufferWords);
+                     int maxChans, int maxSignals, int useDma, int fifoBufferWords);
 }
 #endif
 
