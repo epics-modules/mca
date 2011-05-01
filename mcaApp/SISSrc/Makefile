@@ -7,7 +7,7 @@ include $(TOP)/configure/CONFIG
 #USR_CPPFLAGS += -UUSE_DMA
 
 # <name>.dbd will be created from <name>Include.dbd
-DBD += drvSIS38XXSupport.dbd
+DBD += SIS38XXSupport.dbd
 DBD += SIS38XXTest.dbd
 
 #=============================
