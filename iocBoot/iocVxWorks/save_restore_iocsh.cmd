@@ -7,7 +7,7 @@
 #save_restoreSet_NFSHost("oxygen", "164.54.52.4")
 
 # status-PV prefix
-save_restoreSet_status_prefix("SIS:")
+#save_restoreSet_status_prefix("SIS:")
 # Debug-output level
 save_restoreSet_Debug(0)
 
@@ -31,5 +31,6 @@ set_requestfile_path($(AUTOSAVE), "asApp/Db")
 set_requestfile_path($(CALC),     "calcApp/Db")
 set_requestfile_path($(MCA),      "mcaApp/Db")
 set_requestfile_path($(SSCAN),    "sscanApp/Db")
+set_requestfile_path($(STD),      "stdApp/Db")
 
-dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=SIS:")
+#dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=SIS:")
