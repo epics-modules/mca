@@ -872,6 +872,7 @@ static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset
     mcaRecord *pmca=(mcaRecord *)paddr->precord;
 
     *no_elements =  pmca->nord;
+    if (*no_elements == 0) *no_elements = 1;
     *offset = 0;
     return(0);
 }
