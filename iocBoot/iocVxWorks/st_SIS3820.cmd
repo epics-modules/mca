@@ -14,11 +14,12 @@ errlogInit(20000)
 epicsEnvSet("PREFIX",                   "SIS:3820:")
 epicsEnvSet("RNAME",                    "mca")
 epicsEnvSet("MAX_SIGNALS",              "32")
-epicsEnvSet("MAX_CHANS",                "200000")
+epicsEnvSet("MAX_CHANS",                "2048")
 epicsEnvSet("EPICS_CA_MAX_ARRAY_BYTES", "1000000")
 epicsEnvSet("PORT",                     "SIS3820/1")
 # For MCA records FIELD=READ, for waveform records FIELD=PROC
 epicsEnvSet("FIELD",                    "PROC")
+epicsEnvSet("MODEL",                    "SIS3820")
 
 dbLoadDatabase("../../dbd/SIS38XXTest.dbd",0,0)
 SIS38XXTest_registerRecordDeviceDriver(pdbbase) 
@@ -34,12 +35,13 @@ SIS38XXTest_registerRecordDeviceDriver(pdbbase)
 drvSIS3820Config($(PORT), 0xA8000000, 224, 6, $(MAX_CHANS), $(MAX_SIGNALS), 1, 0x200000)
 
 # This loads the scaler record and supporting records
-dbLoadRecords("$(STD)/stdApp/Db/scaler32.db", "P=$(PREFIX), S=scaler1, DTYP=Asyn Scaler, OUT=@asyn($(PORT)), FREQ=50000000)
+dbLoadRecords("$(STD)/stdApp/Db/scaler32.db", "P=$(PREFIX), S=scaler1, DTYP=Asyn Scaler, OUT=@asyn($(PORT)), FREQ=50000000")
 
 # This database provides the support for the MCS functions
 dbLoadRecords("$(MCA)/mcaApp/Db/SIS38XX.template", "P=$(PREFIX), PORT=$(PORT), SCALER=$(PREFIX)scaler1")
 
 # Load either MCA or waveform records below
+# The number of records loaded must be the same as MAX_SIGNALS defined above
 
 # Load the MCA records
 #dbLoadRecords("$(MCA)/mcaApp/Db/simple_mca.db", "P=$(PREFIX), M=$(RNAME)1,  DTYP=asynMCA, INP=@asyn($(PORT) 0),  PREC=3, CHANS=$(MAX_CHANS)")
@@ -110,19 +112,20 @@ dbLoadRecords("$(MCA)/mcaApp/Db/SIS38XX_waveform.template", "P=$(PREFIX), R=$(RN
 dbLoadRecords("$(MCA)/mcaApp/Db/SIS38XX_waveform.template", "P=$(PREFIX), R=$(RNAME)32, INP=@asyn($(PORT) 31), CHANS=$(MAX_CHANS)")
 
 asynSetTraceIOMask($(PORT),0,2)
-#asynSetTraceFile("$(PORT)",0,"SIS3820.out")
+#asynSetTraceFile("$(PORT)",0,"$(MODEL).out")
 #asynSetTraceMask("$(PORT)",0,0xff)
 
-< save_restore_SIS38XX.cmd
-set_pass0_restoreFile("auto_settings_SIS3820.sav")
-set_pass1_restoreFile("auto_settings_SIS3820.sav")
+< save_restore_iocsh.cmd
+set_pass0_restoreFile("auto_settings_$(MODEL).sav")
+set_pass1_restoreFile("auto_settings_$(MODEL).sav")
+save_restoreSet_status_prefix($(PREFIX))
+dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=$(PREFIX)")
 
 
 iocInit()
 
-#seq(&SIS38XX_SNL, "P=$(PREFIX), R=$(RNAME), NUM_SIGNALS=$(MAX_SIGNALS), FIELD=$(FIELD)")
 seq(&SIS38XX_SNL, "P=$(PREFIX), R=$(RNAME), NUM_SIGNALS=$(MAX_SIGNALS), FIELD=$(FIELD)")
 
 # save settings every thirty seconds
-create_monitor_set("auto_settings_SIS3820.req",30,"P=$(PREFIX)")
+create_monitor_set("auto_settings_$(MODEL).req",30,"P=$(PREFIX)")
 
