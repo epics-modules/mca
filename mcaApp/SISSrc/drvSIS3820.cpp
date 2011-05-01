@@ -766,12 +766,12 @@ void drvSIS3820::dmaCallback()
 
 void drvSIS3820::enableInterrupts()
 {
- registers_->irq_config_reg &= ~SIS3820_IRQ_ENABLE;
+  registers_->irq_config_reg |= SIS3820_IRQ_ENABLE;
 }
 
 void drvSIS3820::disableInterrupts()
 {
-  registers_->irq_config_reg |= SIS3820_IRQ_ENABLE;
+  registers_->irq_config_reg &= ~SIS3820_IRQ_ENABLE;
 }
 
 
@@ -804,7 +804,9 @@ void drvSIS3820::intFunc()
   {
     /* Reset the interrupt source */
     registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE2_CLEAR;
-    acquiring_ = false;
+    // We only set acquiring_ false in scaler mode, in MCS mode we let checkMCSDone() handle this
+    // otherwise we can stop reading the FIFO too soon
+    if (acquireMode_ == ACQUIRE_MODE_SCALER) acquiring_ = false;
   }
 
   /* Check for the FIFO almost full interrupt */
@@ -854,7 +856,14 @@ void drvSIS3820::readFIFOThread()
 
   while(true)
   {
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+              "%s:%s: waiting for readFIFOEvent\n",
+              driverName, functionName);
+    enableInterrupts();
     epicsEventWait(readFIFOEventId_);
+    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
+              "%s:%s: got readFIFOEvent\n",
+              driverName, functionName);
     // We got an event.  This can come from:
     //  Acquisition complete in scaler mode
     //  FIFO full in MCS mode
