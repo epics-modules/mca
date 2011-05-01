@@ -229,13 +229,13 @@
   support had device-specific device support for the scaler and MCA records (which were not based on asyn), and the SIS3820
   driver used basic asyn support, rather than asynPortDriver.  In the new drivers the standard asyn device support for the 
   scaler record (from the std module), the mca record (from the mca module), and the waveform record (from the asyn module)
-  is used, there is no custom device support.  Moreover, there is a base class, SIS38XX.cpp, which is implements the functions
+  are used, there is no custom device support.  Moreover, there is a base class, drvSIS38XX.cpp, which is implements the functions
   common to both the SIS3801 and the SIS3820.  SIS38XX is derived from asynPortDriver which handles much of the standard
   asyn code, and SIS3801.cpp and SIS3820.cpp are derived from SIS38XX.cpp.</p>
   
   <p>The SIS3801 and SIS3820 support in R7-0 is not backwards compatible with previous releases.  IOC startup scripts
-  must be changed, and the medm screens are different.  However, the PVs that most clients like SPEC and IDL are using
-  have not changed, so those clients should not need to be changed.</p>
+  must be changed, and the medm screens are different.  However, the PVs that most clients like the sscan record, SPEC 
+  and IDL are using have not changed, so those clients should not need to be modified.</p>
   <h3>MCA record, MCA device support and MCA driver changes</h3>
   <p>Previously the MCA record sent the following messages (defined in mca.h) to device support:</p>
     <ul>
@@ -258,7 +258,7 @@
     the asyn drvInfo value have had the same changes.  The driver now receives a single command to change the
     acquire mode for example, and the value passed on the aysnInt32 interface specifies which acquire mode is being 
     requested.  This makes the
-    interface more extensible.  All existing drivers in synApps have been modified to use the modified interface.</p>
+    interface more extensible.  All existing drivers in synApps have been modified to use the new interface.</p>
   <p>
     
   <h2 style="text-align: center">
