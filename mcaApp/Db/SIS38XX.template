@@ -152,12 +152,12 @@ record(bo,"$(P)SoftwareChannelAdvance") {
 }
 
 # Binary record to enable switching input 1
-# between internal 50MHz reference clock and
+# between internal 25 MHz (SIS3801) or 50MHz (SIS3820) reference clock and
 # and external source 
 record(bo, "$(P)Channel1Source") {
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(PORT) 0)SIS38XX_CHANNEL1_SOURCE")
-  field(ZNAM, "Int. 50MHz")
+  field(ZNAM, "Int. clock")
   field(ONAM, "External")
 }
 
