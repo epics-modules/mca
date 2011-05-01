@@ -1,6 +1,6 @@
 
 file {
-	name="/home/epics/devel/mca/mcaApp/op/adl/Struck8_plots.adl"
+	name="/home/epics/devel/mca/mcaApp/op/adl/SIS38XX_8_plots.adl"
 	version=030102
 }
 display {
@@ -89,9 +89,20 @@ display {
 }
 rectangle {
 	object {
-		x=100
-		y=14
-		width=600
+		x=250
+		y=36
+		width=300
+		height=25
+	}
+	"basic attribute" {
+		clr=54
+	}
+}
+rectangle {
+	object {
+		x=250
+		y=7
+		width=300
 		height=25
 	}
 	"basic attribute" {
@@ -100,15 +111,15 @@ rectangle {
 }
 text {
 	object {
-		x=304
-		y=16
-		width=192
+		x=298
+		y=9
+		width=204
 		height=25
 	}
 	"basic attribute" {
 		clr=0
 	}
-	textix="SIS38XX MCS Plots $(P) $(A)-$(H)"
+	textix="SIS38XX MCS Plots"
 	align="horiz. centered"
 }
 "cartesian plot" {
@@ -135,7 +146,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -166,7 +176,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -197,7 +206,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -228,7 +236,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -307,7 +314,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -338,7 +344,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -369,7 +374,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -400,7 +404,6 @@ text {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -454,4 +457,17 @@ text {
 		clr=54
 	}
 	textix="$(D)"
+}
+text {
+	object {
+		x=275
+		y=36
+		width=250
+		height=25
+	}
+	"basic attribute" {
+		clr=0
+	}
+	textix="$(P)$(A)-$(H)"
+	align="horiz. centered"
 }

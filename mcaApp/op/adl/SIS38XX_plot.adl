@@ -8,7 +8,7 @@ display {
 		x=128
 		y=158
 		width=500
-		height=360
+		height=385
 	}
 	clr=14
 	bclr=4
@@ -89,10 +89,10 @@ display {
 }
 "cartesian plot" {
 	object {
-		x=11
-		y=130
+		x=10
+		y=120
 		width=480
-		height=220
+		height=230
 	}
 	plotcom {
 		title="$(P)$(M)"
@@ -104,14 +104,13 @@ display {
 	style="line"
 	erase_oldest="plot last n pts"
 	trace[0] {
-		ydata="$(P)$(A).VAL"
+		ydata="$(P)$(M).VAL"
 		data_clr=27
 	}
 	x_axis {
 		rangeStyle="auto-scale"
 	}
 	y1_axis {
-		axisStyle="log10"
 		rangeStyle="auto-scale"
 	}
 	y2_axis {
@@ -155,173 +154,17 @@ composite {
 }
 composite {
 	object {
-		x=235
-		y=54
-		width=235
+		x=10
+		y=40
+		width=481
 		height=70
 	}
 	"composite name"=""
 	children {
 		composite {
 			object {
-				x=235
-				y=104
-				width=230
-				height=20
-			}
-			"composite name"=""
-			children {
-				"text update" {
-					object {
-						x=235
-						y=104
-						width=103
-						height=20
-					}
-					monitor {
-						chan="$(P)ElapsedReal"
-						clr=54
-						bclr=4
-					}
-					align="horiz. right"
-					limits {
-					}
-				}
-				text {
-					object {
-						x=345
-						y=104
-						width=120
-						height=20
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="Elapsed time"
-				}
-			}
-		}
-		composite {
-			object {
-				x=235
-				y=54
-				width=157
-				height=20
-			}
-			"composite name"=""
-			children {
-				composite {
-					object {
-						x=235
-						y=54
-						width=90
-						height=20
-					}
-					"composite name"=""
-					children {
-						text {
-							object {
-								x=235
-								y=54
-								width=90
-								height=20
-							}
-							"basic attribute" {
-								clr=18
-							}
-							"dynamic attribute" {
-								vis="if not zero"
-								chan="$(P)Acquiring"
-							}
-							textix="Acquiring"
-							align="horiz. centered"
-						}
-						text {
-							object {
-								x=285
-								y=54
-								width=40
-								height=20
-							}
-							"basic attribute" {
-								clr=21
-							}
-							"dynamic attribute" {
-								vis="if zero"
-								chan="$(P)Acquiring"
-							}
-							textix="Done"
-							align="horiz. centered"
-						}
-					}
-				}
-				text {
-					object {
-						x=332
-						y=54
-						width=60
-						height=20
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="Status"
-				}
-			}
-		}
-		composite {
-			object {
-				x=235
-				y=79
-				width=235
-				height=20
-			}
-			"composite name"=""
-			children {
-				text {
-					object {
-						x=320
-						y=79
-						width=150
-						height=20
-					}
-					"basic attribute" {
-						clr=14
-					}
-					textix="Current channel"
-				}
-				"text update" {
-					object {
-						x=235
-						y=79
-						width=80
-						height=20
-					}
-					monitor {
-						chan="$(P)CurrentChannel"
-						clr=14
-						bclr=51
-					}
-					limits {
-					}
-				}
-			}
-		}
-	}
-}
-composite {
-	object {
-		x=13
-		y=40
-		width=200
-		height=84
-	}
-	"composite name"=""
-	children {
-		composite {
-			object {
-				x=13
-				y=64
+				x=10
+				y=50
 				width=200
 				height=60
 			}
@@ -329,8 +172,8 @@ composite {
 			children {
 				rectangle {
 					object {
-						x=13
-						y=64
+						x=10
+						y=50
 						width=200
 						height=60
 					}
@@ -342,8 +185,8 @@ composite {
 				}
 				"message button" {
 					object {
-						x=114
-						y=96
+						x=111
+						y=82
 						width=90
 						height=20
 					}
@@ -357,8 +200,8 @@ composite {
 				}
 				"message button" {
 					object {
-						x=19
-						y=96
+						x=16
+						y=82
 						width=90
 						height=20
 					}
@@ -372,8 +215,8 @@ composite {
 				}
 				"message button" {
 					object {
-						x=19
-						y=71
+						x=16
+						y=57
 						width=90
 						height=20
 					}
@@ -387,8 +230,8 @@ composite {
 				}
 				"message button" {
 					object {
-						x=114
-						y=71
+						x=111
+						y=57
 						width=90
 						height=20
 					}
@@ -402,17 +245,180 @@ composite {
 				}
 			}
 		}
+		"text update" {
+			object {
+				x=236
+				y=90
+				width=100
+				height=20
+			}
+			monitor {
+				chan="$(P)ElapsedReal"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		composite {
+			object {
+				x=236
+				y=40
+				width=100
+				height=20
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=236
+						y=40
+						width=100
+						height=20
+					}
+					"basic attribute" {
+						clr=18
+					}
+					"dynamic attribute" {
+						vis="if not zero"
+						chan="$(P)Acquiring"
+					}
+					textix="Acquiring"
+					align="horiz. centered"
+				}
+				text {
+					object {
+						x=292
+						y=40
+						width=44
+						height=20
+					}
+					"basic attribute" {
+						clr=21
+					}
+					"dynamic attribute" {
+						vis="if zero"
+						chan="$(P)Acquiring"
+					}
+					textix="Done"
+					align="horiz. centered"
+				}
+			}
+		}
+		"text update" {
+			object {
+				x=236
+				y=65
+				width=100
+				height=20
+			}
+			monitor {
+				chan="$(P)CurrentChannel"
+				clr=54
+				bclr=4
+			}
+			align="horiz. right"
+			limits {
+			}
+		}
+		composite {
+			object {
+				x=341
+				y=40
+				width=150
+				height=70
+			}
+			"composite name"=""
+			children {
+				text {
+					object {
+						x=341
+						y=90
+						width=120
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Elapsed time"
+				}
+				text {
+					object {
+						x=341
+						y=40
+						width=60
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Status"
+				}
+				text {
+					object {
+						x=341
+						y=65
+						width=150
+						height=20
+					}
+					"basic attribute" {
+						clr=14
+					}
+					textix="Current channel"
+				}
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=10
+		y=357
+		width=257
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=10
+				y=357
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)ReadAll.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
 		text {
 			object {
-				x=78
-				y=40
-				width=70
+				x=117
+				y=357
+				width=90
 				height=20
 			}
 			"basic attribute" {
 				clr=14
 			}
-			textix="Acquire"
+			textix="Read rate"
+		}
+		"message button" {
+			object {
+				x=217
+				y=357
+				width=50
+				height=20
+			}
+			control {
+				chan="$(P)DoReadAll.VAL"
+				clr=14
+				bclr=51
+			}
+			label="Read"
+			press_msg="1"
 		}
 	}
 }
