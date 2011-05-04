@@ -180,16 +180,11 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
   // MCA commands
   if (command == mcaStartAcquire_) {
-    /* Start acquisition. */
-    /* Nothing to do if we are already acquiring. */
-    if (acquiring_) goto done;
-    setAcquireMode(ACQUIRE_MODE_MCS);
-
-    /* If the MCS is set to use internal channel advance, just start
-     * collection. If it is set to use an external channel advance, arm
-     * the scaler so that the next LNE pulse starts collection
-     */
-
+    if (acquiring_) {
+      // We are already acquiring.  If we are in scaler mode it is an error, if MCS mode it is OK
+      if (acquireMode_ == ACQUIRE_MODE_MCS) status = asynSuccess;
+      goto done;
+    }
     acquiring_ = true;
     setIntegerParam(mcaAcquiring_, 1);
     erased_ = 0;
@@ -202,7 +197,13 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   }
     
   else if (command == mcaStopAcquire_) {
+    if (acquireMode_ == ACQUIRE_MODE_SCALER) goto done;
     /* stop data acquisition */
+    if (!acquiring_) {
+      // We are not acquiring.
+      status = asynSuccess;
+      goto done;
+    }
     acquiring_ = false;
     // Stop the hardware
     stopMCSAcquire();
@@ -215,8 +216,10 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
      * last started, so we only do it once.
      */
     /* If SIS38XX is acquiring, turn if off */
-    if (acquiring_)
+    if (acquiring_) {
+      if (acquireMode_ == ACQUIRE_MODE_SCALER) goto done;  // Error
       stopMCSAcquire();
+    }
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
               "%s:%s: [%s signal=%d]: erased\n",
@@ -249,8 +252,9 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   // Scaler commands
   else if (command == scalerReset_) {
     /* Reset scaler */
-   resetScaler();
-   acquiring_ = false;
+    if (acquiring_ && (acquireMode_ == ACQUIRE_MODE_MCS)) goto done;
+    resetScaler();
+    acquiring_ = false;
     /* Clear all of the presets and counts*/
     for (i=0; i<maxSignals_; i++) {
       scalerData_[i] = 0;
@@ -259,8 +263,8 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   }
 
   else if (command == scalerArm_) {
+    if (acquiring_ && (acquireMode_ == ACQUIRE_MODE_MCS)) goto done;
     /* Arm or disarm scaler */
-    setAcquireMode(ACQUIRE_MODE_SCALER);
     setScalerPresets();
     if (value != 0) {
       startScaler();
@@ -273,6 +277,7 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
 
   // SIS38XX specific commands
   else if (command == SIS38XXSoftwareChannelAdvance_) {
+    if (acquiring_ && (acquireMode_ == ACQUIRE_MODE_SCALER)) goto done;
     softwareChannelAdvance();
   }
   
