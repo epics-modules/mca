@@ -72,7 +72,6 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
      useDma_(useDma)
 {
   int status;
-  int firmware;
   epicsUInt32 controlStatusReg;
   epicsUInt32 moduleID;
   static const char* functionName="SIS3820";
@@ -134,11 +133,11 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: module ID=%x\n", 
             driverName, functionName, moduleID);
-  firmware = registers_->moduleID_reg & 0x0000FFFF;
-  setIntegerParam(SIS38XXFirmware_, firmware);
+  firmwareVersion_ = registers_->moduleID_reg & 0x0000FFFF;
+  setIntegerParam(SIS38XXFirmware_, firmwareVersion_);
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: firmware=%d\n",
-            driverName, functionName, firmware);
+            driverName, functionName, firmwareVersion_);
 
   // Allocate FIFO readout buffer
   // fifoBufferWords input argument is in words, must be less than SIS3820_FIFO_WORD_SIZE
@@ -168,9 +167,10 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
            "%s:%s: clearing FIFO\n",
            driverName, functionName);
   resetFIFO();
-
-  /* Initialize board in MCS mode */
-  setAcquireMode(ACQUIRE_MODE_MCS);
+  
+  // Disable 25MHz test pulses and test mode
+  registers_->control_status_reg = CTRL_COUNTER_TEST_25MHZ_DISABLE;
+  registers_->control_status_reg = CTRL_COUNTER_TEST_MODE_DISABLE;
 
   /* Set up the interrupt service routine */
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
@@ -189,35 +189,21 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
             driverName, functionName, interruptVector);
   
   /* Write interrupt level to hardware */
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: irq before setting IntLevel= 0x%x\n", 
-            driverName, functionName, registers_->irq_config_reg);
-
   registers_->irq_config_reg &= ~SIS3820_IRQ_LEVEL_MASK;
   registers_->irq_config_reg |= (interruptLevel << 8);
-
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: IntLevel mask= 0x%x\n", 
-            driverName, functionName, (interruptLevel << 8));
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: irq after setting IntLevel= 0x%x\n", 
              driverName, functionName, registers_->irq_config_reg);
 
   /* Write interrupt vector to hardware */
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: irq before setting IntLevel= 0x%x\n", 
-            driverName, functionName, registers_->irq_config_reg);
-
   registers_->irq_config_reg &= ~SIS3820_IRQ_VECTOR_MASK;
   registers_->irq_config_reg |= interruptVector;
-
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: irq = 0x%08x\n", 
             driverName, functionName, registers_->irq_config_reg);
-
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "m%s:%s: irq config register after enabling interrupts= 0x%08x\n", 
-            driverName, functionName, registers_->irq_config_reg);
+            
+  /* Initialize board in MCS mode. This will also set the initial value of the operation mode register. */
+  setAcquireMode(ACQUIRE_MODE_MCS);
 
   /* Create the thread that reads the FIFO */
   if (epicsThreadCreate("SIS3820FIFOThread",
@@ -324,47 +310,20 @@ void drvSIS3820::erase()
 
 void drvSIS3820::startMCSAcquire()
 {
-  int nChans;
-  int prescale;
-  int channelAdvanceSource;
   int initialChannelAdvance;
-  static const char *functionName="startMCSAcquire";
+  int channelAdvanceSource;
+  //static const char *functionName="startMCSAcquire";
   
-  getIntegerParam(mcaNumChannels_, &nChans);
-  getIntegerParam(mcaChannelAdvanceSource_, &channelAdvanceSource);
   getIntegerParam(SIS38XXInitialChannelAdvance_, &initialChannelAdvance);
-  getIntegerParam(mcaPrescale_, &prescale);
+  getIntegerParam(mcaChannelAdvanceSource_, &channelAdvanceSource);
 
-  /* Set the number of channels to acquire */
-  registers_->acq_preset_reg = nChans;
+  setAcquireMode(ACQUIRE_MODE_MCS);
 
-  if (channelAdvanceSource == mcaChannelAdvance_Internal) {
-    /* The SIS3820 requires the value in the LNE prescale register to be one
-     * less than the actual number of incoming signals. We do this adjustment
-     * here, so the user sees the actual number at the record level.
-     */
-    double dwellTime;
-    getDoubleParam(mcaDwellTime_, &dwellTime);
-    registers_->op_mode_reg = (registers_->op_mode_reg & 0xFFFFFF0F) | SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
-    registers_->lne_prescale_factor_reg = 
-      (epicsUInt32) (SIS3820_10MHZ_CLOCK * dwellTime) - 1;
+  if (channelAdvanceSource == mcaChannelAdvance_Internal) 
     registers_->key_op_enable_reg = 1;
-
-  }
-  else if (channelAdvanceSource == mcaChannelAdvance_External) {
-    /* The SIS3820 requires the value in the LNE prescale register to be one
-     * less than the actual number of incoming signals. We do this adjustment
-     * here, so the user sees the actual number at the record level.
-     */
-    registers_->op_mode_reg = (registers_->op_mode_reg & 0xFFFFFF0F) | SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
-    registers_->lne_prescale_factor_reg = prescale - 1;
+  else if (channelAdvanceSource == mcaChannelAdvance_External) 
     registers_->key_op_arm_reg = 1;
-  } 
-  else {
-    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
-              "%s:%s: unsupported channel advance source %d\n", 
-              driverName, functionName, channelAdvanceSource);
-  }
+
   /* Optionally do one software next_clock. This starts the module counting without 
    * waiting for the first external next clock. */
   if (initialChannelAdvance != 0)
@@ -379,6 +338,7 @@ void drvSIS3820::stopMCSAcquire()
 
 void drvSIS3820::startScaler()
 {
+  setAcquireMode(ACQUIRE_MODE_SCALER);
   registers_->key_op_enable_reg = 1;
 }
 
@@ -399,6 +359,7 @@ void drvSIS3820::readScalers()
 void drvSIS3820::resetScaler()
 {
   /* Reset scaler */
+  setAcquireMode(ACQUIRE_MODE_SCALER);
   registers_->key_op_disable_reg = 1;
   resetFIFO();
   registers_->key_counter_clear = 1;
@@ -459,92 +420,130 @@ void drvSIS3820::setScalerPresets()
 void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
 {
   SIS38XXChannel1Source_t channel1Source;
+  int nChans;
+  int prescale;
+  int channelAdvanceSource;
+  double dwellTime;
   static const char* functionName="setAcquireMode";
   
+  acquireMode_ = acquireMode;
+  setIntegerParam(SIS38XXAcquireMode_, acquireMode);
+
   getIntegerParam(SIS38XXChannel1Source_, (int*)&channel1Source);
-  
   /* Enable or disable 50 MHz channel 1 reference pulses. */
   if (channel1Source == CHANNEL1_SOURCE_INTERNAL)
     registers_->control_status_reg |= CTRL_REFERENCE_CH1_ENABLE;
   else
     registers_->control_status_reg |= CTRL_REFERENCE_CH1_DISABLE;
 
-  if (acquireMode_ == acquireMode) return;  /* Nothing to do */
-  acquireMode_ = acquireMode;
-  setIntegerParam(SIS38XXAcquireMode_, acquireMode);
-  callParamCallbacks();
-
-  
-  /* Initialize board and set the control status register */
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: initialising control status register\n",
-            driverName, functionName);
-  setControlStatusReg();
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: control status register = 0x%08x\n",
-            driverName, functionName, registers_->control_status_reg);
-
   /* Set the interrupt control register */
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: setting interrupt control register\n",
-            driverName, functionName);
   setIrqControlStatusReg();
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: interrupt control register = 0x%08x\n",
-            driverName, functionName, registers_->irq_control_status_reg);
-
-  /* Set the operation mode of the scaler */
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: setting operation mode\n",
-            driverName, functionName);
+  
+  /* Set the operation mode register */
   setOpModeReg();
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: operation mode register = 0x%08x\n",
-            driverName, functionName, registers_->op_mode_reg);
 
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: control status register = 0x%08x\n",
-            driverName, functionName, registers_->control_status_reg);
+  switch (acquireMode_) {
+    case ACQUIRE_MODE_MCS:
+      getIntegerParam(mcaNumChannels_, &nChans);
+      getIntegerParam(mcaChannelAdvanceSource_, &channelAdvanceSource);
+      getIntegerParam(mcaPrescale_, &prescale);
+      getDoubleParam(mcaDwellTime_, &dwellTime);
 
-  /* Trigger an interrupt when 1024 FIFO registers have been filled */
-  registers_->fifo_word_threshold_reg = 1024;
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: FIFO threshold = %d\n",
-            driverName, functionName, registers_->fifo_word_threshold_reg);
+      /* Clear all presets from scaler mode */
+      clearScalerPresets();
+      
+      /* Disable channel in MCS mode. We enable the first maxSignals_ inputs */
+      registers_->copy_disable_reg = 0xFFFFFFFF << maxSignals_;
+      
+      /* Set the number of channels to acquire */
+      registers_->acq_preset_reg = nChans;
 
-  /* Set the LNE channel */
-  if (acquireMode_ == ACQUIRE_MODE_MCS) {
-    registers_->lne_channel_select_reg = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
-  } else {
-    registers_->lne_channel_select_reg = SIS3820_LNE_CHANNEL;
+      /* Set the LNE channel NOTE: This should allow other sources in the future */
+      registers_->lne_channel_select_reg = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+
+      if (channelAdvanceSource == mcaChannelAdvance_Internal) {
+        /* The SIS3820 requires the value in the LNE prescale register to be one
+         * less than the actual number of incoming signals. We do this adjustment
+         * here, so the user sees the actual number at the record level.
+         */
+        registers_->op_mode_reg = (registers_->op_mode_reg & ~0xF0) | SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+        registers_->lne_prescale_factor_reg = 
+          (epicsUInt32) (SIS3820_10MHZ_CLOCK * dwellTime) - 1;
+      }
+      else if (channelAdvanceSource == mcaChannelAdvance_External) {
+        /* The SIS3820 requires the value in the LNE prescale register to be one
+         * less than the actual number of incoming signals. We do this adjustment
+         * here, so the user sees the actual number at the record level.
+         */
+        registers_->op_mode_reg = (registers_->op_mode_reg & ~0xF0) | SIS3820_LNE_SOURCE_CONTROL_SIGNAL;
+        registers_->lne_prescale_factor_reg = prescale - 1;
+      } 
+      else {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
+                  "%s:%s: unsupported channel advance source %d\n", 
+                  driverName, functionName, channelAdvanceSource);
+      }
+      break;
+      
+    case ACQUIRE_MODE_SCALER:
+      /* Clear the preset register from MCS mode */
+      registers_->acq_preset_reg = 0;
+      
+      /* Set the LNE channel */
+      registers_->lne_channel_select_reg = SIS3820_LNE_CHANNEL;
+
+      /* Disable channel in scaler mode. */
+      registers_->count_disable_reg = 0xFFFFFFFF << maxSignals_;
+
+      break;
   }
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: set LNE signal generation to channel %d\n",
-            driverName, functionName, registers_->lne_channel_select_reg);
 
-  /*
-   * Set number of readout channels to maxSignals
-   * Assumes that the lower channels will be used first, and the only unused
-   * channels will be at the upper end of the channel range.
-   * Create a mask with zeros in the rightmost maxSignals bits,
-   * 1 in all higher order bits.
-   */
-  /* Disable channel in MCS mode. */
-  registers_->copy_disable_reg = 0xFFFFFFFF << maxSignals_;
-  /* Disable channel in scaler mode. */
-  registers_->count_disable_reg = 0xFFFFFFFF << maxSignals_;
-  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-            "%s:%s: setting copy disable register=0x%08x\n",
-            driverName, functionName, registers_->copy_disable_reg);
-
-  if (acquireMode_ == ACQUIRE_MODE_MCS) {
-    /* Clear all presets from scaler mode */
-    clearScalerPresets();
-  } else {
-    /* Clear the preset register */
-    registers_->acq_preset_reg = 0;
-  }
+  callParamCallbacks();
 }
+
+void drvSIS3820::setOpModeReg()
+{
+  int inputMode;
+  int outputMode;
+  int maxOutputMode;
+  epicsUInt32 operationRegister = 0;
+
+  getIntegerParam(SIS38XXInputMode_, &inputMode);
+  getIntegerParam(SIS38XXOutputMode_, &outputMode);
+
+  // We hard-code the data format for now, but support for other formats may be added in the future
+  operationRegister   |= SIS3820_MCS_DATA_FORMAT_32BIT;
+  operationRegister   |= SIS3820_SCALER_DATA_FORMAT_32BIT;
+
+  /* Check that input mode is in the allowable range. If so, shift the mode
+   * requested by the correct number of bits, and add to the register. */
+  if (inputMode < 0 || inputMode > 5) inputMode = 0;
+  operationRegister |= (inputMode << SIS3820_INPUT_MODE_SHIFT);
+
+  /* Check that output mode is in the allowable range. If so, shift the mode
+   * requested by the correct number of bits, and add to the register. */
+  if (firmwareVersion_ >= 0x010A) maxOutputMode = 3;
+  else maxOutputMode = 2;
+  if (outputMode < 0 || outputMode > maxOutputMode) outputMode = 0;
+  operationRegister |= (outputMode << SIS3820_OUTPUT_MODE_SHIFT);
+
+  if (acquireMode_ == ACQUIRE_MODE_MCS) {
+    operationRegister |= SIS3820_CLEARING_MODE;
+    operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
+    operationRegister |= SIS3820_FIFO_MODE;
+    operationRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
+  } else {
+    operationRegister |= SIS3820_NON_CLEARING_MODE;
+    operationRegister |= SIS3820_LNE_SOURCE_VME;
+    operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
+    operationRegister |= SIS3820_FIFO_MODE;
+    operationRegister |= SIS3820_HISCAL_START_SOURCE_VME;
+    operationRegister |= SIS3820_OP_MODE_SCALER;
+  }
+  registers_->op_mode_reg = operationRegister;
+}
+
+
 
 void drvSIS3820::softwareChannelAdvance()
 {
@@ -553,40 +552,19 @@ void drvSIS3820::softwareChannelAdvance()
   // It appears to be necessary to set the LNE source to VME for this to work
   // Save the current value, clear the bits to set it to VME, restore
   regValue = registers_->op_mode_reg;
-  registers_->op_mode_reg = regValue & 0xFFFFFF0F;
+  registers_->op_mode_reg = regValue & ~0xF0;
   registers_->key_lne_pulse_reg = 1;
   registers_->op_mode_reg = regValue;
 }
 
 void drvSIS3820::setInputMode()
 {
-  int inputMode;
-
-  getIntegerParam(SIS38XXInputMode_, &inputMode);
-
-  /* Check that input mode is in the allowable range. If so, shift the mode
-   * requested by the correct number of bits, and add to the register. */
-  if (inputMode < 0 || inputMode > 5) inputMode = 0;
-
-  registers_->op_mode_reg |= (inputMode << SIS3820_INPUT_MODE_SHIFT);
+  setOpModeReg();
 }
 
 void drvSIS3820::setOutputMode()
 {
-  int outputMode;
-  int maxOutputMode;
-  int firmware;
-
-  getIntegerParam(SIS38XXOutputMode_, &outputMode);
-  getIntegerParam(SIS38XXFirmware_, &firmware);
-
-  /* Check that output mode is in the allowable range. If so, shift the mode
-   * requested by the correct number of bits, and add to the register. */
-  if (firmware >= 0x010A) maxOutputMode = 3;
-  else maxOutputMode = 2;
-  if (outputMode < 0 || outputMode > maxOutputMode) outputMode = 0;
-
-  registers_->op_mode_reg |= (outputMode << SIS3820_OUTPUT_MODE_SHIFT);
+  setOpModeReg();
 }
 
 
@@ -613,12 +591,10 @@ void drvSIS3820::setMuxOut()
 {
   int value;
   int outputMode;
-  int firmware;
   static const char *functionName="setMuxOut";
   
   getIntegerParam(SIS38XXMuxOut_, &value);
   getIntegerParam(SIS38XXOutputMode_, &outputMode);
-  getIntegerParam(SIS38XXFirmware_, &firmware);
   if (outputMode != 3) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: scalerMuxOutCommand: output-mode %d does not support MUX_OUT.\n", 
@@ -631,10 +607,10 @@ void drvSIS3820::setMuxOut()
               driverName, functionName, value);
     return;
   }
-  if (firmware < 0x010A) {
+  if (firmwareVersion_ < 0x010A) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: scalerMuxOutCommand: MUX_OUT is not supported in firmware version 0x%4.4X\n", 
-              driverName, functionName, firmware);
+              driverName, functionName, firmwareVersion_);
     return;
   }
   registers_->mux_out_channel_select_reg = value - 1;
@@ -648,64 +624,6 @@ int drvSIS3820::getMuxOut()
   return registers_->mux_out_channel_select_reg + 1;
 }
 
-
-
-void drvSIS3820::setControlStatusReg()
-{
-  /* Set up the default behaviour of the card */
-  /* Initially, this will have the following:
-   * User LED off
-   * Counter test modes disabled
-   * Reference pulser enabled to Channel 1
-   * LNE prescaler active
-   */
-
-  epicsUInt32 controlRegister = 0;
-
-  controlRegister |= CTRL_USER_LED_OFF;
-  controlRegister |= CTRL_COUNTER_TEST_25MHZ_DISABLE;
-  controlRegister |= CTRL_COUNTER_TEST_MODE_DISABLE;
-  /*controlRegister |= CTRL_REFERENCE_CH1_ENABLE;*/
-
-  registers_->control_status_reg = controlRegister;
-}
-
-
-void drvSIS3820::setOpModeReg()
-{
-  /* Need to set this up to be accessed from asyn interface to allow changes on
-   * the fly. Prior to that, I should split it out to allow individual changes
-   * to be made from iocsh.
-   */
-
-  /* Set up the operation mode of the SIS3820.
-   * FIFO emulation mode
-   * Arm/enable mode LNE front panel
-   * LNE sourced from front panel
-   * 32 bit data format
-   * Clearing mode - want the incremental counts
-   */
-
-  epicsUInt32 operationRegister = 0;
-
-  operationRegister |= SIS3820_MCS_DATA_FORMAT_32BIT;
-  operationRegister |= SIS3820_SCALER_DATA_FORMAT_32BIT;
-
-  if (acquireMode_ == ACQUIRE_MODE_MCS) {
-    operationRegister |= SIS3820_CLEARING_MODE;
-    operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
-    operationRegister |= SIS3820_FIFO_MODE;
-    operationRegister |= SIS3820_OP_MODE_MULTI_CHANNEL_SCALER;
-  } else {
-    operationRegister |= SIS3820_NON_CLEARING_MODE;
-    operationRegister |= SIS3820_LNE_SOURCE_VME;
-    operationRegister |= SIS3820_ARM_ENABLE_CONTROL_SIGNAL;
-    operationRegister |= SIS3820_FIFO_MODE;
-    operationRegister |= SIS3820_HISCAL_START_SOURCE_VME;
-    operationRegister |= SIS3820_OP_MODE_SCALER;
-  }
-  registers_->op_mode_reg = operationRegister;
-}
 
 void drvSIS3820::setIrqControlStatusReg()
 {
