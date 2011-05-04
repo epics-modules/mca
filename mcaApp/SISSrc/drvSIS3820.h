@@ -203,7 +203,6 @@ class drvSIS3820 : public drvSIS38XX
   private:
   void resetFIFO();
   void setOpModeReg();
-  void setControlStatusReg();
   void setIrqControlStatusReg();
   SIS3820_REGS *registers_;
   bool useDma_;
