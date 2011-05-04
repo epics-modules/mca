@@ -27,6 +27,7 @@ SIS38XX_LIBS += std
 SIS38XX_LIBS += busy
 SIS38XX_LIBS += calc autosave
 SIS38XX_LIBS += asyn
+SIS38XX_LIBS += seq pv
 SIS38XX_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 #==================================
