@@ -67,7 +67,6 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
 
 {
   int status;
-  int firmware;
   epicsUInt32 controlStatusReg;
   epicsUInt32 moduleID;
   static const char* functionName="SIS3801";
@@ -108,11 +107,11 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: module ID=%x\n", 
             driverName, functionName, moduleID);
-  firmware = (registers_->irq_reg & 0x0000F000) >> 12;
-  setIntegerParam(SIS38XXFirmware_, firmware);
+  firmwareVersion_ = (registers_->irq_reg & 0x0000F000) >> 12;
+  setIntegerParam(SIS38XXFirmware_, firmwareVersion_);
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: firmware=%d\n",
-            driverName, functionName, firmware);
+            driverName, functionName, firmwareVersion_);
 
   // Create the mutex used to lock access to the FIFO
   fifoLockId_ = epicsMutexCreate();
@@ -257,16 +256,16 @@ void drvSIS3801::startMCSAcquire()
   int prescale;
   int channelAdvanceSource;
   int initialChannelAdvance;
-  int firmwareVersion;
   static const char *functionName="startMCSAcquire";
  
   getIntegerParam(mcaNumChannels_, &nChans);
   getIntegerParam(mcaChannelAdvanceSource_, &channelAdvanceSource);
   getIntegerParam(SIS38XXInitialChannelAdvance_, &initialChannelAdvance);
   getIntegerParam(mcaPrescale_, &prescale);
-  getIntegerParam(SIS38XXFirmware_, &firmwareVersion);
+  
+  setAcquireMode(ACQUIRE_MODE_MCS);
 
-  if (firmwareVersion >= 5) {
+  if (firmwareVersion_ >= 5) {
     if (channelAdvanceSource == mcaChannelAdvance_Internal) {
         /* The SIS3801 requires the value in the LNE prescale register to be one
          * less than the actual number of incoming signals. We do this adjustment
@@ -345,6 +344,8 @@ void drvSIS3801::startScaler()
 {
   //static const char *functionName="startScaler";
 
+  setAcquireMode(ACQUIRE_MODE_SCALER);
+  
   registers_->csr_reg = CONTROL_M_ENABLE_10MHZ_LNE_PRESCALER;
   registers_->csr_reg = CONTROL_M_DISABLE_LNE_PRESCALER;
   registers_->prescale_factor_reg = ((SIS3801_10MHZ_CLOCK / SIS3801_SCALER_MODE_RATE) - 1);
@@ -371,6 +372,7 @@ void drvSIS3801::readScalers()
 void drvSIS3801::resetScaler()
 {
   //static const char *functionName="resetScaler";
+  setAcquireMode(ACQUIRE_MODE_SCALER);
   resetFIFO();
   nextChan_ = 0;
   nextSignal_ = 0;
@@ -390,19 +392,16 @@ void drvSIS3801::setScalerPresets()
 void drvSIS3801::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
 {
   SIS38XXChannel1Source_t channel1Source;
-  int firmwareVersion;
   static const char* functionName="setAcquireMode";
   
   getIntegerParam(SIS38XXChannel1Source_, (int*)&channel1Source);
-  getIntegerParam(SIS38XXFirmware_, &firmwareVersion);
   
   /* Enable or disable 25 MHz channel 1 reference pulses. */
-  if ((channel1Source == CHANNEL1_SOURCE_INTERNAL) && (firmwareVersion >= 5))
+  if ((channel1Source == CHANNEL1_SOURCE_INTERNAL) && (firmwareVersion_ >= 5))
     registers_->enable_ch1_pulser = 1;
   else
     registers_->disable_ch1_pulser = 1;
 
-  if (acquireMode_ == acquireMode) return;  /* Nothing to do */
   acquireMode_ = acquireMode;
   setIntegerParam(SIS38XXAcquireMode_, acquireMode);
   callParamCallbacks();
@@ -476,16 +475,13 @@ int drvSIS3801::getMuxOut()
 
 void drvSIS3801::setControlStatusReg()
 {
-  int firmwareVersion;
   //static const char* functionName="setControlStatusReg";
 
-  getIntegerParam(SIS38XXFirmware_, &firmwareVersion);
-  
   /* Set up the default behaviour of the card */
   registers_->csr_reg = CONTROL_M_DISABLE_FIFO_TEST_MODE;    /* Disable FIFO test mode */
   registers_->csr_reg = CONTROL_M_DISABLE_25MHZ_TEST_PULSES; /* No 25MHz test pulses */
   registers_->csr_reg = CONTROL_M_DISABLE_INPUT_TEST_MODE;   /* Disable test input */
-  if (firmwareVersion < 5) {
+  if (firmwareVersion_ < 5) {
   registers_->csr_reg = CONTROL_M_DISABLE_BROADCAST_MODE;    /* No broadcast mode */
   registers_->csr_reg = CONTROL_M_DISABLE_BROADCAST_HAND;    /* No broadcast handshake */
   }
