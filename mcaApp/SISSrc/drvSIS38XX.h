@@ -138,6 +138,7 @@ class drvSIS38XX : public asynPortDriver
   #define LAST_SIS38XX_PARAM SIS38XXFirmware_
 
   bool exists_;
+  int firmwareVersion_;
   epicsUInt32 *fifo_base_;
   epicsUInt32 irqStatusReg_;
   SIS38XXAcquireMode_t acquireMode_;
