@@ -9,7 +9,7 @@ grecord(longout,"$(P)mcaSumNDets") {
 	field(DTYP,"Soft Channel")
 	field(DOL,"8")
 }
-grecord(genSub,"$(P)mcaSum") {
+grecord(aSub,"$(P)mcaSum") {
 	field(SDIS,"$(P)mcaSumEnable.VAL  NPP MS")
 	field(DISV,"1")
 	field(PREC,"3")
@@ -56,7 +56,7 @@ grecord(seq, "$(P)mcaSumEtc") {
 	field(DOL3, "1")
 	field(LNK3, "$(P)mca0.READ  PP MS")
 }
-grecord(genSub,"$(P)mcaSum_shift") {
+grecord(aSub,"$(P)mcaSum_shift") {
 	field(PINI,"YES")
 	field(INAM,"mcaSum_do_shift")
 	field(SNAM,"mcaSum_do_shift")
@@ -123,7 +123,7 @@ grecord(ao,"$(P)mcaSum_shift_8") {
     field(FLNK,"$(P)mcaSum_shift.PROC")
     field(PREC,"2")
 }
-grecord(genSub,"$(P)mcaSum_op") {
+grecord(aSub,"$(P)mcaSum_op") {
 	field(PINI,"YES")
 	field(INAM,"mcaSum_do_op")
 	field(SNAM,"mcaSum_do_op")
@@ -207,7 +207,7 @@ grecord(mbbo,"$(P)mcaSum_op_8") {
     field(ONST," + ")
     field(FLNK,"$(P)mcaSum_op.PROC")
 }
-grecord(genSub,"$(P)mcaSum_fact") {
+grecord(aSub,"$(P)mcaSum_fact") {
 	field(PINI,"YES")
 	field(INAM,"mcaSum_do_fact")
 	field(SNAM,"mcaSum_do_fact")
