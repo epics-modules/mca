@@ -10,44 +10,52 @@
     mca Release Notes</h1>
   <h2 style="text-align: center">
     Release 7-0 (XXX-May-2011)</h2>
-  <h3>SIS3801 and SIS320 multi-channel scaler support</h3>
+  <h3>
+    SIS3801 and SIS320 multi-channel scaler support</h3>
   <p>
-  The SIS3801 and SIS3820 support  has been completely rewritten.
-  In previous releases the driver was "synchronous", meaning that the MCA records blocked while
-  the arrays were read from the FIFO on the VME modules.  FIFO reads were done with VME program I/O,
-  which can only do about 1000 32-bit words per ms.  This was acceptable if the arrays were small
-  (e.g. 2048 channels) because it only took a few ms to read each array.  However, some users were beginning
-  to use very large arrays (e.g. 2,000,000 channels).  In this case it took several seconds to 
-  read each array.  Because the MCA records were synchronous, this blocked execution of other EPICS records
-  and tasks while reading the hardware.  This was unacceptable, leading to channel access disconnects and
-  other bad effects.</p>
+    The SIS3801 and SIS3820 support has been completely rewritten. In previous releases
+    the driver was "synchronous", meaning that the MCA records blocked while the arrays
+    were read from the FIFO on the VME modules. FIFO reads were done with VME program
+    I/O, which can only do about 1000 32-bit words per ms. This was acceptable if the
+    arrays were small (e.g. 2048 channels) because it only took a few ms to read each
+    array. However, some users were beginning to use very large arrays (e.g. 2,000,000
+    channels). In this case it took several seconds to read each array. Because the
+    MCA records were synchronous, this blocked execution of other EPICS records and
+    tasks while reading the hardware. This was unacceptable, leading to channel access
+    disconnects and other bad effects.</p>
   <p>
-  One way to fix this would be to make the drivers asynchronous, meaning that device support will do the I/O
-  in a separate thread, and the records will not block.  This is how other slow drivers for the MCA records work, 
-  for example the Canberra AIM and the XIA DXP modules.  However, this approach cannot be used with the SIS
-  drivers because they must support the EPICS "scaler" record, and the scaler record does not work properly with
-  asynchronous device suppport.</p>
+    One way to fix this would be to make the drivers asynchronous, meaning that device
+    support will do the I/O in a separate thread, and the records will not block. This
+    is how other slow drivers for the MCA records work, for example the Canberra AIM
+    and the XIA DXP modules. However, this approach cannot be used with the SIS drivers
+    because they must support the EPICS "scaler" record, and the scaler record does
+    not work properly with asynchronous device suppport.</p>
   <p>
-  Instead, the drivers were rewritten so that the FIFO is read out into a driver buffer in a low-priority background
-  thread.  When the MCA records process they now just read the data from this driver buffer using a memcpy()
-  call, which is very fast.  Furthermore on the 3820 the driver now reads the FIFO using DMA over the VME
-  bus.  This yields a factor of 10 improvement in speed, over 40MB/s, compared to 4MB/s with program I/O.</p>
-  <p>The new drivers have excellent performance with very large arrays, and arrays with more than 10 million elements can now
-  be used if the VME CPU has sufficient memory.  For example, a test was done with the following configuration:
-    <ul>
-      <li>SIS3820 module</li>
-      <li>MVME 5100 CPU with 512MB of memory</li>
-      <li>vxWorks 5.4.2 with Andrew Johnson's BSP with DMA support</li>
-      <li>2 active inputs</li>
-      <li>10,000,000 channels per waveform</li>
-      <li>2 waveform records</li>
-      <li>Internal channel advance</li>
-      <li>1 microsecond dwell time</li>
-      <li>ReadAll.SCAN = Passive</li>
-    </ul>
-  The theoretical time for this acquisition to complete is 10 seconds.  The following is the output from
-  the EPICS "camonitor" program on a Linux client looking at the Acquiring PV, and the first 2 channels of each waveform
-  record:</p>
+    Instead, the drivers were rewritten so that the FIFO is read out into a driver buffer
+    in a low-priority background thread. When the MCA records process they now just
+    read the data from this driver buffer using a memcpy() call, which is very fast.
+    Furthermore on the 3820 the driver now reads the FIFO using DMA over the VME bus.
+    This yields a factor of 10 improvement in speed, over 40MB/s, compared to 4MB/s
+    with program I/O.</p>
+  <p>
+    The new drivers have excellent performance with very large arrays, and arrays with
+    more than 10 million elements can now be used if the VME CPU has sufficient memory.
+    For example, a test was done with the following configuration:</p>
+  <ul>
+    <li>SIS3820 module with 512MB of FIFO memory</li>
+    <li>MVME 5100 CPU with 512MB of memory</li>
+    <li>vxWorks 5.4.2 with Andrew Johnson's BSP with DMA support</li>
+    <li>2 active inputs</li>
+    <li>10,000,000 channels per waveform</li>
+    <li>2 waveform records</li>
+    <li>Internal channel advance</li>
+    <li>1 microsecond dwell time</li>
+    <li>ReadAll.SCAN = Passive</li>
+  </ul>
+  <p>
+    The theoretical time for this acquisition to complete is 10 seconds. The following
+    is the output from the EPICS "camonitor" program on a Linux client looking at the
+    Acquiring PV, and the first 2 channels of each waveform record:</p>
   <pre>
     >camonitor -tc -#2 SIS:3820:mca1 SIS:3820:mca2 SIS:3820:Acquiring 
     SIS:3820:Acquiring             (2011-05-01 11:19:35.050808) Acquiring 
@@ -55,212 +63,374 @@
     SIS:3820:mca2                  (2011-05-01 11:19:46.017223) 2 0 0 
     SIS:3820:Acquiring             (2011-05-01 11:19:46.017264) Done 
   </pre>
-  So the time between when acquistion started and when the client received the data and the Acquiring=Done status
-  was 10.97 seconds.  There is thus less than 1 second of overhead in collecting 2 waveforms of 10,000,000 elements
-  each, which is 80MB of data.</p>
-  <p>The following features have also been added to the drivers (thanks to Ulrik Pedersen from DLS for the
-  initial implementation of several of these):</p>
+  <p>
+    So the time between when acquisition started and when the client received the data
+    and the Acquiring=Done status was 10.97 seconds. There is thus less than 1 second
+    of overhead in collecting 2 waveforms of 10,000,000 elements each, which is 80MB
+    of data.</p>
+  <p>
+    The following features have also been added to the drivers (thanks to Ulrik Pedersen
+    from DLS for the initial implementation of several of these):</p>
   <ul>
-    <li>It is no longer necessary to use the MCA record for the arrays.  The standard EPICS waveform record can
-    now be used instead if that is desired.  The performance is somewhat better with the waveform record, because it has less
-    overhead when it reads the arrays, not needing to perform ROI calculations, etc.  The example startup scripts contain
-    commands for both MCA and waveform records</li>
-    <li>There is a new PV to perform a software channel advance. (Note that channel advance is called LNE in the SIS manuals).
-    This PV can be processed at any time, and works in both internal and external channel advance modes.</li>
-    <li>There is a new PV to control whether the driver does an initial software channel advance when acquisition is
-    started, or whether the module does not start counting until the first internal or external channel advance signal arrives.
-    Previously this option was only configurable in the startup script for the 3801, and was not available for the 3820
-    at all.</li>
-    <li>There are new PVs to control the input and output modes.  These control the functionality of the 4 input
-    control signals and the 4 output control signals.  There were previously only configurable in the startup script,
-    while they can now be changed at run-time.</li>
-    <li>There is a new PV to control the channel 1 source, i.e. whether it uses the internal clock (25MHz on 3801, 50MHz on
-    3820), or an external pulse input.  This was previously only configurable in the startup script.</li>
-    <li>There is a new PV to control the user-defined LED on the module, and on the 3820 this is linked to a user-defineable
-    binary output signal on a control output.</li>
-    <li>There is a new PV to select which input is routed via the MUX to one of the output control signals on the 3820.</li>
-    <li>There are new PVs that reflect the current acquisition mode (MCS or Scaler), the model number (3801 or 3820), 
-    and the firmware version.</li>
-    <li>There is a new PV that displays the current channel number being acquired.  This PV is I/O Intr scanned, and reflects
-    the current value, whether or not the MCA or waveform records are being periodically processed during acquisition.</li>
-    <li>The elapsed time PV is now also I/O Intr scanned, and reflects
-    the current value, whether or not the MCA or waveform records are being periodically processed during acquisition.</li>
-    <li>It is no longer necessary to periodically process the MCA records during acquisition to obtain status
-    updates, so the StatusAll PV has been removed.</li>
-    <li>The ReadAll PV can be periodically processed during acquisition to read the arrays into the MCA or waveform records.
-    However, this is optional, and if this record is Passive then the arrays will still be read into these records as
-    soon as acquisition completes.  For highest performance with very large arrays this record should be Passive.</li>
-    <li>In previous releases the database file (e.g. Struck32.db) contained the logic to process all of the MCA 
-    records when acquisition completed and
-    to do other coordination tasks for the multiple MCA records.  This required having multiple databases depending on how many
-    MCA records (e.g. active inputs) were being used, and 8 and 32 input versions were included in the distribution.  If an application demanded
-    a different number of inputs (e.g. only 2 inputs with a very large number of channels) then the database needed to be customized.
-    In the new release this logic is no longer in the database; rather it is contained in a very simple SNL program that
-    must be run.  This allows a single simple database to be used, no matter how many MCA or waveform records are being
-    used.</li>
-    <li>There is now logic in the database to disable Autocount mode in the scaler record when MCS data acquisition is started.
-    This can prevent the interference that has been a problem in the past if Autocount started the scaler while MCS
-    acquisition was in progress.  However, this logic is not bullet-proof depending on exact timing, so it is still 
-    recommended to manually turn off autocount before starting MCS acquisition.</li>
-    <li>The performance of the Erase operation has been significantly improved for large arrays.  Previously the entire
-    buffer, which could be many megabytes, was erased when any MCA record did the erase operation. This has been fixed 
-    so that it is only done once, and not 32 times if there are 32 MCA records.</li>
+    <li>It is no longer necessary to use the MCA record for the arrays. The standard EPICS
+      waveform record can now be used instead if that is desired. The performance is somewhat
+      better with the waveform record, because it has less overhead when it reads the
+      arrays, not needing to perform ROI calculations, etc. The example startup scripts
+      contain commands for both MCA and waveform records</li>
+    <li>There is a new PV to perform a software channel advance. (Note that channel advance
+      is called LNE in the SIS manuals). This PV can be processed at any time, and works
+      in both internal and external channel advance modes.</li>
+    <li>There is a new PV to control whether the driver does an initial software channel
+      advance when acquisition is started, or whether the module does not start counting
+      until the first internal or external channel advance signal arrives. Previously
+      this option was only configurable in the startup script for the 3801, and was not
+      available for the 3820 at all.</li>
+    <li>There are new PVs to control the input and output modes. These control the functionality
+      of the 4 input control signals and the 4 output control signals. They were previously
+      only configurable in the startup script, while they can now be changed at run-time.</li>
+    <li>There is a new PV to control the channel 1 source, i.e. whether it uses the internal
+      clock (25MHz on 3801, 50MHz on 3820), or an external pulse input. This was previously
+      only configurable in the startup script.</li>
+    <li>There is a new PV to control the user-defined LED on the module, and on the 3820
+      this is linked to a user-defineable binary output signal on a control output.</li>
+    <li>There is a new PV to select which input is routed via the MUX to one of the output
+      control signals on the 3820.</li>
+    <li>There are new PVs that reflect the current acquisition mode (MCS or Scaler), the
+      model number (3801 or 3820), and the firmware version.</li>
+    <li>There is a new PV that displays the current channel number being acquired. This
+      PV is I/O Intr scanned, and reflects the current value, whether or not the MCA or
+      waveform records are being periodically processed during acquisition.</li>
+    <li>The elapsed time PV is now also I/O Intr scanned, and reflects the current value,
+      whether or not the MCA or waveform records are being periodically processed during
+      acquisition.</li>
+    <li>It is no longer necessary to periodically process the MCA records during acquisition
+      to obtain status updates, so the StatusAll PV has been removed.</li>
+    <li>The ReadAll PV can be periodically processed during acquisition to read the arrays
+      into the MCA or waveform records. However, this is optional, and if this record
+      is Passive then the arrays will still be read into these records as soon as acquisition
+      completes. For highest performance with very large arrays this record should be
+      Passive.</li>
+    <li>In previous releases the database file (e.g. Struck32.db) contained the logic
+      to process all of the MCA records when acquisition completed and to do other coordination
+      tasks for the multiple MCA records. This required having multiple databases depending
+      on how many MCA records (e.g. active inputs) were being used, and 8 and 32 input
+      versions were included in the distribution. If an application demanded a different
+      number of inputs (e.g. only 2 inputs with a very large number of channels) then
+      the database needed to be customized. In the new release this logic is no longer
+      in the database; rather it is contained in a very simple SNL program that must be
+      run. This allows a single simple database to be used, no matter how many MCA or
+      waveform records are being used.</li>
+    <li>There is now logic in the database to disable Autocount mode in the scaler record
+      when MCS data acquisition is started. This can prevent the interference that has
+      been a problem in the past if Autocount started the scaler while MCS acquisition
+      was in progress. However, this logic is not bullet-proof depending on exact timing,
+      so it is still recommended to manually turn off autocount before starting MCS acquisition.</li>
+    <li>The performance of the Erase operation has been significantly improved for large
+      arrays. Previously the entire buffer, which could be many megabytes, was erased
+      when any MCA record did the erase operation. This has been fixed so that it is only
+      done once, and not 32 times if there are 32 MCA records.</li>
   </ul>
-  <p>With the many improvements and new features in the drivers the amount of code has actually <b>decreased</b> in R7-0
-  compared to previous releases.  The following table compares the size of the driver code and databases between R-7 and
-  R6-12-15.<p>
-    <table border="1" cellpadding="2" cellspacing="2" style="text-align: right">
+  <p>
+    With the many improvements and new features in the drivers the amount of code has
+    actually <b>decreased</b> in R7-0 compared to previous releases. The following table
+    compares the size of the driver code and databases between R6-12-5 and R7-0.</p>
+  <table border="1" cellpadding="2" cellspacing="2" style="text-align: right">
     <tbody>
       <tr>
-        <th align="center" colspan="4">Size of driver source code</td>
+        <th align="center" colspan="4">
+          Size of driver source code</th>
       </tr>
       <tr>
-        <th align="center" colspan="2">R6-12-5</th>
-        <th align="center" colspan="2">R7-0</th>
+        <th align="center" colspan="2">
+          R6-12-5
+        </th>
+        <th align="center" colspan="2">
+          R7-0
+        </th>
       </tr>
       <tr>
-        <th>File</td>
-        <th>Lines</td>
-        <th>File</td>
-        <th>Lines</td>
+        <th>
+          File</th>
+        <th>
+          Lines</th>
+        <th>
+          File</th>
+        <th>
+          Lines</th>
       </tr>
       <tr>
-        <td>devStr7201.c</td>
-        <td>264</td>
-        <td>SIS38XX_SNL.st</td>
-        <td>116</td>
+        <td>
+          devStr7201.c
+        </td>
+        <td>
+          264
+        </td>
+        <td>
+          SIS38XX_SNL.st
+        </td>
+        <td>
+          116
+        </td>
       </tr>
       <tr>
-        <td>devScalerST7201.c</td>
-        <td>326</td>
-        <td>apsLib.h</td>
-        <td>58</td>
+        <td>
+          devScalerST7201.c
+        </td>
+        <td>
+          326
+        </td>
+        <td>
+          apsLib.h
+        </td>
+        <td>
+          58
+        </td>
       </tr>
       <tr>
-        <td>drvMcaSIS3820Asyn.c</td>
-        <td>1689</td>
-        <td>drvSIS3801.cpp</td>
-        <td>731</td>
+        <td>
+          drvMcaSIS3820Asyn.c
+        </td>
+        <td>
+          1689
+        </td>
+        <td>
+          drvSIS3801.cpp
+        </td>
+        <td>
+          731
+        </td>
       </tr>
       <tr>
-        <td>drvMcaSIS3820Asyn.h</td>
-        <td>285</td>
-        <td>drvSIS3801.h</td>
-        <td>210</td>
+        <td>
+          drvMcaSIS3820Asyn.h
+        </td>
+        <td>
+          285
+        </td>
+        <td>
+          drvSIS3801.h
+        </td>
+        <td>
+          210
+        </td>
       </tr>
       <tr>
-        <td>drvSTR7201.c</td>
-        <td>812</td>
-        <td>drvSIS3820.cpp</td>
-        <td>1017</td>
+        <td>
+          drvSTR7201.c
+        </td>
+        <td>
+          812
+        </td>
+        <td>
+          drvSIS3820.cpp
+        </td>
+        <td>
+          1017
+        </td>
       </tr>
       <tr>
-        <td>drvSTR7201.h</td>
-        <td>38</td>
-        <td>drvSIS3820.h</td>
-        <td>225</td>
+        <td>
+          drvSTR7201.h
+        </td>
+        <td>
+          38
+        </td>
+        <td>
+          drvSIS3820.h
+        </td>
+        <td>
+          225
+        </td>
       </tr>
       <tr>
-        <td>mcaSIS3820Register.c</td>
-        <td>62</td>
-        <td>drvSIS38XX.cpp</td>
-        <td>542</td>
+        <td>
+          mcaSIS3820Register.c
+        </td>
+        <td>
+          62
+        </td>
+        <td>
+          drvSIS38XX.cpp
+        </td>
+        <td>
+          542
+        </td>
       </tr>
       <tr>
-        <td>mcaSSTR7201Register.c</td>
-        <td>49</td>
-        <td>drvSIS38XX.h</td>
-        <td>164</td>
+        <td>
+          mcaSSTR7201Register.c
+        </td>
+        <td>
+          49
+        </td>
+        <td>
+          drvSIS38XX.h
+        </td>
+        <td>
+          164
+        </td>
       </tr>
       <tr>
-        <td>sis3820.h</td>
-        <td>240</td>
-        <td>sis3820.h</td>
-        <td>240</td>
+        <td>
+          sis3820.h
+        </td>
+        <td>
+          240
+        </td>
+        <td>
+          sis3820.h
+        </td>
+        <td>
+          240
+        </td>
       </tr>
       <tr>
-        <td>N.A.</td>
-        <td>-</td>
-        <td>vmeDMA.h</td>
-        <td>53</td>
+        <td>
+          N.A.
+        </td>
+        <td>
+          -
+        </td>
+        <td>
+          vmeDMA.h
+        </td>
+        <td>
+          53
+        </td>
       </tr>
       <tr>
-        <th>TOTAL</td>
-        <th>3765</td>
-        <th>TOTAL</td>
-        <th>3356</td>
+        <th>
+          TOTAL</th>
+        <th>
+          3765</th>
+        <th>
+          TOTAL</th>
+        <th>
+          3356</th>
       </tr>
       <tr>
-        <td align="center" colspan="7,"><b>Size of databases</b></td>
+        <td align="center" colspan="7,">
+          <b>Size of databases</b>
+        </td>
       </tr>
       <tr>
-        <td>Struck32.db</td>
-        <td>623</td>
-        <td>SIS38XX.template</td>
-        <td>303</td>
+        <td>
+          Struck32.db
+        </td>
+        <td>
+          623
+        </td>
+        <td>
+          SIS38XX.template
+        </td>
+        <td>
+          303
+        </td>
       </tr>
       <tr>
-        <td>Struck8.db</td>
-        <td>215</td>
-        <td>SIS38XX_waveform.template</td>
-        <td>9</td>
+        <td>
+          Struck8.db
+        </td>
+        <td>
+          215
+        </td>
+        <td>
+          SIS38XX_waveform.template
+        </td>
+        <td>
+          9
+        </td>
       </tr>
       <tr>
-        <td>STR7201scaler.db</td>
-        <td>241</td>
-        <td>N.A.</td>
-        <td>-</td>
+        <td>
+          STR7201scaler.db
+        </td>
+        <td>
+          241
+        </td>
+        <td>
+          N.A.
+        </td>
+        <td>
+          -
+        </td>
       </tr>
       <tr>
-        <td>SIS3820.db</td>
-        <td>7</td>
-        <td>N.A.</td>
-        <td>-</td>
+        <td>
+          SIS3820.db
+        </td>
+        <td>
+          7
+        </td>
+        <td>
+          N.A.
+        </td>
+        <td>
+          -
+        </td>
       </tr>
       <tr>
-        <th>TOTAL</td>
-        <th>1086</td>
-        <th>TOTAL</td>
-        <th>311</td>
+        <th>
+          TOTAL</th>
+        <th>
+          1086</th>
+        <th>
+          TOTAL</th>
+        <th>
+          311</th>
       </tr>
     </tbody>
   </table>
-  <p>The driver is thus 10% smaller than in the previous release.  This is because in the previous release the SIS3801 
-  support had device-specific device support for the scaler and MCA records (which were not based on asyn), and the SIS3820
-  driver used basic asyn support, rather than asynPortDriver.  In the new drivers the standard asyn device support for the 
-  scaler record (from the std module), the mca record (from the mca module), and the waveform record (from the asyn module)
-  are used, there is no custom device support.  Moreover, there is a base class, drvSIS38XX.cpp, which is implements the functions
-  common to both the SIS3801 and the SIS3820.  SIS38XX is derived from asynPortDriver which handles much of the standard
-  asyn code, and SIS3801.cpp and SIS3820.cpp are derived from SIS38XX.cpp.</p>
-  
-  <p>The SIS3801 and SIS3820 support in R7-0 is not backwards compatible with previous releases.  IOC startup scripts
-  must be changed, and the medm screens are different.  However, the PVs that most clients like the sscan record, SPEC 
-  and IDL are using have not changed, so those clients should not need to be modified.</p>
-  <h3>MCA record, MCA device support and MCA driver changes</h3>
-  <p>Previously the MCA record sent the following messages (defined in mca.h) to device support:</p>
-    <ul>
-      <li>mcaChannelAdvanceInternal</li>
-      <li>mcaChannelAdvanceExternal</li>
-      <li>mcaModePHA</li>
-      <li>mcaModeMCS</li>
-      <li>mcaModeList</li>
-    </ul>
-    <p>Thus, it was sending a separate message for each type of channel advance and each type of acquisition mode.
-    This was inconvenient for drivers and device support, and was not consistent with the way that other parameters
-    were handled.  This was thus changed to:</p>
-    <ul>
-      <li>mcaChannelAdvanceSource</li>
-      <li>mcaAcquireMode</li>
-    </ul>
-    <p>where the value passed to device support in the message now specifies what type of channel advance source
-    or acquisition mode is being requested.  Similarly the strings defined in drvMca.h that are used 
-    by device support and drivers to define
-    the asyn drvInfo value have had the same changes.  The driver now receives a single command to change the
-    acquire mode for example, and the value passed on the aysnInt32 interface specifies which acquire mode is being 
-    requested.  This makes the
-    interface more extensible.  All existing drivers in synApps have been modified to use the new interface.</p>
   <p>
-    
+    The driver is thus 10% smaller than in the previous release. This is because in
+    the previous release the SIS3801/STR7201 support had device-specific device support
+    for the scaler and MCA records (which were not based on asyn), and the SIS3820 driver
+    used basic asyn support, rather than asynPortDriver. The new drivers USE the standard
+    asyn device support for the scaler record (from the std module), the mca record
+    (from the mca module), and the waveform record (from the asyn module), and there
+    is no custom device support. Moreover, there is a base class, drvSIS38XX.cpp, which
+    is implements the functions common to both the SIS3801 and the SIS3820. SIS38XX
+    is derived from asynPortDriver, which handles much of the standard asyn code, and
+    SIS3801.cpp and SIS3820.cpp are derived from SIS38XX.cpp.</p>
+  <p>
+    The SIS3801 and SIS3820 support in R7-0 is not backwards compatible with previous
+    releases. IOC startup scripts must be changed, and the medm screens are different.
+    However, the PVs that are used by most clients (such as the sscan record, SPEC and
+    IDL), have not changed, so those clients should not need to be modified.</p>
+  <h3>
+    Canberra support</h3>
+  <p>
+    Added support for windows-x64 by including the 64-bit support files from WinPcap.</p>
+  <h3>
+    MCA record, MCA device support and MCA driver changes</h3>
+  <p>
+    Previously the MCA record sent the following messages (defined in mca.h) to device
+    support:</p>
+  <ul>
+    <li>mcaChannelAdvanceInternal</li>
+    <li>mcaChannelAdvanceExternal</li>
+    <li>mcaModePHA</li>
+    <li>mcaModeMCS</li>
+    <li>mcaModeList</li>
+  </ul>
+  <p>
+    Thus, it was sending a separate message for each type of channel advance and each
+    type of acquisition mode. This was inconvenient for drivers and device support,
+    and was not consistent with the way that other parameters were handled. This was
+    thus changed to:</p>
+  <ul>
+    <li>mcaChannelAdvanceSource</li>
+    <li>mcaAcquireMode</li>
+  </ul>
+  <p>
+    where the value passed to device support in the message now specifies what type
+    of channel advance source or acquisition mode is being requested. Similarly the
+    strings defined in drvMca.h that are used by device support and drivers to define
+    the asyn drvInfo value have had the same changes. The driver now receives a single
+    command to change the acquire mode for example, and the value passed on the aysnInt32
+    interface specifies which acquire mode is being requested. This makes the interface
+    more extensible. All existing drivers in synApps have been modified to use the new
+    interface.</p>
   <h2 style="text-align: center">
     Release 6-12-5 (21-Feb-2011)</h2>
   <ul>
