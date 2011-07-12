@@ -152,10 +152,18 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
     return;
   }
   
-  // Create the DMA ID
-  dmaId_ = sysDmaCreate(dmaCallbackC, (void*)this);
   dmaDoneEventId_ = epicsEventCreate(epicsEventEmpty);
-  
+  // Create the DMA ID
+  if (useDma_) {
+    dmaId_ = sysDmaCreate(dmaCallbackC, (void*)this);
+    if (dmaId_ == 0 || (int)dmaId_ == -1) {
+      asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s:%s: sysDmaCreate failed. Disabling use of DMA.\n",
+                driverName, functionName);
+      useDma_ = false;
+    }
+  }
+ 
   /* Reset card */
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: resetting port %s\n", 
