@@ -22,6 +22,10 @@ AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-
 # This is the lab computer
 #AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{864AA927-88D6-4407-96F5-A5DF9E43D684}")
 #AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{864AA927-88D6-4407-96F5-A5DF9E43D684}")
+# This is the lab 64-bit computer
+#AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{FBAE6033-0C1B-4166-A3B4-C377270DE4A3}")
+#AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{FBAE6033-0C1B-4166-A3B4-C377270DE4A3}")
+
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
 
