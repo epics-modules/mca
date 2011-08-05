@@ -29,15 +29,16 @@
       this module, as well as by the driver in the <a href="dxp.html">DXP module</a>.</li>
     <li>asyn driver support for the <a href="mcaCanberra.html">Canberra ICB programmable
       NIM modules.</a></li>
-    <li>Device and driver support for the <a href="mcaStruck.html">SIS 3801 MCS</a> (formerly
-      the STR7201 from Struck).  There is support for both the mca and scaler records.</li>
-  <li>Driver support for the SIS 3820 MCS using both the mca and scaler records.</li>
-  <li>asyn fastSweep driver for waveform digitizer type devices. This is used by the
+    <li>Driver support for the <a href="mcaStruck.html">SIS3801 multi-channel scaler (MCS)</a>
+      (formerly the STR7201 from Struck) and the SIS3820 MCS. There is support for MCS
+      operation with either mca or waveform records, and for simple preset scaler operation
+      with the scaler record.</li>
+    <li>asyn fastSweep driver for waveform digitizer type devices. This is used by the
       <a href="ip330.html">ip330 module</a> and the <a href="quadEM">quadEM module</a>.</li>
   </ul>
-  <p>
+  <h3>
     EPICS MCA client software.
-  </p>
+  </h3>
   <p>
     A basic interface to the mca record is provided with medm. These screens allow one
     to control acquisition, view spectra on a linear or logarithmic scale. There are
@@ -74,8 +75,7 @@
   <p>
     The IDL MCA display and multi-element display tools have also been ported to Python.
     With the advent of the IDL Virtual Machine that allows IDL programs to be run for
-    free I am no longer actively working on the Python versions, but it is available
-    here.</p>
+    free I am no longer actively working on the Python versions, but it is available.</p>
   <hr />
   <address>
     Suggestions and Comments to:<br />
