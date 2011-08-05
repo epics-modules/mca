@@ -9,7 +9,7 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-0 (XXX-May-2011)</h2>
+    Release 7-0 (04-Aug-2011)</h2>
   <h3>
     SIS3801 and SIS320 multi-channel scaler support</h3>
   <p>
@@ -56,8 +56,7 @@
     The theoretical time for this acquisition to complete is 10 seconds. The following
     is the output from the EPICS "camonitor" program on a Linux client looking at the
     Acquiring PV, and the first 2 channels of each waveform record:</p>
-  <pre>
-    >camonitor -tc -#2 SIS:3820:mca1 SIS:3820:mca2 SIS:3820:Acquiring 
+  <pre>    >camonitor -tc -#2 SIS:3820:mca1 SIS:3820:mca2 SIS:3820:Acquiring 
     SIS:3820:Acquiring             (2011-05-01 11:19:35.050808) Acquiring 
     SIS:3820:mca1                  (2011-05-01 11:19:46.017134) 2 50 50 
     SIS:3820:mca2                  (2011-05-01 11:19:46.017223) 2 0 0 
@@ -616,7 +615,7 @@
             <li>Allows the Bruker GUI to run in parallel.</li>
           </ul>
           The drawback is that it compiles and runs on Windows only. You need to install the
-          Bruker QM100 Software and the Bruker Esprit API which contains the RTIfcClient.dll
+          Bruker QM100 Software and the Bruker Esprit API which contains the RTIfcServer.dll
           to be able to use it.</li>
       </ul>
     </li>
