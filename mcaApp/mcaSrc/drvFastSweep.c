@@ -561,7 +561,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     pasynManager->getAddr(pasynUser, &signal);
     memcpy(data, &pPvt->pData[pPvt->maxPoints*signal], 
            pPvt->numPoints*sizeof(int));
-    *nactual = pPvt->numPoints;
+    *nactual = pPvt->numAcquired;
     epicsMutexUnlock(pPvt->mutexId);
     return(asynSuccess);
 }
