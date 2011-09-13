@@ -155,6 +155,7 @@ record(bo,"$(P)SoftwareChannelAdvance") {
 # between internal 25 MHz (SIS3801) or 50MHz (SIS3820) reference clock and
 # and external source 
 record(bo, "$(P)Channel1Source") {
+  field(PINI, "YES")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(PORT) 0)SIS38XX_CHANNEL1_SOURCE")
   field(ZNAM, "Int. clock")
@@ -162,25 +163,26 @@ record(bo, "$(P)Channel1Source") {
 }
 
 record(longout,"$(P)Prescale") {
-  field(PINI,"YES")
+  field(PINI, "YES")
   field(DTYP, "asynInt32")
   field(OUT,  "@asyn($(PORT),0)MCA_PRESCALE")
-  field(VAL,"1")
+  field(VAL,  "1")
 }
 
 record(bo,"$(P)EnableClientWait") {
-  field(ZNAM,"Disable")
-  field(ONAM,"Enable")
+  field(PINI, "YES")
+  field(ZNAM, "Disable")
+  field(ONAM, "Enable")
 }
 
 record(bo,"$(P)SetClientWait") {
-  field(DISV,"0")
-  field(SDIS,"$(P)EnableClientWait NPP NMS")
-  field(OMSL,"closed_loop")
-  field(DOL,"1")
-  field(OUT,"$(P)ClientWait PP MS")
-  field(ONAM,"SetClientWait")
-  field(ZNAM,"Done")
+  field(DISV, "0")
+  field(SDIS, "$(P)EnableClientWait NPP NMS")
+  field(OMSL, "closed_loop")
+  field(DOL,  "1")
+  field(OUT,  "$(P)ClientWait PP MS")
+  field(ONAM, "SetClientWait")
+  field(ZNAM, "Done")
 }
 
 record(busy,"$(P)ClientWait") {
