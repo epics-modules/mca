@@ -747,7 +747,7 @@ void drvSIS3820::intFunc()
     registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE4_DISABLE;
   }
 
-  /* Send an event to intTask to read the FIFO and perform any requested callbacks */
+  /* Send an event to readFIFOThread task to read the FIFO and perform any requested callbacks */
   epicsEventSignal(readFIFOEventId_);
 }
 
