@@ -265,8 +265,8 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   else if (command == scalerArm_) {
     if (acquiring_ && (acquireMode_ == ACQUIRE_MODE_MCS)) goto done;
     /* Arm or disarm scaler */
-    setScalerPresets();
     if (value != 0) {
+      setScalerPresets();
       startScaler();
       acquiring_ = true;
     } else {
