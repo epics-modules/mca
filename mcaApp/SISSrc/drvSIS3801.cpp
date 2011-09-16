@@ -576,16 +576,16 @@ void drvSIS3801::readFIFOThread()
               "%s:%s: got readFIFOEvent, interrupt status=0x%8.8x\n",
               driverName, functionName, registers_->csr_reg & 0xFFF00000);
     lock();
-    for (i=0; i<maxSignals_; i++) 
-      getIntegerParam(i, scalerPresets_, (int *)&scalerPresets[i]);
-    getIntegerParam(mcaNumChannels_, &nChans);
-    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-              "%s:%s: scaler presets[0]=%d, scalerData[0]=%d\n",
-              driverName, functionName, scalerPresets[0], scalerData_[0]);
     acquiring = acquiring_;
     unlock();
     while (acquiring) {
       lock();
+      for (i=0; i<maxSignals_; i++) 
+        getIntegerParam(i, scalerPresets_, (int *)&scalerPresets[i]);
+      getIntegerParam(mcaNumChannels_, &nChans);
+      asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                "%s:%s: scaler presets[0]=%d, scalerData[0]=%d\n",
+                driverName, functionName, scalerPresets[0], scalerData_[0]);
       signal = nextSignal_;
       chan = nextChan_;
       count = 0;
@@ -631,7 +631,7 @@ void drvSIS3801::readFIFOThread()
                 acquiring = false;
             }
             asynPrintIO(pasynUserSelf, ASYN_TRACEIO_DRIVER, 
-                      (const char*)scalerData_, nChans*sizeof(epicsUInt32), 
+                      (const char*)scalerData_, maxSignals_*sizeof(epicsUInt32), 
                       "%s:%s:\n",
                       driverName, functionName);
             if (!acquiring) break;
@@ -670,13 +670,16 @@ void drvSIS3801::readFIFOThread()
       /* Reenable interrupts in case we were woken up by an interrupt for FIFO almost full */
       enableInterrupts();
       acquiring = acquiring_;
-      // Release the lock and sleep for a short time, but wake up if there is an interrupt
+      // Release the lock
       unlock();
-      status = epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
-      if (status == epicsEventWaitOK) 
-        asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                  "%s:%s: got interrupt in epicsEventWaitWithTimeout\n",
-                  driverName, functionName);
+      // If we are still acquiring then sleep for a short time, but wake up if there is an interrupt
+      if (acquiring) {
+        status = epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
+        if (status == epicsEventWaitOK) 
+          asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s:%s: got interrupt in epicsEventWaitWithTimeout\n",
+                    driverName, functionName);
+      }
     }  
   }
 }
