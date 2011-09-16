@@ -809,7 +809,7 @@ void drvSIS3820::readFIFOThread()
     acquiring = acquiring_;
     unlock();
     // MCS mode
-    while (acquiring) {
+    while (acquiring && (acquireMode_ == ACQUIRE_MODE_MCS)) {
       lock();
       signal = nextSignal_;
       chan = nextChan_;
@@ -884,10 +884,11 @@ void drvSIS3820::readFIFOThread()
       /* registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE1_ENABLE; */
       registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE4_ENABLE;
 
-      // Release the lock and sleep for a short time but wake up on interrupt
+      // Release the lock 
       unlock();
       enableInterrupts();
-      epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
+      // If we are still acquiring sleep for a short time but wake up on interrupt
+      if (acquiring) epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
     }
   }
 }
