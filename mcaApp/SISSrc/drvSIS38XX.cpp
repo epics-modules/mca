@@ -475,7 +475,7 @@ void drvSIS38XX::checkMCSDone()
   epicsTimeStamp now;
   int nChans;
   double presetReal, elapsedTime;
-  static const char* functionName="checkDone";
+  static const char* functionName="checkMCSDone";
 
 
   getIntegerParam(mcaNumChannels_,    &nChans);
