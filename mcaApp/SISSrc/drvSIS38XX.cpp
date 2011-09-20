@@ -193,6 +193,7 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
     // Start the hardware
     startMCSAcquire();
     // Wake up the FIFO reading thread
+    eventType_ = EventStartMCA;
     epicsEventSignal(readFIFOEventId_);
   }
     
