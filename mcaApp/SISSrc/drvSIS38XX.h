@@ -59,6 +59,15 @@ typedef enum {
     MODEL_SIS3820
 } SIS38XXModel_t;
 
+typedef enum {
+    EventStartScaler,
+    EventStartMCA,
+    EventISR1,
+    EventISR2,
+    EventISR3,
+    EventISR4
+} SIS38XXEventType_t;
+
 class drvSIS38XX : public asynPortDriver
 {
   
@@ -142,6 +151,7 @@ class drvSIS38XX : public asynPortDriver
   epicsUInt32 *fifo_base_;
   epicsUInt32 irqStatusReg_;
   SIS38XXAcquireMode_t acquireMode_;
+  SIS38XXEventType_t eventType_;
   int maxSignals_;
   int maxChans_;
   epicsTimeStamp startTime_;
