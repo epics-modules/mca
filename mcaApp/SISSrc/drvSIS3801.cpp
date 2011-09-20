@@ -308,14 +308,7 @@ void drvSIS3801::startMCSAcquire()
   /* Enable counting bit in CSR */
   registers_->csr_reg = CONTROL_M_CLEAR_SOFTWARE_DISABLE;
 
-  /* Do one software next_clock. This starts the module counting without 
-   * waiting for the first external next clock. 
-   * Only do this if:
-   *    Old firmware (not new SIS modules) OR
-   *    (Using MCS (not scaler) MODE) AND
-   *    ((Using internal channel advance) OR
-   *    ((Using external channel advance) AND (softAdvance flag=1))
-   */
+  /* Do one software next_clock if enabled */
   if (initialChannelAdvance != 0)
     softwareChannelAdvance();
 }
@@ -355,6 +348,7 @@ void drvSIS3801::startScaler()
   registers_->csr_reg = CONTROL_M_CLEAR_SOFTWARE_DISABLE;
   registers_->soft_next_reg = 1; 
   // Wake up the FIFO reading thread
+  eventType_ = EventStartScaler;
   epicsEventSignal(readFIFOEventId_);
 }
 
@@ -530,6 +524,7 @@ void drvSIS3801::intFunc()
   /* Test which interrupt source has triggered this interrupt??? */
 
   /* Send an event to readFIFO thread to read the FIFO.  It will re-enable interrupts when the FIFO is empty */
+  eventType_ = EventISR1;
   epicsEventSignal(readFIFOEventId_);
 
 }
@@ -573,8 +568,8 @@ void drvSIS3801::readFIFOThread()
     epicsEventWait(readFIFOEventId_);
     // We got an event, which can come from acquisition starting, or FIFO full interrupt
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-              "%s:%s: got readFIFOEvent, interrupt status=0x%8.8x\n",
-              driverName, functionName, registers_->csr_reg & 0xFFF00000);
+              "%s:%s: got readFIFOEvent, eventType=%d, interrupt status=0x%8.8x\n",
+              driverName, functionName, eventType_, registers_->csr_reg & 0xFFF00000);
     lock();
     acquiring = acquiring_;
     unlock();
