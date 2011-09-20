@@ -723,6 +723,7 @@ void drvSIS3820::intFunc()
     /* Disable this interrupt, since it is caused by FIFO threshold, and that
      * condition is only cleared in the readFIFO routine */
     registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE1_DISABLE;
+    eventType_ = EventISR1;
   }
 
   /* Check for the data acquisition complete interrupt */
@@ -733,6 +734,7 @@ void drvSIS3820::intFunc()
     // We only set acquiring_ false in scaler mode, in MCS mode we let checkMCSDone() handle this
     // otherwise we can stop reading the FIFO too soon
     if (acquireMode_ == ACQUIRE_MODE_SCALER) acquiring_ = false;
+    eventType_ = EventISR2;
   }
 
   /* Check for the FIFO almost full interrupt */
@@ -745,6 +747,7 @@ void drvSIS3820::intFunc()
      * Instead we disable the interrupt, and re-enable it at the end of readFIFO.
      */
     registers_->irq_control_status_reg = SIS3820_IRQ_SOURCE4_DISABLE;
+    eventType_ = EventISR4;
   }
 
   /* Send an event to readFIFOThread task to read the FIFO and perform any requested callbacks */
@@ -788,8 +791,8 @@ void drvSIS3820::readFIFOThread()
     enableInterrupts();
     epicsEventWait(readFIFOEventId_);
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-              "%s:%s: got readFIFOEvent\n",
-              driverName, functionName);
+              "%s:%s: got readFIFOEvent, eventType=%d\n",
+              driverName, functionName, eventType_);
     // We got an event.  This can come from:
     //  Acquisition complete in scaler mode
     //  FIFO full in MCS mode
