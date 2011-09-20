@@ -891,7 +891,13 @@ void drvSIS3820::readFIFOThread()
       unlock();
       enableInterrupts();
       // If we are still acquiring sleep for a short time but wake up on interrupt
-      if (acquiring) epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
+     if (acquiring) {
+        status = epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
+        if (status == epicsEventWaitOK) 
+          asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
+                    "%s:%s: got interrupt in epicsEventWaitWithTimeout, eventType=%d\n",
+                    driverName, functionName, eventType_);
+      }
     }
   }
 }

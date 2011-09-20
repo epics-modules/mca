@@ -672,8 +672,8 @@ void drvSIS3801::readFIFOThread()
         status = epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
         if (status == epicsEventWaitOK) 
           asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
-                    "%s:%s: got interrupt in epicsEventWaitWithTimeout\n",
-                    driverName, functionName);
+                    "%s:%s: got interrupt in epicsEventWaitWithTimeout, eventType=%d\n",
+                    driverName, functionName, eventType_);
       }
     }  
   }
