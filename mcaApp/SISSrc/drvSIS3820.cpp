@@ -467,7 +467,7 @@ void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
       registers_->acq_preset_reg = nChans;
 
       /* Set the LNE channel NOTE: This should allow other sources in the future */
-      registers_->lne_channel_select_reg = SIS3820_LNE_SOURCE_INTERNAL_10MHZ;
+      registers_->lne_channel_select_reg = 0;
 
       if (channelAdvanceSource == mcaChannelAdvance_Internal) {
         /* The SIS3820 requires the value in the LNE prescale register to be one
