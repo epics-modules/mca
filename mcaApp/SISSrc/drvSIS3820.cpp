@@ -119,12 +119,12 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
             fifo_base_, SIS3820_FIFO_BYTE_SIZE);
 
   /* Probe VME bus to see if card is there */
-  status = devReadProbe(4, (char *) registers_->control_status_reg,
+  status = devReadProbe(4, (char *) &(registers_->control_status_reg),
                        (char *) &controlStatusReg);
   if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-              "%s:%s: devReadProbe failure = %d\n", 
-              driverName, functionName, status);
+              "%s:%s: devReadProbe failure for address %p = %d\n", 
+              driverName, functionName, &registers_->control_status_reg, status);
     return;
   }
 
