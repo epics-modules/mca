@@ -93,7 +93,7 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
             driverName, functionName, baseAddress, registers_, SIS3801_BOARD_SIZE);
 
   /* Probe VME bus to see if card is there */
-  status = devReadProbe(4, (char *) registers_->csr_reg,
+  status = devReadProbe(4, (char *) &registers_->csr_reg,
                        (char *) &controlStatusReg);
   if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
