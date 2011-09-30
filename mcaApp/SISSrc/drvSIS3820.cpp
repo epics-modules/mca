@@ -433,7 +433,7 @@ void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
   int channelAdvanceSource;
   double dwellTime;
   static const char* functionName="setAcquireMode";
-  
+
   acquireMode_ = acquireMode;
   setIntegerParam(SIS38XXAcquireMode_, acquireMode);
 
@@ -498,7 +498,7 @@ void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
       registers_->acq_preset_reg = 0;
       
       /* Set the LNE channel */
-      registers_->lne_channel_select_reg = SIS3820_LNE_CHANNEL;
+      registers_->lne_channel_select_reg = 0;
 
       /* Disable channel in scaler mode. */
       registers_->count_disable_reg = 0xFFFFFFFF << maxSignals_;
