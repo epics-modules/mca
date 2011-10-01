@@ -226,7 +226,7 @@ void drvSIS3801::report(FILE *fp, int details)
   else
     fprintf(fp, "SIS3801: asyn port: %s, not connected!!!\n",
             portName);
-  if (details > 1) {
+  if (details > 0) {
     fprintf(fp, "  Registers:\n");
     fprintf(fp, "    csr_reg              = 0x%x\n",   registers_->csr_reg);
     fprintf(fp, "    irq_reg              = 0x%x\n",   registers_->irq_reg);
