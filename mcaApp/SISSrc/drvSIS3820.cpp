@@ -259,7 +259,7 @@ void drvSIS3820::report(FILE *fp, int details)
 
   fprintf(fp, "SIS3820: asyn port: %s, connected at VME base address %p, maxChans=%d\n",
           portName, registers_, maxChans_);
-  if (details > 1) {
+  if (details > 0) {
     int i;
     fprintf(fp, "  Registers:\n");
     fprintf(fp, "    control_status_reg         = 0x%x\n",   registers_->control_status_reg);
@@ -513,11 +513,13 @@ void drvSIS3820::setOpModeReg()
 {
   int inputMode;
   int outputMode;
+  int outputPolarity;
   int maxOutputMode;
   epicsUInt32 operationRegister = 0;
 
   getIntegerParam(SIS38XXInputMode_, &inputMode);
   getIntegerParam(SIS38XXOutputMode_, &outputMode);
+  getIntegerParam(SIS38XXOutputPolarity_, &outputPolarity);
 
   // We hard-code the data format for now, but support for other formats may be added in the future
   operationRegister   |= SIS3820_MCS_DATA_FORMAT_32BIT;
@@ -534,6 +536,7 @@ void drvSIS3820::setOpModeReg()
   else maxOutputMode = 2;
   if (outputMode < 0 || outputMode > maxOutputMode) outputMode = 0;
   operationRegister |= (outputMode << SIS3820_OUTPUT_MODE_SHIFT);
+  if (outputPolarity == OUTPUT_POLARITY_INVERTED) operationRegister |= SIS3820_CONTROL_OUTPUTS_INVERT;
 
   if (acquireMode_ == ACQUIRE_MODE_MCS) {
     operationRegister |= SIS3820_CLEARING_MODE;
