@@ -10,11 +10,27 @@
     mca Release Notes</h1>
   <h2 style="text-align: center">
     Release 7-1 (XXX-Oct-2011)</h2>
-  <p>SIS38XX support</p>
   <ul>
-    <li>Added PINI=YES to Channel1Source and EnableClientWait records. Without
-    this the initial channel 1 source was always internal until the record was
-    forced to process.</li>
+    <li>SIS38XX support
+      <ul>
+        <li>Added support the control the polarity of the control outputs on the SIS3820.
+          Choices are Normal and Inverted.</li>
+        <li>Added PINI=YES to Channel1Source and EnableClientWait records. Without this the
+          initial channel 1 source was always internal until the record was forced to process.</li>
+        <li>Fixed some bugs in SIS38XX drivers that happened on some systems that appear to
+          be getting extra interrupts. Added additional asynTrace debugging to drivers to
+          help track down this type of problem.</li>
+        <li>Tracked down problem on the SIS3820 with too many counts in the first time bin
+          in MCS mode when using External Channel Advance. This happens if there are pulses
+          present on the first counter input. Apparently the unit is becoming enabled (i.e.
+          counting) before the first external LNE pulse arrives. This is a bug in the SIS3820
+          firmware. The workaround is to not have any hardware connection to the first counter
+          input, and just use the internal 50MHz clock on this input.</li>
+        <li>Fixed bugs in the calls to devReadProbe in both the SIS3801 and SIS3820 drivers
+          which were missing a needed "&" operator on the address to be probed.</li>
+      </ul>
+    </li>
+    <li>Minor fixes to medm adl files to make them work with the adl-BOY translator.</li>
   </ul>
   <h2 style="text-align: center">
     Release 7-0 (04-Aug-2011)</h2>
