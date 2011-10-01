@@ -1,14 +1,14 @@
 
 file {
 	name="/home/epics/devel/mca/mcaApp/op/adl/SIS38XX.adl"
-	version=030102
+	version=030105
 }
 display {
 	object {
 		x=155
 		y=131
 		width=680
-		height=500
+		height=525
 	}
 	clr=14
 	bclr=4
@@ -104,7 +104,7 @@ rectangle {
 		x=4
 		y=40
 		width=350
-		height=455
+		height=480
 	}
 	"basic attribute" {
 		clr=54
@@ -588,7 +588,7 @@ composite {
 composite {
 	object {
 		x=18
-		y=463
+		y=488
 		width=257
 		height=20
 	}
@@ -597,7 +597,7 @@ composite {
 		menu {
 			object {
 				x=18
-				y=463
+				y=488
 				width=100
 				height=20
 			}
@@ -610,7 +610,7 @@ composite {
 		text {
 			object {
 				x=125
-				y=463
+				y=488
 				width=90
 				height=20
 			}
@@ -622,7 +622,7 @@ composite {
 		"message button" {
 			object {
 				x=225
-				y=463
+				y=488
 				width=50
 				height=20
 			}
@@ -641,7 +641,7 @@ rectangle {
 		x=365
 		y=40
 		width=310
-		height=455
+		height=480
 	}
 	"basic attribute" {
 		clr=54
@@ -1379,4 +1379,44 @@ text {
 		clr=14
 	}
 	textix="Max. # of channels"
+}
+composite {
+	object {
+		x=18
+		y=463
+		width=257
+		height=20
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=18
+				y=463
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)OutputPolarity"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=463
+				width=150
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Output polarity"
+		}
+	}
+	"dynamic attribute" {
+		vis="if not zero"
+		chan="$(P)Model"
+	}
 }
