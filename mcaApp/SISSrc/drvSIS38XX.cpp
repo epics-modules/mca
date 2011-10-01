@@ -97,6 +97,7 @@ drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
   createParam(SIS38XXAcquireModeString,             asynParamInt32, &SIS38XXAcquireMode_);        /* int32, write */
   createParam(SIS38XXInputModeString,               asynParamInt32, &SIS38XXInputMode_);          /* int32, write */
   createParam(SIS38XXOutputModeString,              asynParamInt32, &SIS38XXOutputMode_);         /* int32, write */
+  createParam(SIS38XXOutputPolarityString,          asynParamInt32, &SIS38XXOutputPolarity_);     /* int32, write */
   createParam(SIS38XXSoftwareChannelAdvanceString,  asynParamInt32, &SIS38XXSoftwareChannelAdvance_); /* int32, write */
   createParam(SIS38XXInitialChannelAdvanceString,   asynParamInt32, &SIS38XXInitialChannelAdvance_);  /* int32, write */
   createParam(SIS38XXModelString,                   asynParamInt32, &SIS38XXModel_);              /* int32, read */
@@ -294,7 +295,8 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
     setInputMode();
   }
   
-  else if (command == SIS38XXOutputMode_) {
+  else if ((command == SIS38XXOutputMode_) ||
+           (command == SIS38XXOutputPolarity_)) {
     setOutputMode();
   }
 
