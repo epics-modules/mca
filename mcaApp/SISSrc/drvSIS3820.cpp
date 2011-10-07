@@ -854,8 +854,8 @@ void drvSIS3820::readFIFOThread()
       epicsTimeGetCurrent(&t2);
 
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                "%s:%s: read FIFO (%d) in %fs, fifo word count after=%d\n",
-                driverName, functionName, count, epicsTimeDiffInSeconds(&t2, &t1), registers_->fifo_word_count_reg);
+                "%s:%s: read FIFO (%d) in %fs, fifo word count after=%d, fifoBuffer_=%p, fifo_base_=%p\n",
+                driverName, functionName, count, epicsTimeDiffInSeconds(&t2, &t1), registers_->fifo_word_count_reg, fifoBuffer_, fifo_base_);
       // Release the FIFO lock, we are done accessing the FIFO
       epicsMutexUnlock(fifoLockId_);
       
@@ -894,7 +894,7 @@ void drvSIS3820::readFIFOThread()
       unlock();
       enableInterrupts();
       // If we are still acquiring sleep for a short time but wake up on interrupt
-     if (acquiring) {
+      if (acquiring) {
         status = epicsEventWaitWithTimeout(readFIFOEventId_, epicsThreadSleepQuantum());
         if (status == epicsEventWaitOK) 
           asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
