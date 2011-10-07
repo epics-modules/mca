@@ -849,7 +849,9 @@ void drvSIS3820::readFIFOThread()
         asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
                   "%s:%s: memcpy transfer, count=%d\n",
                   driverName, functionName, count);
-        memcpy(fifoBuffer_, fifo_base_, count*sizeof(int));
+        //memcpy(fifoBuffer_, fifo_base_, count*sizeof(int));
+        for (i=0; i<count; i++)
+          fifoBuffer_[i] = fifo_base_[i];
       }
       epicsTimeGetCurrent(&t2);
 
