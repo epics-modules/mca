@@ -847,9 +847,11 @@ void drvSIS3820::readFIFOThread()
         }
       } else {    
         asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                  "%s:%s: memcpy transfer, count=%d\n",
+                  "%s:%s: programmed transfer, count=%d\n",
                   driverName, functionName, count);
-        //memcpy(fifoBuffer_, fifo_base_, count*sizeof(int));
+        // Note: we were previously using memcpy here.  But that is not guaranteed to do a word transfer, which the
+        // SIS3820 requires for reading the FIFO.  In fact if the word count was 1 then a memcpy of 4 bytes was clearly
+        // not doing a word transfer on vxWorks, and was generating bus errors.
         for (i=0; i<count; i++)
           fifoBuffer_[i] = fifo_base_[i];
       }
