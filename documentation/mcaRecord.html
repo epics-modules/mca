@@ -722,17 +722,17 @@ FTVL  data type      comment
       <td>
         R</td>
       <td>
-        "Acquisition stop time" NOTE: Prior to release 7-1 of the mca module this field contained the acquisition start
-        time, not the stop time.  This was changed because in multi-element detector systems like the
-        DXP xMAP or the SIS38XX MCS the MCA records only process when acquisition completes, not
-        when it starts.  This meant that the record time stamp and the STIM field were never being
-        updated.  The MCA record always processes when acquisition completes, so this field is now
-        correctly updated.</td>
+        "Acquisition stop time" NOTE: Prior to release 7-1 of the mca module this field
+        contained the acquisition start time, not the stop time. This was changed because
+        in multi-element detector systems like the DXP xMAP or the SIS38XX MCS the MCA records
+        only process when acquisition completes, not when it starts. This meant that the
+        record time stamp and the STIM field were never being updated. The MCA record always
+        processes when acquisition completes, so this field is now correctly updated.</td>
       <td>
         DBF_STRING</td>
       <td>
-        This field contains the time that acquisition was stopped. It is an absolute
-        time as reported and formatted by the IOC.
+        This field contains the time that acquisition was stopped. It is an absolute time
+        as reported and formatted by the IOC.
       </td>
     </tr>
     <tr valign="top">
