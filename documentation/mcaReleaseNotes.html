@@ -30,6 +30,17 @@
           which were missing a needed "&" operator on the address to be probed.</li>
       </ul>
     </li>
+    <li>mca record
+     <ul>
+       <li>The STIM field and the record time stamp were changed to record the time that 
+        acquisition <b>stopped</b> rather than the time that acquisition <b>started</b>. 
+        This was changed because in multi-element detector systems like the
+        DXP xMAP or the SIS38XX MCS the MCA records only process when acquisition completes, not
+        when it starts.  In this situation the record time stamp and the STIM field were never being
+        updated.  The MCA record always processes when acquisition completes, so this field is now
+        correctly updated, but has changed its meaning.</li>
+      </ul>
+    </li>
     <li>Minor fixes to medm adl files to make them work with the adl-BOY translator.</li>
   </ul>
   <h2 style="text-align: center">
