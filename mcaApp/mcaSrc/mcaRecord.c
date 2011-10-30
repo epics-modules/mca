@@ -602,17 +602,10 @@ reprocess:
             status = (*pdset->send_msg)
                 (pmca,  mcaErase, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
-            /* Use TimeStamp to record beginning of acquisition */
-            recGblGetTimeStamp(pmca);
-            tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY,
-                           pmca->stim);
 
             /* Reset NORD */
             pmca->nord = 0;
             MARK(M_NORD);
-            /* Trim STIM to 25 characters = .001 sec precision */
-            pmca->stim[25]='\0';
-            MARK(M_STIM);
             /* Erase the data array.  Do this inside the record rather than
              * forcing a read from device support for perfomance reasons. */
             memset(pmca->bptr, 0, pmca->nuse*sizeofTypes[pmca->ftvl]);
@@ -654,15 +647,6 @@ reprocess:
           pmca->erst = 0;
           MARK(M_ERST);
           NEWV_UNMARK(M_ERST);
-       }
-       /* Use TimeStamp to record beginning of acquisition */
-       /* Don't reset the clock if we are already acquiring */
-       if (!pmca->acqg) {
-          recGblGetTimeStamp(pmca);
-          tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY, pmca->stim);
-          /* Trim STIM to 25 characters = .001 sec precision */
-          pmca->stim[25]='\0';
-          MARK(M_STIM);
        }
     }
     if (pmca->stop) {
@@ -819,6 +803,15 @@ read_data:
     }
     pmca->udf = FALSE;
 
+    if (!pmca->acqg) {
+        /* Use TimeStamp to record end of acquisition */
+        recGblGetTimeStamp(pmca);
+        tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY,
+                       pmca->stim);
+        /* Trim STIM to 25 characters = .001 sec precision */
+        pmca->stim[25]='\0';
+        MARK(M_STIM);
+    }
     mcaAlarm(pmca);
     monitor(pmca);
 
