@@ -9,10 +9,15 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-1 (XXX-Oct-2011)</h2>
+    Release 7-1 (2-November-2011)</h2>
   <ul>
     <li>SIS38XX support
       <ul>
+        <li>Fixed a serious bug when reading the FIFO on the SIS3820. For non-DMA reads it
+          was previously using a call to memcpy(). This can cause bus errors because memcpy()
+          is not guaranteed to do 32-bit word transfers, which the SIS3820 requires. In fact
+          if the number of words to copy was exactly 1 then a bus error was ocurring, because
+          memcpy() appears to do 4 8-bit transfers in this case.</li>
         <li>Added support the control the polarity of the control outputs on the SIS3820.
           Choices are Normal and Inverted.</li>
         <li>Added PINI=YES to Channel1Source and EnableClientWait records. Without this the
@@ -25,20 +30,21 @@
           present on the first counter input. Apparently the unit is becoming enabled (i.e.
           counting) before the first external LNE pulse arrives. This is a bug in the SIS3820
           firmware. The workaround is to not have any hardware connection to the first counter
-          input, and just use the internal 50MHz clock on this input.</li>
+          input, and just use the internal 50MHz clock on this input. This problem is fixed
+          in firmware release 0x010F, which is now available from SIS.</li>
         <li>Fixed bugs in the calls to devReadProbe in both the SIS3801 and SIS3820 drivers
           which were missing a needed "&" operator on the address to be probed.</li>
       </ul>
     </li>
     <li>mca record
-     <ul>
-       <li>The STIM field and the record time stamp were changed to record the time that 
-        acquisition <b>stopped</b> rather than the time that acquisition <b>started</b>. 
-        This was changed because in multi-element detector systems like the
-        DXP xMAP or the SIS38XX MCS the MCA records only process when acquisition completes, not
-        when it starts.  In this situation the record time stamp and the STIM field were never being
-        updated.  The MCA record always processes when acquisition completes, so this field is now
-        correctly updated, but has changed its meaning.</li>
+      <ul>
+        <li>The STIM field and the record time stamp were changed to record the time that
+          acquisition <b>stopped</b> rather than the time that acquisition <b>started</b>.
+          This was changed because in multi-element detector systems like the DXP xMAP or
+          the SIS38XX MCS the MCA records only process when acquisition completes, not when
+          it starts. In this situation the record time stamp and the STIM field were never
+          being updated. The MCA record always processes when acquisition completes, so this
+          field is now correctly updated, but has changed its meaning.</li>
       </ul>
     </li>
     <li>Minor fixes to medm adl files to make them work with the adl-BOY translator.</li>
