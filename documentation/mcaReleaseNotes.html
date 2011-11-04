@@ -18,7 +18,7 @@
           is not guaranteed to do 32-bit word transfers, which the SIS3820 requires. In fact
           if the number of words to copy was exactly 1 then a bus error was ocurring, because
           memcpy() appears to do 4 8-bit transfers in this case.</li>
-        <li>Added support the control the polarity of the control outputs on the SIS3820.
+        <li>Added support to control the polarity of the control outputs on the SIS3820.
           Choices are Normal and Inverted.</li>
         <li>Added PINI=YES to Channel1Source and EnableClientWait records. Without this the
           initial channel 1 source was always internal until the record was forced to process.</li>
