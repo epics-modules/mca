@@ -4,7 +4,8 @@ include $(TOP)/configure/CONFIG
 #  ADD MACRO DEFINITIONS AFTER THIS LINE
 #=============================
 
-#USR_CPPFLAGS += -UUSE_DMA
+# If your system supports the APS DMA library written by Andrew Johnson uncomment this line; if not comment this line out
+USR_CPPFLAGS += -DUSE_DMA
 
 # <name>.dbd will be created from <name>Include.dbd
 DBD += SIS38XXSupport.dbd
