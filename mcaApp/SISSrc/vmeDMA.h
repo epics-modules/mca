@@ -1,8 +1,9 @@
 /* DMA Routines */
 
-// If OS supports DMA - overridden from compiler line
+// If the target system supports the APS DMA library then use the compiler flag -DUSE_DMA
 
-#define USE_DMA 1
+#ifndef VME_DMA_H
+#define VME_DMA_H
 
 #include <epicsTypes.h>
 
@@ -24,13 +25,13 @@ extern "C" {
 typedef void (*DMA_CALLBACK)(void *context);
 typedef int* DMA_ID;
 
-DMA_ID sysDmaCreate(DMA_CALLBACKS callback, void *context) 
+DMA_ID sysDmaCreate(DMA_CALLBACK callback, void *context) 
 { 
-  return -1;
+  return NULL;
 }
 void * sysDmaContext(DMA_ID dmaId)
 { 
-  return -1;
+  return NULL;
 }
 int sysDmaStatus(DMA_ID dmaId)
 { 
@@ -51,3 +52,4 @@ int sysDmaFromVme(DMA_ID dmaId, void *pLocal, epicsUInt32 vmeAddr,
 }
 #endif
 #endif /* USE_DMA */
+#endif /* VME_DMA_A */
