@@ -264,6 +264,10 @@ void drvSIS3801::startMCSAcquire()
   getIntegerParam(mcaPrescale_, &prescale);
   
   setAcquireMode(ACQUIRE_MODE_MCS);
+  
+  // Reset the FIFO and nextSignal_, but not nextChan_ because we could be resuming acquisition
+  resetFIFO();
+  nextSignal_ = 0;
 
   if (firmwareVersion_ >= 5) {
     if (channelAdvanceSource == mcaChannelAdvance_Internal) {
