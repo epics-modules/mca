@@ -9,6 +9,26 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-2 (XXX-February-2012)</h2>
+  <ul>
+    <li>SIS38XX support
+      <ul>
+        <li>Fixed the SISSrc/Makefile so that by commenting out a line one can build on systems
+          without Andrew Johnson's APS DMA support.</li>
+        <li>Fixed a bug in the SIS3801 support. The bug was causing incorrect data in MCS
+          mode under the following conditions:
+          <ul>
+            <li>The unit was previously counting in "scaler" mode.</li>
+            <li>Acquisition was started in MCS mode with StartAll (rather than EraseStart) and
+              without doing an EraseAll after the scaler mode acquisition was complete.</li>
+          </ul>
+          This change also fixes another problem. If MCS acquisition was stopped with StopAll
+          and then resumed with StartAll there was one spuriously high count in each input
+          channel. </li>
+      </ul>
+    </li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-1 (2-November-2011)</h2>
   <ul>
     <li>SIS38XX support
@@ -18,8 +38,8 @@
           is not guaranteed to do 32-bit word transfers, which the SIS3820 requires. In fact
           if the number of words to copy was exactly 1 then a bus error was ocurring, because
           memcpy() appears to do 4 8-bit transfers in this case.</li>
-        <li>Added support to control the polarity of the control outputs on the SIS3820.
-          Choices are Normal and Inverted.</li>
+        <li>Added support to control the polarity of the control outputs on the SIS3820. Choices
+          are Normal and Inverted.</li>
         <li>Added PINI=YES to Channel1Source and EnableClientWait records. Without this the
           initial channel 1 source was always internal until the record was forced to process.</li>
         <li>Fixed some bugs in SIS38XX drivers that happened on some systems that appear to
@@ -182,11 +202,9 @@
       </tr>
       <tr>
         <th align="center" colspan="2">
-          R6-12-5
-        </th>
+          R6-12-5 </th>
         <th align="center" colspan="2">
-          R7-0
-        </th>
+          R7-0 </th>
       </tr>
       <tr>
         <th>
@@ -200,143 +218,103 @@
       </tr>
       <tr>
         <td>
-          devStr7201.c
-        </td>
+          devStr7201.c </td>
         <td>
-          264
-        </td>
+          264 </td>
         <td>
-          SIS38XX_SNL.st
-        </td>
+          SIS38XX_SNL.st </td>
         <td>
-          116
-        </td>
+          116 </td>
       </tr>
       <tr>
         <td>
-          devScalerST7201.c
-        </td>
+          devScalerST7201.c </td>
         <td>
-          326
-        </td>
+          326 </td>
         <td>
-          apsLib.h
-        </td>
+          apsLib.h </td>
         <td>
-          58
-        </td>
+          58 </td>
       </tr>
       <tr>
         <td>
-          drvMcaSIS3820Asyn.c
-        </td>
+          drvMcaSIS3820Asyn.c </td>
         <td>
-          1689
-        </td>
+          1689 </td>
         <td>
-          drvSIS3801.cpp
-        </td>
+          drvSIS3801.cpp </td>
         <td>
-          731
-        </td>
+          731 </td>
       </tr>
       <tr>
         <td>
-          drvMcaSIS3820Asyn.h
-        </td>
+          drvMcaSIS3820Asyn.h </td>
         <td>
-          285
-        </td>
+          285 </td>
         <td>
-          drvSIS3801.h
-        </td>
+          drvSIS3801.h </td>
         <td>
-          210
-        </td>
+          210 </td>
       </tr>
       <tr>
         <td>
-          drvSTR7201.c
-        </td>
+          drvSTR7201.c </td>
         <td>
-          812
-        </td>
+          812 </td>
         <td>
-          drvSIS3820.cpp
-        </td>
+          drvSIS3820.cpp </td>
         <td>
-          1017
-        </td>
+          1017 </td>
       </tr>
       <tr>
         <td>
-          drvSTR7201.h
-        </td>
+          drvSTR7201.h </td>
         <td>
-          38
-        </td>
+          38 </td>
         <td>
-          drvSIS3820.h
-        </td>
+          drvSIS3820.h </td>
         <td>
-          225
-        </td>
+          225 </td>
       </tr>
       <tr>
         <td>
-          mcaSIS3820Register.c
-        </td>
+          mcaSIS3820Register.c </td>
         <td>
-          62
-        </td>
+          62 </td>
         <td>
-          drvSIS38XX.cpp
-        </td>
+          drvSIS38XX.cpp </td>
         <td>
-          542
-        </td>
+          542 </td>
       </tr>
       <tr>
         <td>
-          mcaSSTR7201Register.c
-        </td>
+          mcaSSTR7201Register.c </td>
         <td>
-          49
-        </td>
+          49 </td>
         <td>
-          drvSIS38XX.h
-        </td>
+          drvSIS38XX.h </td>
         <td>
-          164
-        </td>
+          164 </td>
       </tr>
       <tr>
         <td>
-          sis3820.h
-        </td>
+          sis3820.h </td>
         <td>
-          240
-        </td>
+          240 </td>
         <td>
-          sis3820.h
-        </td>
+          sis3820.h </td>
         <td>
-          240
-        </td>
+          240 </td>
       </tr>
       <tr>
         <td>
-          N.A.
-        </td>
+          N.A. </td>
         <td>
-          -
-        </td>
+          - </td>
         <td>
-          vmeDMA.h
-        </td>
+          vmeDMA.h </td>
         <td>
-          53
-        </td>
+          53 </td>
       </tr>
       <tr>
         <th>
@@ -350,64 +328,47 @@
       </tr>
       <tr>
         <td align="center" colspan="7,">
-          <b>Size of databases</b>
-        </td>
+          <b>Size of databases</b> </td>
       </tr>
       <tr>
         <td>
-          Struck32.db
-        </td>
+          Struck32.db </td>
         <td>
-          623
-        </td>
+          623 </td>
         <td>
-          SIS38XX.template
-        </td>
+          SIS38XX.template </td>
         <td>
-          303
-        </td>
+          303 </td>
       </tr>
       <tr>
         <td>
-          Struck8.db
-        </td>
+          Struck8.db </td>
         <td>
-          215
-        </td>
+          215 </td>
         <td>
-          SIS38XX_waveform.template
-        </td>
+          SIS38XX_waveform.template </td>
         <td>
-          9
-        </td>
+          9 </td>
       </tr>
       <tr>
         <td>
-          STR7201scaler.db
-        </td>
+          STR7201scaler.db </td>
         <td>
-          241
-        </td>
+          241 </td>
         <td>
-          N.A.
-        </td>
+          N.A. </td>
         <td>
-          -
-        </td>
+          - </td>
       </tr>
       <tr>
         <td>
-          SIS3820.db
-        </td>
+          SIS3820.db </td>
         <td>
-          7
-        </td>
+          7 </td>
         <td>
-          N.A.
-        </td>
+          N.A. </td>
         <td>
-          -
-        </td>
+          - </td>
       </tr>
       <tr>
         <th>
@@ -664,7 +625,8 @@
       <ul>
         <li>Changed so that drvUser strings for the data and time interval are no longer hardcoded
           to be DATA and SCAN_PERIOD. These strings are now parameters to the initFastSweep
-          command. But they default to DATA and SCAN_PERIOD for backwards compatibility. </li>
+          command. But they default to DATA and SCAN_PERIOD for backwards compatibility.
+        </li>
       </ul>
     </li>
     <li>Modified to depend on busy module, instead of sscan module for busy record.</li>
