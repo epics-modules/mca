@@ -19,14 +19,7 @@
 /************/
 
 /* EPICS includes */
-#include <asynPortDriver.h>
-#include <epicsEvent.h>
-#include <epicsTypes.h>
-
 #include "drvSIS38XX.h"
-
-// My temporary file
-#include <vmeDMA.h>
 
 /***************/
 /* Definitions */
