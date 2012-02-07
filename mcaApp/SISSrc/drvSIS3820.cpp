@@ -30,6 +30,11 @@
 #include <string.h>
 #include <stdio.h>
 
+// Needed for memalign on vxWorks
+#ifdef vxWorks
+#include <memLib.h>
+#endif
+
 /******************/
 /* EPICS includes */
 /******************/
@@ -48,9 +53,7 @@
 /* Custom includes */
 /*******************/
 
-// My temporary file
-#include <vmeDMA.h>
-
+#include "vmeDMA.h"
 #include "drvMca.h"
 #include "devScalerAsyn.h"
 #include "drvSIS3820.h"
