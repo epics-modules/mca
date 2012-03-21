@@ -560,8 +560,8 @@ void nmcEthCapture(struct nmc_comm_info_struct *i)
 {
 #ifdef USE_SOCKETS
     struct sockaddr_llc from;
-    int fromlen;
-    int length;
+    socklen_t fromlen = sizeof(from);
+    ssize_t length;
     struct response_packet buf;
     /* Start reading in from the snap ID */
     int offset = offsetof(struct response_packet, snap_header.snap_id);
