@@ -466,8 +466,9 @@ void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
       /* Disable channel in MCS mode. We enable the first maxSignals_ inputs */
       registers_->copy_disable_reg = 0xFFFFFFFF << maxSignals_;
       
-      /* Set the number of channels to acquire */
-      registers_->acq_preset_reg = nChans;
+      /* Set the number of channels to acquire.  
+       * We could be resuming acquisition so subtract nextChan_ */
+      registers_->acq_preset_reg = nChans - nextChan_;
 
       /* Set the LNE channel NOTE: This should allow other sources in the future */
       registers_->lne_channel_select_reg = 0;
