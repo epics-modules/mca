@@ -186,6 +186,14 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
       if (acquireMode_ == ACQUIRE_MODE_MCS) status = asynSuccess;
       goto done;
     }
+    // If we have already completed acquisition due to nextChan_, don't start, signal error
+    if (nextChan_ >= nChans) {
+        // Must toggle mcaAcquiring to 1 and back to 0 to signal SNL program to clear Acquiring
+      setIntegerParam(mcaAcquiring_, 1);
+      callParamCallbacks();
+      setIntegerParam(mcaAcquiring_, 0);
+      goto done;
+    }
     acquiring_ = true;
     setIntegerParam(mcaAcquiring_, 1);
     erased_ = 0;
