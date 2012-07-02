@@ -9,14 +9,14 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-2 (XXX-February-2012)</h2>
+    Release 7-2 (XXX-June-2012)</h2>
   <ul>
     <li>SIS38XX support
       <ul>
         <li>Fixed the SISSrc/Makefile and vmeDMA.h so that by commenting out one line in the
           Makefile one can build on systems without Andrew Johnson's APS DMA support.</li>
-        <li>Fixed a bug in the SIS3801 support. The bug was causing incorrect data in MCS
-          mode under the following conditions:
+        <li>Fixed a bug in drvSIS3801.cpp. The bug was causing incorrect data in MCS mode
+          under the following conditions:
           <ul>
             <li>The unit was previously counting in "scaler" mode.</li>
             <li>Acquisition was started in MCS mode with StartAll (rather than EraseStart) and
@@ -25,13 +25,28 @@
           This change also fixes another problem. If MCS acquisition was stopped with StopAll
           and then resumed with StartAll there was one spuriously high count in each input
           channel. </li>
+        <li>Fixed a bug in drvSIS38XX.cpp. If acquisition was already complete because CurrentChannel
+          = NuseAll then processing StartAll was incorrectly causing acquisition to start
+          again when it should not.</li>
+        <li>Fixed a bug in drvSIS3820.cpp. If acquisition was paused with StopAll and then
+          resumed with StartAll the incorrect value was being programmed into the acquisition
+          preset register. It should be NuseAll-CurrentChannel, but NuseAll was being programmed.
+          This caused too many channels to be acquired, leading to buffer overflow and crashing
+          the IOC.</li>
       </ul>
-      <li>Canberra support
-        <ul>
-          <li>Fixed a bug when using llc_sockets due to an uninitialized variable. Thanks to
-            Jens Eden for finding and fixing this.</li>
-        </ul>
-      </li>
+    </li>
+    <li>Canberra support
+      <ul>
+        <li>Fixed a bug when using llc_sockets due to an uninitialized variable. Thanks to
+          Jens Eden for finding and fixing this.</li>
+      </ul>
+    </li>
+    <li>drvFastSweep driver
+      <ul>
+        <li>Converted from C to C++ based on asynPortDriver. Should be backwards compatible
+          with existing drivers and device support.</li>
+      </ul>
+    </li>
   </ul>
   <h2 style="text-align: center">
     Release 7-1 (2-November-2011)</h2>
