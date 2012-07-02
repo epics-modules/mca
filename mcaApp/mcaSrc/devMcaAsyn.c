@@ -406,7 +406,7 @@ static long read_array(mcaRecord *pmca)
     asynUser *pasynUser = pPvt->pasynUser;
 
     /* Copy data from private buffer to record */
-    memcpy(pmca->bptr, pPvt->data, pPvt->nread*sizeof(long));
+    memcpy(pmca->bptr, pPvt->data, pPvt->nread*sizeof(long));  
     pmca->udf=0;
     pmca->nord = pPvt->nread;
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
