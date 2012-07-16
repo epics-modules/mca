@@ -383,7 +383,7 @@ void drvSIS3820::clearScalerPresets()
   registers_->preset_channel_select_reg &= ~(SIS3820_FOUR_BIT_MASK << 16);
   registers_->preset_enable_reg &= ~SIS3820_PRESET_STATUS_ENABLE_GROUP1;
   registers_->preset_enable_reg &= ~SIS3820_PRESET_STATUS_ENABLE_GROUP2;
-  registers_->preset_group2_reg = 0;
+  registers_->preset_group1_reg = 0;
   registers_->preset_group2_reg = 0;
 }
 
