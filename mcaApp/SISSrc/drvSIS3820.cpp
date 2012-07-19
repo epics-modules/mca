@@ -161,8 +161,8 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
     dmaId_ = sysDmaCreate(dmaCallbackC, (void*)this);
     if (dmaId_ == 0 || (int)dmaId_ == -1) {
       asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s:%s: sysDmaCreate failed. Disabling use of DMA.\n",
-                driverName, functionName);
+                "%s:%s: sysDmaCreate failed, errno=%d. Disabling use of DMA.\n",
+                driverName, functionName, errno);
       useDma_ = false;
     }
   }
@@ -838,8 +838,8 @@ void drvSIS3820::readFIFOThread()
         status = sysDmaFromVme(dmaId_, fifoBuffer_, (int)fifo_base_, VME_AM_EXT_SUP_D64BLT, (count)*sizeof(int), 8);
         if (status) {
           asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
-                    "%s:%s: doing DMA transfer, error calling sysDmaFromVme, status=%d, buff=%p, fifo_base=%p, count=%d\n",
-                    driverName, functionName, status, fifoBuffer_, fifo_base_, count);
+                    "%s:%s: doing DMA transfer, error calling sysDmaFromVme, status=%d, error=%d, buff=%p, fifo_base=%p, count=%d\n",
+                    driverName, functionName, status, errno, fifoBuffer_, fifo_base_, count);
         } 
         else {
           epicsEventWait(dmaDoneEventId_);
