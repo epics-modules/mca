@@ -36,6 +36,8 @@ mcaRontecApp_LIBS += asyn
 mcaRontecApp_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 mcaRontecApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+mcaRontecApp_SYS_LIBS_solaris += socket
+
 #=============================
 LIBRARY_IOC_WIN32 += mcaBrukerQM100
 
@@ -56,6 +58,7 @@ mcaBrukerQM100App_LIBS += busy calc sscan autosave
 mcaBrukerQM100App_LIBS += asyn
 mcaBrukerQM100App_LIBS += $(EPICS_BASE_IOC_LIBS)
 
+_SYS_LIBS_solaris += socket
 
 # uncomment, if using Bruker QM100-Server
 #BIN_INSTALLS_WIN32 += ../RTIfcClient.dll
