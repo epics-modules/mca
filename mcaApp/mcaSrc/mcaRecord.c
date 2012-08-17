@@ -106,7 +106,7 @@
 #include    <recSup.h>
 #include    <recGbl.h>
 #include    <special.h>
-#include    <tsDefs.h>
+/* not in 3.15.0.1 #include    <tsDefs.h> */
 #include    <menuYesNo.h> 
 
 #define GEN_SIZE_OFFSET
@@ -806,8 +806,8 @@ read_data:
     if (!pmca->acqg) {
         /* Use TimeStamp to record end of acquisition */
         recGblGetTimeStamp(pmca);
-        tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY,
-                       pmca->stim);
+		epicsTimeToStrftime(pmca->stim, 25, "%b %d, %Y %T.%03f", &pmca->time);
+        /* tsStampToText(&pmca->time, TS_TEXT_MONDDYYYY, pmca->stim);*/
         /* Trim STIM to 25 characters = .001 sec precision */
         pmca->stim[25]='\0';
         MARK(M_STIM);
