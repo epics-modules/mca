@@ -188,12 +188,9 @@ record(bo,"$(P)SetClientWait") {
 record(busy,"$(P)ClientWait") {
 }
 
-#
-# This record reflect the current mode of the
+# This record reflects the current mode of the
 # driver.
 # Can be either MCA or SCALER (or UNDEFINED).
-# Use it to disable the autocount feature of the 
-# scaler record when in MCA mode.
 record(mbbi, "$(P)AcquireMode") {
   field(DESC, "SIS38XX acquire mode")
   field(DTYP, "asynInt32")
@@ -203,12 +200,11 @@ record(mbbi, "$(P)AcquireMode") {
   field(ZRST, "MCS")
   field(ONST, "Scaler")
   field(SCAN, "I/O Intr")
-  field(FLNK, "$(P)DisableAutoCount.PROC CA MS")
 }
 
 record(calcout, "$(P)DisableAutoCount") {
-  field(CALC, "A")
-  field(INPA, "$(P)AcquireMode")
+  field(CALC, "!A")
+  field(INPA, "$(P)Acquiring CP")
   field(OUT,  "$(SCALER).CONT")
   field(OOPT, "Transition To Zero")
 }
