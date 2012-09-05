@@ -9,8 +9,13 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-2 (XXX-June-2012)</h2>
+    Release 7-2 (5-September-2012)</h2>
   <ul>
+    <li>General
+      <ul>
+        <li>Minor changes to build with base 3.15</li>
+      </ul>
+    </li>
     <li>SIS38XX support
       <ul>
         <li>Fixed the SISSrc/Makefile and vmeDMA.h so that by commenting out one line in the
@@ -33,6 +38,13 @@
           preset register. It should be NuseAll-CurrentChannel, but NuseAll was being programmed.
           This caused too many channels to be acquired, leading to buffer overflow and crashing
           the IOC.</li>
+        <li>Fixed typo bug in drvSIS3820.cpp. clearScalerPresets was not clearing preset group
+          1.</li>
+        <li>Improved the logic for disabling AutoCount in the scaler record when starting
+          MCS acquisition. The logic is still not perfect: if AutoCount is in progress when
+          MCS acquisition is started it will set AutoCount to One-Shot but the AutoCount will
+          complete and MCS acquisition will not really start. However, if MCS acquisition
+          is started again it will succeed. </li>
       </ul>
     </li>
     <li>Canberra support
