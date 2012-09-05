@@ -12,9 +12,9 @@ SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 # Transform record
-CALC=$(SUPPORT)/calc-2-9
+CALC=$(SUPPORT)/calc-2-10
 # If calc was built with sscan, we must link against it
-SSCAN=$(SUPPORT)/sscan-2-7
+SSCAN=$(SUPPORT)/sscan-2-8-1
 
 # Busy record 
 BUSY=$(SUPPORT)/busy-1-4
@@ -23,13 +23,13 @@ BUSY=$(SUPPORT)/busy-1-4
 STD=$(SUPPORT)/std-3-0
 
 # SISSrc uses the sequencer
-SNCSEQ=$(SUPPORT)/seq-2-1-7
+SNCSEQ=$(SUPPORT)/seq-2-1-9
 
 # save_restore
-AUTOSAVE=$(SUPPORT)/autosave-4-8
+AUTOSAVE=$(SUPPORT)/autosave-4-9
 
 # ASYN - for device/driver support
-ASYN=$(SUPPORT)/asyn-4-19
+ASYN=$(SUPPORT)/asyn-4-20
 
 # MCA - this module
 MCA=$(SUPPORT)/mca-7-1
