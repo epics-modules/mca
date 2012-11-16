@@ -99,7 +99,7 @@ drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
   createParam(SIS38XXOutputModeString,              asynParamInt32, &SIS38XXOutputMode_);         /* int32, write */
   createParam(SIS38XXOutputPolarityString,          asynParamInt32, &SIS38XXOutputPolarity_);     /* int32, write */
   createParam(SIS38XXSoftwareChannelAdvanceString,  asynParamInt32, &SIS38XXSoftwareChannelAdvance_); /* int32, write */
-  createParam(SIS38XXInitialChannelAdvanceString,   asynParamInt32, &SIS38XXInitialChannelAdvance_);  /* int32, write */
+  createParam(SIS38XXCountOnStartString,            asynParamInt32, &SIS38XXCountOnStart_);       /* int32, write */
   createParam(SIS38XXModelString,                   asynParamInt32, &SIS38XXModel_);              /* int32, read */
   createParam(SIS38XXFirmwareString,                asynParamInt32, &SIS38XXFirmware_);           /* int32, read */
 
@@ -137,7 +137,7 @@ drvSIS38XX::drvSIS38XX(const char *portName, int maxChans, int maxSignals)
   setIntegerParam(scalerChannels_, maxSignals);
   /* Enable channel 1 reference pulses by default */
   setIntegerParam(SIS38XXChannel1Source_, CHANNEL1_SOURCE_INTERNAL);
-  setIntegerParam(SIS38XXInitialChannelAdvance_, 0);
+  setIntegerParam(SIS38XXCountOnStart_, 0);
   setIntegerParam(SIS38XXInputMode_, 3);
   setIntegerParam(SIS38XXOutputMode_, 0);
   setIntegerParam(SIS38XXMaxChannels_, maxChans_);

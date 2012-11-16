@@ -39,7 +39,7 @@
 #define SIS38XXOutputModeString             "SIS38XX_OUTPUT_MODE"
 #define SIS38XXOutputPolarityString         "SIS38XX_OUTPUT_POLARITY"
 #define SIS38XXSoftwareChannelAdvanceString "SIS38XX_SOFTWARE_CHANNEL_ADVANCE"
-#define SIS38XXInitialChannelAdvanceString  "SIS38XX_INITIAL_CHANNEL_ADVANCE"
+#define SIS38XXCountOnStartString           "SIS38XX_COUNT_ON_START"
 #define SIS38XXModelString                  "SIS38XX_MODEL"
 #define SIS38XXFirmwareString               "SIS38XX_FIRMWARE"
 
@@ -148,7 +148,7 @@ class drvSIS38XX : public asynPortDriver
   int SIS38XXOutputMode_;
   int SIS38XXOutputPolarity_;
   int SIS38XXSoftwareChannelAdvance_;
-  int SIS38XXInitialChannelAdvance_;
+  int SIS38XXCountOnStart_;
   int SIS38XXModel_;
   int SIS38XXFirmware_;
   #define LAST_SIS38XX_PARAM SIS38XXFirmware_

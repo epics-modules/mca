@@ -255,12 +255,12 @@ void drvSIS3801::startMCSAcquire()
   int nChans;
   int prescale;
   int channelAdvanceSource;
-  int initialChannelAdvance;
+  int countOnStart;
   static const char *functionName="startMCSAcquire";
  
   getIntegerParam(mcaNumChannels_, &nChans);
   getIntegerParam(mcaChannelAdvanceSource_, &channelAdvanceSource);
-  getIntegerParam(SIS38XXInitialChannelAdvance_, &initialChannelAdvance);
+  getIntegerParam(SIS38XXCountOnStart_, &countOnStart);
   getIntegerParam(mcaPrescale_, &prescale);
   
   setAcquireMode(ACQUIRE_MODE_MCS);
@@ -313,7 +313,7 @@ void drvSIS3801::startMCSAcquire()
   registers_->csr_reg = CONTROL_M_CLEAR_SOFTWARE_DISABLE;
 
   /* Do one software next_clock if enabled */
-  if (initialChannelAdvance != 0)
+  if (countOnStart != 0)
     softwareChannelAdvance();
 }
 
