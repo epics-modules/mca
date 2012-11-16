@@ -258,7 +258,8 @@
         <td>
           ao</td>
         <td>
-          Preset real time. If non-zero then acquisition will stop when this time is reached.</td>
+          Preset real time. If non-zero then acquisition will stop when this time is reached.
+        </td>
       </tr>
       <tr>
         <td>
@@ -316,15 +317,15 @@
       </tr>
       <tr>
         <td>
-          $(P)InitialChannelAdvance</td>
+          $(P)CountOnStart</td>
         <td>
           bo</td>
         <td>
-          Flag controlling whether an initial software channel advance is done when acquisition
-          starts. If No (=0) then counting does not start in channel 0 until receipt of the
-          first external channel advance pulse in External channel advance mode. If Yes(=1)
-          then counting in channel 0 starts immediately when acquisition starts, without waiting
-          for the first external channel advance pulse.</td>
+          Flag controlling whether the module begins counting immediately when acquisition
+          starts. This record only applied in External channel advance mode. If No (=0) then
+          counting does not start in channel 0 until receipt of the first external channel
+          advance pulse. If Yes(=1) then counting in channel 0 starts immediately when acquisition
+          starts, without waiting for the first external channel advance pulse.</td>
       </tr>
       <tr>
         <td>
@@ -365,7 +366,8 @@
           bo</td>
         <td>
           Flag to force acquisition to wait until a client clears the ClientWait busy record
-          before proceeding to the next acquisition. This can be useful with the scan record.</td>
+          before proceeding to the next acquisition. This can be useful with the scan record.
+        </td>
       </tr>
       <tr>
         <td>
@@ -410,8 +412,7 @@
           mbbo</td>
         <td>
           The input mode. The section below lists the supported input modes for the SIS3801
-          and SIS3820.
-        </td>
+          and SIS3820. </td>
       </tr>
       <tr>
         <td>
@@ -420,8 +421,7 @@
           mbbo</td>
         <td>
           The output mode. The section below lists the supported output modes for the SIS3801
-          and SIS3820.
-        </td>
+          and SIS3820. </td>
       </tr>
       <tr>
         <td>
@@ -430,8 +430,7 @@
           bo</td>
         <td>
           The polarity of the output control signals on the SIS3820. Choices are Normal and
-          Inverted.
-        </td>
+          Inverted. </td>
       </tr>
       <tr>
         <td>
@@ -439,8 +438,7 @@
         <td>
           mbbi</td>
         <td>
-          The scaler model. Values are "SIS3801" and SIS3820".
-        </td>
+          The scaler model. Values are "SIS3801" and SIS3820". </td>
       </tr>
       <tr>
         <td>
@@ -448,8 +446,7 @@
         <td>
           longin</td>
         <td>
-          The firmware version.
-        </td>
+          The firmware version. </td>
       </tr>
       <tr>
         <td>
@@ -457,8 +454,7 @@
         <td>
           longin</td>
         <td>
-          The maximum number of channels.
-        </td>
+          The maximum number of channels. </td>
       </tr>
     </tbody>
   </table>
