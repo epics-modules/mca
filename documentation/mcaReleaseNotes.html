@@ -9,6 +9,25 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-3 (XXX-November-2012)</h2>
+  <ul>
+    <li>SIS38XX support
+      <ul>
+        <li>Renamed the InitialChannelAdvance record to CountOnStart, because this is really
+          what it does. If this record is Yes (1) then the module begins counting input pulses
+          as soon as acquisition is started. If this record is No (0) then the module does
+          not being counting input pulses until it receives the first External Channel Advance
+          pulse. This record only applies in External Channel Advance mode.</li>
+        <li>Fixed a bug on the SIS3820 which caused the module not to begin counting input
+          pulses when the InitialChannelAdvance record (now called CountOnStart) was Yes.
+          The SIS3820 was doing a software channel advance, but was not being armed to count.
+          This was not the desired behavior. The SIS3801 was behaving correctly, starting
+          to count but not doing a channel advance. With this fix CountOnStart works identically
+          on the SIS3820 and SIS3801. </li>
+      </ul>
+    </li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-2 (6-September-2012)</h2>
   <ul>
     <li>General
