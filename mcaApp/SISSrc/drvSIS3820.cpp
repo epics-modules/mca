@@ -321,24 +321,23 @@ void drvSIS3820::erase()
 
 void drvSIS3820::startMCSAcquire()
 {
-  int initialChannelAdvance;
+  int countOnStart;
   int channelAdvanceSource;
   //static const char *functionName="startMCSAcquire";
   
-  getIntegerParam(SIS38XXInitialChannelAdvance_, &initialChannelAdvance);
+  getIntegerParam(SIS38XXCountOnStart_, &countOnStart);
   getIntegerParam(mcaChannelAdvanceSource_, &channelAdvanceSource);
 
   setAcquireMode(ACQUIRE_MODE_MCS);
 
   if (channelAdvanceSource == mcaChannelAdvance_Internal) 
     registers_->key_op_enable_reg = 1;
-  else if (channelAdvanceSource == mcaChannelAdvance_External) 
-    registers_->key_op_arm_reg = 1;
-
-  /* Optionally do one software next_clock. This starts the module counting without 
-   * waiting for the first external next clock. */
-  if (initialChannelAdvance != 0)
-     softwareChannelAdvance(); 
+  else if (channelAdvanceSource == mcaChannelAdvance_External) {
+    if (countOnStart)
+      registers_->key_op_enable_reg = 1;
+    else
+      registers_->key_op_arm_reg = 1;
+  }
 }
 
 void drvSIS3820::stopMCSAcquire()
