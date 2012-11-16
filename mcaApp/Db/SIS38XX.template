@@ -135,10 +135,10 @@ record(bo,"$(P)ChannelAdvance") {
   field(ONAM, "External")
 }
 
-record(bo,"$(P)InitialChannelAdvance") {
+record(bo,"$(P)CountOnStart") {
   field(PINI, "YES")
   field(DTYP, "asynInt32")
-  field(OUT,  "@asyn($(PORT),0)SIS38XX_INITIAL_CHANNEL_ADVANCE")
+  field(OUT,  "@asyn($(PORT),0)SIS38XX_COUNT_ON_START")
   field(ZNAM, "No")
   field(ONAM, "Yes")
 }
