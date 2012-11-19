@@ -16,7 +16,7 @@
         <li>Renamed the InitialChannelAdvance record to CountOnStart, because this is really
           what it does. If this record is Yes (1) then the module begins counting input pulses
           as soon as acquisition is started. If this record is No (0) then the module does
-          not being counting input pulses until it receives the first External Channel Advance
+          not begin counting input pulses until it receives the first External Channel Advance
           pulse. This record only applies in External Channel Advance mode.</li>
         <li>Fixed a bug on the SIS3820 which caused the module not to begin counting input
           pulses when the InitialChannelAdvance record (now called CountOnStart) was Yes.
