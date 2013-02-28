@@ -9,7 +9,7 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-3 (XXX-November-2012)</h2>
+    Release 7-3 (28-February-2013)</h2>
   <ul>
     <li>SIS38XX support
       <ul>
@@ -24,6 +24,12 @@
           This was not the desired behavior. The SIS3801 was behaving correctly, starting
           to count but not doing a channel advance. With this fix CountOnStart works identically
           on the SIS3820 and SIS3801. </li>
+      </ul>
+    </li>
+    <li>CanberraSupport
+      <ul>
+        <li>Changed Makefile to allow building on architectures like win32-x86-debug, win32-x86-dynamic,
+          etc. and not just win32-x86. Same changes for windows-x64 and cygwin-x86.</li>
       </ul>
     </li>
   </ul>
