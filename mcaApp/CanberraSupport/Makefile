@@ -13,7 +13,7 @@ BIN_INSTALLS_WIN32    += ../os/WIN32/wpcap.dll ../os/WIN32/Packet.dll
 else ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
 LIB_INSTALLS_WIN32    += ../os/WIN32/x64/wpcap.lib ../os/WIN32/x64/Packet.lib
 BIN_INSTALLS_WIN32    += ../os/WIN32/x64/wpcap.dll ../os/WIN32/x64/Packet.dll
-else ifeq (cygwinx-86, $(findstring cygwin-x86, $(T_A)))
+else ifeq (cygwin-x86, $(findstring cygwin-x86, $(T_A)))
 LIB_INSTALLS_cygwin32    += ../os/WIN32/wpcap.lib ../os/WIN32/Packet.lib
 BIN_INSTALLS_cygwin32    += ../os/WIN32/wpcap.dll ../os/WIN32/Packet.dll
 endif
