@@ -805,7 +805,7 @@ read_data:
     if (!pmca->acqg) {
         /* Use TimeStamp to record end of acquisition */
         recGblGetTimeStamp(pmca);
-	epicsTimeToStrftime(pmca->stim, 25, "%b %d, %Y %T.%03f", &pmca->time);
+	epicsTimeToStrftime(pmca->stim, 25, "%b %d, %Y %H:%M:%S.%03f", &pmca->time);
         /* Trim STIM to 25 characters = .001 sec precision */
         pmca->stim[25]='\0';
         MARK(M_STIM);
