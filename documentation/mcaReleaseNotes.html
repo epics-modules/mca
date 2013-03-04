@@ -9,6 +9,22 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-3-1 (4-March-2013)</h2>
+  <ul>
+    <li>mcaRecord
+      <ul>
+        <li>Fixed a problem introduced in R7-2 with epicsTimeToStrftime format string. It
+          would crash on Windows where %T is not a valid format item.</li>
+        <li>Fixed a problem where the upper limit of the ROI (RnHI) was not limited to the
+          number of elements in the MCA array, so the ROI calculation could be garbage or
+          even crash.</li>
+      </ul>
+    </li>
+    <li>medm screens (mca.adl, simple_mca.adl). The ROI labels were incorrect, they were
+      1-8, should be 0-7. These screens were also invoking mca_ROIs.adl incorrectly, they
+      were invoking 1-N, rather than 0-(N-1). </li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-3 (28-February-2013)</h2>
   <ul>
     <li>SIS38XX support
