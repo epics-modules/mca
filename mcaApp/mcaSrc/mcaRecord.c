@@ -365,7 +365,9 @@ field to all listeners.  monitor() does this.
         DATA_TYPE *pb, *pbg = (DATA_TYPE *)pmca->pbg;\
         DATA_TYPE *plo, *phi;\
         sum = net = 0.0;\
-        lo = proi->lo; hi = proi->hi;\
+        lo = proi->lo; \
+        hi = proi->hi;\
+        if (hi > max) hi = max; \
         if (lo >= 0 && hi >= lo) {\
             bg_lo = bg_hi = 0.0;\
             if (proi->nbg >= 0) {\
@@ -391,20 +393,19 @@ field to all listeners.  monitor() does this.
                 net += *p - *pb;\
             }\
             MARK(M_BG);\
+        }\
+        if ((sum != psum->sum) || (net != psum->net)) ROI_MARK(M_R0<<i);\
+        psum->sum = sum;\
+        psum->net = net;\
+        if (proi->isPreset) *preset_reached |= psum->net >= psum->preset;\
+        NEWR_UNMARK(M_R0<<i);\
     }\
-    if ((sum != psum->sum) || (net != psum->net)) ROI_MARK(M_R0<<i);\
-    psum->sum = sum;\
-    psum->net = net;\
-    if (proi->isPreset) *preset_reached |= psum->net >= psum->preset;\
-    NEWR_UNMARK(M_R0<<i);\
-    }\
-\
     proi = (struct roi *)&pmca->r0lo;\
     for (i=0; i<NUM_ROI; i++, proi++) {\
         DATA_TYPE *pbg = (DATA_TYPE *)pmca->pbg;\
         if (proi->lo >= 0 && proi->hi >= proi->lo) {\
             pbg[proi->lo] = pbg[proi->hi] = ymax;\
-    }\
+        }\
     }\
 
 
