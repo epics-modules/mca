@@ -8,8 +8,8 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
 #           maxSignals, maxSequences, ethernetDevice)
-AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "eth0")
-AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "eth0")
+AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "eth1")
+AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "eth1")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
 
