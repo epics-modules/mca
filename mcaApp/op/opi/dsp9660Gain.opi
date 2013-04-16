@@ -1,28 +1,34 @@
-<?xml version='1.0' encoding='UTF-8'?>
 <display typeId="org.csstudio.opibuilder.Display" version="1.0">
   <auto_zoom_to_fit_all>false</auto_zoom_to_fit_all>
   <macros>
     <include_parent_macros>true</include_parent_macros>
   </macros>
-  <scripts/>
+  <wuid>39872d87:13e14015f61:-4a15</wuid>
+  <boy_version>3.1.2.20120830</boy_version>
+  <scripts />
   <show_ruler>true</show_ruler>
   <height>490</height>
   <name>dsp9660Gain</name>
   <snap_to_geometry>false</snap_to_geometry>
   <show_grid>false</show_grid>
   <background_color>
-    <color name="Gray_4"/>
+    <color name="Gray_4" red="187" green="187" blue="187" />
   </background_color>
   <foreground_color>
-    <color name="Gray_14"/>
+    <color name="Gray_14" red="0" green="0" blue="0" />
   </foreground_color>
   <widget_type>Display</widget_type>
   <show_close_button>true</show_close_button>
   <width>520</width>
-  <rules/>
+  <rules />
   <show_edit_range>true</show_edit_range>
   <grid_space>5</grid_space>
-  <actions hook="false"/>
+  <auto_scale_widgets>
+    <auto_scale_widgets>false</auto_scale_widgets>
+    <min_width>-1</min_width>
+    <min_height>-1</min_height>
+  </auto_scale_widgets>
+  <actions hook="false" hook_all="false" />
   <y>173</y>
   <x>485</x>
   <widget typeId="org.csstudio.opibuilder.widgets.Rectangle" version="1.0">
@@ -30,186 +36,228 @@
     <visible>true</visible>
     <fill_level>100.0</fill_level>
     <line_color>
-      <color red="128" green="0" blue="255"/>
+      <color red="128" green="0" blue="255" />
     </line_color>
-    <scripts/>
+    <wuid>39872d87:13e14015f61:-4a14</wuid>
+    <bg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </bg_gradient_color>
+    <scripts />
     <height>39</height>
     <anti_alias>true</anti_alias>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Rectangle</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <alpha>255</alpha>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>false</transparent>
-    <pv_name/>
+    <pv_name></pv_name>
     <background_color>
-      <color red="0" green="0" blue="255"/>
+      <color red="30" green="144" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="MEDM_COLOR_52"/>
+      <color name="MEDM_COLOR_52" red="78" green="165" blue="249" />
     </foreground_color>
     <widget_type>Rectangle</widget_type>
     <enabled>true</enabled>
+    <fg_gradient_color>
+      <color red="255" green="255" blue="255" />
+    </fg_gradient_color>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
-    <line_style>0</line_style>
     <width>274</width>
+    <line_style>0</line_style>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
+    <pv_value />
     <border_width>1</border_width>
     <line_width>0</line_width>
     <horizontal_fill>true</horizontal_fill>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>4</y>
     <tooltip>$(pv_name)
 $(pv_value)</tooltip>
     <x>123</x>
+    <gradient>false</gradient>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-4a12</wuid>
+    <scripts />
+    <height>63</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>495</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>63</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>58</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>5</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-4a11</wuid>
+      <scripts />
+      <height>63</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>63</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>125</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-4a10</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Fine gain</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
-        <minimum>-Infinity</minimum>
         <vertical_alignment>1</vertical_alignment>
-        <show_units>false</show_units>
         <multiline_input>false</multiline_input>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-        <name>Text Input</name>
-        <format_type>1</format_type>
         <precision_from_pv>true</precision_from_pv>
-        <transparent>false</transparent>
-        <selector_type>0</selector_type>
-        <pv_name>$(P)$(DSP)FG</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
-        <foreground_color>
-          <color name="Gray_14"/>
-        </foreground_color>
         <widget_type>Text Input</widget_type>
         <enabled>true</enabled>
-        <text/>
-        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-        <precision>0</precision>
+        <text></text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>100</width>
         <border_style>3</border_style>
-        <rules/>
+        <pv_value />
         <border_width>1</border_width>
         <maximum>Infinity</maximum>
+        <minimum>-Infinity</minimum>
+        <show_units>false</show_units>
+        <wuid>39872d87:13e14015f61:-4a0f</wuid>
+        <rotation_angle>0.0</rotation_angle>
+        <name>Text Input</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
+        <format_type>1</format_type>
+        <transparent>false</transparent>
+        <selector_type>0</selector_type>
+        <pv_name>$(P)$(DSP)FG</pv_name>
+        <foreground_color>
+          <color name="Gray_14" red="0" green="0" blue="0" />
+        </foreground_color>
+        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+        <precision>0</precision>
+        <confirm_message></confirm_message>
+        <rules />
         <limits_from_pv>false</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>0</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>21</y>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -220,297 +268,344 @@ $(pv_value)</tooltip>
         <border_alarm_sensitive>true</border_alarm_sensitive>
         <visible>true</visible>
         <color_fillbackground>
-          <color red="200" green="200" blue="200"/>
+          <color red="200" green="200" blue="200" />
         </color_fillbackground>
         <color_hihi>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_hihi>
         <show_lo>true</show_lo>
-        <scripts/>
+        <scripts />
         <thumb_color>
-          <color red="172" green="172" blue="172"/>
+          <color red="172" green="172" blue="172" />
         </thumb_color>
         <height>20</height>
         <major_tick_step_hint>50</major_tick_step_hint>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <page_increment>10.0</page_increment>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <enabled>true</enabled>
         <widget_type>Scaled Slider</widget_type>
         <show_minor_ticks>true</show_minor_ticks>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <show_lolo>true</show_lolo>
         <border_style>0</border_style>
         <effect_3d>true</effect_3d>
+        <pv_value />
         <show_markers>true</show_markers>
         <show_hi>true</show_hi>
         <maximum>100.0</maximum>
         <border_width>1</border_width>
-        <horizontal>true</horizontal>
+        <horizontal>false</horizontal>
         <log_scale>false</log_scale>
         <minimum>0.0</minimum>
+        <wuid>39872d87:13e14015f61:-4a0e</wuid>
         <show_hihi>true</show_hihi>
-        <scale_format/>
+        <scale_format></scale_format>
         <show_scale>true</show_scale>
         <color_lo>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_lo>
         <name>Scaled Slider</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <color_hi>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_hi>
         <pv_name>$(P)$(DSP)FG</pv_name>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <step_increment>1.0</step_increment>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <level_hi>80.0</level_hi>
         <scale_font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </scale_font>
         <level_hihi>90.0</level_hihi>
-        <fill_color>
-          <color red="0" green="0" blue="255"/>
-        </fill_color>
         <color_lolo>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_lolo>
-        <rules/>
-        <value_label_format/>
+        <fill_color>
+          <color red="0" green="0" blue="255" />
+        </fill_color>
+        <rules />
+        <value_label_format></value_label_format>
         <transparent_background>true</transparent_background>
         <limits_from_pv>true</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <level_lolo>10.0</level_lolo>
         <y>43</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <x>10</x>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-4a0d</wuid>
+      <scripts />
+      <height>41</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>41</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>0</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-4a0c</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Coarse gain</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
         <actions_from_pv>true</actions_from_pv>
-        <scripts/>
+        <wuid>39872d87:13e14015f61:-4a0b</wuid>
+        <scripts />
         <height>20</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Menu Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>false</transparent>
         <pv_name>$(P)$(DSP)CG</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Menu Button</widget_type>
         <enabled>true</enabled>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <border_style>6</border_style>
-        <label/>
-        <rules/>
+        <label></label>
+        <rules />
+        <pv_value />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <y>21</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
         <x>10</x>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-4a0a</wuid>
+      <scripts />
+      <height>63</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>63</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>250</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-4a09</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>S-Fine gain</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
-        <minimum>-Infinity</minimum>
         <vertical_alignment>1</vertical_alignment>
-        <show_units>false</show_units>
         <multiline_input>false</multiline_input>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-        <name>Text Input</name>
-        <format_type>1</format_type>
         <precision_from_pv>true</precision_from_pv>
-        <transparent>false</transparent>
-        <selector_type>0</selector_type>
-        <pv_name>$(P)$(DSP)SFG</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
-        <foreground_color>
-          <color name="Gray_14"/>
-        </foreground_color>
         <widget_type>Text Input</widget_type>
         <enabled>true</enabled>
-        <text/>
-        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-        <precision>0</precision>
+        <text></text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>100</width>
         <border_style>3</border_style>
-        <rules/>
+        <pv_value />
         <border_width>1</border_width>
         <maximum>Infinity</maximum>
+        <minimum>-Infinity</minimum>
+        <show_units>false</show_units>
+        <wuid>39872d87:13e14015f61:-4a08</wuid>
+        <rotation_angle>0.0</rotation_angle>
+        <name>Text Input</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
+        <format_type>1</format_type>
+        <transparent>false</transparent>
+        <selector_type>0</selector_type>
+        <pv_name>$(P)$(DSP)SFG</pv_name>
+        <foreground_color>
+          <color name="Gray_14" red="0" green="0" blue="0" />
+        </foreground_color>
+        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+        <precision>0</precision>
+        <confirm_message></confirm_message>
+        <rules />
         <limits_from_pv>false</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>0</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>21</y>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -521,182 +616,208 @@ $(pv_value)</tooltip>
         <border_alarm_sensitive>true</border_alarm_sensitive>
         <visible>true</visible>
         <color_fillbackground>
-          <color red="200" green="200" blue="200"/>
+          <color red="200" green="200" blue="200" />
         </color_fillbackground>
         <color_hihi>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_hihi>
         <show_lo>true</show_lo>
-        <scripts/>
+        <scripts />
         <thumb_color>
-          <color red="172" green="172" blue="172"/>
+          <color red="172" green="172" blue="172" />
         </thumb_color>
         <height>20</height>
         <major_tick_step_hint>50</major_tick_step_hint>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <page_increment>10.0</page_increment>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <enabled>true</enabled>
         <widget_type>Scaled Slider</widget_type>
         <show_minor_ticks>true</show_minor_ticks>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <show_lolo>true</show_lolo>
         <border_style>0</border_style>
         <effect_3d>true</effect_3d>
+        <pv_value />
         <show_markers>true</show_markers>
         <show_hi>true</show_hi>
         <maximum>100.0</maximum>
         <border_width>1</border_width>
-        <horizontal>true</horizontal>
+        <horizontal>false</horizontal>
         <log_scale>false</log_scale>
         <minimum>0.0</minimum>
+        <wuid>39872d87:13e14015f61:-4a07</wuid>
         <show_hihi>true</show_hihi>
-        <scale_format/>
+        <scale_format></scale_format>
         <show_scale>true</show_scale>
         <color_lo>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_lo>
         <name>Scaled Slider</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <color_hi>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_hi>
         <pv_name>$(P)$(DSP)SFG</pv_name>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <step_increment>1.0</step_increment>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <level_hi>80.0</level_hi>
         <scale_font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </scale_font>
         <level_hihi>90.0</level_hihi>
-        <fill_color>
-          <color red="0" green="0" blue="255"/>
-        </fill_color>
         <color_lolo>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_lolo>
-        <rules/>
-        <value_label_format/>
+        <fill_color>
+          <color red="0" green="0" blue="255" />
+        </fill_color>
+        <rules />
+        <value_label_format></value_label_format>
         <transparent_background>true</transparent_background>
         <limits_from_pv>true</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <level_lolo>10.0</level_lolo>
         <y>43</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <x>10</x>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-4a06</wuid>
+      <scripts />
+      <height>41</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>41</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>375</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-4a05</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Coinc. mode</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
         <actions_from_pv>true</actions_from_pv>
-        <scripts/>
+        <wuid>39872d87:13e14015f61:-4a04</wuid>
+        <scripts />
         <height>20</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Menu Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>false</transparent>
         <pv_name>$(P)$(DSP)GATM</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Menu Button</widget_type>
         <enabled>true</enabled>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <border_style>6</border_style>
-        <label/>
-        <rules/>
+        <label></label>
+        <rules />
+        <pv_value />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <y>21</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
         <x>10</x>
@@ -704,115 +825,136 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-4a03</wuid>
+    <scripts />
+    <height>63</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>63</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>270</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>130</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-4a02</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>LT trim</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
-      <minimum>-Infinity</minimum>
       <vertical_alignment>1</vertical_alignment>
-      <show_units>false</show_units>
       <multiline_input>false</multiline_input>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-      <name>Text Input</name>
-      <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
-      <transparent>false</transparent>
-      <selector_type>0</selector_type>
-      <pv_name>$(P)$(DSP)LTRM</pv_name>
       <background_color>
-        <color name="ioc_write_bg"/>
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
-      <foreground_color>
-        <color name="Gray_14"/>
-      </foreground_color>
       <widget_type>Text Input</widget_type>
       <enabled>true</enabled>
-      <text/>
-      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-      <precision>0</precision>
+      <text></text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>100</width>
       <border_style>3</border_style>
-      <rules/>
+      <pv_value />
       <border_width>1</border_width>
       <maximum>Infinity</maximum>
+      <minimum>-Infinity</minimum>
+      <show_units>false</show_units>
+      <wuid>39872d87:13e14015f61:-4a01</wuid>
+      <rotation_angle>0.0</rotation_angle>
+      <name>Text Input</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <format_type>1</format_type>
+      <transparent>false</transparent>
+      <selector_type>0</selector_type>
+      <pv_name>$(P)$(DSP)LTRM</pv_name>
+      <foreground_color>
+        <color name="Gray_14" red="0" green="0" blue="0" />
+      </foreground_color>
+      <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+      <precision>0</precision>
+      <confirm_message></confirm_message>
+      <rules />
       <limits_from_pv>false</limits_from_pv>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>0</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>21</y>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -823,390 +965,454 @@ $(pv_value)</tooltip>
       <border_alarm_sensitive>true</border_alarm_sensitive>
       <visible>true</visible>
       <color_fillbackground>
-        <color red="200" green="200" blue="200"/>
+        <color red="200" green="200" blue="200" />
       </color_fillbackground>
       <color_hihi>
-        <color red="255" green="0" blue="0"/>
+        <color red="255" green="0" blue="0" />
       </color_hihi>
       <show_lo>true</show_lo>
-      <scripts/>
+      <scripts />
       <thumb_color>
-        <color red="172" green="172" blue="172"/>
+        <color red="172" green="172" blue="172" />
       </thumb_color>
       <height>20</height>
       <major_tick_step_hint>50</major_tick_step_hint>
       <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <page_increment>10.0</page_increment>
       <background_color>
-        <color name="ioc_write_bg"/>
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
       <enabled>true</enabled>
       <widget_type>Scaled Slider</widget_type>
       <show_minor_ticks>true</show_minor_ticks>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>100</width>
       <show_lolo>true</show_lolo>
       <border_style>0</border_style>
       <effect_3d>true</effect_3d>
+      <pv_value />
       <show_markers>true</show_markers>
       <show_hi>true</show_hi>
       <maximum>100.0</maximum>
       <border_width>1</border_width>
-      <horizontal>true</horizontal>
+      <horizontal>false</horizontal>
       <log_scale>false</log_scale>
       <minimum>0.0</minimum>
+      <wuid>39872d87:13e14015f61:-4a00</wuid>
       <show_hihi>true</show_hihi>
-      <scale_format/>
+      <scale_format></scale_format>
       <show_scale>true</show_scale>
       <color_lo>
-        <color red="255" green="128" blue="0"/>
+        <color red="255" green="128" blue="0" />
       </color_lo>
       <name>Scaled Slider</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <color_hi>
-        <color red="255" green="128" blue="0"/>
+        <color red="255" green="128" blue="0" />
       </color_hi>
       <pv_name>$(P)$(DSP)LTRM</pv_name>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <step_increment>1.0</step_increment>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <level_hi>80.0</level_hi>
       <scale_font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </scale_font>
       <level_hihi>90.0</level_hihi>
-      <fill_color>
-        <color red="0" green="0" blue="255"/>
-      </fill_color>
       <color_lolo>
-        <color red="255" green="0" blue="0"/>
+        <color red="255" green="0" blue="0" />
       </color_lolo>
-      <rules/>
-      <value_label_format/>
+      <fill_color>
+        <color red="0" green="0" blue="255" />
+      </fill_color>
+      <rules />
+      <value_label_format></value_label_format>
       <transparent_background>true</transparent_background>
       <limits_from_pv>true</limits_from_pv>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <level_lolo>10.0</level_lolo>
       <y>43</y>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <x>10</x>
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49ff</wuid>
+    <scripts />
+    <height>41</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>41</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>270</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>255</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-49fe</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Inh. mode</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
       <actions_from_pv>true</actions_from_pv>
-      <scripts/>
+      <wuid>39872d87:13e14015f61:-49fd</wuid>
+      <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Menu Button</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>false</transparent>
       <pv_name>$(P)$(DSP)TINH</pv_name>
       <background_color>
-        <color name="ioc_write_bg"/>
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Menu Button</widget_type>
       <enabled>true</enabled>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>100</width>
       <border_style>6</border_style>
-      <label/>
-      <rules/>
+      <label></label>
+      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <y>21</y>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       <x>10</x>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49fc</wuid>
+    <scripts />
+    <height>41</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>41</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>270</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>380</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-49fb</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Inh. polarity</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
       <actions_from_pv>true</actions_from_pv>
-      <scripts/>
+      <wuid>39872d87:13e14015f61:-49fa</wuid>
+      <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Menu Button</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>false</transparent>
       <pv_name>$(P)$(DSP)INHP</pv_name>
       <background_color>
-        <color name="ioc_write_bg"/>
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Menu Button</widget_type>
       <enabled>true</enabled>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>100</width>
       <border_style>6</border_style>
-      <label/>
-      <rules/>
+      <label></label>
+      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <y>21</y>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       <x>10</x>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49f9</wuid>
+    <scripts />
+    <height>63</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>495</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>63</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>199</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>5</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49f8</wuid>
+      <scripts />
+      <height>41</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>41</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>250</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
         <actions_from_pv>true</actions_from_pv>
-        <scripts/>
+        <wuid>39872d87:13e14015f61:-49f7</wuid>
+        <scripts />
         <height>20</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Menu Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>false</transparent>
         <pv_name>$(P)$(DSP)GD</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Menu Button</widget_type>
         <enabled>true</enabled>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <border_style>6</border_style>
-        <label/>
-        <rules/>
+        <label></label>
+        <rules />
+        <pv_value />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <y>21</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
         <x>10</x>
@@ -1214,149 +1420,176 @@ $(pv_value)</tooltip>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49f6</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>PUR guard</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49f5</wuid>
+      <scripts />
+      <height>63</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>63</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>125</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49f4</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Fdisc</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
-        <minimum>-Infinity</minimum>
         <vertical_alignment>1</vertical_alignment>
-        <show_units>false</show_units>
         <multiline_input>false</multiline_input>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-        <name>Text Input</name>
-        <format_type>1</format_type>
         <precision_from_pv>true</precision_from_pv>
-        <transparent>false</transparent>
-        <selector_type>0</selector_type>
-        <pv_name>$(P)$(DSP)FD</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
-        <foreground_color>
-          <color name="Gray_14"/>
-        </foreground_color>
         <widget_type>Text Input</widget_type>
         <enabled>true</enabled>
-        <text/>
-        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-        <precision>0</precision>
+        <text></text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>100</width>
         <border_style>3</border_style>
-        <rules/>
+        <pv_value />
         <border_width>1</border_width>
         <maximum>Infinity</maximum>
+        <minimum>-Infinity</minimum>
+        <show_units>false</show_units>
+        <wuid>39872d87:13e14015f61:-49f3</wuid>
+        <rotation_angle>0.0</rotation_angle>
+        <name>Text Input</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
+        <format_type>1</format_type>
+        <transparent>false</transparent>
+        <selector_type>0</selector_type>
+        <pv_name>$(P)$(DSP)FD</pv_name>
+        <foreground_color>
+          <color name="Gray_14" red="0" green="0" blue="0" />
+        </foreground_color>
+        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+        <precision>0</precision>
+        <confirm_message></confirm_message>
+        <rules />
         <limits_from_pv>false</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>0</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>21</y>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1367,287 +1600,332 @@ $(pv_value)</tooltip>
         <border_alarm_sensitive>true</border_alarm_sensitive>
         <visible>true</visible>
         <color_fillbackground>
-          <color red="200" green="200" blue="200"/>
+          <color red="200" green="200" blue="200" />
         </color_fillbackground>
         <color_hihi>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_hihi>
         <show_lo>true</show_lo>
-        <scripts/>
+        <scripts />
         <thumb_color>
-          <color red="172" green="172" blue="172"/>
+          <color red="172" green="172" blue="172" />
         </thumb_color>
         <height>20</height>
         <major_tick_step_hint>50</major_tick_step_hint>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <page_increment>10.0</page_increment>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <enabled>true</enabled>
         <widget_type>Scaled Slider</widget_type>
         <show_minor_ticks>true</show_minor_ticks>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <show_lolo>true</show_lolo>
         <border_style>0</border_style>
         <effect_3d>true</effect_3d>
+        <pv_value />
         <show_markers>true</show_markers>
         <show_hi>true</show_hi>
         <maximum>100.0</maximum>
         <border_width>1</border_width>
-        <horizontal>true</horizontal>
+        <horizontal>false</horizontal>
         <log_scale>false</log_scale>
         <minimum>0.0</minimum>
+        <wuid>39872d87:13e14015f61:-49f2</wuid>
         <show_hihi>true</show_hihi>
-        <scale_format/>
+        <scale_format></scale_format>
         <show_scale>true</show_scale>
         <color_lo>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_lo>
         <name>Scaled Slider</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <color_hi>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_hi>
         <pv_name>$(P)$(DSP)FD</pv_name>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <step_increment>1.0</step_increment>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <level_hi>80.0</level_hi>
         <scale_font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </scale_font>
         <level_hihi>90.0</level_hihi>
-        <fill_color>
-          <color red="0" green="0" blue="255"/>
-        </fill_color>
         <color_lolo>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_lolo>
-        <rules/>
-        <value_label_format/>
+        <fill_color>
+          <color red="0" green="0" blue="255" />
+        </fill_color>
+        <rules />
+        <value_label_format></value_label_format>
         <transparent_background>true</transparent_background>
         <limits_from_pv>true</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <level_lolo>10.0</level_lolo>
         <y>43</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <x>10</x>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49f1</wuid>
+      <scripts />
+      <height>41</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>41</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>0</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49f0</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Fdisc mode</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
         <actions_from_pv>true</actions_from_pv>
-        <scripts/>
+        <wuid>39872d87:13e14015f61:-49ef</wuid>
+        <scripts />
         <height>20</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Menu Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>false</transparent>
         <pv_name>$(P)$(DSP)FDM</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Menu Button</widget_type>
         <enabled>true</enabled>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <border_style>6</border_style>
-        <label/>
-        <rules/>
+        <label></label>
+        <rules />
+        <pv_value />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <y>21</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
         <x>10</x>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49ee</wuid>
+      <scripts />
+      <height>41</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>41</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>375</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49ed</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Inp. polarity</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
         <actions_from_pv>true</actions_from_pv>
-        <scripts/>
+        <wuid>39872d87:13e14015f61:-49ec</wuid>
+        <scripts />
         <height>20</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Menu Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>false</transparent>
         <pv_name>$(P)$(DSP)INPP</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Menu Button</widget_type>
         <enabled>true</enabled>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <border_style>6</border_style>
-        <label/>
-        <rules/>
+        <label></label>
+        <rules />
+        <pv_value />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <y>21</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
         <x>10</x>
@@ -1655,113 +1933,134 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49eb</wuid>
+    <scripts />
+    <height>62</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>495</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>62</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>129</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>5</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49ea</wuid>
+      <scripts />
+      <height>62</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>62</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>125</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
-        <minimum>-Infinity</minimum>
         <vertical_alignment>1</vertical_alignment>
-        <show_units>false</show_units>
         <multiline_input>false</multiline_input>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-        <name>Text Input</name>
-        <format_type>1</format_type>
         <precision_from_pv>true</precision_from_pv>
-        <transparent>false</transparent>
-        <selector_type>0</selector_type>
-        <pv_name>$(P)$(DSP)LLD</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
-        <foreground_color>
-          <color name="Gray_14"/>
-        </foreground_color>
         <widget_type>Text Input</widget_type>
         <enabled>true</enabled>
-        <text/>
-        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-        <precision>0</precision>
+        <text></text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>100</width>
         <border_style>3</border_style>
-        <rules/>
+        <pv_value />
         <border_width>1</border_width>
         <maximum>Infinity</maximum>
+        <minimum>-Infinity</minimum>
+        <show_units>false</show_units>
+        <wuid>39872d87:13e14015f61:-49e9</wuid>
+        <rotation_angle>0.0</rotation_angle>
+        <name>Text Input</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
+        <format_type>1</format_type>
+        <transparent>false</transparent>
+        <selector_type>0</selector_type>
+        <pv_name>$(P)$(DSP)LLD</pv_name>
+        <foreground_color>
+          <color name="Gray_14" red="0" green="0" blue="0" />
+        </foreground_color>
+        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+        <precision>0</precision>
+        <confirm_message></confirm_message>
+        <rules />
         <limits_from_pv>false</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>0</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>20</y>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1772,77 +2071,84 @@ $(pv_value)</tooltip>
         <border_alarm_sensitive>true</border_alarm_sensitive>
         <visible>true</visible>
         <color_fillbackground>
-          <color red="200" green="200" blue="200"/>
+          <color red="200" green="200" blue="200" />
         </color_fillbackground>
         <color_hihi>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_hihi>
         <show_lo>true</show_lo>
-        <scripts/>
+        <scripts />
         <thumb_color>
-          <color red="172" green="172" blue="172"/>
+          <color red="172" green="172" blue="172" />
         </thumb_color>
         <height>20</height>
         <major_tick_step_hint>50</major_tick_step_hint>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <page_increment>10.0</page_increment>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <enabled>true</enabled>
         <widget_type>Scaled Slider</widget_type>
         <show_minor_ticks>true</show_minor_ticks>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <show_lolo>true</show_lolo>
         <border_style>0</border_style>
         <effect_3d>true</effect_3d>
+        <pv_value />
         <show_markers>true</show_markers>
         <show_hi>true</show_hi>
         <maximum>100.0</maximum>
         <border_width>1</border_width>
-        <horizontal>true</horizontal>
+        <horizontal>false</horizontal>
         <log_scale>false</log_scale>
         <minimum>0.0</minimum>
+        <wuid>39872d87:13e14015f61:-49e8</wuid>
         <show_hihi>true</show_hihi>
-        <scale_format/>
+        <scale_format></scale_format>
         <show_scale>true</show_scale>
         <color_lo>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_lo>
         <name>Scaled Slider</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <color_hi>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_hi>
         <pv_name>$(P)$(DSP)LLD</pv_name>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <step_increment>1.0</step_increment>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <level_hi>80.0</level_hi>
         <scale_font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </scale_font>
         <level_hihi>90.0</level_hihi>
-        <fill_color>
-          <color red="0" green="0" blue="255"/>
-        </fill_color>
         <color_lolo>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_lolo>
-        <rules/>
-        <value_label_format/>
+        <fill_color>
+          <color red="0" green="0" blue="255" />
+        </fill_color>
+        <rules />
+        <value_label_format></value_label_format>
         <transparent_background>true</transparent_background>
         <limits_from_pv>true</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <level_lolo>10.0</level_lolo>
         <y>42</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <x>10</x>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -1850,149 +2156,176 @@ $(pv_value)</tooltip>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49e7</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>LLD</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49e6</wuid>
+      <scripts />
+      <height>62</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>62</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>250</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49e5</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>ADC zero</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
-        <minimum>-Infinity</minimum>
         <vertical_alignment>1</vertical_alignment>
-        <show_units>false</show_units>
         <multiline_input>false</multiline_input>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-        <name>Text Input</name>
-        <format_type>1</format_type>
         <precision_from_pv>true</precision_from_pv>
-        <transparent>false</transparent>
-        <selector_type>0</selector_type>
-        <pv_name>$(P)$(DSP)ZERO</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
-        <foreground_color>
-          <color name="Gray_14"/>
-        </foreground_color>
         <widget_type>Text Input</widget_type>
         <enabled>true</enabled>
-        <text/>
-        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-        <precision>0</precision>
+        <text></text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>100</width>
         <border_style>3</border_style>
-        <rules/>
+        <pv_value />
         <border_width>1</border_width>
         <maximum>Infinity</maximum>
+        <minimum>-Infinity</minimum>
+        <show_units>false</show_units>
+        <wuid>39872d87:13e14015f61:-49e4</wuid>
+        <rotation_angle>0.0</rotation_angle>
+        <name>Text Input</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
+        <format_type>1</format_type>
+        <transparent>false</transparent>
+        <selector_type>0</selector_type>
+        <pv_name>$(P)$(DSP)ZERO</pv_name>
+        <foreground_color>
+          <color name="Gray_14" red="0" green="0" blue="0" />
+        </foreground_color>
+        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+        <precision>0</precision>
+        <confirm_message></confirm_message>
+        <rules />
         <limits_from_pv>false</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>0</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>20</y>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2003,297 +2336,344 @@ $(pv_value)</tooltip>
         <border_alarm_sensitive>true</border_alarm_sensitive>
         <visible>true</visible>
         <color_fillbackground>
-          <color red="200" green="200" blue="200"/>
+          <color red="200" green="200" blue="200" />
         </color_fillbackground>
         <color_hihi>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_hihi>
         <show_lo>true</show_lo>
-        <scripts/>
+        <scripts />
         <thumb_color>
-          <color red="172" green="172" blue="172"/>
+          <color red="172" green="172" blue="172" />
         </thumb_color>
         <height>20</height>
         <major_tick_step_hint>50</major_tick_step_hint>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <page_increment>10.0</page_increment>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <enabled>true</enabled>
         <widget_type>Scaled Slider</widget_type>
         <show_minor_ticks>true</show_minor_ticks>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <show_lolo>true</show_lolo>
         <border_style>0</border_style>
         <effect_3d>true</effect_3d>
+        <pv_value />
         <show_markers>true</show_markers>
         <show_hi>true</show_hi>
         <maximum>100.0</maximum>
         <border_width>1</border_width>
-        <horizontal>true</horizontal>
+        <horizontal>false</horizontal>
         <log_scale>false</log_scale>
         <minimum>0.0</minimum>
+        <wuid>39872d87:13e14015f61:-49e3</wuid>
         <show_hihi>true</show_hihi>
-        <scale_format/>
+        <scale_format></scale_format>
         <show_scale>true</show_scale>
         <color_lo>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_lo>
         <name>Scaled Slider</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <color_hi>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_hi>
         <pv_name>$(P)$(DSP)ZERO</pv_name>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <step_increment>1.0</step_increment>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <level_hi>80.0</level_hi>
         <scale_font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </scale_font>
         <level_hihi>90.0</level_hihi>
-        <fill_color>
-          <color red="0" green="0" blue="255"/>
-        </fill_color>
         <color_lolo>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_lolo>
-        <rules/>
-        <value_label_format/>
+        <fill_color>
+          <color red="0" green="0" blue="255" />
+        </fill_color>
+        <rules />
+        <value_label_format></value_label_format>
         <transparent_background>true</transparent_background>
         <limits_from_pv>true</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <level_lolo>10.0</level_lolo>
         <y>42</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <x>10</x>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49e2</wuid>
+      <scripts />
+      <height>40</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>40</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>375</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49e1</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>Conv. gain</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
         <actions_from_pv>true</actions_from_pv>
-        <scripts/>
+        <wuid>39872d87:13e14015f61:-49e0</wuid>
+        <scripts />
         <height>20</height>
-        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <name>Menu Button</name>
+        <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>false</transparent>
         <pv_name>$(P)$(DSP)ADCG</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Menu Button</widget_type>
         <enabled>true</enabled>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <border_style>6</border_style>
-        <label/>
-        <rules/>
+        <label></label>
+        <rules />
+        <pv_value />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <y>20</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
         <x>10</x>
       </widget>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-      <enabled>true</enabled>
-      <widget_type>Grouping Container</widget_type>
       <macros>
         <include_parent_macros>true</include_parent_macros>
       </macros>
       <visible>true</visible>
+      <wuid>39872d87:13e14015f61:-49df</wuid>
+      <scripts />
+      <height>62</height>
+      <name>Grouping Container</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
+      <transparent>true</transparent>
+      <show_scrollbar>false</show_scrollbar>
+      <background_color>
+        <color red="187" green="187" blue="187" />
+      </background_color>
+      <foreground_color>
+        <color red="0" green="0" blue="0" />
+      </foreground_color>
+      <widget_type>Grouping Container</widget_type>
+      <enabled>true</enabled>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <lock_children>false</lock_children>
-      <scripts/>
-      <height>62</height>
       <border_width>1</border_width>
-      <name>Grouping Container</name>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
-      <transparent>false</transparent>
-      <show_scrollbar>false</show_scrollbar>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
-      <actions hook="false"/>
-      <foreground_color>
-        <color red="0" green="0" blue="0"/>
-      </foreground_color>
-      <background_color>
-        <color red="187" green="187" blue="187"/>
-      </background_color>
+      <tooltip></tooltip>
       <x>0</x>
-      <tooltip/>
       <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
         <visible>true</visible>
         <vertical_alignment>1</vertical_alignment>
+        <wuid>39872d87:13e14015f61:-49de</wuid>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <name>Label</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <transparent>true</transparent>
         <show_scrollbar>false</show_scrollbar>
         <background_color>
-          <color red="255" green="255" blue="255"/>
+          <color red="255" green="255" blue="255" />
         </background_color>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <widget_type>Label</widget_type>
         <enabled>true</enabled>
         <text>ADC offset</text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>120</width>
         <border_style>0</border_style>
-        <rules/>
+        <rules />
         <border_width>1</border_width>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>1</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>0</y>
         <wrap_words>true</wrap_words>
-        <tooltip/>
+        <tooltip></tooltip>
         <x>0</x>
       </widget>
       <widget typeId="org.csstudio.opibuilder.widgets.TextInput" version="1.0">
         <border_alarm_sensitive>false</border_alarm_sensitive>
         <visible>true</visible>
-        <minimum>-Infinity</minimum>
         <vertical_alignment>1</vertical_alignment>
-        <show_units>false</show_units>
         <multiline_input>false</multiline_input>
         <auto_size>false</auto_size>
-        <scripts/>
+        <scripts />
         <height>20</height>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
-        <name>Text Input</name>
-        <format_type>1</format_type>
         <precision_from_pv>true</precision_from_pv>
-        <transparent>false</transparent>
-        <selector_type>0</selector_type>
-        <pv_name>$(P)$(DSP)ADCO</pv_name>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
-        <foreground_color>
-          <color name="Gray_14"/>
-        </foreground_color>
         <widget_type>Text Input</widget_type>
         <enabled>true</enabled>
-        <text/>
-        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
-        <precision>0</precision>
+        <text></text>
         <font>
-          <fontdata fontName="Sans" height="14" style="0"/>
+          <fontdata fontName="Sans" height="11" style="0" />
         </font>
         <width>100</width>
         <border_style>3</border_style>
-        <rules/>
+        <pv_value />
         <border_width>1</border_width>
         <maximum>Infinity</maximum>
+        <minimum>-Infinity</minimum>
+        <show_units>false</show_units>
+        <wuid>39872d87:13e14015f61:-49dd</wuid>
+        <rotation_angle>0.0</rotation_angle>
+        <name>Text Input</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
+        <format_type>1</format_type>
+        <transparent>false</transparent>
+        <selector_type>0</selector_type>
+        <pv_name>$(P)$(DSP)ADCO</pv_name>
+        <foreground_color>
+          <color name="Gray_14" red="0" green="0" blue="0" />
+        </foreground_color>
+        <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
+        <precision>0</precision>
+        <confirm_message></confirm_message>
+        <rules />
         <limits_from_pv>false</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <horizontal_alignment>0</horizontal_alignment>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <y>20</y>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2304,77 +2684,84 @@ $(pv_value)</tooltip>
         <border_alarm_sensitive>true</border_alarm_sensitive>
         <visible>true</visible>
         <color_fillbackground>
-          <color red="200" green="200" blue="200"/>
+          <color red="200" green="200" blue="200" />
         </color_fillbackground>
         <color_hihi>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_hihi>
         <show_lo>true</show_lo>
-        <scripts/>
+        <scripts />
         <thumb_color>
-          <color red="172" green="172" blue="172"/>
+          <color red="172" green="172" blue="172" />
         </thumb_color>
         <height>20</height>
         <major_tick_step_hint>50</major_tick_step_hint>
         <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
         <page_increment>10.0</page_increment>
         <background_color>
-          <color name="ioc_write_bg"/>
+          <color name="ioc_write_bg" red="115" green="223" blue="255" />
         </background_color>
         <enabled>true</enabled>
         <widget_type>Scaled Slider</widget_type>
         <show_minor_ticks>true</show_minor_ticks>
         <font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </font>
         <width>100</width>
         <show_lolo>true</show_lolo>
         <border_style>0</border_style>
         <effect_3d>true</effect_3d>
+        <pv_value />
         <show_markers>true</show_markers>
         <show_hi>true</show_hi>
         <maximum>100.0</maximum>
         <border_width>1</border_width>
-        <horizontal>true</horizontal>
+        <horizontal>false</horizontal>
         <log_scale>false</log_scale>
         <minimum>0.0</minimum>
+        <wuid>39872d87:13e14015f61:-49dc</wuid>
         <show_hihi>true</show_hihi>
-        <scale_format/>
+        <scale_format></scale_format>
         <show_scale>true</show_scale>
         <color_lo>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_lo>
         <name>Scaled Slider</name>
+        <scale_options>
+          <width_scalable>true</width_scalable>
+          <height_scalable>true</height_scalable>
+          <keep_wh_ratio>false</keep_wh_ratio>
+        </scale_options>
         <color_hi>
-          <color red="255" green="128" blue="0"/>
+          <color red="255" green="128" blue="0" />
         </color_hi>
         <pv_name>$(P)$(DSP)ADCO</pv_name>
         <foreground_color>
-          <color name="Gray_14"/>
+          <color name="Gray_14" red="0" green="0" blue="0" />
         </foreground_color>
         <step_increment>1.0</step_increment>
         <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
         <level_hi>80.0</level_hi>
         <scale_font>
-          <opifont.name>Default</opifont.name>
+          <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
         </scale_font>
         <level_hihi>90.0</level_hihi>
-        <fill_color>
-          <color red="0" green="0" blue="255"/>
-        </fill_color>
         <color_lolo>
-          <color red="255" green="0" blue="0"/>
+          <color red="255" green="0" blue="0" />
         </color_lolo>
-        <rules/>
-        <value_label_format/>
+        <fill_color>
+          <color red="0" green="0" blue="255" />
+        </fill_color>
+        <rules />
+        <value_label_format></value_label_format>
         <transparent_background>true</transparent_background>
         <limits_from_pv>true</limits_from_pv>
         <border_color>
-          <color red="0" green="128" blue="255"/>
+          <color red="0" green="128" blue="255" />
         </border_color>
         <level_lolo>10.0</level_lolo>
         <y>42</y>
-        <actions hook="false"/>
+        <actions hook="false" hook_all="false" />
         <x>10</x>
         <tooltip>$(pv_name)
 $(pv_value)</tooltip>
@@ -2382,70 +2769,83 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49db</wuid>
+    <scripts />
+    <height>41</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>41</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>270</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>5</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
       <actions_from_pv>true</actions_from_pv>
-      <scripts/>
+      <wuid>39872d87:13e14015f61:-49da</wuid>
+      <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Menu Button</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>false</transparent>
       <pv_name>$(P)$(DSP)PURM</pv_name>
       <background_color>
-        <color name="ioc_write_bg"/>
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Menu Button</widget_type>
       <enabled>true</enabled>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>100</width>
       <border_style>6</border_style>
-      <label/>
-      <rules/>
+      <label></label>
+      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <y>21</y>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       <x>10</x>
@@ -2453,105 +2853,123 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-49d9</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>PUR mode</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49d2</wuid>
+    <scripts />
+    <height>41</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>41</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>400</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>130</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-49d1</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Error</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
@@ -2559,20 +2977,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>39872d87:13e14015f61:-49d0</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <rotation_angle>0.0</rotation_angle>
+      <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(DSP)MERR</pv_name>
       <background_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </background_color>
       <foreground_color>
-        <color name="MEDM_COLOR_15"/>
+        <color name="MEDM_COLOR_15" red="0" green="216" blue="0" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2580,17 +3005,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>100</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>21</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2599,71 +3025,83 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49cc</wuid>
+    <scripts />
+    <height>41</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>41</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>340</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>255</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-49cb</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Value</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
     <widget typeId="org.csstudio.opibuilder.widgets.TextUpdate" version="1.0">
@@ -2671,20 +3109,27 @@ $(pv_value)</tooltip>
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
       <show_units>false</show_units>
+      <wuid>39872d87:13e14015f61:-49ca</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <rotation_angle>0.0</rotation_angle>
+      <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Text Update</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <format_type>1</format_type>
       <precision_from_pv>true</precision_from_pv>
       <transparent>false</transparent>
       <pv_name>$(P)$(DSP)READ_RATES</pv_name>
       <background_color>
-        <color name="MEDM_COLOR_55"/>
+        <color name="MEDM_COLOR_55" red="235" green="241" blue="181" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Text Update</widget_type>
       <enabled>true</enabled>
@@ -2692,17 +3137,18 @@ $(pv_value)</tooltip>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <precision>0</precision>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>100</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>21</y>
       <wrap_words>false</wrap_words>
       <tooltip>$(pv_name)
@@ -2711,70 +3157,83 @@ $(pv_value)</tooltip>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.groupingContainer" version="1.0">
-    <enabled>true</enabled>
-    <widget_type>Grouping Container</widget_type>
     <macros>
       <include_parent_macros>true</include_parent_macros>
     </macros>
     <visible>true</visible>
+    <wuid>39872d87:13e14015f61:-49c9</wuid>
+    <scripts />
+    <height>41</height>
+    <name>Grouping Container</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
+    <transparent>true</transparent>
+    <show_scrollbar>false</show_scrollbar>
+    <background_color>
+      <color red="187" green="187" blue="187" />
+    </background_color>
+    <foreground_color>
+      <color red="0" green="0" blue="0" />
+    </foreground_color>
+    <widget_type>Grouping Container</widget_type>
+    <enabled>true</enabled>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <lock_children>false</lock_children>
-    <scripts/>
-    <height>41</height>
     <border_width>1</border_width>
-    <name>Grouping Container</name>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
-    <transparent>false</transparent>
-    <show_scrollbar>false</show_scrollbar>
+    <actions hook="false" hook_all="false" />
     <y>340</y>
-    <actions hook="false"/>
-    <foreground_color>
-      <color red="0" green="0" blue="0"/>
-    </foreground_color>
-    <background_color>
-      <color red="187" green="187" blue="187"/>
-    </background_color>
+    <tooltip></tooltip>
     <x>130</x>
-    <tooltip/>
     <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
       <border_alarm_sensitive>false</border_alarm_sensitive>
       <visible>true</visible>
       <actions_from_pv>true</actions_from_pv>
-      <scripts/>
+      <wuid>39872d87:13e14015f61:-49c8</wuid>
+      <scripts />
       <height>20</height>
-      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
       <name>Menu Button</name>
+      <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>false</transparent>
       <pv_name>$(P)$(DSP)THRI</pv_name>
       <background_color>
-        <color name="ioc_write_bg"/>
+        <color name="ioc_write_bg" red="115" green="223" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Menu Button</widget_type>
       <enabled>true</enabled>
       <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
       <font>
-        <opifont.name>Default</opifont.name>
+        <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
       </font>
       <width>100</width>
       <border_style>6</border_style>
-      <label/>
-      <rules/>
+      <label></label>
+      <rules />
+      <pv_value />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <y>21</y>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <tooltip>$(pv_name)
 $(pv_value)</tooltip>
       <x>10</x>
@@ -2782,141 +3241,166 @@ $(pv_value)</tooltip>
     <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
       <visible>true</visible>
       <vertical_alignment>1</vertical_alignment>
+      <wuid>39872d87:13e14015f61:-49c7</wuid>
       <auto_size>false</auto_size>
-      <scripts/>
+      <scripts />
       <height>20</height>
       <name>Label</name>
+      <scale_options>
+        <width_scalable>true</width_scalable>
+        <height_scalable>true</height_scalable>
+        <keep_wh_ratio>false</keep_wh_ratio>
+      </scale_options>
       <transparent>true</transparent>
       <show_scrollbar>false</show_scrollbar>
       <background_color>
-        <color red="255" green="255" blue="255"/>
+        <color red="255" green="255" blue="255" />
       </background_color>
       <foreground_color>
-        <color name="Gray_14"/>
+        <color name="Gray_14" red="0" green="0" blue="0" />
       </foreground_color>
       <widget_type>Label</widget_type>
       <enabled>true</enabled>
       <text>Selection</text>
       <font>
-        <fontdata fontName="Sans" height="14" style="0"/>
+        <fontdata fontName="Sans" height="11" style="0" />
       </font>
       <width>120</width>
       <border_style>0</border_style>
-      <rules/>
+      <rules />
       <border_width>1</border_width>
       <border_color>
-        <color red="0" green="128" blue="255"/>
+        <color red="0" green="128" blue="255" />
       </border_color>
       <horizontal_alignment>1</horizontal_alignment>
-      <actions hook="false"/>
+      <actions hook="false" hook_all="false" />
       <y>0</y>
       <wrap_words>true</wrap_words>
-      <tooltip/>
+      <tooltip></tooltip>
       <x>0</x>
     </widget>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>39872d87:13e14015f61:-4a13</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <scripts />
     <height>25</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>DSP 9660 Gain Control</text>
     <font>
-      <fontdata fontName="Sans" height="18" style="0"/>
+      <fontdata fontName="Sans" height="15" style="0" />
     </font>
     <width>250</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>0</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>11</y>
     <wrap_words>true</wrap_words>
-    <tooltip/>
+    <tooltip></tooltip>
     <x>135</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>39872d87:13e14015f61:-49d8</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Status rate</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0"/>
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>400</y>
     <wrap_words>true</wrap_words>
-    <tooltip/>
+    <tooltip></tooltip>
     <x>383</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
     <border_alarm_sensitive>false</border_alarm_sensitive>
     <visible>true</visible>
     <actions_from_pv>true</actions_from_pv>
-    <scripts/>
+    <wuid>39872d87:13e14015f61:-49d7</wuid>
+    <scripts />
     <height>20</height>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Menu Button</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>false</transparent>
     <pv_name>$(P)$(DSP)READ_SCAN.SCAN</pv_name>
     <background_color>
-      <color name="ioc_write_bg"/>
+      <color name="ioc_write_bg" red="115" green="223" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Menu Button</widget_type>
     <enabled>true</enabled>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>100</width>
     <border_style>6</border_style>
-    <label/>
-    <rules/>
+    <label></label>
+    <rules />
+    <pv_value />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <y>421</y>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <tooltip>$(pv_name)
 $(pv_value)</tooltip>
     <x>393</x>
@@ -2926,20 +3410,27 @@ $(pv_value)</tooltip>
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
     <show_units>false</show_units>
+    <wuid>39872d87:13e14015f61:-49d6</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <rotation_angle>0.0</rotation_angle>
+    <scripts />
     <height>20</height>
-    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
     <name>Text Update</name>
+    <forecolor_alarm_sensitive>true</forecolor_alarm_sensitive>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <format_type>1</format_type>
     <precision_from_pv>true</precision_from_pv>
     <transparent>false</transparent>
     <pv_name>$(P)$(DSP)MINT</pv_name>
     <background_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </background_color>
     <foreground_color>
-      <color name="MEDM_COLOR_15"/>
+      <color name="MEDM_COLOR_15" red="0" green="216" blue="0" />
     </foreground_color>
     <widget_type>Text Update</widget_type>
     <enabled>true</enabled>
@@ -2947,17 +3438,18 @@ $(pv_value)</tooltip>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <precision>0</precision>
     <font>
-      <fontdata fontName="Sans" height="14" style="0"/>
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>100</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
+    <pv_value />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>421</y>
     <wrap_words>false</wrap_words>
     <tooltip>$(pv_name)
@@ -2967,84 +3459,97 @@ $(pv_value)</tooltip>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>39872d87:13e14015f61:-49d5</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Reset</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0"/>
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>400</y>
     <wrap_words>true</wrap_words>
-    <tooltip/>
+    <tooltip></tooltip>
     <x>255</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.MenuButton" version="1.0">
     <border_alarm_sensitive>false</border_alarm_sensitive>
     <visible>true</visible>
     <actions_from_pv>false</actions_from_pv>
-    <scripts/>
+    <wuid>39872d87:13e14015f61:-49d4</wuid>
+    <scripts />
     <height>20</height>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Menu Button</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>false</transparent>
-    <pv_name/>
+    <pv_name></pv_name>
     <background_color>
-      <color name="Gray_4"/>
+      <color name="Gray_4" red="187" green="187" blue="187" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Menu Button</widget_type>
     <enabled>true</enabled>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>100</width>
     <border_style>6</border_style>
-    <label/>
-    <rules/>
+    <label></label>
+    <rules />
+    <pv_value />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <y>461</y>
-    <actions hook="false">
-      <action type="OPEN_OPI_IN_VIEW">
+    <actions hook="false" hook_all="false">
+      <action type="OPEN_DISPLAY">
         <path>dsp9660Filter.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
         </macros>
-        <Position>1</Position>
+        <replace>0</replace>
         <description>Filter Control</description>
       </action>
-      <action type="OPEN_OPI_IN_VIEW">
+      <action type="OPEN_DISPLAY">
         <path>dsp9660Stabilizer.opi</path>
         <macros>
           <include_parent_macros>true</include_parent_macros>
         </macros>
-        <Position>1</Position>
+        <replace>0</replace>
         <description>Stabilizer Control</description>
       </action>
     </actions>
@@ -3055,117 +3560,136 @@ $(pv_value)</tooltip>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>39872d87:13e14015f61:-49d3</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>More</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0"/>
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>40</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>461</y>
     <wrap_words>true</wrap_words>
-    <tooltip/>
+    <tooltip></tooltip>
     <x>45</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>39872d87:13e14015f61:-49cf</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Clear errors</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0"/>
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>400</y>
     <wrap_words>true</wrap_words>
-    <tooltip/>
+    <tooltip></tooltip>
     <x>5</x>
   </widget>
   <widget typeId="org.csstudio.opibuilder.widgets.ActionButton" version="1.0">
     <border_alarm_sensitive>false</border_alarm_sensitive>
     <visible>true</visible>
-    <scripts/>
+    <wuid>39872d87:13e14015f61:-49ce</wuid>
+    <scripts />
     <height>20</height>
-    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
     <name>Action Button</name>
+    <forecolor_alarm_sensitive>false</forecolor_alarm_sensitive>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <pv_name>$(P)$(DSP)CLEAR</pv_name>
     <background_color>
-      <color name="ioc_write_bg"/>
+      <color name="ioc_write_bg" red="115" green="223" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Action Button</widget_type>
     <enabled>true</enabled>
     <text>Clear</text>
     <backcolor_alarm_sensitive>false</backcolor_alarm_sensitive>
     <font>
-      <opifont.name>Default</opifont.name>
+      <opifont.name fontName="Sans" height="10" style="0">Default</opifont.name>
     </font>
     <width>100</width>
-    <push_action_index>0</push_action_index>
     <border_style>0</border_style>
-    <image/>
-    <rules/>
+    <push_action_index>0</push_action_index>
+    <image></image>
+    <rules />
+    <pv_value />
     <toggle_button>true</toggle_button>
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <y>420</y>
-    <actions hook="false">
+    <actions hook="false" hook_all="false">
       <action type="WRITE_PV">
         <pv_name>$(P)$(DSP)CLEAR</pv_name>
         <value>1</value>
         <timeout>10</timeout>
-        <description/>
+        <description></description>
       </action>
       <action type="WRITE_PV">
         <pv_name>$(P)$(DSP)CLEAR</pv_name>
         <value>0</value>
         <timeout>10</timeout>
-        <description/>
+        <description></description>
       </action>
     </actions>
     <tooltip>$(pv_name)
@@ -3175,36 +3699,42 @@ $(pv_value)</tooltip>
   <widget typeId="org.csstudio.opibuilder.widgets.Label" version="1.0">
     <visible>true</visible>
     <vertical_alignment>1</vertical_alignment>
+    <wuid>39872d87:13e14015f61:-49cd</wuid>
     <auto_size>false</auto_size>
-    <scripts/>
+    <scripts />
     <height>20</height>
     <name>Label</name>
+    <scale_options>
+      <width_scalable>true</width_scalable>
+      <height_scalable>true</height_scalable>
+      <keep_wh_ratio>false</keep_wh_ratio>
+    </scale_options>
     <transparent>true</transparent>
     <show_scrollbar>false</show_scrollbar>
     <background_color>
-      <color red="255" green="255" blue="255"/>
+      <color red="255" green="255" blue="255" />
     </background_color>
     <foreground_color>
-      <color name="Gray_14"/>
+      <color name="Gray_14" red="0" green="0" blue="0" />
     </foreground_color>
     <widget_type>Label</widget_type>
     <enabled>true</enabled>
     <text>Throughput</text>
     <font>
-      <fontdata fontName="Sans" height="14" style="0"/>
+      <fontdata fontName="Sans" height="11" style="0" />
     </font>
     <width>120</width>
     <border_style>0</border_style>
-    <rules/>
+    <rules />
     <border_width>1</border_width>
     <border_color>
-      <color red="0" green="128" blue="255"/>
+      <color red="0" green="128" blue="255" />
     </border_color>
     <horizontal_alignment>1</horizontal_alignment>
-    <actions hook="false"/>
+    <actions hook="false" hook_all="false" />
     <y>353</y>
     <wrap_words>true</wrap_words>
-    <tooltip/>
+    <tooltip></tooltip>
     <x>5</x>
   </widget>
 </display>
