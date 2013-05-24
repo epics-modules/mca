@@ -14,7 +14,11 @@
 
 #ifdef USE_DMA
 
-#include "apsLib.h"
+#ifdef vxWorks
+  #include "apsLib.h"
+#elif defined(__rtems__)
+  #include "rtemsDMA.h"
+#endif
 
 #else
 
