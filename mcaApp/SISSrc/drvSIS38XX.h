@@ -155,7 +155,8 @@ class drvSIS38XX : public asynPortDriver
 
   bool exists_;
   int firmwareVersion_;
-  epicsUInt32 *fifo_base_;
+  epicsUInt32 *fifoBaseVME_;
+  epicsUInt32 *fifoBaseCPU_;
   epicsUInt32 irqStatusReg_;
   SIS38XXAcquireMode_t acquireMode_;
   SIS38XXEventType_t eventType_;
