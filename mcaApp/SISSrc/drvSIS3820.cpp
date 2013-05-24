@@ -147,7 +147,16 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   if (fifoBufferWords == 0) fifoBufferWords = SIS3820_FIFO_WORD_SIZE;
   if (fifoBufferWords > SIS3820_FIFO_WORD_SIZE) fifoBufferWords = SIS3820_FIFO_WORD_SIZE;
   fifoBufferWords_ = fifoBufferWords;
+#ifdef vxWorks
   fifoBuffer_ = (epicsUInt32*) memalign(8, fifoBufferWords_*sizeof(epicsUInt32));
+#else
+  void *ptr;
+  status = posix_memalign(&ptr, 8, fifoBufferWords_*sizeof(epicsUInt32));
+  if(status != 0) {
+    printf("Error: posix_memalign status = %d\n", status);
+  }
+  fifoBuffer_ = (epicsUInt32*)ptr;
+#endif
   if (fifoBuffer_ == NULL) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
               "%s:%s: posix_memalign failure for fifoBuffer_ = %d\n", 
