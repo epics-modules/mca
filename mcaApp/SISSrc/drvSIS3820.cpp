@@ -103,11 +103,12 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
   /* Call devLib to get the system address that corresponds to the VME
    * FIFO address of the board.
    */
+  fifoBaseVME_ = (epicsUInt32 *)(baseAddress + SIS3820_FIFO_BASE);
   status = devRegisterAddress("drvSIS3820",
                               SIS3820_ADDRESS_TYPE,
-                              (size_t)(baseAddress + SIS3820_FIFO_BASE),
+                              (size_t)fifoBaseVME_,
                               SIS3820_FIFO_BYTE_SIZE,
-                              (volatile void **)&fifo_base_);
+                              (volatile void **)&fifoBaseCPU_);
 
   if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -118,8 +119,8 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
 
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: Registered VME FIFO address: %p to local address: %p size: 0x%X\n", 
-            driverName, functionName, baseAddress + SIS3820_FIFO_BASE, 
-            fifo_base_, SIS3820_FIFO_BYTE_SIZE);
+            driverName, functionName, fifoBaseVME_, 
+            fifoBaseCPU_, SIS3820_FIFO_BYTE_SIZE);
 
   /* Probe VME bus to see if card is there */
   status = devReadProbe(4, (char *) &(registers_->control_status_reg),
@@ -841,13 +842,13 @@ void drvSIS3820::readFIFOThread()
       epicsTimeGetCurrent(&t1);
       if (useDma_ && (count >= MIN_DMA_TRANSFERS)) {
         asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                  "%s:%s: doing DMA transfer, fifoBuffer=%p, fifo_base=%p, count=%d\n",
-                  driverName, functionName, fifoBuffer_, fifo_base_, count);
-        status = sysDmaFromVme(dmaId_, fifoBuffer_, (int)fifo_base_, VME_AM_EXT_SUP_D64BLT, (count)*sizeof(int), 8);
+                  "%s:%s: doing DMA transfer, fifoBuffer=%p, fifoBaseVME_=%p, count=%d\n",
+                  driverName, functionName, fifoBuffer_, fifoBaseVME_, count);
+        status = sysDmaFromVme(dmaId_, fifoBuffer_, (int)fifoBaseVME_, VME_AM_EXT_SUP_D64BLT, (count)*sizeof(int), 8);
         if (status) {
           asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
-                    "%s:%s: doing DMA transfer, error calling sysDmaFromVme, status=%d, error=%d, buff=%p, fifo_base=%p, count=%d\n",
-                    driverName, functionName, status, errno, fifoBuffer_, fifo_base_, count);
+                    "%s:%s: doing DMA transfer, error calling sysDmaFromVme, status=%d, error=%d, buff=%p, fifoBaseVME_=%p, count=%d\n",
+                    driverName, functionName, status, errno, fifoBuffer_, fifoBaseVME_, count);
         } 
         else {
           epicsEventWait(dmaDoneEventId_);
@@ -865,13 +866,13 @@ void drvSIS3820::readFIFOThread()
         // SIS3820 requires for reading the FIFO.  In fact if the word count was 1 then a memcpy of 4 bytes was clearly
         // not doing a word transfer on vxWorks, and was generating bus errors.
         for (i=0; i<count; i++)
-          fifoBuffer_[i] = fifo_base_[i];
+          fifoBuffer_[i] = fifoBaseCPU_[i];
       }
       epicsTimeGetCurrent(&t2);
 
       asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-                "%s:%s: read FIFO (%d) in %fs, fifo word count after=%d, fifoBuffer_=%p, fifo_base_=%p\n",
-                driverName, functionName, count, epicsTimeDiffInSeconds(&t2, &t1), registers_->fifo_word_count_reg, fifoBuffer_, fifo_base_);
+                "%s:%s: read FIFO (%d) in %fs, fifo word count after=%d, fifoBuffer_=%p, fifoBaseCPU_=%p\n",
+                driverName, functionName, count, epicsTimeDiffInSeconds(&t2, &t1), registers_->fifo_word_count_reg, fifoBuffer_, fifoBaseCPU_);
       // Release the FIFO lock, we are done accessing the FIFO
       epicsMutexUnlock(fifoLockId_);
       
