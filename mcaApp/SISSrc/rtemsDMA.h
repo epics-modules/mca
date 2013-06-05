@@ -7,10 +7,12 @@
 #include <bsp/VMEDMA.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 
 /* need this prototype for RTEMS <= 4.9.3 */
 int posix_memalign(void **memptr, size_t alignment, size_t size);
@@ -35,10 +37,10 @@ static DMA_ID sysDmaCreate(DMA_CALLBACK callback, void *context) {
     DMA_ID dmaId;
    
     /* unused by RTEMS, we allocate a DMA_ID anyway for compatibility */
-    dmaId = (int*)calloc(0,sizeof(DMA_ID));
+    dmaId = (DMA_ID)calloc(1,sizeof(DMA_ID));
     if(dmaId == NULL) {
-        printf("Couldn't allocate DMA_ID\n");
-        return NULL;
+        printf("Couldn't allocate DMA_ID: %s\n", strerror(errno));
+        return dmaId;
     }
 
 #ifndef RTEMS_DMA_LOWLATENCY
@@ -93,15 +95,8 @@ static int sysDmaStatus(DMA_ID dmaId) {
 static int sysDmaFromVme(DMA_ID dmaId, void *pLocal, epicsUInt32 vmeAddr,
                     int adrsSpace, int length, int dataWidth)       {
     int dmaChannel = 0;
-    /* Some BSPs require address translations.
-     * For most, the following is a no-op.
-     */
-#ifndef BSP_LOCAL2PCI_ADDR
-#define BSP_LOCAL2PCI_ADDR(laddr) ((uint32_t)(laddr) +PCI_DRAM_OFFSET )
-#endif
-    uint32_t pciAddr = BSP_LOCAL2PCI_ADDR(pLocal);
-    
-    return BSP_VMEDmaStart(dmaChannel,pciAddr,vmeAddr,length);
+
+    return BSP_VMEDmaStart(dmaChannel, (uint32_t)pLocal, vmeAddr, length);
 }
 
 /**
