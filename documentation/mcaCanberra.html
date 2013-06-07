@@ -278,12 +278,9 @@ epics> mcaAIMFreeModule 1 1
   <h2 id="vxWorks_configuration">
     vxWorks configuration</h2>
   <p>
-    The driver on vxWorks uses the functions "etherInputHookAdd" and "etherOutput".
-    These functions exist in vxWorks 5.4, but they have been eliminated in vxWorks 5.5.
-    Thus, it is not possible to use the existing driver for vxWorks 5.5. There is a
-    new interface in vxWorks that should make it possible to write a driver that will
-    work on both 5.4 and 5.5, but this has not yet been done. There is nothing special
-    that needs to be done to build the driver or run it in vxWorks 5.4.</p>
+    The driver on vxWorks uses the functions in muxLib or muxTkLib. On vxWorks 6.x this
+    requires that the Board Support Package (BSP) be built with the INCLUDE_NET_POOL
+    option.</p>
   <h2 id="Linux_configuration">
     Linux configuration</h2>
   <ul>
