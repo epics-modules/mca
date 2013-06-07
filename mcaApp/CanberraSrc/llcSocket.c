@@ -24,10 +24,13 @@
 
 /* Revision History
  * 
- * 2005-11-10 0.01 Written
+ * 2005-11-10 0.01 Written 
+ * 2013-06-03 0.02 VxWorks 6.x API changes. Support requires INCLUDE_NET_POOL 
+ *                 BSP option.
  */
 
 #include <vxWorks.h>
+#include <version.h>
 #include <stdlib.h>
 #include <string.h>
 #include <iosLib.h>
@@ -95,7 +98,11 @@ int llcSockIoctl(int fd, int function, int arg)
  * Socket functions implemented by this back-end
  */
 
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+STATUS llcSocket(int domain, int type, int protocol, struct socket **ppSo)
+#else
 int llcSocket(int domain, int type, int protocol)
+#endif
 {
     struct llc_socket *s;
 
@@ -115,19 +122,30 @@ int llcSocket(int domain, int type, int protocol)
 
     /* Create the internal socket structure */
     s = malloc(sizeof(struct llc_socket));
-    if (!s) {
+    if (!s)
+    {
+	errnoSet(ENOMEM);
 	return ERROR;
     }
-
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+    *ppSo = (struct socket *) s;
+    return(OK);
+#else
     /* Create a new file descriptor for this device, passing the internal
        socket structure as the private parameter */
     return iosFdNew(&socket_dev, socket_dev.name, (int)s);
+#endif
 }
 
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+STATUS llcSockBind(struct llc_socket *s, struct sockaddr *name, int namelen)
+{
+#else
 STATUS llcSockBind(int fd, struct sockaddr *name, int namelen)
 {
-    struct sockaddr_llc *addr = (struct sockaddr_llc *)name;
     struct llc_socket *s = (struct llc_socket *)iosFdValue(fd);
+#endif
+    struct sockaddr_llc *addr = (struct sockaddr_llc *)name;
     
     /* We only support binding to the SNAP Service Access Point */
     /* If this were expanded to be a fully-functional implementation,
@@ -146,20 +164,31 @@ STATUS llcSockBind(int fd, struct sockaddr *name, int namelen)
     return 0;
 }
 
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+STATUS llcSockConnect(struct llc_socket *s, struct sockaddr *name, int namelen)
+#else
 STATUS llcSockConnect(int fd, struct sockaddr *name, int namelen)
+#endif
 {
     errnoSet(EOPNOTSUPP);
     return ERROR;
 }
 
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+STATUS llcSockListen(struct llc_socket *s, int backlog)
+#else
 STATUS llcSockListen(int fd, int backlog)
+#endif
 {
     errnoSet(EOPNOTSUPP);
     return ERROR;
 }
 
-STATUS llcSockRecvFrom(int fd, char *buf, int bufLen, int flags,
-			struct sockaddr *from, int *pFromLen)
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+STATUS llcSockRecvFrom(struct llc_socket *s, char *buf, int bufLen, int flags, struct sockaddr *from, int *pFromLen)
+#else
+STATUS llcSockRecvFrom(int fd, char *buf, int bufLen, int flags, struct sockaddr *from, int *pFromLen)
+#endif
 {
     int size;
 
@@ -172,10 +201,14 @@ STATUS llcSockRecvFrom(int fd, char *buf, int bufLen, int flags,
     return size;
 }
 
-STATUS llcSockSendTo(int fd, caddr_t buf, int bufLen, int flags,
-		      struct sockaddr *to, int tolen)
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+STATUS llcSockSendTo(struct llc_socket *s, caddr_t buf, int bufLen, int flags, struct sockaddr *to, int tolen)
+{
+#else
+STATUS llcSockSendTo(int fd, caddr_t buf, int bufLen, int flags, struct sockaddr *to, int tolen)
 {
     struct llc_socket *s = (struct llc_socket *)iosFdValue(fd);
+#endif
     int sap;
     int type;
     
@@ -187,7 +220,11 @@ STATUS llcSockSendTo(int fd, caddr_t buf, int bufLen, int flags,
 /**
  * We do not support Zbuf-style sockets, so return FALSE
  */
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+BOOL llcSockZbuf(void)
+#else
 STATUS llcSockZbuf(void)
+#endif
 {
     return FALSE;
 }

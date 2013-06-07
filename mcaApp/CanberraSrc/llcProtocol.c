@@ -32,9 +32,12 @@
  * 2007-12-17 Modified to work on vxWorks 5.4.2 where muxLib, 
  *            rather than muxTkLib must be used because muxTkLib
  *            seems to trash all other protocols.
+ * 2013-06-03 VxWorks 6.x API changes. Support requires INCLUDE_NET_POOL 
+ *            BSP option.
  */
 
 #include <vxWorks.h>
+#include <version.h>
 #include <muxLib.h>
 #ifdef USE_MUXTKLIB
 #include <muxTkLib.h>
@@ -47,8 +50,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "llc.h"
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+#include <end.h>
+#endif
+#include <string.h>
 
 #define QUEUE_SIZE 512
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+#define LLC_SNAP_FRAMELEN    8
+#endif
 
 int llcDetach(void);
 static void mBlkShow(M_BLK_ID mBlk);
@@ -74,18 +84,30 @@ static struct ether_addr local_mac_addr;
 static M_CL_CONFIG mClBlkConfig = /* mBlk, clBlk configuration table */
 { /* mBlkNum clBlkNum memArea memSize */
 /* ---------- -------- ------- ------- */
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+200, 140, NULL, 0 };
+#else
 NUM_NET_MBLKS_MIN, NUM_CL_BLKS_MIN, NULL, 0 };
-
+#endif
 static int clDescTblNumEnt;
 static CL_DESC clDescTbl [] = /* cluster descriptor table */
 { /* clSize clNnum memArea memSize */
   /* ---------- ---- ------- ------- */
-    {64, NUM_64_MIN, NULL, 0},
-    {128, NUM_128_MIN, NULL, 0},
-    {256, NUM_256_MIN, NULL, 0},
-    {512, NUM_512_MIN, NULL, 0},
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+    {64,   50, NULL, 0},
+    {128,  50, NULL, 0},
+    {256,  10, NULL, 0},
+    {512,  10, NULL, 0},
+    {1024, 20, NULL, 0},
+    {2048, 20, NULL, 0}
+#else
+    {64,     NUM_64_MIN, NULL, 0},
+    {128,   NUM_128_MIN, NULL, 0},
+    {256,   NUM_256_MIN, NULL, 0},
+    {512,   NUM_512_MIN, NULL, 0},
     {1024, NUM_1024_MIN, NULL, 0},
     {2048, NUM_1024_MIN, NULL, 0}
+#endif
 };
 
 /**
@@ -201,6 +223,19 @@ int llcAttach(char *device, int unit)
                        NULL /* void * pNetDrvInfo ref to netDrvInfo structure */
                        );
 #else
+#if defined(vxWorks) && defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+    END_OBJ *pEnd;
+    unsigned char mac[6];
+
+    pEnd= endFindByName(device, 0);
+    if (pEnd == NULL)
+    {
+        printf("llcAttach: invalid Ethernet device name %s\n", device);
+        return ERROR;
+    }
+    muxIoctl(pEnd, EIOCGADDR, (caddr_t) mac);
+    memcpy(&local_mac_addr, mac, 6);
+#else
     /* Need to get our local MAC address */
     struct ifnet *ifPtr;
     char temp_device[6];
@@ -208,7 +243,7 @@ int llcAttach(char *device, int unit)
     sprintf(temp_device, "%s%d", device, unit);
     ifPtr = ifunit(temp_device);
     memcpy(&local_mac_addr, ((struct arpcom *)ifPtr)->ac_enaddr, sizeof(struct ether_addr));
-
+#endif
     cookie= muxBind   (device, /* char * pName, interface name, for example: ln, ei */
                        unit, /* int unit, unit number */
                        &llcRcvRtn, /* llcRcvRtn( ) Receive data from the MUX */
@@ -229,8 +264,8 @@ int llcAttach(char *device, int unit)
                              device, unit);
 
     /* Allocate and initialize the memory pool */
-    mClBlkConfig.memSize = (mClBlkConfig.mBlkNum * (M_BLK_SZ +
-                                                    sizeof(long))) + (mClBlkConfig.clBlkNum * CL_BLK_SZ);
+    mClBlkConfig.memSize = (mClBlkConfig.mBlkNum * (M_BLK_SZ + sizeof(long))) +
+                           (mClBlkConfig.clBlkNum * CL_BLK_SZ);
     mClBlkConfig.memArea = malloc(mClBlkConfig.memSize);
     clDescTblNumEnt = (NELEMENTS(clDescTbl));
     for (i=0; i< clDescTblNumEnt; i++) {
@@ -238,8 +273,7 @@ int llcAttach(char *device, int unit)
         clDescTbl[i].memArea = malloc( clDescTbl[i].memSize );
     }
     
-    if (netPoolInit (pNetPool, &mClBlkConfig, &clDescTbl
-                     [0],clDescTblNumEnt, NULL) != OK)
+    if (netPoolInit (pNetPool, &mClBlkConfig, &clDescTbl[0], clDescTblNumEnt, NULL) != OK)
         return -1;
 
     /* Create the message queue for received packets */
@@ -335,6 +369,11 @@ int llcSendPacket(struct sockaddr_llc *addr, int sap, int type,
     memcpy(pDst->mBlkHdr.mData, addr->sllc_mac, sizeof(struct ether_addr));
     pDst->mBlkHdr.reserved = len;
     pMblk = muxAddressForm(cookie, pMblk, pSrc, pDst);
+    if (pMblk == NULL)
+    {
+        perror("llcSendPacket: muxAddressForm() returns NULL");
+        return ERROR;
+    }
     netMblkClChainFree(pSrc);
     netMblkClChainFree(pDst);
 #endif

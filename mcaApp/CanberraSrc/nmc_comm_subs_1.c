@@ -65,16 +65,23 @@
 *   24-Nov-2005    pnd   Move to socket based code for vxWorks and Linux
 *   21-Sep-2006    pnd   Merged socket and non-socket code
 *   03-Dec-2009    mlr   Added support for WinPcap on Windows, moved from libnet to WinPcap on Cygwin
+*   03-Jun-2013    rls   Added VxWorks 6.8 (and above) support. VxWorks 6.x support
+*                        requires INCLUDE_NET_POOL BSP option.
 *******************************************************************************/
 
 #include "nmc_sys_defs.h"
 
 #ifdef vxWorks
+  #include <version.h>
   #include <sysLib.h>
   #include <taskLib.h>
   #include <hostLib.h>
   #include <usrLib.h>
   #include <sockLib.h>
+#if defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+  #include <muxLib.h>
+  #include <end.h>
+#endif
 #else
   #ifndef USE_WINPCAP
     #include <sys/types.h>
@@ -1365,7 +1372,28 @@ done:
 *******************************************************************************/
 int nmc_get_niaddr(char *device, unsigned char *address)
 {   
-#if defined(vxWorks)
+#if defined(vxWorks) && defined(_WRS_VXWORKS_MAJOR) && (_WRS_VXWORKS_MAJOR >= 6)
+    unsigned char mac[6];
+    END_OBJ *pEnd;
+    STATUS rtnstat;
+    char temp_device[20];
+    int unit, len;
+
+    len = strlen(device);
+    unit = atoi(&device[len - 1]);
+    strncpy(temp_device, device, len - 1);
+    temp_device[len - 1] = 0; 
+
+    pEnd= endFindByName(temp_device, unit);
+    if (pEnd == NULL)
+    {
+        errlogPrintf("(nmc_get_niaddr): invalid Ethernet device name %s\n", device);
+        return ERROR;
+    }
+    rtnstat = muxIoctl(pEnd, EIOCGADDR, mac);
+    memcpy(address, mac, 6);
+    return OK;
+#elif defined(vxWorks)
     struct ifnet *ifPtr;
     ifPtr = ifunit(device);
     memcpy(address, ((struct arpcom *) ifPtr)->ac_enaddr, 6);
