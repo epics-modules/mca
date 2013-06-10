@@ -70,7 +70,7 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
   epicsUInt32 controlStatusReg;
   epicsUInt32 moduleID;
   static const char* functionName="SIS3801";
-  
+
   setIntegerParam(SIS38XXModel_, MODEL_SIS3801);
   
   /* Call devLib to get the system address that corresponds to the VME
@@ -89,8 +89,8 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
     return;
   }
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
-            "%s:%s: Registered VME address: %p to local address: %p size: 0x%X\n", 
-            driverName, functionName, baseAddress, registers_, SIS3801_BOARD_SIZE);
+            "%s:%s: Registered VME address: 0x%lX to local address: %p size: 0x%X\n", 
+            driverName, functionName, (long)baseAddress, registers_, SIS3801_BOARD_SIZE);
 
   /* Probe VME bus to see if card is there */
   status = devReadProbe(4, (char *) &registers_->csr_reg,
