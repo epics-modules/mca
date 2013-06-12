@@ -207,7 +207,7 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
   }
     
   else if (command == mcaStopAcquire_) {
-    if (acquireMode_ == ACQUIRE_MODE_SCALER) goto done;
+    if (acquiring_ && (acquireMode_ == ACQUIRE_MODE_SCALER)) goto done;
     /* stop data acquisition */
     if (!acquiring_) {
       // We are not acquiring.
@@ -225,7 +225,7 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
      * a flag that says we have been erased since acquire was
      * last started, so we only do it once.
      */
-    /* If SIS38XX is acquiring, turn if off */
+    /* If SIS38XX is acquiring, turn it off */
     if (acquiring_) {
       if (acquireMode_ == ACQUIRE_MODE_SCALER) goto done;  // Error
       stopMCSAcquire();
