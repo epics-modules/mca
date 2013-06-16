@@ -31,9 +31,7 @@ char *record;
 char *field;
 
 int   ReadArray[MAX_SIGNALS]; 
-assign  ReadArray to
-          {"","","","","","","","","","","","","","","","",
-           "","","","","","","","","","","","","","","",""};
+assign  ReadArray to {};
 int     ReadArrays; assign ReadArrays to "{P}DoReadAll";
 monitor ReadArrays; evflag ReadArraysMon; sync ReadArrays ReadArraysMon;
 
