@@ -286,7 +286,7 @@ asynStatus DSA2000::setHVStatus()
     }
     setUIntDigitalParam(P_HVControl, control, 0xFFFFFFFF);
     setCommand.control = control;   
-    setCommand.DAC = (DACVolts/fullScale * 4095) + 0.5;
+    setCommand.DAC = (epicsInt16)((DACVolts/fullScale * 4095) + 0.5);
     sendStatus = nmc_sendcmd(this->module, NCP_K_HCMD_SETHVSTATUS, &setCommand, sizeof(setCommand),
                              &response, sizeof(response), &actual, 0);
     if (sendStatus != 9) status = asynError;
