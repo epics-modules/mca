@@ -1,0 +1,189 @@
+# Database for Canberra 9621 HVPS
+#   Mark Rivers
+#   October 11, 2000
+
+record(ao,"$(P)$(HVPS)VOLTS") {
+    field(DESC,"HVPS output voltage")
+    field(PINI,"YES")
+    field(DRVL,"0")
+    field(LOPR,"0")
+    field(DRVH,"$(LIMIT)")
+    field(HOPR,"$(LIMIT)")
+    field(PREC,"1")
+    field(VAL,"0")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT))DAC_SETTING")
+}
+
+record(ai,"$(P)$(HVPS)VOLTS_RBV") {
+    field(DESC,"Voltage readback")
+    field(LOPR,"0")
+    field(HOPR,"$(LIMIT)")
+    field(PREC,"1")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))DAC_READBACK")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)$(HVPS)VOLTS_ADC_RBV") {
+    field(DESC,"Voltage ADC readback")
+    field(LOPR,"0")
+    field(HOPR,"$(LIMIT)")
+    field(PREC,"0")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))ADC_READBACK")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo,"$(P)$(HVPS)OFF_ON") {
+    field(DESC,"Off/On control")
+    field(PINI,"NO")
+    field(ZNAM,"Off")
+    field(ONAM,"On")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asynMask($(PORT),0,0x1)HV_CONTROL")
+}
+
+record(bi,"$(P)$(HVPS)OFF_ON_RBV") {
+    field(DESC,"Off/On status")
+    field(ZNAM,"Off")
+    field(ZSV, "NO_ALARM")
+    field(ONAM,"On")
+    field(OSV, "MINOR")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0x1)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(HVPS)RANGE") {
+    field(DESC,"Voltage range")
+    field(PINI,"YES")
+    field(ZRST,"+1300V")
+    field(ZRVL,"0")
+    field(ONST,"+5000V")
+    field(ONVL,"1")
+    field(TWST,"-5000V")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)HV_RANGE_SETTING")
+}
+
+record(mbbi,"$(P)$(HVPS)RANGE_RBV") {
+    field(DESC,"Voltage range")
+    field(ZRST,"+1300V")
+    field(ZRVL,"0")
+    field(ONST,"+5000V")
+    field(ONVL,"1")
+    field(TWST,"-5000V")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)HV_RANGE_READBACK")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo,"$(P)$(HVPS)FREEZE") {
+    field(DESC,"Freeze high voltage state")
+    field(PINI,"YES")
+    field(ZNAM,"Off")
+    field(ONAM,"On")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asynMask($(PORT),0,0x80)HV_CONTROL")
+}
+
+record(bo,"$(P)$(HVPS)INHIBIT_LEVEL") {
+    field(DESC,"Inhibit level")
+    field(PINI,"YES")
+    field(ZNAM,"+5V")
+    field(ONAM,"+12V")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)HV_INHIBIT_LEVEL")
+}
+
+record(bi,"$(P)$(HVPS)INHIBIT_LEVEL_RBV") {
+    field(DESC,"Inhibit level")
+    field(ZNAM,"+5V")
+    field(ONAM,"+12V")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0x200)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(bi,"$(P)$(HVPS)INHIBIT_RBV") {
+    field(DESC,"Voltage inhibited")
+    field(ZNAM,"Off")
+    field(ZSV, "NO_ALARM")
+    field(ONAM,"On")
+    field(OSV, "MINOR")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0x40)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(bi,"$(P)$(HVPS)RESET_POLARITY_RBV") {
+    field(DESC,"Reset polarity")
+    field(ZNAM,"Neg. edge")
+    field(ONAM,"Pos. edge")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0x100)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(bo,"$(P)$(HVPS)RESET") {
+    field(DESC,"Reset HVPS")
+    field(PINI,"NO")
+    field(ZNAM,"Done")
+    field(ONAM,"Reset")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT))HV_RESET")
+}
+
+record(bo,"$(P)$(HVPS)READBACK_SCAN") {
+    field(PINI,"YES")
+    field(VAL, "1")
+    field(OUT, "$(P)$(HVPS)READBACK PP MS")
+    field(SCAN,"1 second")
+}
+
+record(bo,"$(P)$(HVPS)READBACK") {
+    field(DESC,"Readback values")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT))READ_STATUS")
+}
+
+record(bi,"$(P)$(HVPS)RAMPING_RBV") {
+    field(DESC,"Voltage ramping")
+    field(ZNAM,"Done")
+    field(ZSV, "NO_ALARM")
+    field(ONAM,"Ramping")
+    field(OSV, "MINOR")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0x20)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(bi,"$(P)$(HVPS)FAULT_RBV") {
+    field(DESC,"Voltage fault")
+    field(ZNAM,"OK")
+    field(ZSV, "NO_ALARM")
+    field(ONAM,"Fault")
+    field(OSV, "MAJOR")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0x80)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(HVPS)STATUS_REG_RBV") {
+    field(DESC,"Status register")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0xFFFFFFFF)HV_STATUS")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(HVPS)CONTROL_REG_RBV") {
+    field(DESC,"Control register")
+    field(DTYP, "asynUInt32Digital")
+    field(INP,"@asynMask($(PORT),0,0xFFFFFFFF)HV_CONTROL")
+    field(SCAN, "I/O Intr")
+}
+
+
