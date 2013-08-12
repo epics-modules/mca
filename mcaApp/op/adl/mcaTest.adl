@@ -1,7 +1,7 @@
 
 file {
-	name="/home/epics/devel/mca/6-11/mcaApp/op/adl/mcaTest.adl"
-	version=030102
+	name="/home/epics/devel/mca/mcaApp/op/adl/mcaTest.adl"
+	version=030105
 }
 display {
 	object {
@@ -133,6 +133,11 @@ display {
 		label="AIM #1 std records"
 		name="mcaStdRecords.adl"
 		args="P=mcaTest:, R=aim_adc1"
+	}
+	display[8] {
+		label="DSA-2000 HVPS"
+		name="DSA2000_HVPS.adl"
+		args="P=mcaTest:, HVPS=hvps1:"
 	}
 	clr=14
 	bclr=4
