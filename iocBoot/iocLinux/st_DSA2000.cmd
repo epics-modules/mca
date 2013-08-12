@@ -35,8 +35,11 @@ dbLoadRecords("$(MCA)/mcaApp/Db/DSA2000_HVPS.db", "P=mcaTest:,HVPS=hvps1:,PORT=D
 
 < save_restore.cmd
 
+set_pass0_restoreFile("DSA2000_settings.sav")
+set_pass1_restoreFile("DSA2000_settings.sav")
+
 iocInit()
 
 # save settings every thirty seconds
-create_monitor_set("auto_settings.req",30,"P=mcaTest:")
+create_monitor_set("DSA2000_settings.req",30,"P=mcaTest:")
 
