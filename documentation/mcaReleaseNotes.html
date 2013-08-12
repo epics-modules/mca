@@ -9,6 +9,15 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-5 (XXX-August-2013)</h2>
+  <ul>
+    <li>Added support for the programmable high-voltage power supply in the Canberra DSA-2000.
+      The MCA and DSP controls in the DSA-2000 were already supported. The file iocBoot/iocLinux/st_DSA2000.cmd
+      is used to test this, and the mcaTest.adl medm screen can be used to load the new
+      DSA2000_HVPS.adl screen.</li>
+    <li>Cleaned up SIS38XX_SNL.st by removing unneeded empty strings in assign statements.</li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-4 (10-June-2013)</h2>
   <ul>
     <li>Changes to the Canberra support for vxWorks 6.x. These were done by Ron Sluiter.
