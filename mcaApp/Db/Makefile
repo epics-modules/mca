@@ -14,6 +14,7 @@ DB += 13element.db
 DB += 13element_sum.db
 DB += 16element.db
 DB += 3element.db
+DB += DSA2000_HVPS.db
 DB += RontecXFlash.db
 DB += SIS38XX.template
 DB += SIS38XX_waveform.template
