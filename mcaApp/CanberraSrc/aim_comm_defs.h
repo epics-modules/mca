@@ -251,6 +251,42 @@ struct ncp_hcmd_retmemsep {
 struct ncp_hcmd_resetlist {
         epicsUInt16 adc;                     	/* adc number */
 };
+
+
+/* These commands are for the DSA-2000, which supports some commands beyond the AIM ones */
+
+#define NCP_K_HCMD_SETHVSTATUS  50              /* SET HIGH VOLTAGE STATUS */
+struct ncp_hcmd_sethvstatus {
+        epicsInt16 control;                  	  /* control word */
+        epicsInt16 DAC;                     	  /* 12-bit DAC setting */
+        epicsInt16 spare;                   	  /* spare */
+};
+
+#define NCP_K_HCMD_RETHVSTATUS  51              /* RETURN HIGH VOLTAGE STATUS */
+struct ncp_hcmd_rethvstatus {
+        epicsInt16 spare;                   	  /* spare */
+};
+
+#define NCP_K_MRESP_RETHVSTATUS  233            /* RETURN HIGH VOLTAGE STATUS */
+struct ncp_mresp_rethvstatus {
+        epicsInt16 status;                   	  /* status */
+        epicsInt16 DACValue;                    /* 12-bit actual DAC value */
+        epicsInt16 DACSetting;                  /* 12-bit DAC setting */
+        epicsInt16 ADCValue;                    /* 8-bit ADC value */
+        epicsInt16 spare;                   	  /* spare */
+};
+
+#define NCP_K_HCMD_RESETHVSTATUS 52              /* RESET HIGH VOLTAGE STATUS */
+struct ncp_hcmd_resethvstatus {
+        epicsInt16 spare;                   	  /* spare */
+};
+
+#define NCP_K_HCMD_SETHVPARAMS  53              /* SET HIGH VOLTAGE PARAMS */
+struct ncp_hcmd_sethvparams {
+        epicsInt16 control;                   	/* Control */
+};
+
+
 
 /*
 * Define format for host memory usage. This is used by hosts to store module
