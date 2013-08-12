@@ -17,6 +17,7 @@
     <li><a href="#Overview">Overview</a></li>
     <li><a href="#AIM_MCA_setup">AIM MCA setup</a></li>
     <li><a href="#ICB_setup">ICB setup</a></li>
+    <li><a href="#DSA2000_setup">DSA-2000 setup</a></li>
     <li><a href="#Utility_commands">Utility commands</a></li>
     <li><a href="#vxWorks_configuration">vxWorks configuration</a></li>
     <li><a href="#Linux_configuration">Linux configuration</a></li>
@@ -46,6 +47,13 @@
     message. If the AIM is currently owned by another computer and you want to change
     what computer owns it, you can do one of two things. Either power off the AIM and
     back on, or issue the command mcaAIMFreeModule, described below.
+  </p>
+  <p>
+    The DSA-2000 is functionally the same as the AIM, but with a single ADC port and
+    packaged in a rack-mount unit. The DSA-2000 contains the equivalent of the 9660
+    DSP which is set at ICB address 0. The DSA-2000 also contains an internal programmable
+    high-voltage power supply. This is not the same as the ICB power supplies, and has
+    its own driver described below.
   </p>
   <p>
     The AIM and ICB device support runs on vxWorks, Linux, and Windows (win32-x86 and
@@ -213,6 +221,32 @@ icbConfig("icbTca1", 0x59e, 8, 3)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_tca.db", "P=mcaTest:,TCA=tca1,MCA=aim_adc2,PORT=icbTca1")
 #icbConfig("icbDsp1", 0x59e, 7, 4)
 #dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
+</pre>
+  <h2 id="DSA2000_setup">
+    DSA-2000 setup</h2>
+  <p>
+    The DSA-2000 contains 3 logical modules that are supported by EPICS.</p>
+  <ol>
+    <li>The MCA module is the same as an AIM with a single ADC port, and it is configured
+      with the AIMConfig command described above.</li>
+    <li>The DSP module is the same as the 9660 DSP ICB module, and is configured with
+      the icbConfig command described above, with ICB address 0 and module type 4.</li>
+    <li>The HVPS is unique to the DSA-2000 and is configured with the DSA2000Config command.</li>
+  </ol>
+  <h3>
+    Example DSA-2000 startup script</h3>
+  <p>
+    The following startup script configures a DSA-2000 MCA, DSP, and HVPS.
+  </p>
+  <pre>
+AIMConfig("AIM1/1", 0x8058, 1, 2048, 1, 1, "eth1")
+dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
+
+icbConfig("icbDsp1", 0x8058, 0, 4)
+dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
+
+DSA2000Config("DSA2000", 0x8058)
+dbLoadRecords("$(MCA)/mcaApp/Db/DSA2000_HVPS.db", "P=mcaTest:,HVPS=hvps1:,PORT=DSA2000,LIMIT=5000")
 </pre>
   <h2 id="Utility_commands">
     Utility commands</h2>
