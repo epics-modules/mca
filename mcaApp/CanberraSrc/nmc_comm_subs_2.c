@@ -679,6 +679,17 @@ int nmc_byte_order_in(void *inpkt)
          break;
       }
 
+      case NCP_K_MRESP_RETHVSTATUS:
+      {
+         struct ncp_mresp_rethvstatus *d;
+         d = (struct ncp_mresp_rethvstatus *) rpkt->ncp_packet_data;
+         SSWAP(d->status);
+         SSWAP(d->DACValue);
+         SSWAP(d->DACSetting);
+         SSWAP(d->ADCValue);
+         break;
+      }
+
       default:
          /*
           * There are many other possible module responses.
@@ -1011,6 +1022,35 @@ int nmc_byte_order_out(void *outpkt)
          struct ncp_hcmd_resetlist *d;
          d = (struct ncp_hcmd_resetlist *) rpkt->ncp_packet_data;
          SSWAP(d->adc);
+         break;
+      }
+
+      case NCP_K_HCMD_SETHVSTATUS:
+      {
+         struct ncp_hcmd_sethvstatus *d;
+         d = (struct ncp_hcmd_sethvstatus *) rpkt->ncp_packet_data;
+         SSWAP(d->control);
+         SSWAP(d->DAC);
+         break;
+      }
+
+      case NCP_K_HCMD_RETHVSTATUS:
+      {
+         /* Nothing to do in this case */
+         break;
+      }
+
+      case NCP_K_HCMD_RESETHVSTATUS:
+      {
+         /* Nothing to do in this case */
+         break;
+      }
+
+      case NCP_K_HCMD_SETHVPARAMS:
+      {
+         struct ncp_hcmd_sethvparams *d;
+         d = (struct ncp_hcmd_sethvparams *) rpkt->ncp_packet_data;
+         SSWAP(d->control);
          break;
       }
 
