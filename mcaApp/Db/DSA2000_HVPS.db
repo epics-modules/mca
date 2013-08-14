@@ -95,8 +95,8 @@ record(bo,"$(P)$(HVPS)INHIBIT_LEVEL") {
     field(PINI,"YES")
     field(ZNAM,"+5V")
     field(ONAM,"+12V")
-    field(DTYP, "asynInt32")
-    field(OUT,"@asyn($(PORT),0)HV_INHIBIT_LEVEL")
+    field(DTYP, "asynUInt32Digital")
+    field(OUT,"@asynMask($(PORT),0,0x200)HV_CONTROL")
 }
 
 record(bi,"$(P)$(HVPS)INHIBIT_LEVEL_RBV") {
@@ -116,15 +116,6 @@ record(bi,"$(P)$(HVPS)INHIBIT_RBV") {
     field(OSV, "MINOR")
     field(DTYP, "asynUInt32Digital")
     field(INP,"@asynMask($(PORT),0,0x40)HV_STATUS")
-    field(SCAN, "I/O Intr")
-}
-
-record(bi,"$(P)$(HVPS)RESET_POLARITY_RBV") {
-    field(DESC,"Reset polarity")
-    field(ZNAM,"Neg. edge")
-    field(ONAM,"Pos. edge")
-    field(DTYP, "asynUInt32Digital")
-    field(INP,"@asynMask($(PORT),0,0x100)HV_STATUS")
     field(SCAN, "I/O Intr")
 }
 
