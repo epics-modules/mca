@@ -54,7 +54,7 @@ DSA2000::DSA2000(const char *portName, int moduleAddress)
     int status;
     epicsUInt32 HVStatus, HVControl;
     double voltage;
-    int inhibitLevel, range;
+    int range;
     int retries=0;
     const char *functionName = "DSA2000";
 
@@ -66,7 +66,6 @@ DSA2000::DSA2000(const char *portName, int moduleAddress)
     createParam(P_DACReadbackString,        asynParamFloat64,       &P_DACReadback);
     createParam(P_ADCReadbackString,        asynParamFloat64,       &P_ADCReadback);
     createParam(P_HVResetString,            asynParamInt32,         &P_HVReset);
-    createParam(P_HVInhibitLevelString,     asynParamInt32,         &P_HVInhibitLevel);
     createParam(P_ReadStatusString,         asynParamInt32,         &P_ReadStatus);
     
     /* Compute the module Ethernet address */
@@ -96,11 +95,9 @@ DSA2000::DSA2000(const char *portName, int moduleAddress)
     getUIntDigitalParam(P_HVStatus, &HVStatus, 0xFFFFFFFF);
     // Force callbacks on all bits first time
     setUIntDigitalParam(P_HVStatus, HVStatus, 0xFFFFFFFF, 0xFFFFFFFF);
-    // Copy the first 3 bits of status to control
-    HVControl = HVStatus & 0x7;
+    // Copy bits 0-2 and 9 of status to control
+    HVControl = HVStatus & 0x207;
     setUIntDigitalParam(P_HVControl, HVControl, 0xFFFFFFFF, 0xFFFFFFFF);
-    inhibitLevel = (HVStatus & 0x200) ? 1:0;
-    setIntegerParam(P_HVInhibitLevel, inhibitLevel);
     getDoubleParam(P_DACReadback, &voltage);
     setDoubleParam(P_DACSetting, voltage);
     getIntegerParam(P_HVRangeReadback, &range);
@@ -157,7 +154,6 @@ asynStatus DSA2000::writeInt32(asynUser *pasynUser, epicsInt32 value)
     int function = pasynUser->reason;
     asynStatus status = asynSuccess;
     struct ncp_hcmd_resethvstatus resetCommand;
-    struct ncp_hcmd_sethvparams paramsCommand;
     int sendStatus;
     int response;
     int actual;
@@ -171,18 +167,12 @@ asynStatus DSA2000::writeInt32(asynUser *pasynUser, epicsInt32 value)
     getParamName(function, &paramName);
 
     if (function == P_HVRangeSetting) {
-        /* Send the HV reset command */
+        /* Set the range */
         status = setHVStatus();
     }
     if (function == P_HVReset) {
         /* Send the HV reset command */
         sendStatus = nmc_sendcmd(this->module, NCP_K_HCMD_RESETHVSTATUS, &resetCommand, sizeof(resetCommand),
-                                 &response, sizeof(response), &actual, 0);
-        if (sendStatus != 9) status = asynError;
-    }
-    else if (function == P_HVInhibitLevel) {
-        paramsCommand.control = value;
-        sendStatus = nmc_sendcmd(this->module, NCP_K_HCMD_SETHVPARAMS, &paramsCommand, sizeof(paramsCommand),
                                  &response, sizeof(response), &actual, 0);
         if (sendStatus != 9) status = asynError;
     }
