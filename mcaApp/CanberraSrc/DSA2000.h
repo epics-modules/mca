@@ -20,7 +20,6 @@
 #define P_DACReadbackString              "DAC_READBACK"               /* asynFloat64,       r/o */
 #define P_ADCReadbackString              "ADC_READBACK"               /* asynFloat64,       r/o */
 #define P_HVResetString                  "HV_RESET"                   /* asynInt32,         r/w */
-#define P_HVInhibitLevelString           "HV_INHIBIT_LEVEL"           /* asynInt32,         r/w */
 #define P_ReadStatusString               "READ_STATUS"                /* asynInt32,         r/w */
 
 /** Class that controls the HVPS of the Canberra DSA-2000. This uses the Canberra library for the AIM
@@ -47,7 +46,6 @@ protected:
     int P_DACReadback;
     int P_ADCReadback;
     int P_HVReset;
-    int P_HVInhibitLevel;
     int P_ReadStatus;
     #define LAST_COMMAND P_ReadStatus
 
