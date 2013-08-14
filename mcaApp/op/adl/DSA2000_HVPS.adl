@@ -145,9 +145,9 @@ text {
 }
 "message button" {
 	object {
-		x=385
+		x=249
 		y=152
-		width=50
+		width=80
 		height=20
 	}
 	control {
@@ -355,79 +355,6 @@ composite {
 			limits {
 			}
 		}
-	}
-}
-text {
-	object {
-		x=149
-		y=133
-		width=117
-		height=15
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Inhibit Level"
-	align="horiz. centered"
-}
-"text update" {
-	object {
-		x=167
-		y=153
-		width=80
-		height=15
-	}
-	monitor {
-		chan="$(P)$(HVPS)INHIBIT_LEVEL_RBV"
-		clr=14
-		bclr=2
-	}
-	align="horiz. centered"
-	format="string"
-	limits {
-	}
-}
-menu {
-	object {
-		x=167
-		y=172
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)$(HVPS)INHIBIT_LEVEL"
-		clr=14
-		bclr=51
-	}
-}
-text {
-	object {
-		x=13
-		y=133
-		width=126
-		height=15
-	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Reset Polarity"
-	align="horiz. centered"
-}
-"text update" {
-	object {
-		x=36
-		y=153
-		width=80
-		height=15
-	}
-	monitor {
-		chan="$(P)$(HVPS)RESET_POLARITY_RBV"
-		clr=14
-		bclr=2
-	}
-	align="horiz. centered"
-	format="string"
-	limits {
 	}
 }
 text {
@@ -722,29 +649,94 @@ text {
 	limits {
 	}
 }
-text {
+composite {
 	object {
-		x=276
+		x=13
+		y=133
+		width=117
+		height=59
+	}
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=13
+				y=133
+				width=117
+				height=15
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Inhibit Level"
+			align="horiz. centered"
+		}
+		"text update" {
+			object {
+				x=31
+				y=153
+				width=80
+				height=15
+			}
+			monitor {
+				chan="$(P)$(HVPS)INHIBIT_LEVEL_RBV"
+				clr=14
+				bclr=2
+			}
+			align="horiz. centered"
+			format="string"
+			limits {
+			}
+		}
+		menu {
+			object {
+				x=31
+				y=172
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(HVPS)INHIBIT_LEVEL"
+				clr=14
+				bclr=51
+			}
+		}
+	}
+}
+composite {
+	object {
+		x=140
 		y=143
 		width=99
-		height=15
+		height=39
 	}
-	"basic attribute" {
-		clr=14
-	}
-	textix="Status Rate"
-	align="horiz. centered"
-}
-menu {
-	object {
-		x=285
-		y=162
-		width=80
-		height=20
-	}
-	control {
-		chan="$(P)$(HVPS)READBACK_SCAN.SCAN"
-		clr=14
-		bclr=51
+	"composite name"=""
+	children {
+		text {
+			object {
+				x=140
+				y=143
+				width=99
+				height=15
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Status Rate"
+			align="horiz. centered"
+		}
+		menu {
+			object {
+				x=149
+				y=162
+				width=80
+				height=20
+			}
+			control {
+				chan="$(P)$(HVPS)READBACK_SCAN.SCAN"
+				clr=14
+				bclr=51
+			}
+		}
 	}
 }
