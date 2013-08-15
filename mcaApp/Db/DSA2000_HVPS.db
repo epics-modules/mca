@@ -108,17 +108,6 @@ record(bi,"$(P)$(HVPS)INHIBIT_LEVEL_RBV") {
     field(SCAN, "I/O Intr")
 }
 
-record(bi,"$(P)$(HVPS)INHIBIT_RBV") {
-    field(DESC,"Voltage inhibited")
-    field(ZNAM,"Off")
-    field(ZSV, "NO_ALARM")
-    field(ONAM,"On")
-    field(OSV, "MINOR")
-    field(DTYP, "asynUInt32Digital")
-    field(INP,"@asynMask($(PORT),0,0x40)HV_STATUS")
-    field(SCAN, "I/O Intr")
-}
-
 record(bo,"$(P)$(HVPS)RESET") {
     field(DESC,"Reset HVPS")
     field(PINI,"NO")
