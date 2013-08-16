@@ -11,6 +11,12 @@
   <h2 style="text-align: center">
     Release 7-5 (XXX-August-2013)</h2>
   <ul>
+    <li>Fixed a serious bug in the Canberra support when libpcap was being used. Previously
+      pcap_open_live was being called with a timeout of -1 (ms). This actually causes
+      pcap to enter a tight polling loop where it uses 100% of the CPU time. The timeout
+      was changed to 0, which means wait for a packet to arrive. The CPU time was reduced
+      to 1%-2% for the test IOC, but the MCA and ICB performance (updates/sec, etc.) appears
+      to be the same.</li>
     <li>Added support for the programmable high-voltage power supply in the Canberra DSA-2000.
       The MCA and DSP controls in the DSA-2000 were already supported. The file iocBoot/iocLinux/st_DSA2000.cmd
       is used to test this, and the mcaTest.adl medm screen can be used to load the new
