@@ -118,6 +118,9 @@
   #endif
 #endif
 
+/* PCAP timeout in ms */
+#define PCAP_TIMEOUT 0
+
 struct nmc_module_info_struct *nmc_module_info; /* Keeps info on modules */
 struct nmc_comm_info_struct *nmc_comm_info;     /* Keeps comm info */
 char sys_node_name[9] = {"        "};           /* System node name */
@@ -327,7 +330,7 @@ found:
     /* If we are not using sockets then we must be using pcap */
     errbuf[0]='\0';
     if (aimDebug > 4) errlogPrintf("(nmcEtherCapture): calling pcap_open_live, device=%s \n", device);
-    i->pcap = pcap_open_live(device, NMC_K_CAPTURESIZE,0,-1,errbuf);
+    i->pcap = pcap_open_live(device, NMC_K_CAPTURESIZE, 0, PCAP_TIMEOUT, errbuf);
     if (errbuf[0]) {
         printf("nmcEthCapture: pcap_open_live: %s\n",errbuf);   
     }
