@@ -17,12 +17,15 @@
       timeout was changed to 0, which means wait for a packet to arrive. The CPU time
       was reduced to 1%-2% for the test IOC, but the MCA and ICB performance (updates/sec,
       etc.) appears to be the same. Note that timeout of 0 does NOT work on Windows, and
-      the previous value of -1 works fine, so the timeout was not changed on Windows.</li>
+      the previous value of -1 works fine, so the timeout was not changed on Windows or
+      Cygwin.</li>
     <li>Previously the WinPcap DLL files were installed into the mca/bin/$(ARCH) directories.
       This does not work with Windows 7, because the DLLs that work on XP don't work on
-      Windows 7. The DLLs are no longer distributed with mca. This means that the CanberraSrc
-      directory will build (because the .lib files are still distributed) but it will
-      not run unless the WinPcap package is installed on the target machine.</li>
+      Windows 7. The DLLs are no longer distributed with mca. They were actually never
+      needed because it was always necessary to install the WinPcap package to run an
+      application built with Canberra support. This is because it requires drivers that
+      were not distributed with mca. So the required DLLs will always be available on
+      the target machine, and they are guaranteed to be the correct versions.</li>
     <li>Added support for the programmable high-voltage power supply in the Canberra DSA-2000.
       The MCA and DSP controls in the DSA-2000 were already supported. The file iocBoot/iocLinux/st_DSA2000.cmd
       is used to test this, and the mcaTest.adl medm screen can be used to load the new
