@@ -119,7 +119,12 @@
 #endif
 
 /* PCAP timeout in ms */
-#define PCAP_TIMEOUT 0
+/* On Windows we can use -1, but on Linux that leads to 100% CPU utilization */
+#ifdef _WIN32
+  #define PCAP_TIMEOUT -1
+#else
+  #define PCAP_TIMEOUT 0
+#endif
 
 struct nmc_module_info_struct *nmc_module_info; /* Keeps info on modules */
 struct nmc_comm_info_struct *nmc_comm_info;     /* Keeps comm info */
