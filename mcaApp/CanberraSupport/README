@@ -5,10 +5,7 @@ WIN32.
 
 wpcap.lib and Packet.lib are from the Lib directory in WinPcap.
 
-wpcap.dll and Packet.dll are from the Windows/System32 directory after an install of the WinPCAP application.
-They are not included in the developers pack.
-
-The files in os/WIN32 and os/cygwin32 are from the WinPcap Include/ Include/pcap directories. 
+The header files in os/WIN32 and os/cygwin32 are from the WinPcap Include/ Include/pcap directories. 
 They are put in these os/ specific directories to avoid name conflicts with Linux.  
 The pcap.h file is the one from Include/pcap.h, not the top-level Include/pcap.h.  
 It has also been edited to change the #include pcap/bpf.h to just bpf.h, 
