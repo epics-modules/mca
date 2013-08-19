@@ -16,9 +16,12 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 # Canberra hardware is attached to, and replace the string in the AIMConfig
 # commands below with that string.
 
-# This is my office computer
-AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-9340BE526C25}")
-AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-9340BE526C25}")
+# This is my office 32-bit computer
+#AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-9340BE526C25}")
+#AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{5EDD2D78-B567-49D2-B7C3-9340BE526C25}")
+# This is my office 64-bit computer
+AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{73750E33-093D-41D2-8915-CA2078FE8E88}")
+AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{73750E33-093D-41D2-8915-CA2078FE8E88}")
 # This is the lab computer
 #AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "\Device\NPF_{864AA927-88D6-4407-96F5-A5DF9E43D684}")
 #AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "\Device\NPF_{864AA927-88D6-4407-96F5-A5DF9E43D684}")
