@@ -120,7 +120,7 @@
 
 /* PCAP timeout in ms */
 /* On Windows we can use -1, but on Linux that leads to 100% CPU utilization */
-#ifdef _WIN32
+#if defined(_WIN32) || defined(CYGWIN32)
   #define PCAP_TIMEOUT -1
 #else
   #define PCAP_TIMEOUT 0
