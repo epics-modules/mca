@@ -5,7 +5,7 @@ include $(TOP)/configure/CONFIG
 #=============================
 
 # libnet needs this
-USR_CFLAGS_darwin-ppc += -g `libnet-config --defines` 
+USR_CFLAGS_Darwin += -g `libnet-config --defines` 
 
 #=============================
 
@@ -35,6 +35,7 @@ INC += nmcmsgdef.h icb_sys_defs.h ndtypes.h campardef.h
 LIBRARY_IOC_vxWorks  += mcaCanberra
 LIBRARY_IOC_cygwin32 += mcaCanberra
 LIBRARY_IOC_WIN32    += mcaCanberra
+LIBRARY_IOC_Darwin   += mcaCanberra
 
 USR_CFLAGS_vxWorks += -DUSE_SOCKETS
 USR_CPPFLAGS_vxWorks += -DUSE_SOCKETS
@@ -63,6 +64,15 @@ USR_CPPFLAGS_Linux += -g `libnet-config --defines`
 mcaCanberra_SYS_LIBS_Linux += net pcap
 mcaAIM_SYS_LIBS_Linux      += net pcap
 nmcDemo_SYS_LIBS_Linux     += net pcap
+
+# Darwin
+USR_CFLAGS_Darwin += -DUSE_LIBNET
+USR_CPPFLAGS_LDarwin += -DUSE_LIBNET
+USR_CFLAGS_Darwin += -g `libnet-config --defines` 
+USR_CPPFLAGS_Darwin += -g `libnet-config --defines` 
+mcaCanberra_SYS_LIBS_Darwin += net pcap
+mcaAIM_SYS_LIBS_Darwin      += net pcap
+nmcDemo_SYS_LIBS_Darwin     += net pcap
 
 # Cygwin and WIN32 use WinPcap
 USR_CFLAGS_cygwin32 += -DUSE_WINPCAP
