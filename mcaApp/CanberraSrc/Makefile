@@ -67,7 +67,7 @@ nmcDemo_SYS_LIBS_Linux     += net pcap
 
 # Darwin
 USR_CFLAGS_Darwin += -DUSE_LIBNET
-USR_CPPFLAGS_LDarwin += -DUSE_LIBNET
+USR_CPPFLAGS_Darwin += -DUSE_LIBNET
 USR_CFLAGS_Darwin += -g `libnet-config --defines` 
 USR_CPPFLAGS_Darwin += -g `libnet-config --defines` 
 mcaCanberra_SYS_LIBS_Darwin += net pcap
