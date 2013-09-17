@@ -91,6 +91,7 @@ USR_CFLAGS_WIN32    += -DUSE_WINPCAP -DWIN32
 USR_CPPFLAGS_WIN32  += -DUSE_WINPCAP -DWIN32
 LIB_LIBS_WIN32      += wpcap Packet
 PROD_LIBS_WIN32     += wpcap Packet
+LIB_SYS_LIBS_WIN32  += ws2_32
 PROD_SYS_LIBS_WIN32 += ws2_32
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
