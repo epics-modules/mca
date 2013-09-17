@@ -400,7 +400,7 @@ found:
                libnet_geterror(i->pIf->libnet));
         return ERROR;
     }
-    if ((i->pIf->hw_address = (struct ether_addr *)libnet_get_hwaddr( i->pIf->libnet)) == NULL) {
+    if ((i->pIf->hw_address = libnet_get_hwaddr( i->pIf->libnet)) == NULL) {
         printf("Unable to detemine MAC-Address, error=%s\n",
                libnet_geterror(i->pIf->libnet));
         return ERROR;

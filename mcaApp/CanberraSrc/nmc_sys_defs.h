@@ -157,7 +157,7 @@ struct nmc_module_info_struct {
                   short   if_unit;       /* not used, always 0 */
                   libnet_t *libnet;      /* libnet_t struct for packet injection */
                   char errbuf[LIBNET_ERRBUF_SIZE];
-                  struct  ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
+                  struct  libnet_ether_addr *hw_address;     /* Ethernet Mac-Address of our device */
   };
 #endif
 
