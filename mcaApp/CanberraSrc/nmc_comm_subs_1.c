@@ -122,6 +122,9 @@
 /* On Windows we can use -1, but on Linux that leads to 100% CPU utilization */
 #if defined(_WIN32) || defined(CYGWIN32)
   #define PCAP_TIMEOUT -1
+#elif defined(darwin)
+  /* Darwin waits till a buffer fills with a timeout of 0 */
+  #define PCAP_TIMEOUT 100
 #else
   #define PCAP_TIMEOUT 0
 #endif
@@ -422,7 +425,7 @@ found:
     memcpy(&i->response_snap[3], &pid, 2);  /* Copy the first word of the process ID */
     i->response_snap[4] &= 0x7f;  /* clear msbit so response and status differ */
 
-    if (aimDebug > 0) errlogPrintf("(nmc_initialize): response SNAP: %2x %2x %2x %2x %2x\n",
+    if (aimDebug > 0) errlogPrintf("(nmc_initialize): response SNAP: %2.2x %2.2x %2.2x %2.2x %2.2x\n",
     i->response_snap[0],i->response_snap[1],i->response_snap[2],
     i->response_snap[3],i->response_snap[4]);
 
@@ -433,7 +436,7 @@ found:
     COPY_SNAP(i->response_snap, i->status_snap);
     i->status_snap[4] |= 0x80;
 
-    if (aimDebug > 0) errlogPrintf("(nmc_initialize): status SNAP: %2x %2x %2x %2x %2x\n",
+    if (aimDebug > 0) errlogPrintf("(nmc_initialize): status SNAP: %2.2x %2.2x %2.2x %2.2x %2.2x\n",
     i->status_snap[0],i->status_snap[1],i->status_snap[2],
     i->status_snap[3],i->status_snap[4]);
 
@@ -449,7 +452,7 @@ found:
     i->header_size = sizeof(struct enet_header) + sizeof(struct snap_header);
 #endif
 
-    if (aimDebug > 0) errlogPrintf("(nmc_initialize): MAC=%2x:%2x:%2x:%2x:%2x:%2x\n", 
+    if (aimDebug > 0) errlogPrintf("(nmc_initialize): MAC=%2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x\n", 
         i->sys_address[0],
         i->sys_address[1],
         i->sys_address[2],
@@ -664,8 +667,10 @@ void nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkthdr, cons
 
     /* If the packet has the statusSNAP ID then write the message to the statusQ */
     if (COMPARE_SNAP(s->snap_id, net->status_snap)) {
+        /* On Darwin for some reason the status packet length is 87 bytes, not 83.  Trim. */
+        if (length > MAX_STATUS_Q_MSG_SIZE) length = MAX_STATUS_Q_MSG_SIZE;
         if (epicsMessageQueueSend(net->statusQ, (char *)buffer, length) == -1) {
-            nmc_signal("nmcEtherGrab: Status Queue write",errno);  
+            nmc_signal("nmcEtherGrab: Status Queue write failed", -1);  
         }
     }
     /* If the packet has the responseSNAP ID then write the message to the responseQ for this module */
@@ -1484,6 +1489,9 @@ int nmc_get_niaddr(char *device, unsigned char *address)
     COPY_ENET_ADDR(i->pIf->hw_address->ether_addr_octet, i->sys_address); 
     */
     return OK;
+#else
+    printf("nmc_get_niaddr, unknown operating system!!!\n");
+    return ERROR;
 #endif
 }
 
