@@ -9,7 +9,7 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-5 (XXX-August-2013)</h2>
+    Release 7-5 (XXX-October-2013)</h2>
   <ul>
     <li>Fixed a serious bug in the Canberra support when libpcap was being used on Linux.
       Previously pcap_open_live was being called with a timeout of -1 (ms). This actually
@@ -19,6 +19,12 @@
       etc.) appears to be the same. Note that timeout of 0 does NOT work on Windows, and
       the previous value of -1 works fine, so the timeout was not changed on Windows or
       Cygwin.</li>
+    <li>Minor changes to the Canberra support to work on Darwin. Darwin does not work
+      with a pcap timeout of 0 because it then waits for the system to fill a buffer.
+      Used 100 ms timeout. When receiving status responses the packet length is 87, which
+      is 4 bytes longer than expected. The defined size of the status packet and the size
+      received on other architectures is 83 bytes. The reason for this is not known, but
+      the code was changed to tolerate it.</li>
     <li>Previously the WinPcap DLL files were installed into the mca/bin/$(ARCH) directories.
       This does not work with Windows 7, because the DLLs that work on XP don't work on
       Windows 7. The DLLs are no longer distributed with mca. They were actually never
