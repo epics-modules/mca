@@ -122,9 +122,6 @@
 /* On Windows we can use -1, but on Linux that leads to 100% CPU utilization */
 #if defined(_WIN32) || defined(CYGWIN32)
   #define PCAP_TIMEOUT -1
-#elif defined(darwin)
-  /* Darwin waits till a buffer fills with a timeout of 0 */
-  #define PCAP_TIMEOUT 100
 #else
   #define PCAP_TIMEOUT 0
 #endif
@@ -378,6 +375,21 @@ found:
         return ERROR;
     }
 
+
+#ifdef BIOCIMMEDIATE
+    /*
+     * When libpcap uses BPF we must enable "immediate mode" to
+     * receive frames right away; otherwise the system may
+     * buffer them for us.
+     */
+    {
+        unsigned int on = 1;
+        if (ioctl(pcap_fileno(i->pcap), BIOCIMMEDIATE, &on) < 0) {
+            printf("nmc_initialize: cannot enable immediate mode on interface %s: %s\n",
+                   device, strerror(errno));
+        }
+    }
+#endif /* BIOCIMMEDIATE */
 
     if( pcap_compile(i->pcap,&bpfprog,bpfstr,0,netp) == -1){ 
         printf("nmcEthCapture: pcap_compile: %s \n",pcap_geterr(i->pcap)); 
