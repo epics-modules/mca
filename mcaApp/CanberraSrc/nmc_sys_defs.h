@@ -35,6 +35,10 @@
   #include <net/if.h>
 #endif
 
+#ifdef darwin
+  #include <net/bpf.h>
+#endif
+
 #if defined(vxWorks)
   #include <vxWorks.h>
   #include <msgQLib.h>
