@@ -679,8 +679,6 @@ void nmcEtherGrab(unsigned char* usrdata, const struct pcap_pkthdr* pkthdr, cons
 
     /* If the packet has the statusSNAP ID then write the message to the statusQ */
     if (COMPARE_SNAP(s->snap_id, net->status_snap)) {
-        /* On Darwin for some reason the status packet length is 87 bytes, not 83.  Trim. */
-        if (length > MAX_STATUS_Q_MSG_SIZE) length = MAX_STATUS_Q_MSG_SIZE;
         if (epicsMessageQueueSend(net->statusQ, (char *)buffer, length) == -1) {
             nmc_signal("nmcEtherGrab: Status Queue write failed", -1);  
         }
