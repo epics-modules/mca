@@ -34,6 +34,8 @@
  *            seems to trash all other protocols.
  * 2013-06-03 VxWorks 6.x API changes. Support requires INCLUDE_NET_POOL 
  *            BSP option.
+ * 2014-04-23 Bug fix for Canberra AIM only working with network device
+ *            where unit# = 0. Fixed endFindByName(device, 0<-unit) call.
  */
 
 #include <vxWorks.h>
@@ -227,7 +229,7 @@ int llcAttach(char *device, int unit)
     END_OBJ *pEnd;
     unsigned char mac[6];
 
-    pEnd= endFindByName(device, 0);
+    pEnd= endFindByName(device, unit);
     if (pEnd == NULL)
     {
         printf("llcAttach: invalid Ethernet device name %s\n", device);
