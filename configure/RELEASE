@@ -20,7 +20,7 @@ SSCAN=$(SUPPORT)/sscan-2-9
 BUSY=$(SUPPORT)/busy-1-6
 
 # Scaler record
-STD=$(SUPPORT)/std-3-1
+STD=$(SUPPORT)/std-3-2
 
 # SISSrc uses the sequencer
 SNCSEQ=$(SUPPORT)/seq-2-1-10
@@ -29,13 +29,13 @@ SNCSEQ=$(SUPPORT)/seq-2-1-10
 AUTOSAVE=$(SUPPORT)/autosave-5-1
 
 # ASYN - for device/driver support
-ASYN=$(SUPPORT)/asyn-4-22
+ASYN=$(SUPPORT)/asyn-4-23
 
 # MCA - this module
 MCA=$(SUPPORT)/mca-7-4
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.3
+EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.4
 -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 #Capfast users may need the following definitions
