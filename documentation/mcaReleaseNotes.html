@@ -9,7 +9,7 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-5 (XXX-October-2013)</h2>
+    Release 7-5 (27-June-2014)</h2>
   <ul>
     <li>Fixed a serious bug in the Canberra support when libpcap was being used on Linux.
       Previously pcap_open_live was being called with a timeout of -1 (ms). This actually
@@ -22,6 +22,8 @@
     <li>Minor changes to the Canberra support to work on Darwin. Darwin uses the BSD "bpf"
       library for raw packet reading. It requires setting the Ethernet interface into
       BIOCIMMEDIATE mode to receive packets immediately, and not have the OS buffer them.</li>
+    <li>Minor bug fix for SIS38XX.cpp when stopping mca acquisition. Don't issue error
+      if unit is in scaler mode and mcaStopAcquire is received as long as it is not acquiring.</li>
     <li>Previously the WinPcap DLL files were installed into the mca/bin/$(ARCH) directories.
       This does not work with Windows 7, because the DLLs that work on XP don't work on
       Windows 7. The DLLs are no longer distributed with mca. They were actually never
@@ -34,6 +36,7 @@
       is used to test this, and the mcaTest.adl medm screen can be used to load the new
       DSA2000_HVPS.adl screen.</li>
     <li>Cleaned up SIS38XX_SNL.st by removing unneeded empty strings in assign statements.</li>
+    <li>Added new iocDarwin and iocWindows example directories, removed iocCygwin.</li>
   </ul>
   <h2 style="text-align: center">
     Release 7-4 (10-June-2013)</h2>
