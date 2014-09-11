@@ -14,6 +14,7 @@
         <string>
 
 QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
+QPushButton::menu-indicator {image: url(none.png); width: 0}
 
 </string>
     </property>
@@ -121,14 +122,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
             <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>160</x>
-                    <y>11</y>
-                    <width>324</width>
-                    <height>25</height>
-                </rect>
-            </property>
             <property name="foreground">
                 <color alpha="255">
                     <red>0</red>
@@ -147,7 +140,15 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                 <string>DSP 9660 Stabilizer Control</string>
             </property>
             <property name="fontScaleMode">
-                <enum>ESimpleLabel::Height</enum>
+                <enum>ESimpleLabel::WidthAndHeight</enum>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>160</x>
+                    <y>11</y>
+                    <width>405</width>
+                    <height>25</height>
+                </rect>
             </property>
             <property name="alignment">
                 <set>Qt::AlignAbsolute|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -181,7 +182,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)SZER</string>
@@ -229,14 +230,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -255,10 +248,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Value</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
             </widget>
@@ -274,14 +275,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                 <widget class="caLabel" name="caLabel_2">
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
-                    </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
                     </property>
                     <property name="foreground">
                         <color alpha="255">
@@ -301,10 +294,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Ratio</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
                 <widget class="caTextEntry" name="caTextEntry_0">
@@ -317,7 +318,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)ZRAT</string>
@@ -384,6 +385,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <blue>255</blue>
                         </color>
                     </property>
+                    <property name="incrementValue">
+                        <double>0.100000</double>
+                    </property>
                     <property name="limitsMode">
                         <enum>caSlider::Channel</enum>
                     </property>
@@ -442,6 +446,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <blue>255</blue>
                         </color>
                     </property>
+                    <property name="incrementValue">
+                        <double>1.000000</double>
+                    </property>
                     <property name="limitsMode">
                         <enum>caSlider::Channel</enum>
                     </property>
@@ -468,14 +475,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -494,10 +493,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Spacing</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
                 <widget class="caTextEntry" name="caTextEntry_1">
@@ -510,7 +517,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)ZSPC</string>
@@ -565,14 +572,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -591,10 +590,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Window</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
                 <widget class="caTextEntry" name="caTextEntry_2">
@@ -607,7 +614,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)ZWND</string>
@@ -674,6 +681,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <blue>255</blue>
                         </color>
                     </property>
+                    <property name="incrementValue">
+                        <double>1.000000</double>
+                    </property>
                     <property name="limitsMode">
                         <enum>caSlider::Channel</enum>
                     </property>
@@ -710,14 +720,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>121</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -736,10 +738,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Centroid</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>121</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
                 <widget class="caTextEntry" name="caTextEntry_3">
@@ -752,7 +762,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)ZCNT</string>
@@ -818,6 +828,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <green>223</green>
                             <blue>255</blue>
                         </color>
+                    </property>
+                    <property name="incrementValue">
+                        <double>128.000000</double>
                     </property>
                     <property name="limitsMode">
                         <enum>caSlider::Channel</enum>
@@ -895,14 +908,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -921,10 +926,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Mode</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
             </widget>
@@ -971,14 +984,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -997,10 +1002,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Range</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
             </widget>
@@ -1047,14 +1060,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -1073,10 +1078,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Corr. div.</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
             </widget>
@@ -1099,7 +1112,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)ZOVF</string>
@@ -1147,14 +1160,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -1173,10 +1178,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Overflow</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
             </widget>
@@ -1199,7 +1212,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         </rect>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>caLineEdit::Height</enum>
+                        <enum>caLineEdit::WidthAndHeight</enum>
                     </property>
                     <property name="channel">
                         <string>$(P)$(DSP)ZOVR</string>
@@ -1247,14 +1260,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <property name="frameShape">
                         <enum>QFrame::NoFrame</enum>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>0</x>
-                            <y>0</y>
-                            <width>120</width>
-                            <height>20</height>
-                        </rect>
-                    </property>
                     <property name="foreground">
                         <color alpha="255">
                             <red>0</red>
@@ -1273,10 +1278,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <string>Overrange</string>
                     </property>
                     <property name="fontScaleMode">
-                        <enum>ESimpleLabel::Height</enum>
+                        <enum>ESimpleLabel::WidthAndHeight</enum>
                     </property>
                     <property name="alignment">
                         <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                    </property>
+                    <property name="geometry">
+                        <rect>
+                            <x>0</x>
+                            <y>0</y>
+                            <width>120</width>
+                            <height>20</height>
+                        </rect>
                     </property>
                 </widget>
             </widget>
@@ -1312,14 +1325,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -1338,10 +1343,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Mode</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                     <widget class="caMenu" name="caMenu_3">
@@ -1418,14 +1431,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -1444,10 +1449,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Range</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                 </widget>
@@ -1494,14 +1507,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -1520,10 +1525,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Corr. div.</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                 </widget>
@@ -1539,14 +1552,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                     <widget class="caLabel" name="caLabel_14">
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
-                        </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
                         </property>
                         <property name="foreground">
                             <color alpha="255">
@@ -1566,10 +1571,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Overflow</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                     <widget class="caLineEdit" name="caLineEdit_3">
@@ -1582,7 +1595,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)GOVF</string>
@@ -1646,7 +1659,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)GOVR</string>
@@ -1694,14 +1707,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -1720,10 +1725,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Overrange</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                 </widget>
@@ -1756,7 +1769,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)SGN</string>
@@ -1804,14 +1817,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -1830,10 +1835,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Value</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                 </widget>
@@ -1872,6 +1885,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                                 <blue>255</blue>
                             </color>
                         </property>
+                        <property name="incrementValue">
+                            <double>0.100000</double>
+                        </property>
                         <property name="limitsMode">
                             <enum>caSlider::Channel</enum>
                         </property>
@@ -1904,7 +1920,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)GRAT</string>
@@ -1949,14 +1965,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -1975,10 +1983,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Ratio</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                 </widget>
@@ -2017,6 +2033,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                                 <blue>255</blue>
                             </color>
                         </property>
+                        <property name="incrementValue">
+                            <double>1.000000</double>
+                        </property>
                         <property name="limitsMode">
                             <enum>caSlider::Channel</enum>
                         </property>
@@ -2043,14 +2062,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -2069,10 +2080,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Spacing</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                     <widget class="caTextEntry" name="caTextEntry_5">
@@ -2085,7 +2104,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)GSPC</string>
@@ -2140,14 +2159,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -2166,10 +2177,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Window</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                     <widget class="caTextEntry" name="caTextEntry_6">
@@ -2182,7 +2201,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)GWND</string>
@@ -2249,6 +2268,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                                 <blue>255</blue>
                             </color>
                         </property>
+                        <property name="incrementValue">
+                            <double>1.000000</double>
+                        </property>
                         <property name="limitsMode">
                             <enum>caSlider::Channel</enum>
                         </property>
@@ -2285,14 +2307,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                         <property name="frameShape">
                             <enum>QFrame::NoFrame</enum>
                         </property>
-                        <property name="geometry">
-                            <rect>
-                                <x>0</x>
-                                <y>0</y>
-                                <width>120</width>
-                                <height>20</height>
-                            </rect>
-                        </property>
                         <property name="foreground">
                             <color alpha="255">
                                 <red>0</red>
@@ -2311,10 +2325,18 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             <string>Centroid</string>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>ESimpleLabel::Height</enum>
+                            <enum>ESimpleLabel::WidthAndHeight</enum>
                         </property>
                         <property name="alignment">
                             <set>Qt::AlignAbsolute|Qt::AlignHCenter|Qt::AlignVCenter</set>
+                        </property>
+                        <property name="geometry">
+                            <rect>
+                                <x>0</x>
+                                <y>0</y>
+                                <width>120</width>
+                                <height>20</height>
+                            </rect>
                         </property>
                     </widget>
                     <widget class="caTextEntry" name="caTextEntry_7">
@@ -2327,7 +2349,7 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                             </rect>
                         </property>
                         <property name="fontScaleMode">
-                            <enum>caLineEdit::Height</enum>
+                            <enum>caLineEdit::WidthAndHeight</enum>
                         </property>
                         <property name="channel">
                             <string>$(P)$(DSP)GCNT</string>
@@ -2394,6 +2416,9 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                                 <blue>255</blue>
                             </color>
                         </property>
+                        <property name="incrementValue">
+                            <double>128.000000</double>
+                        </property>
                         <property name="limitsMode">
                             <enum>caSlider::Channel</enum>
                         </property>
@@ -2423,14 +2448,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
             <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>298</x>
-                    <y>68</y>
-                    <width>48</width>
-                    <height>25</height>
-                </rect>
-            </property>
             <property name="foreground">
                 <color alpha="255">
                     <red>0</red>
@@ -2449,7 +2466,15 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                 <string>Gain</string>
             </property>
             <property name="fontScaleMode">
-                <enum>ESimpleLabel::Height</enum>
+                <enum>ESimpleLabel::WidthAndHeight</enum>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>298</x>
+                    <y>68</y>
+                    <width>60</width>
+                    <height>25</height>
+                </rect>
             </property>
             <property name="alignment">
                 <set>Qt::AlignAbsolute|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -2533,14 +2558,6 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
             <property name="frameShape">
                 <enum>QFrame::NoFrame</enum>
             </property>
-            <property name="geometry">
-                <rect>
-                    <x>298</x>
-                    <y>248</y>
-                    <width>48</width>
-                    <height>25</height>
-                </rect>
-            </property>
             <property name="foreground">
                 <color alpha="255">
                     <red>0</red>
@@ -2559,7 +2576,15 @@ QWidget#centralWidget {background: rgba(187, 187, 187, 255);}
                 <string>Zero</string>
             </property>
             <property name="fontScaleMode">
-                <enum>ESimpleLabel::Height</enum>
+                <enum>ESimpleLabel::WidthAndHeight</enum>
+            </property>
+            <property name="geometry">
+                <rect>
+                    <x>298</x>
+                    <y>248</y>
+                    <width>60</width>
+                    <height>25</height>
+                </rect>
             </property>
             <property name="alignment">
                 <set>Qt::AlignAbsolute|Qt::AlignLeft|Qt::AlignVCenter</set>
