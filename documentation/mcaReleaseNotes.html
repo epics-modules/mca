@@ -9,6 +9,12 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-6 (XXX-Nov-2014)</h2>
+  <ul>
+    <li>Fixed a bug in the mcaRecord on some 64-bit architectures. The ROI calculations
+      were incorrect because "long" was being used where epicsInt32 was needed.</li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-5 (27-June-2014)</h2>
   <ul>
     <li>Fixed a serious bug in the Canberra support when libpcap was being used on Linux.
