@@ -12,9 +12,9 @@ SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 # Transform record
-CALC=$(SUPPORT)/calc-3-2
+CALC=$(SUPPORT)/calc-3-4-1
 # If calc was built with sscan, we must link against it
-SSCAN=$(SUPPORT)/sscan-2-9
+SSCAN=$(SUPPORT)/sscan-2-10
 
 # Busy record 
 BUSY=$(SUPPORT)/busy-1-6
@@ -26,13 +26,13 @@ STD=$(SUPPORT)/std-3-2
 SNCSEQ=$(SUPPORT)/seq-2-1-10
 
 # save_restore
-AUTOSAVE=$(SUPPORT)/autosave-5-1
+AUTOSAVE=$(SUPPORT)/autosave-5-4-2
 
 # ASYN - for device/driver support
-ASYN=$(SUPPORT)/asyn-4-23
+ASYN=$(SUPPORT)/asyn-4-24
 
 # MCA - this module
-MCA=$(SUPPORT)/mca-7-4
+MCA=$(SUPPORT)/mca-7-5
 
 # EPICS_BASE usually appears last so other apps can override stuff:
 EPICS_BASE=/corvette/usr/local/epics/base-3.14.12.4
