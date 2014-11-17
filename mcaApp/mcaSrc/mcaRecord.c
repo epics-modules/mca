@@ -1148,28 +1148,28 @@ static long sum_ROIs(mcaRecord *pmca, short *preset_reached)
         break;
 
     case DBF_SHORT:
-        {PROCESS_ROI(short);
+        {PROCESS_ROI(epicsInt16);
          break;
         }
     case DBF_USHORT:
-        {PROCESS_ROI(unsigned short);
+        {PROCESS_ROI(epicsUInt16);
          break;
         }
     case DBF_LONG:
-        {PROCESS_ROI(long);
+        {PROCESS_ROI(epicsInt32);
          break;
         }
     case DBF_ULONG:
-        {PROCESS_ROI(unsigned long);
+        {PROCESS_ROI(epicsUInt32);
          break;
         }
 
     case DBF_FLOAT:
-        {PROCESS_ROI(float);
+        {PROCESS_ROI(epicsFloat32);
          break;
         }
     case DBF_DOUBLE:
-        {PROCESS_ROI(double);
+        {PROCESS_ROI(epicsFloat64);
          break;
         }
     }
