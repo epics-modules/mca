@@ -73,7 +73,7 @@ static long init_record(mcaRecord *pmca)
 
 static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 {
-	int s=0, seq, nchans;
+	epicsInt32 s=0, seq, nchans;
 
 	switch (msg) {
 	case mcaStartAcquire:
@@ -90,12 +90,12 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 		break;
 	case mcaNumChannels:
 		/* set number of channels */
-		nchans = *(long *)parg;
+		nchans = *(epicsInt32 *)parg;
 		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaSequence:
 		/* set sequence number */
-		seq = *(long *)parg;
+		seq = *(epicsInt32 *)parg;
 		if (devMCA_softDebug > 5) errlogPrintf("(send_msg): acqu setup %d\n", s);
 		break;
 	case mcaDwellTime:
@@ -154,7 +154,7 @@ static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg)
 
 static long read_array(mcaRecord *pmca)
 {
-	int nuse = pmca->nuse;
+	epicsInt32 nuse = pmca->nuse;
 
 	if (devMCA_softDebug > 5) errlogPrintf("(read_array): doing nothing\n");
 	pmca->nord = nuse;
