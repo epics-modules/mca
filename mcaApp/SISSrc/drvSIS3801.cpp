@@ -432,11 +432,6 @@ void drvSIS3801::setInputMode()
   else               registers_->csr_reg = CONTROL_M_CLEAR_INPUT_MODE_BIT_1;
 }
 
-void drvSIS3801::setOutputMode()
-{
-  // No-op for 3801
-}
-
 
 void drvSIS3801::setLED()
 {
@@ -456,17 +451,6 @@ int drvSIS3801::getLED()
   
   value = registers_->csr_reg & STATUS_M_USER_LED;
   return (value == 0) ? 0:1;
-}
-
-void drvSIS3801::setMuxOut()
-{
-  // No-op for 3801
-}
-
-int drvSIS3801::getMuxOut()
-{
-  // No-op for 3801
-  return 1;
 }
 
 

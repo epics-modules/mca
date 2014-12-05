@@ -181,13 +181,10 @@ class drvSIS3801 : public drvSIS38XX
   void readScalers();
   void clearScalerPresets();
   void setScalerPresets();
-  void setOutputMode();
   void setInputMode();
   void softwareChannelAdvance();
   void setLED();
   int getLED();
-  void setMuxOut();
-  int getMuxOut();
 
   private:
   void resetFIFO();
