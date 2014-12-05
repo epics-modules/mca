@@ -42,6 +42,10 @@
 #define SIS38XXCountOnStartString           "SIS38XX_COUNT_ON_START"
 #define SIS38XXModelString                  "SIS38XX_MODEL"
 #define SIS38XXFirmwareString               "SIS38XX_FIRMWARE"
+#define SIS38XXLNEOutputStretcherString     "SIS38XX_LNE_OUTPUT_STRETCHER"
+#define SIS38XXLNEOutputPolarityString      "SIS38XX_LNE_OUTPUT_POLARITY"
+#define SIS38XXLNEOutputWidthString         "SIS38XX_LNE_OUTPUT_WIDTH"
+#define SIS38XXLNEOutputDelayString         "SIS38XX_LNE_OUTPUT_DELAY"
 
 #define SIS38XX_MAX_SIGNALS 32
 
@@ -82,6 +86,7 @@ class drvSIS38XX : public asynPortDriver
 
   // These are the methods we override from asynPortDriver
   asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+  asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
   asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
   asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *data, 
                                     size_t maxChans, size_t *nactual);
@@ -90,7 +95,8 @@ class drvSIS38XX : public asynPortDriver
   protected:
   virtual void checkMCSDone();
   virtual void erase();
-  // Pure virtual functions, derived class must implement these
+  // Pure virtual functions have = 0, derived class must implement these
+  // Base class implements a dummy routine for methods that not all derived classes support
   virtual void stopMCSAcquire() = 0;
   virtual void startMCSAcquire() = 0;
   virtual void enableInterrupts() = 0;
@@ -102,13 +108,17 @@ class drvSIS38XX : public asynPortDriver
   virtual void readScalers() = 0;
   virtual void clearScalerPresets() = 0;
   virtual void setScalerPresets() = 0;
-  virtual void setOutputMode() = 0;
+  virtual void setOutputMode() {};
   virtual void setInputMode() = 0;
   virtual void softwareChannelAdvance() = 0;
   virtual void setLED() = 0;
   virtual int getLED() = 0;
-  virtual void setMuxOut() = 0;
-  virtual int getMuxOut() = 0;
+  virtual void setMuxOut() {};
+  virtual int getMuxOut() {return 1;};
+  virtual void setLNEOutputStretcherEnable() {};
+  virtual void setLNEOutputPolarity() {};
+  virtual void setLNEOutputWidth() {};
+  virtual void setLNEOutputDelay() {};
 
    #define FIRST_SIS38XX_PARAM mcaStartAcquire_
   int mcaStartAcquire_;
@@ -151,7 +161,11 @@ class drvSIS38XX : public asynPortDriver
   int SIS38XXCountOnStart_;
   int SIS38XXModel_;
   int SIS38XXFirmware_;
-  #define LAST_SIS38XX_PARAM SIS38XXFirmware_
+  int SIS38XXLNEOutputStretcher_;
+  int SIS38XXLNEOutputPolarity_;
+  int SIS38XXLNEOutputWidth_;
+  int SIS38XXLNEOutputDelay_;
+  #define LAST_SIS38XX_PARAM SIS38XXLNEOutputDelay_
 
   bool exists_;
   int firmwareVersion_;
