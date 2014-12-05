@@ -92,10 +92,12 @@ typedef volatile struct {
   epicsUInt32 hiscal_start_preset_reg;    /* Offset = 0x40 */
   epicsUInt32 hiscal_start_counter_reg;   /* Offset = 0x44 */
   epicsUInt32 hiscal_last_acq_count_reg;  /* Offset = 0x48 */
-  epicsUInt32 unused4c;
+  epicsUInt32 unused4c_54[3];
 
-  epicsUInt32 unused50_fc[44];
+  epicsUInt32 lne_output_delay_reg;       /* Offset = 0x58 */
+  epicsUInt32 lne_output_width_reg;       /* Offset = 0x5c */
   
+  epicsUInt32 unused60_fc[40];
   epicsUInt32 op_mode_reg;                /* Offset = 0x100 */
   epicsUInt32 copy_disable_reg;           /* Offset = 0x104 */
   epicsUInt32 lne_channel_select_reg;     /* Offset = 0x108 */
@@ -192,6 +194,10 @@ class drvSIS3820 : public drvSIS38XX
   int getLED();
   void setMuxOut();
   int getMuxOut();
+  void setLNEOutputStretcherEnable();
+  void setLNEOutputPolarity();
+  void setLNEOutputWidth();
+  void setLNEOutputDelay();
 
   private:
   void resetFIFO();

@@ -295,6 +295,10 @@ void drvSIS3820::report(FILE *fp, int details)
     fprintf(fp, "    op_mode_reg                = 0x%x\n",   registers_->op_mode_reg);
     fprintf(fp, "    copy_disable_reg           = 0x%x\n",   registers_->copy_disable_reg);
     fprintf(fp, "    lne_channel_select_reg     = 0x%x\n",   registers_->lne_channel_select_reg);
+    if (firmwareVersion_ >= 0x111) {
+      fprintf(fp, "    lne_output_delay_reg       = 0x%x\n",   registers_->lne_output_delay_reg);
+      fprintf(fp, "    lne_output_width_reg       = 0x%x\n",   registers_->lne_output_width_reg);
+    }
     fprintf(fp, "    preset_channel_select_reg  = 0x%x\n",   registers_->preset_channel_select_reg);
     fprintf(fp, "    mux_out_channel_select_reg = 0x%x\n",   registers_->mux_out_channel_select_reg);
     fprintf(fp, "    count_disable_reg          = 0x%x\n",   registers_->count_disable_reg);
@@ -528,11 +532,19 @@ void drvSIS3820::setOpModeReg()
   int outputMode;
   int outputPolarity;
   int maxOutputMode;
+  int LNEStretcherEnable;
+  int LNEOutputInverted;
   epicsUInt32 operationRegister = 0;
 
   getIntegerParam(SIS38XXInputMode_, &inputMode);
   getIntegerParam(SIS38XXOutputMode_, &outputMode);
   getIntegerParam(SIS38XXOutputPolarity_, &outputPolarity);
+  if (firmwareVersion_ >= 0x0111) {
+    getIntegerParam(SIS38XXLNEOutputStretcher_, &LNEStretcherEnable);
+    getIntegerParam(SIS38XXLNEOutputPolarity_, &LNEOutputInverted);
+    if (LNEStretcherEnable) operationRegister |=  SIS3820_LNE_STRETCHER_ENABLE;
+    if (LNEOutputInverted)  operationRegister |=  SIS3820_LNE_OUTPUT_INVERT_ENABLE;
+  }
 
   // We hard-code the data format for now, but support for other formats may be added in the future
   operationRegister   |= SIS3820_MCS_DATA_FORMAT_32BIT;
@@ -648,6 +660,37 @@ int drvSIS3820::getMuxOut()
   return registers_->mux_out_channel_select_reg + 1;
 }
 
+void drvSIS3820::setLNEOutputStretcherEnable()
+{
+  setOpModeReg();
+}
+ 
+void drvSIS3820::setLNEOutputPolarity()
+{
+  setOpModeReg();
+}
+ 
+void drvSIS3820::setLNEOutputWidth()
+{
+  double value;
+  epicsUInt32 ivalue;
+  
+  if (firmwareVersion_ < 0x0111) return;
+  getDoubleParam(SIS38XXLNEOutputWidth_, &value);
+  ivalue = epicsUInt32(value * SIS3820_INTERNAL_CLOCK + 0.5) - 1;
+  registers_->lne_output_width_reg = ivalue;
+}
+
+void drvSIS3820::setLNEOutputDelay()
+{
+  double value;
+  epicsUInt32 ivalue;
+  
+  if (firmwareVersion_ < 0x0111) return;
+  getDoubleParam(SIS38XXLNEOutputDelay_, &value);
+  ivalue = epicsUInt32(value * SIS3820_INTERNAL_CLOCK + 0.5);
+  registers_->lne_output_delay_reg = ivalue;
+}
 
 void drvSIS3820::setIrqControlStatusReg()
 {
