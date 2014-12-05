@@ -1,14 +1,14 @@
 
 file {
 	name="/home/epics/devel/mca/mcaApp/op/adl/SIS38XX.adl"
-	version=030105
+	version=030107
 }
 display {
 	object {
 		x=155
 		y=131
 		width=680
-		height=525
+		height=625
 	}
 	clr=14
 	bclr=4
@@ -104,7 +104,7 @@ rectangle {
 		x=4
 		y=40
 		width=350
-		height=480
+		height=580
 	}
 	"basic attribute" {
 		clr=54
@@ -283,45 +283,6 @@ composite {
 				clr=14
 			}
 			textix="Elapsed time"
-		}
-	}
-}
-composite {
-	object {
-		x=18
-		y=187
-		width=207
-		height=20
-	}
-	"composite name"=""
-	children {
-		"text entry" {
-			object {
-				x=18
-				y=187
-				width=100
-				height=20
-			}
-			control {
-				chan="$(P)Dwell"
-				clr=14
-				bclr=51
-			}
-			format="exponential"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=125
-				y=187
-				width=100
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Dwell time"
 		}
 	}
 }
@@ -548,7 +509,7 @@ composite {
 composite {
 	object {
 		x=18
-		y=438
+		y=588
 		width=257
 		height=20
 	}
@@ -557,47 +518,7 @@ composite {
 		menu {
 			object {
 				x=18
-				y=438
-				width=100
-				height=20
-			}
-			control {
-				chan="$(P)OutputMode"
-				clr=14
-				bclr=51
-			}
-		}
-		text {
-			object {
-				x=125
-				y=438
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Output mode"
-		}
-	}
-	"dynamic attribute" {
-		vis="if not zero"
-		chan="$(P)Model"
-	}
-}
-composite {
-	object {
-		x=18
-		y=488
-		width=257
-		height=20
-	}
-	"composite name"=""
-	children {
-		menu {
-			object {
-				x=18
-				y=488
+				y=588
 				width=100
 				height=20
 			}
@@ -610,7 +531,7 @@ composite {
 		text {
 			object {
 				x=125
-				y=488
+				y=588
 				width=90
 				height=20
 			}
@@ -622,7 +543,7 @@ composite {
 		"message button" {
 			object {
 				x=225
-				y=488
+				y=588
 				width=50
 				height=20
 			}
@@ -1383,12 +1304,76 @@ text {
 composite {
 	object {
 		x=18
-		y=463
-		width=257
+		y=187
+		width=207
 		height=20
 	}
 	"composite name"=""
 	children {
+		"text entry" {
+			object {
+				x=18
+				y=187
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)Dwell"
+				clr=14
+				bclr=51
+			}
+			format="exponential"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=125
+				y=187
+				width=100
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Dwell time"
+		}
+	}
+}
+composite {
+	object {
+		x=18
+		y=438
+		width=307
+		height=145
+	}
+	"composite name"=""
+	children {
+		menu {
+			object {
+				x=18
+				y=438
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)OutputMode"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=438
+				width=110
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Output mode"
+		}
 		menu {
 			object {
 				x=18
@@ -1413,6 +1398,112 @@ composite {
 				clr=14
 			}
 			textix="Output polarity"
+		}
+		menu {
+			object {
+				x=18
+				y=513
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)LNEOutputPolarity"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=513
+				width=190
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="LNE output polarity"
+		}
+		menu {
+			object {
+				x=18
+				y=488
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)LNEStretcherEnable"
+				clr=14
+				bclr=51
+			}
+		}
+		text {
+			object {
+				x=125
+				y=488
+				width=200
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="LNE output stretcher"
+		}
+		"text entry" {
+			object {
+				x=18
+				y=538
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)LNEOutputDelay"
+				clr=14
+				bclr=51
+			}
+			format="exponential"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=125
+				y=538
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="LNE output delay"
+		}
+		"text entry" {
+			object {
+				x=18
+				y=563
+				width=100
+				height=20
+			}
+			control {
+				chan="$(P)LNEOutputWidth"
+				clr=14
+				bclr=51
+			}
+			format="exponential"
+			limits {
+			}
+		}
+		text {
+			object {
+				x=125
+				y=563
+				width=160
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="LNE output width"
 		}
 	}
 	"dynamic attribute" {
