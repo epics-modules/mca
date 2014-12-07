@@ -568,7 +568,7 @@ int jtag_wr_data(unsigned int base_addr,
 
    if (gl_jtg_state < 0) return CE_PROMPT;
 
-   bf=(u_long*)buf; 
+   bf=(u_long*)buf;
    len >>=2;
    if (len == 0) return 0;
 
@@ -594,10 +594,10 @@ int jtag_wr_data(unsigned int base_addr,
             while (ux) {
                ux--;
                if ((dev == 0) && (len == 0) && (ux == 0)) ms=2;
-                 data = ms |((u_char)din &1);
-                 addr = base_addr + SIS3820_JTAG_TEST ;
-                 if (vme_A32D32_write(addr, data)) return -1 ;
-                          din >>=1;
+               data = ms |((u_char)din &1);
+               addr = base_addr + SIS3820_JTAG_TEST ;
+               if (vme_A32D32_write(addr, data)) return -1 ;
+               din >>=1;
             }
          }
       }
@@ -840,7 +840,7 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
         do {
             addr = base_addr + SIS3820_JTAG_DATA_IN ;
             if (vme_A32D32_read(addr, &data)) return -1 ;
-                    i++ ;
+            i++ ;
         } while (i < 1000);   /* min  500 */
 
         /*        jtag_instruction(base_addr, NORMRST); */
@@ -848,8 +848,8 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
         /*        ret=jtag_instruction(base_addr, BYPASS); */
         /*        if (ret != 0x01) printf("BYPASS.0 %02X\n", ret);   */
 
-         jtag_instruction(base_addr, ISPEN);
-         jtag_data(base_addr, 0x04, 6);
+        jtag_instruction(base_addr, ISPEN);
+        jtag_data(base_addr, 0x04, 6);
 
         lx=0;
 
@@ -882,8 +882,9 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
             do { /* delay */
                 addr = base_addr + SIS3820_JTAG_DATA_IN ;
                 if (vme_A32D32_read(addr, &data)) return -1 ;
-                            i++ ;
+                i++ ;
             } while (i < 1000);   /* min  500 */
+            epicsThreadSleep(epicsThreadSleepQuantum());
 
             printf("rest_write_length = %08X            %03d%%  \r",
                 rest_write_length, ((100*write_byte_index)/((mcs_buffer_length + 0x200) & 0xfffe00)));
@@ -901,7 +902,7 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
         do {
             addr = base_addr + SIS3820_JTAG_DATA_IN ;
             if (vme_A32D32_read(addr, &data)) return -1 ;
-                    i++ ;
+            i++ ;
         } while (i < 1000);   /* min  500 */
 
         printf("\nWrite finished \n");
@@ -929,7 +930,7 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
     do {
          addr = base_addr + SIS3820_JTAG_DATA_IN ;
          if (vme_A32D32_read(addr, &data)) return -1 ;
-              i++ ;
+         i++ ;
     } while (i < 50);   /* min  20 */
 
 
