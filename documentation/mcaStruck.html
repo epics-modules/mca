@@ -51,30 +51,30 @@
   <p>
     The SIS38XX hardware itself is not a multichannel scaler in the conventional sense,
     since it simply contains a FIFO of scaler counts, rather than an array of memory
-    locations which hold the counts for each dwell cycle. The device support for the
-    SIS38XX simulates a conventional MCS by allocating a memory buffer which contains
-    the counts in each dwell period. The device support copies the counts from the FIFO
-    to this memory buffer. The SIS3801 has a limited amount of FIFO memory (128KB to
-    512KB), while the SIS3820 comes standard with 64MB, and optionally has 512MB. The
-    SIS3820 also maps a large block (8MB) of the FIFO memory to the VME bus, so it can
-    effectively use DMA operations. The SIS3801 only maps 256 bytes to the VME bus,
-    so DMA cannot be effectively used.
+    locations which hold the counts for each dwell cycle. The driver for the SIS38XX
+    simulates a conventional MCS by allocating a memory buffer which contains the counts
+    in each dwell period. The driver copies the counts from the FIFO to this memory
+    buffer. The SIS3801 has a limited amount of FIFO memory (128KB to 512KB), while
+    the SIS3820 comes standard with 64MB, and optionally has 512MB. The SIS3820 also
+    maps a large block (8MB) of the FIFO memory to the VME bus, so it can effectively
+    use DMA operations. The SIS3801 only maps 256 bytes to the VME bus, so DMA cannot
+    be effectively used.
   </p>
   <p>
     Each FIFO word contains the counts for one input signal for one dwell period. On
     the SIS3801 the FIFO can thus buffer anywhere from 1024 dwell cycles (32 active
     inputs, 128KB FIFO) to 128K dwell cycles (1 active input, 512KB FIFO). The minimum
     dwell time is in the range .5-4 microseconds, depending upon the number of active
-    inputs.&nbsp; VME interrupts are implemented, so that FIFO readout is done automatically
+    inputs. VME interrupts are implemented, so that FIFO readout is done automatically
     when the FIFO is half full. Even with interrupts there is a possibility of FIFO
     overflow with very short dwell times and small FIFO sizes. Users whose applications
     require short dwell times and a large number of active inputs should purchase large
-    FIFO chips to prevent this. The FIFO chip can be replaced in the field. The device
-    support determines the FIFO size automatically. On the SIS3820 the FIFO size is
-    large (64MB to 512MB), and can be read out quickly (~ 40 MB/s) using DMA. Still,
-    at 1 microsecond dwell time and 32 active inputs the data rate is 128MB/s, which
-    is 3 times faster than the FIFO readout speed. Thus, users who need very large time
-    sequences at minimum dwell times should chose the 512MB FIFO option.
+    FIFO chips to prevent this. The FIFO chip can be replaced in the field. The driver
+    determines the FIFO size automatically. On the SIS3820 the FIFO size is large (64MB
+    to 512MB), and can be read out quickly (~ 40 MB/s) using DMA. Still, at 1 microsecond
+    dwell time and 32 active inputs the data rate is 128MB/s, which is 3 times faster
+    than the FIFO readout speed. Thus, users who need very large time sequences at minimum
+    dwell times should chose the 512MB FIFO option.
   </p>
   <h2 id="Hardware_configuration">
     Hardware configuration</h2>
@@ -85,23 +85,49 @@
     LCA file 3 (STR7201 Design 2). With Design 1 selected the scalers are 32 bits wide.
     With Design 2 selected the scalers are 24 bits wide, and the upper 8 bits of each
     data word contain information on the channel number, bank, and 2 user bits. The
-    channel number and bank information are redundant since the device support sorts
-    the FIFO output by channel number when copying the data to the buffer and then to
-    the MCA record. However, some applications may want to use the 2 user bits which
-    are latched with each Next cycle, and Design 2 may be selected for those applications.</p>
+    channel number and bank information are redundant since the driver sorts the FIFO
+    output by channel number when copying the data to the buffer and then to the MCA
+    record. However, some applications may want to use the 2 user bits which are latched
+    with each Next cycle, and Design 2 may be selected for those applications.</p>
   <p>
-    The device support requires that the board be configured for VME A32 addressing,
-    so jumper EN_A32 must be in place. Address selection is done with jumper J_A11,
-    and switches SW_A32U, SW_A32L, SW_A24 and SW_A16. Note that the factory-default
-    address of 0x33508000 cannot be used with the APS version of the vxWorks board support
-    package since this part of the VME A32 address space is not accessible. Each board
-    takes up 2K bytes of A32 address space.</p>
+    The driver requires that the board be configured for VME A32 addressing, so jumper
+    EN_A32 must be in place. Address selection is done with jumper J_A11, and switches
+    SW_A32U, SW_A32L, SW_A24 and SW_A16. Note that the factory-default address of 0x33508000
+    cannot be used with the APS version of the vxWorks board support package since this
+    part of the VME A32 address space is not accessible. Each board takes up 2K bytes
+    of A32 address space.</p>
   <h3>
     Hardware Configuration of SIS3801 and SIS3820 cards</h3>
   <p>
     The A32 address space must be used. The VME A32 base address must be set to a value
     that is supported by the board support package being used. The SIS3801 occupies
     2KB of address space, while the SIS3820 occupies 16MB of address space.</p>
+  <p>
+    The SIS3820 supports loading new firmware into the PROM using either of 2 methods:</p>
+  <ol>
+    <li>Using an external JTAG programmer, typically a USB device with a Windows laptop.
+      This method requires that pins 1 and 2 be connected on jumper J570 (factory configuration).</li>
+    <li>Over the VME bus, using a function provided with this EPICS software called sis3820_jtag_prom().
+      This method requires that pins 2 and 3 be connected on jumper J570 (must be changed
+      from factory configuration).</li>
+  </ol>
+  <p>
+    The sis3820_jtag_prom() program is called from the vxWorks or iocsh shell as follows:</p>
+  <pre>sis3820_jtag_prom(baseAddress, command, mcsFile)</pre>
+  <p>
+    where:</p>
+  <ul>
+    <li>baseAddress is the VME address of the SIS3820 card</li>
+    <li>command is one of the followiing:
+      <ul>
+        <li>"R" (Read configuration information)</li>
+        <li>"V" (Verify the current contents of the PROM to see if it is the same as that
+          in mcsFile</li>
+        <li>"P" (Program the contents of mcsFile into the PROM, and then verify the result)</li>
+      </ul>
+    </li>
+    <li>mcsFile is the relative path to the new firmware file, e.g. "./prom_v0111.mcs"</li>
+  </ul>
   <h2 id="Software_architecture">
     Software architecture</h2>
   <p>
@@ -458,6 +484,14 @@
       </tr>
     </tbody>
   </table>
+  <p>
+    Acqusition will be stopped for all records connected to a driver whenever one or
+    more of the following conditions is satisfied:</p>
+  <ul>
+    <li>The StopAll record is processed.</li>
+    <li>The PresetReal time is reached.</li>
+    <li>The number of channel advances reaches NUseAll.</li>
+  </ul>
   <h3>
     Input modes</h3>
   <p>
@@ -612,13 +646,58 @@
     </li>
   </ul>
   <p>
-    Acqusition will be stopped for all records connected to a driver whenever one or
-    more of the following conditions is satisfied:</p>
-  <ul>
-    <li>The StopAll record is processed.</li>
-    <li>The PresetReal time is reached.</li>
-    <li>The number of channel advances reaches NUseAll.</li>
-  </ul>
+    On the SIS3820 with firmware version 0x111 and above the properties of the LNE/CIP
+    output pulse (Output 5 in all output modes) can be programmed using the records
+    in the following table:
+  </p>
+  <table border="1">
+    <tbody>
+      <tr align="center">
+        <th>
+          Record</th>
+        <th>
+          Record type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr>
+        <td>
+          $(P)LNEStretcherEnable</td>
+        <td>
+          bo</td>
+        <td>
+          Disable (0) or Enable (1) the LNE pulse inversion, delay, and width functions. Disable
+          results in the same LNE output pulse as firmware version 0x110 and previous.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)LNEOutputPolarity</td>
+        <td>
+          bo</td>
+        <td>
+          Sets the LNE pulse output polarity to Normal (0) or Inverted (1).</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)LNEOutputWidth</td>
+        <td>
+          ao</td>
+        <td>
+          Sets the LNE pulse output width in seconds. The range is 20 ns to ~85.9 seconds
+          in 20 ns increments.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)LNEOutputDelay</td>
+        <td>
+          ao</td>
+        <td>
+          Sets the LNE pulse output delay in seconds. The range is 0 to ~85.9 seconds in 20
+          ns increments. The delay is relative to when the pulse would have been output with
+          LNEStretcherEnable=Disable.</td>
+      </tr>
+    </tbody>
+  </table>
   <p>
     The following shows the MEDM screen for the MCS operation mode of the SIS3820</p>
   <div style="text-align: center">
