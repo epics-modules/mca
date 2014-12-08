@@ -9,7 +9,7 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-6 (XXX-Dec-2014)</h2>
+    Release 7-6 (8-Dec-2014)</h2>
   <ul>
     <li>Added support for SIS3820 firmware version 0x0111. This firmware provides control
       over the LNE pulse output signal:
@@ -21,9 +21,9 @@
       Being able to program these pulse parameters means that the SIS3820 can now be used
       to directly trigger or gate most detectors without using external pulse inverter
       or pulse stretcher hardware. </li>
-    <li>Added a function, sis3820_jtag_prom() to load new firmware into the SIS3820 over
-      the VME bus rather than having to use a USB JTAG programmer. This function should
-      work on vxWorks, RTEMS, and Linux, but it has only been tested on vxWorks.</li>
+    <li>Added a function, sis3820_jtag_prom_epics() to load new firmware into the SIS3820
+      over the VME bus rather than having to use a USB JTAG programmer. This function
+      should work on vxWorks, RTEMS, and Linux, but it has only been tested on vxWorks.</li>
     <li>Fixed a bug in the mcaRecord on some 64-bit architectures. The ROI calculations
       were incorrect because "long" was being used where epicsInt32 was needed.</li>
   </ul>
