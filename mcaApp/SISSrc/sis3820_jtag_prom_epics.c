@@ -125,7 +125,6 @@ int sis3820_jtag_prom_epics(int baseAddress, const char *cmd_parameter, char *mc
     *                     "P" (Program Prom with file and load FPGA)
     */
 
-    int i;
     int return_code;
     int mod_base;
     unsigned int addr, data  ;
