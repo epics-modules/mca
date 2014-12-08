@@ -49,6 +49,8 @@
 #define SIS3820_HISCAL_COUNT                    0x44                /* read  D32 */
 #define SIS3820_HISCAL_LAST_ACQ_COUNT           0x48                /* read  D32 */
 
+#define SIS3820_LNE_OUTPUT_DELAY                0x58                /* read/write; D32 */
+#define SIS3820_LNE_OUTPUT_WIDTH                0x5C                /* read/write; D32 */
 
 #define SIS3820_OPERATION_MODE                  0x100                /* read/write; D32 */
 #define SIS3820_COPY_DISABLE                    0x104                /* read/write; D32 */
