@@ -989,9 +989,9 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
             return_code =  vme_A32D32_read(&gl_sis1100_device, addr, &data) ;
             if (return_code != 0) {printf("vme_A32D32_read:ret_code=0x%08x at addr=0x%08x\n",return_code,addr);return -1;}
             i++ ;
-        //} while (i < 1000);   /* min  500 */
-        //} while (i < 200000);   /* ca. 0.140.000 us   --> Fehler*/
-        } while (i < 2000000);   /* ca. 5 Sec */
+        } while (i < 1000);   /* min  500 */
+        epicsThreadSleep(5.0);
+
 
         printf("\nErase finished \n");
 
@@ -1038,7 +1038,7 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
                 if (return_code != 0) {printf("vme_A32D32_read:ret_code=0x%08x at addr=0x%08x\n",return_code,addr);return -1;}
                 i++ ;
             } while (i < 1000);   /* min  500 */
-            epicsThreadSleep(epicsThreadSleepQuantum());
+            epicsThreadSleep(2*epicsThreadSleepQuantum());
 
             printf("rest_write_length = %08X            %03d%%  \r",rest_write_length, ((100*write_byte_index)/((mcs_buffer_length + 0x200) & 0xfffe00)));
 
@@ -1112,6 +1112,7 @@ int jtag_program_verifier (unsigned int base_addr, char* fname, int program)
         if ((ret=jtag_rd_data(base_addr, &gl_rbuf[read_byte_index], read_length, 0)) != 0) return ret;
         read_byte_index = read_byte_index + read_length ;
         printf("rest_read_length  = %08X            %03d%%  \r",rest_read_length, ((100*read_byte_index)/mcs_buffer_length));
+        epicsThreadSleep(2*epicsThreadSleepQuantum());
 
     }   
     printf("\nRead finished \n");
