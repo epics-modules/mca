@@ -26,8 +26,9 @@
 
 /***************************************************************************/
 /* Modified by Mark Rivers, Dec. 8, 2014                                   */ 
-/* Changes to with EPICS on VME processors                                 */
+/* Changes to run inside an EPICS on VME processors                        */
 /* Changes to work with big-endian architectures                           */
+/* Renamed to sis3820_jtag_prom_epics                                      */
 /***************************************************************************/
 
 
@@ -117,7 +118,7 @@ static int vme_A32D32_write(void *unused, int addr, int data);
 /****************************************************************************/
 
 
-int sis3820_jtag_xilinx_prom(int baseAddress, const char *cmd_parameter, char *mcs_file_name)
+int sis3820_jtag_prom_epics(int baseAddress, const char *cmd_parameter, char *mcs_file_name)
 {
    /* command_parameter = "R" (Read IDCode)
     *                     "V" (Verify Prom against file)
@@ -155,7 +156,7 @@ int sis3820_jtag_xilinx_prom(int baseAddress, const char *cmd_parameter, char *m
     switch (*cmd_parameter) {
 
         case 'R' : { /* data record */
-            printf("R\n");
+            printf("\n\n\n\n");
             gl_jtg_select = 0 ;
             jtag_reset (mod_base) ;
             print_jtag_chain();
@@ -164,7 +165,6 @@ int sis3820_jtag_xilinx_prom(int baseAddress, const char *cmd_parameter, char *m
         break;
 
         case 'V' : { /* data record */
-            printf("V\n");
             printf("\n\n\n\n");
             return_code = jtag_program_verifier (mod_base, mcs_file_name,0) ;
             if (return_code != 0) {
@@ -242,11 +242,11 @@ static const iocshArg * const configArgs[] =
 };
 
 static const iocshFuncDef configFuncDef = 
-    {"sis3820_jtag_xilinx_prom",3,configArgs};
+    {"sis3820_jtag_prom_epics",3,configArgs};
 
 static void configCallFunc(const iocshArgBuf *args)
 {
-    sis3820_jtag_xilinx_prom(args[0].ival, args[1].sval, args[2].sval);
+    sis3820_jtag_prom_epics(args[0].ival, args[1].sval, args[2].sval);
 }
 
 void sis3820_jtag_promRegister(void)
