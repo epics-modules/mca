@@ -106,18 +106,20 @@
     The SIS3820 supports loading new firmware into the PROM using either of 2 methods:</p>
   <ol>
     <li>Using an external JTAG programmer, typically a USB device with a Windows laptop.
-      This method requires that pins 1 and 2 be connected on jumper J570 (factory configuration).</li>
-    <li>Over the VME bus, using a function provided with this EPICS software called sis3820_jtag_prom().
-      This method requires that pins 2 and 3 be connected on jumper J570 (must be changed
+      This method requires that pins 1 and 2 be connected on jumper JP570 (factory configuration).</li>
+    <li>Over the VME bus, using a function provided with this EPICS software called sis3820_jtag_prom_epics().
+      This method requires that pins 2 and 3 be connected on jumper JP570 (must be changed
       from factory configuration).</li>
   </ol>
   <p>
-    The sis3820_jtag_prom() program is called from the vxWorks or iocsh shell as follows:</p>
-  <pre>sis3820_jtag_prom(baseAddress, command, mcsFile)</pre>
+    The sis3820_jtag_prom_epics() function is called from the vxWorks or iocsh shell
+    as follows:</p>
+  <pre>sis3820_jtag_prom_epics(baseAddress, command, mcsFile)</pre>
   <p>
     where:</p>
   <ul>
-    <li>baseAddress is the VME address of the SIS3820 card</li>
+    <li>baseAddress is the VME address of the SIS3820 card. This is the same address used
+      in the drvSIS3820Config command.</li>
     <li>command is one of the followiing:
       <ul>
         <li>"R" (Read configuration information)</li>
