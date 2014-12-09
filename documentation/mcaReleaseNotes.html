@@ -23,7 +23,9 @@
       or pulse stretcher hardware. </li>
     <li>Added a function, sis3820_jtag_prom_epics() to load new firmware into the SIS3820
       over the VME bus rather than having to use a USB JTAG programmer. This function
-      should work on vxWorks, RTEMS, and Linux, but it has only been tested on vxWorks.</li>
+      should work on vxWorks, RTEMS, and Linux, but it has only been tested on vxWorks.
+      The latest version 0x0111 firmware file is included in the distribution or can be downloaded
+      from the <a href="http://www.struck.de/sis3820firm.htm">SIS S8320 firmware Web site</a> </li>
     <li>Fixed a bug in the mcaRecord on some 64-bit architectures. The ROI calculations
       were incorrect because "long" was being used where epicsInt32 was needed.</li>
   </ul>
