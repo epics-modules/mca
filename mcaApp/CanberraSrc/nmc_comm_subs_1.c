@@ -105,7 +105,11 @@
 #ifdef USE_WINPCAP
   #ifdef _WIN32
     #include "Packet32.h"
-    #include "ntddndis.h"
+    #if defined(__MINGW32__) || defined(__MINGW64__)
+      #include "ddk/ntddndis.h"
+    #else
+      #include "ntddndis.h"
+    #endif
   #else
     /* We would like to include these files on Cygwin too, but that generates problems with syntax conflicts 
      * so we cheat and define a few things here.  This is all for using the function to get the MAC address
