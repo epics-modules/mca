@@ -75,8 +75,9 @@ mcaAIM_SYS_LIBS_Darwin      += net pcap
 nmcDemo_SYS_LIBS_Darwin     += net pcap
 
 # Cygwin uses WinPcap
-LIBRARY_IOC_cygwin32   += mcaCanberra
-PROD_IOC_cygwin32      += mcaAIM
+# WinPCAP no longer worked on latest version of Cygwin, so we can't build this
+#LIBRARY_IOC_cygwin32   += mcaCanberra
+#PROD_IOC_cygwin32      += mcaAIM
 USR_CFLAGS_cygwin32    += -DUSE_WINPCAP
 USR_CPPFLAGS_cygwin32  += -DUSE_WINPCAP
 LIB_LIBS_cygwin32      += wpcap Packet
