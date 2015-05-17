@@ -9,5 +9,6 @@ It contains:
 * Drivers for the XFlash MCA from [From Bruker (formerly Rontec)](http://www.bruker-axs.de)
 
 Additional information:
+* [Home page](http://cars.uchicago.edu/software/epics/mca.html)
 * [Documentation](http://cars.uchicago.edu/software/epics/mcaDoc.html)
 * [Release notes](http://cars.uchicago.edu/software/epics/mcaReleaseNotes.html)
