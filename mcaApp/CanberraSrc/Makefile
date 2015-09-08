@@ -124,6 +124,7 @@ mcaAIM_LIBS        += mcaCanberra
 mcaAIM_LIBS        += calc autosave
 mcaAIM_LIBS        += sscan busy
 mcaAIM_LIBS        += asyn
+mcaAIM_LIBS        += seq pv
 mcaAIM_LIBS        += $(EPICS_BASE_IOC_LIBS)
 
 
