@@ -69,6 +69,8 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
   int status;
   epicsUInt32 controlStatusReg;
   epicsUInt32 moduleID;
+  epicsUInt32 allEnabled = 0xFFFFFFFF;
+  epicsUInt32 disableMask;
   static const char* functionName="SIS3801";
 
   setIntegerParam(SIS38XXModel_, MODEL_SIS3801);
@@ -84,7 +86,7 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
 
   if (status) {
     asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-              "%s:%s: %s, Can't register VME address %p\n", 
+              "%s:%s: %s, Can't register VME address 0x%x\n", 
               driverName, functionName, portName, baseAddress);
     return;
   }
@@ -138,10 +140,12 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
    * channels will be at the upper end of the channel range.
    * Create a mask with zeros in the rightmost maxSignals bits,
    * 1 in all higher order bits. */
-  registers_->copy_disable_reg = 0xffffffff<<maxSignals_;
+  if (maxSignals_ < SIS38XX_MAX_SIGNALS) disableMask = allEnabled << maxSignals_;
+  else disableMask = allEnabled;
+  registers_->copy_disable_reg = disableMask;
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
             "%s:%s: setting copy disable register=0x%08x\n",
-            driverName, functionName, 0xffffffff<<maxSignals_);
+            driverName, functionName, disableMask);
 
   /* Set up the interrupt service routine */
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
@@ -553,7 +557,7 @@ void drvSIS3801::readFIFOThread()
 
   while(true)
   {
-    epicsEventWait(readFIFOEventId_);
+    (void)epicsEventWait(readFIFOEventId_);
     // We got an event, which can come from acquisition starting, or FIFO full interrupt
     asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
               "%s:%s: got readFIFOEvent, eventType=%d, interrupt status=0x%8.8x\n",
