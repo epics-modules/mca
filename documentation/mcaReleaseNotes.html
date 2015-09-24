@@ -9,8 +9,14 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-6-1 (6-May-2015)</h2>
+    Release 7-7 (XXX-Sept-2015)</h2>
   <ul>
+    <li>Moved the repository from Subversion at the APS to <a href="https://github.com/epics-modules/mca">
+      github</a>.</li>
+    <li>Fixed problems when the number of signals being use (maxSignals) was 32. In this
+      case the left shift operator was shifting by 32-bits which is undefined, and could
+      disable all channels rather than enabling all channels on some architectures.</li>
+    <li>Minor change to allow building on mingw.</li>
     <li>Removed building mcaCanberra on cygwin-x86. WinPCAP libraries do not work with
       latest Cygwin version.</li>
   </ul>
