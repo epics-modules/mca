@@ -469,7 +469,7 @@ void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
   setOpModeReg();
 
   if (maxSignals_ < SIS38XX_MAX_SIGNALS) disableMask = allEnabled << maxSignals_;
-  else disableMask = allEnabled;
+  else disableMask = 0;
 
   switch (acquireMode_) {
     case ACQUIRE_MODE_MCS:

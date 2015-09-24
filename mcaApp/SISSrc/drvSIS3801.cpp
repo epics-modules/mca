@@ -141,7 +141,7 @@ drvSIS3801::drvSIS3801(const char *portName, int baseAddress, int interruptVecto
    * Create a mask with zeros in the rightmost maxSignals bits,
    * 1 in all higher order bits. */
   if (maxSignals_ < SIS38XX_MAX_SIGNALS) disableMask = allEnabled << maxSignals_;
-  else disableMask = allEnabled;
+  else disableMask = 0;
   registers_->copy_disable_reg = disableMask;
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW,
             "%s:%s: setting copy disable register=0x%08x\n",
