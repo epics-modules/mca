@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include "ndtypes.h"
 #include "icb_sys_defs.h"
 #include "campardef.h"
 
