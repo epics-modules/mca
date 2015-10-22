@@ -31,7 +31,7 @@
 *******************************************************************************/
 
 #include <stdio.h>
-#include "ndtypes.h"
+
 #include "icb_sys_defs.h"
 #include "nmc_sys_defs.h"
 
