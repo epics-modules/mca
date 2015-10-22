@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <errlog.h>
-#include "ndtypes.h"
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
 #include "nmc_sys_defs.h"
