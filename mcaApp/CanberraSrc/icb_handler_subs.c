@@ -4380,7 +4380,7 @@ int32_t flags;
   int32_t s;
   int32_t i;
   uint8_t reg_val;
-  CHAR nibble;
+  int8_t nibble;
   uint32_t temp;
   struct icb_module_info_struct *entry;  
 
