@@ -54,7 +54,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ndtypes.h"
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
 #include "nmc_sys_defs.h"
