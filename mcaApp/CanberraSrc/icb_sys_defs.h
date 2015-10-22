@@ -27,6 +27,8 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+	
 #define ICB_K_MAX_MODULES 96    /* The number of entries in ICB_MODULE_INFO */
 
 /*
@@ -489,7 +491,7 @@ int icb_set_cached_flags (ICB_CCNIM_ANY *ccany, ICB_PARAM_LIST *params);
 int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags);
 int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags);
 int32_t icb_hvps_verify (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags,
-                              UBYTE *reg_list);
+                              uint8_t *reg_list);
 int32_t icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps);
 int32_t icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps, float voltage, int32_t flags);
 int32_t icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps, float *voltage, int32_t flags);
@@ -497,11 +499,11 @@ int32_t icb_hvps_set_state (ICB_CCNIM_HVPS *hvps, int32_t state, int32_t flags);
 int32_t icb_adc_write (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags);
 int32_t icb_adc_read (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags);
 int32_t icb_adc_verify (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags,
-                                 UBYTE *reg_list);
+                                 uint8_t *reg_list);
 int32_t icb_amp_write (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags);
 int32_t icb_amp_read (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags);
 int32_t icb_amp_verify (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags,
-                                 UBYTE *reg_list);
+                                 uint8_t *reg_list);
 int32_t icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp, int32_t flags);
 int32_t icb_amp_write_gain2 (ICB_CCNIM_AMP *amp);
 int32_t icb_amp_complete_position (ICB_CCNIM_AMP *amp);

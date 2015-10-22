@@ -1832,11 +1832,11 @@ while (1) {
 
 int32_t icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps,
 			    float voltage,
-			    LONG flags)
+			    int32_t flags)
 
 {
-  LONG s;
-  LONG index;
+  int32_t s;
+  int32_t index;
   ICB_MODULE_INFO *entry;
 
 /*
