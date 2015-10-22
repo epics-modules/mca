@@ -69,8 +69,8 @@ extern "C" {
 */
         typedef struct {
 
-                LONG    pcode;          /* CAM parameter code   */
-                LONG    cached_flag;    /* Boolian              */
+                int32_t    pcode;          /* CAM parameter code   */
+                int32_t    cached_flag;    /* Boolian              */
 
         } ICB_CACHED_PARAM;
 
@@ -85,9 +85,9 @@ extern "C" {
 
         typedef struct {
 
-                LONG icb_index;         /* Module ICB database index    */
+                int32_t icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                CHAR extra_header[24];  /* Space for more header info   */
+                int8_t extra_header[24];  /* Space for more header info   */
 
         } ICB_CCNIM_ANY;
 
@@ -139,30 +139,30 @@ extern "C" {
 
         typedef struct {
 
-                LONG icb_index;         /* Module ICB database index    */
+                int32_t icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                CHAR extra_header[24];  /* Space for more header info   */
+                int8_t extra_header[24];  /* Space for more header info   */
 
                 /*----------------------*/
                 /* ADC CAM values       */
                 /*----------------------*/
 
-                LONG range;             /* ADC range                    */
-                LONG offset;            /* ADC offset                   */
-                CHAR acqmode[12];       /* ADC acquisition mode (8 char)*/
-                LONG cnvgain;           /* ADC conversion gain          */
-                LONG abs_cnvlim;        /* Absolute conv. gain limit    */
-                REAL lld;               /* Lower level descriminator    */
-                REAL uld;               /* Upper level descriminator    */
-                REAL zero;              /* ADC zero                     */
-                CHAR extra_values[32];  /* Space for more values        */
+                int32_t range;             /* ADC range                    */
+                int32_t offset;            /* ADC offset                   */
+                int8_t acqmode[12];       /* ADC acquisition mode (8 char)*/
+                int32_t cnvgain;           /* ADC conversion gain          */
+                int32_t abs_cnvlim;        /* Absolute conv. gain limit    */
+                float lld;               /* Lower level descriminator    */
+                float uld;               /* Upper level descriminator    */
+                float zero;              /* ADC zero                     */
+                int8_t extra_values[32];  /* Space for more values        */
 
                 /*--------------------------------*/
                 /* ADC CAM flags (CAM_L_ADCFLAGS) */
                 /*--------------------------------*/
 
                 union {
-                    LONG lword;         /* Standard flags field         */
+                    int32_t lword;         /* Standard flags field         */
                     ICB_ADC_FLAGS bit;  /* Individual flag bit struct   */
                 } flags;
 
@@ -171,11 +171,11 @@ extern "C" {
                 /*----------------------------------------*/
 
                 union {
-                    LONG lword;         /* Standard flags field         */
+                    int32_t lword;         /* Standard flags field         */
                     ICB_ADC_VFLAGS bit; /* Individual flag bit struct   */
                 } vflags;
 
-                LONG extra_flags[1];    /* Space for extra values         */
+                int32_t extra_flags[1];    /* Space for extra values         */
 
         } ICB_CCNIM_ADC;
 
@@ -231,33 +231,33 @@ extern "C" {
 
         typedef struct {
 
-                LONG icb_index;         /* Module ICB database index    */
+                int32_t icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                CHAR extra_header[24];  /* Space for more header info   */
+                int8_t extra_header[24];  /* Space for more header info   */
 
                 /*----------------------*/
                 /* AMP CAM values       */
                 /*----------------------*/
 
-                CHAR pramptype[12];     /* Preamp type (RC,TRP) (8 char)      */
-                REAL gain;              /* Virtual gain (hwg1 * hwg2 * hwg3)  */
-                REAL hwgain1;           /* Course gain                        */
-                REAL hwgain2;           /* Fine gain                          */
-                REAL hwgain3;           /* Super fine gain                    */
-                CHAR shapemode[12];     /* Shaping mode (8 char)              */
-                LONG pz;                /* Pole zero                          */
-                CHAR blrtype[12];       /* Base-line restore (SYM,ASYM) (8 char) */
-                CHAR dtctype[12];       /* Dead-time control (Normal,LFC) (8 char) */
-                REAL tc;                /* AMP time constant (seconds)        */
-                LONG hwgain2_timer;     /* Callback Timer id for fine gain    */
-                CHAR extra_values[32];  /* Space for more values              */
+                int8_t pramptype[12];     /* Preamp type (RC,TRP) (8 char)      */
+                float gain;              /* Virtual gain (hwg1 * hwg2 * hwg3)  */
+                float hwgain1;           /* Course gain                        */
+                float hwgain2;           /* Fine gain                          */
+                float hwgain3;           /* Super fine gain                    */
+                int8_t shapemode[12];     /* Shaping mode (8 char)              */
+                int32_t pz;                /* Pole zero                          */
+                int8_t blrtype[12];       /* Base-line restore (SYM,ASYM) (8 char) */
+                int8_t dtctype[12];       /* Dead-time control (Normal,LFC) (8 char) */
+                float tc;                /* AMP time constant (seconds)        */
+                int32_t hwgain2_timer;     /* Callback Timer id for fine gain    */
+                int8_t extra_values[32];  /* Space for more values              */
 
                 /*--------------------------------*/
                 /* AMP CAM flags (CAM_L_AMPFLAGS) */
                 /*--------------------------------*/
 
                 union {
-                    LONG lword;         /* Standard flags field         */
+                    int32_t lword;         /* Standard flags field         */
                     ICB_AMP_FLAGS bit;  /* Individual flag bit struct   */
                 } flags;
 
@@ -266,11 +266,11 @@ extern "C" {
                 /*----------------------------------------*/
 
                 union {
-                    LONG lword;         /* Standard flags field         */
+                    int32_t lword;         /* Standard flags field         */
                     ICB_AMP_VFLAGS bit; /* Individual flag bit struct   */
                 } vflags;
 
-                LONG extra_flags[1];    /* Space for more values            */
+                int32_t extra_flags[1];    /* Space for more values            */
 
         } ICB_CCNIM_AMP;
 
@@ -320,29 +320,29 @@ extern "C" {
 
         typedef struct {
 
-                LONG icb_index;         /* Module ICB database index    */
+                int32_t icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                CHAR extra_header[24];  /* Space for more header info   */
+                int8_t extra_header[24];  /* Space for more header info   */
 
                 /*----------------------*/
                 /* HVPS CAM values      */
                 /*----------------------*/
 
-                REAL voltage;           /* High voltage setting         */
-                REAL voltlim;           /* Voltage limit                */
-                REAL abs_voltlim;       /* Absolute limit for module    */
-                REAL current_level;     /* Current voltage level        */
+                float voltage;           /* High voltage setting         */
+                float voltlim;           /* Voltage limit                */
+                float abs_voltlim;       /* Absolute limit for module    */
+                float current_level;     /* Current voltage level        */
                 void *ramp_ast_id;      /* Id of ramp function AST      */
                                         /*  Non-zero indicates that a   */
                                         /*  ramp is in progress         */
-                CHAR extra_values[24];  /* Space for more values        */
+                int8_t extra_values[24];  /* Space for more values        */
 
                 /*----------------------------------*/
                 /* HVPS CAM flags (CAM_L_HVPSFLAGS) */
                 /*----------------------------------*/
 
                 union {
-                    LONG lword;         /* Standard flags field         */
+                    int32_t lword;         /* Standard flags field         */
                     ICB_HVPS_FLAGS bit; /* Individual flag bit struct   */
                 } flags;
 
@@ -351,11 +351,11 @@ extern "C" {
                 /*------------------------------------------*/
 
                 union {
-                    LONG lword;         /* Standard flags field         */
+                    int32_t lword;         /* Standard flags field         */
                     ICB_HVPS_VFLAGS bit;/* Individual flag bit struct   */
                 } vflags;
 
-                LONG extra_flags[1];    /* Space for more values        */
+                int32_t extra_flags[1];    /* Space for more values        */
 
         } ICB_CCNIM_HVPS;
 
@@ -366,8 +366,8 @@ extern "C" {
 
 typedef struct _ICB_PARAM_LIST {
 
-        LONG    pcode;
-        LONG    reserved;
+        int32_t    pcode;
+        int32_t    reserved;
         void    *value;
 
 } ICB_PARAM_LIST;
@@ -478,54 +478,54 @@ int icb_crmpsc();
 int icb_get_module_state(int index);
 
 /* Functions in icb_handler_subs.c */
-LONG icb_hvps_hdlr (LONG index, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_adc_hdlr (LONG index, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_amp_hdlr (LONG index, ICB_PARAM_LIST *params, LONG flags);
-int icb_validate_module (LONG index, ICB_PARAM_LIST *params,
-                                                 LONG *present, LONG *reset, LONG flags);
-int icb_init_ccnim_cache (LONG index, LONG flags);
+int32_t icb_hvps_hdlr (int32_t index, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_adc_hdlr (int32_t index, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_amp_hdlr (int32_t index, ICB_PARAM_LIST *params, int32_t flags);
+int icb_validate_module (int32_t index, ICB_PARAM_LIST *params,
+                                                 int32_t *present, int32_t *reset, int32_t flags);
+int icb_init_ccnim_cache (int32_t index, int32_t flags);
 ICB_PARAM_LIST *icb_build_cached_plist (ICB_CCNIM_ANY *ccany);
 int icb_set_cached_flags (ICB_CCNIM_ANY *ccany, ICB_PARAM_LIST *params);
-LONG icb_hvps_write (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_hvps_read (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_hvps_verify (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, LONG flags,
+int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_hvps_verify (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags,
                               UBYTE *reg_list);
-LONG icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps);
-LONG icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps, REAL voltage, LONG flags);
-LONG icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps, REAL *voltage, LONG flags);
-LONG icb_hvps_set_state (ICB_CCNIM_HVPS *hvps, LONG state, LONG flags);
-LONG icb_adc_write (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_adc_read (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_adc_verify (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, LONG flags,
+int32_t icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps);
+int32_t icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps, float voltage, int32_t flags);
+int32_t icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps, float *voltage, int32_t flags);
+int32_t icb_hvps_set_state (ICB_CCNIM_HVPS *hvps, int32_t state, int32_t flags);
+int32_t icb_adc_write (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_adc_read (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_adc_verify (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags,
                                  UBYTE *reg_list);
-LONG icb_amp_write (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_amp_read (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, LONG flags);
-LONG icb_amp_verify (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, LONG flags,
+int32_t icb_amp_write (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_amp_read (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags);
+int32_t icb_amp_verify (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags,
                                  UBYTE *reg_list);
-LONG icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp, LONG flags);
-LONG icb_amp_write_gain2 (ICB_CCNIM_AMP *amp);
-LONG icb_amp_complete_position (ICB_CCNIM_AMP *amp);
-LONG icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp);
-LONG icb_amp_home_motor (ICB_CCNIM_AMP *amp);
-LONG icb_amp_test_home (ICB_CCNIM_AMP *amp);
-ULONG icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp);
-LONG icb_amp_get_nvram_motor_pos (LONG index, LONG *nvpos, LONG flags);
-LONG icb_amp_put_nvram_motor_pos (LONG index, LONG nvpos, LONG flags);
-LONG icb_amp_put_motor_pos (LONG index, LONG pos, LONG flags);
-LONG icb_amp_start_pz (ICB_CCNIM_AMP *amp);
-LONG icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp);
-LONG icb_amp_write_pz (ICB_CCNIM_AMP *amp);
-LONG icb_adc_encode_chns (ULONG chns);
-LONG icb_write_csr (ICB_CCNIM_ANY *ccnim, LONG perm_bits, LONG temp_bits,
-                                        LONG mask);
-LONG icb_monitor_modules ();
+int32_t icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp, int32_t flags);
+int32_t icb_amp_write_gain2 (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_complete_position (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_home_motor (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_test_home (ICB_CCNIM_AMP *amp);
+uint32_t icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_get_nvram_motor_pos (int32_t index, int32_t *nvpos, int32_t flags);
+int32_t icb_amp_put_nvram_motor_pos (int32_t index, int32_t nvpos, int32_t flags);
+int32_t icb_amp_put_motor_pos (int32_t index, int32_t pos, int32_t flags);
+int32_t icb_amp_start_pz (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp);
+int32_t icb_amp_write_pz (ICB_CCNIM_AMP *amp);
+int32_t icb_adc_encode_chns (uint32_t chns);
+int32_t icb_write_csr (ICB_CCNIM_ANY *ccnim, int32_t perm_bits, int32_t temp_bits,
+                                        int32_t mask);
+int32_t icb_monitor_modules ();
 
 /* The following routines are in icb_strings.c */
-int icb_dsc2str (CHAR *str, CHAR *dsc, LONG max_len);
-int icb_str2dsc (CHAR *dsc,     CHAR *str);
-int StrNCmp (CHAR *s1, CHAR *s2, int len);
-int StrUpCase (CHAR *dst, CHAR *src, int len);
-int StrTrim (CHAR *dst, CHAR *src, int len, int *trim_len);
+int icb_dsc2str (int8_t *str, int8_t *dsc, int32_t max_len);
+int icb_str2dsc (int8_t *dsc,     int8_t *str);
+int StrNCmp (int8_t *s1, int8_t *s2, int len);
+int StrUpCase (int8_t *dst, int8_t *src, int len);
+int StrTrim (int8_t *dst, int8_t *src, int len, int *trim_len);
 
 #ifdef __cplusplus
 }
