@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include "epicsTypes.h"
 	
 #define ICB_K_MAX_MODULES 96    /* The number of entries in ICB_MODULE_INFO */
 
@@ -71,8 +71,8 @@ extern "C" {
 */
         typedef struct {
 
-                int32_t    pcode;          /* CAM parameter code   */
-                int32_t    cached_flag;    /* Boolian              */
+                epicsInt32    pcode;          /* CAM parameter code   */
+                epicsInt32    cached_flag;    /* Boolian              */
 
         } ICB_CACHED_PARAM;
 
@@ -87,9 +87,9 @@ extern "C" {
 
         typedef struct {
 
-                int32_t icb_index;         /* Module ICB database index    */
+                epicsInt32 icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                int8_t extra_header[24];  /* Space for more header info   */
+                epicsInt8 extra_header[24];  /* Space for more header info   */
 
         } ICB_CCNIM_ANY;
 
@@ -141,30 +141,30 @@ extern "C" {
 
         typedef struct {
 
-                int32_t icb_index;         /* Module ICB database index    */
+                epicsInt32 icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                int8_t extra_header[24];  /* Space for more header info   */
+                epicsInt8 extra_header[24];  /* Space for more header info   */
 
                 /*----------------------*/
                 /* ADC CAM values       */
                 /*----------------------*/
 
-                int32_t range;             /* ADC range                    */
-                int32_t offset;            /* ADC offset                   */
-                int8_t acqmode[12];       /* ADC acquisition mode (8 char)*/
-                int32_t cnvgain;           /* ADC conversion gain          */
-                int32_t abs_cnvlim;        /* Absolute conv. gain limit    */
+                epicsInt32 range;             /* ADC range                    */
+                epicsInt32 offset;            /* ADC offset                   */
+                epicsInt8 acqmode[12];       /* ADC acquisition mode (8 char)*/
+                epicsInt32 cnvgain;           /* ADC conversion gain          */
+                epicsInt32 abs_cnvlim;        /* Absolute conv. gain limit    */
                 float lld;               /* Lower level descriminator    */
                 float uld;               /* Upper level descriminator    */
                 float zero;              /* ADC zero                     */
-                int8_t extra_values[32];  /* Space for more values        */
+                epicsInt8 extra_values[32];  /* Space for more values        */
 
                 /*--------------------------------*/
                 /* ADC CAM flags (CAM_L_ADCFLAGS) */
                 /*--------------------------------*/
 
                 union {
-                    int32_t lword;         /* Standard flags field         */
+                    epicsInt32 lword;         /* Standard flags field         */
                     ICB_ADC_FLAGS bit;  /* Individual flag bit struct   */
                 } flags;
 
@@ -173,11 +173,11 @@ extern "C" {
                 /*----------------------------------------*/
 
                 union {
-                    int32_t lword;         /* Standard flags field         */
+                    epicsInt32 lword;         /* Standard flags field         */
                     ICB_ADC_VFLAGS bit; /* Individual flag bit struct   */
                 } vflags;
 
-                int32_t extra_flags[1];    /* Space for extra values         */
+                epicsInt32 extra_flags[1];    /* Space for extra values         */
 
         } ICB_CCNIM_ADC;
 
@@ -233,33 +233,33 @@ extern "C" {
 
         typedef struct {
 
-                int32_t icb_index;         /* Module ICB database index    */
+                epicsInt32 icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                int8_t extra_header[24];  /* Space for more header info   */
+                epicsInt8 extra_header[24];  /* Space for more header info   */
 
                 /*----------------------*/
                 /* AMP CAM values       */
                 /*----------------------*/
 
-                int8_t pramptype[12];     /* Preamp type (RC,TRP) (8 char)      */
+                epicsInt8 pramptype[12];     /* Preamp type (RC,TRP) (8 char)      */
                 float gain;              /* Virtual gain (hwg1 * hwg2 * hwg3)  */
                 float hwgain1;           /* Course gain                        */
                 float hwgain2;           /* Fine gain                          */
                 float hwgain3;           /* Super fine gain                    */
-                int8_t shapemode[12];     /* Shaping mode (8 char)              */
-                int32_t pz;                /* Pole zero                          */
-                int8_t blrtype[12];       /* Base-line restore (SYM,ASYM) (8 char) */
-                int8_t dtctype[12];       /* Dead-time control (Normal,LFC) (8 char) */
+                epicsInt8 shapemode[12];     /* Shaping mode (8 char)              */
+                epicsInt32 pz;                /* Pole zero                          */
+                epicsInt8 blrtype[12];       /* Base-line restore (SYM,ASYM) (8 char) */
+                epicsInt8 dtctype[12];       /* Dead-time control (Normal,LFC) (8 char) */
                 float tc;                /* AMP time constant (seconds)        */
-                int32_t hwgain2_timer;     /* Callback Timer id for fine gain    */
-                int8_t extra_values[32];  /* Space for more values              */
+                epicsInt32 hwgain2_timer;     /* Callback Timer id for fine gain    */
+                epicsInt8 extra_values[32];  /* Space for more values              */
 
                 /*--------------------------------*/
                 /* AMP CAM flags (CAM_L_AMPFLAGS) */
                 /*--------------------------------*/
 
                 union {
-                    int32_t lword;         /* Standard flags field         */
+                    epicsInt32 lword;         /* Standard flags field         */
                     ICB_AMP_FLAGS bit;  /* Individual flag bit struct   */
                 } flags;
 
@@ -268,11 +268,11 @@ extern "C" {
                 /*----------------------------------------*/
 
                 union {
-                    int32_t lword;         /* Standard flags field         */
+                    epicsInt32 lword;         /* Standard flags field         */
                     ICB_AMP_VFLAGS bit; /* Individual flag bit struct   */
                 } vflags;
 
-                int32_t extra_flags[1];    /* Space for more values            */
+                epicsInt32 extra_flags[1];    /* Space for more values            */
 
         } ICB_CCNIM_AMP;
 
@@ -322,9 +322,9 @@ extern "C" {
 
         typedef struct {
 
-                int32_t icb_index;         /* Module ICB database index    */
+                epicsInt32 icb_index;         /* Module ICB database index    */
                 ICB_CACHED_PARAM param_list[ICB_K_MAX_CACHED_PARAMS];
-                int8_t extra_header[24];  /* Space for more header info   */
+                epicsInt8 extra_header[24];  /* Space for more header info   */
 
                 /*----------------------*/
                 /* HVPS CAM values      */
@@ -337,14 +337,14 @@ extern "C" {
                 void *ramp_ast_id;      /* Id of ramp function AST      */
                                         /*  Non-zero indicates that a   */
                                         /*  ramp is in progress         */
-                int8_t extra_values[24];  /* Space for more values        */
+                epicsInt8 extra_values[24];  /* Space for more values        */
 
                 /*----------------------------------*/
                 /* HVPS CAM flags (CAM_L_HVPSFLAGS) */
                 /*----------------------------------*/
 
                 union {
-                    int32_t lword;         /* Standard flags field         */
+                    epicsInt32 lword;         /* Standard flags field         */
                     ICB_HVPS_FLAGS bit; /* Individual flag bit struct   */
                 } flags;
 
@@ -353,11 +353,11 @@ extern "C" {
                 /*------------------------------------------*/
 
                 union {
-                    int32_t lword;         /* Standard flags field         */
+                    epicsInt32 lword;         /* Standard flags field         */
                     ICB_HVPS_VFLAGS bit;/* Individual flag bit struct   */
                 } vflags;
 
-                int32_t extra_flags[1];    /* Space for more values        */
+                epicsInt32 extra_flags[1];    /* Space for more values        */
 
         } ICB_CCNIM_HVPS;
 
@@ -368,8 +368,8 @@ extern "C" {
 
 typedef struct _ICB_PARAM_LIST {
 
-        int32_t    pcode;
-        int32_t    reserved;
+        epicsInt32    pcode;
+        epicsInt32    reserved;
         void    *value;
 
 } ICB_PARAM_LIST;
@@ -480,54 +480,54 @@ int icb_crmpsc();
 int icb_get_module_state(int index);
 
 /* Functions in icb_handler_subs.c */
-int32_t icb_hvps_hdlr (int32_t index, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_adc_hdlr (int32_t index, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_amp_hdlr (int32_t index, ICB_PARAM_LIST *params, int32_t flags);
-int icb_validate_module (int32_t index, ICB_PARAM_LIST *params,
-                                                 int32_t *present, int32_t *reset, int32_t flags);
-int icb_init_ccnim_cache (int32_t index, int32_t flags);
+epicsInt32 icb_hvps_hdlr (epicsInt32 index, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_adc_hdlr (epicsInt32 index, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_amp_hdlr (epicsInt32 index, ICB_PARAM_LIST *params, epicsInt32 flags);
+int icb_validate_module (epicsInt32 index, ICB_PARAM_LIST *params,
+                                                 epicsInt32 *present, epicsInt32 *reset, epicsInt32 flags);
+int icb_init_ccnim_cache (epicsInt32 index, epicsInt32 flags);
 ICB_PARAM_LIST *icb_build_cached_plist (ICB_CCNIM_ANY *ccany);
 int icb_set_cached_flags (ICB_CCNIM_ANY *ccany, ICB_PARAM_LIST *params);
-int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_hvps_verify (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, int32_t flags,
-                              uint8_t *reg_list);
-int32_t icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps);
-int32_t icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps, float voltage, int32_t flags);
-int32_t icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps, float *voltage, int32_t flags);
-int32_t icb_hvps_set_state (ICB_CCNIM_HVPS *hvps, int32_t state, int32_t flags);
-int32_t icb_adc_write (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_adc_read (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_adc_verify (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, int32_t flags,
-                                 uint8_t *reg_list);
-int32_t icb_amp_write (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_amp_read (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags);
-int32_t icb_amp_verify (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, int32_t flags,
-                                 uint8_t *reg_list);
-int32_t icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp, int32_t flags);
-int32_t icb_amp_write_gain2 (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_complete_position (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_home_motor (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_test_home (ICB_CCNIM_AMP *amp);
-uint32_t icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_get_nvram_motor_pos (int32_t index, int32_t *nvpos, int32_t flags);
-int32_t icb_amp_put_nvram_motor_pos (int32_t index, int32_t nvpos, int32_t flags);
-int32_t icb_amp_put_motor_pos (int32_t index, int32_t pos, int32_t flags);
-int32_t icb_amp_start_pz (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp);
-int32_t icb_amp_write_pz (ICB_CCNIM_AMP *amp);
-int32_t icb_adc_encode_chns (uint32_t chns);
-int32_t icb_write_csr (ICB_CCNIM_ANY *ccnim, int32_t perm_bits, int32_t temp_bits,
-                                        int32_t mask);
-int32_t icb_monitor_modules ();
+epicsInt32 icb_hvps_write (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_hvps_read (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_hvps_verify (ICB_CCNIM_HVPS *hvps, ICB_PARAM_LIST *params, epicsInt32 flags,
+                              epicsUInt8 *reg_list);
+epicsInt32 icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps);
+epicsInt32 icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps, float voltage, epicsInt32 flags);
+epicsInt32 icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps, float *voltage, epicsInt32 flags);
+epicsInt32 icb_hvps_set_state (ICB_CCNIM_HVPS *hvps, epicsInt32 state, epicsInt32 flags);
+epicsInt32 icb_adc_write (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_adc_read (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_adc_verify (ICB_CCNIM_ADC *adc, ICB_PARAM_LIST *params, epicsInt32 flags,
+                                 epicsUInt8 *reg_list);
+epicsInt32 icb_amp_write (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_amp_read (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, epicsInt32 flags);
+epicsInt32 icb_amp_verify (ICB_CCNIM_AMP *amp, ICB_PARAM_LIST *params, epicsInt32 flags,
+                                 epicsUInt8 *reg_list);
+epicsInt32 icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp, epicsInt32 flags);
+epicsInt32 icb_amp_write_gain2 (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_complete_position (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_home_motor (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_test_home (ICB_CCNIM_AMP *amp);
+epicsUInt32 icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_get_nvram_motor_pos (epicsInt32 index, epicsInt32 *nvpos, epicsInt32 flags);
+epicsInt32 icb_amp_put_nvram_motor_pos (epicsInt32 index, epicsInt32 nvpos, epicsInt32 flags);
+epicsInt32 icb_amp_put_motor_pos (epicsInt32 index, epicsInt32 pos, epicsInt32 flags);
+epicsInt32 icb_amp_start_pz (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_amp_write_pz (ICB_CCNIM_AMP *amp);
+epicsInt32 icb_adc_encode_chns (epicsUInt32 chns);
+epicsInt32 icb_write_csr (ICB_CCNIM_ANY *ccnim, epicsInt32 perm_bits, epicsInt32 temp_bits,
+                                        epicsInt32 mask);
+epicsInt32 icb_monitor_modules ();
 
 /* The following routines are in icb_strings.c */
-int icb_dsc2str (int8_t *str, int8_t *dsc, int32_t max_len);
-int icb_str2dsc (int8_t *dsc,     int8_t *str);
-int StrNCmp (int8_t *s1, int8_t *s2, int len);
-int StrUpCase (int8_t *dst, int8_t *src, int len);
-int StrTrim (int8_t *dst, int8_t *src, int len, int *trim_len);
+int icb_dsc2str (epicsInt8 *str, epicsInt8 *dsc, epicsInt32 max_len);
+int icb_str2dsc (epicsInt8 *dsc,     epicsInt8 *str);
+int StrNCmp (epicsInt8 *s1, epicsInt8 *s2, int len);
+int StrUpCase (epicsInt8 *dst, epicsInt8 *src, int len);
+int StrTrim (epicsInt8 *dst, epicsInt8 *src, int len, int *trim_len);
 
 #ifdef __cplusplus
 }
