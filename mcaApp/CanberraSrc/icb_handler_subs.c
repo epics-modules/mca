@@ -4381,7 +4381,7 @@ epicsInt32 flags;
   epicsInt32 s;
   epicsInt32 i;
   epicsUInt8 reg_val;
-  int8_t nibble;
+  epicsInt8 nibble;
   epicsUInt32 temp;
   struct icb_module_info_struct *entry;  
 
