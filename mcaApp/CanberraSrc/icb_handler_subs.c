@@ -77,13 +77,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include "icb_sys_defs.h"
 #include "icb_bus_defs.h"
 #include "nmc_sys_defs.h"
 #include "nmcmsgdef.h"
 #include "mcamsgdef.h"
 #include "campardef.h"
+
+#include "epicsTypes.h"
 
 extern ICB_MODULE_INFO *icb_module_info;	/* pointer to ICB module info structure */
 
@@ -94,18 +95,18 @@ extern struct nmc_module_info_struct *nmc_module_info;	/* pointer to networked m
 /* the setting the ASTF_CCERR flag.			 */
 /*-------------------------------------------------------*/
 
-int32_t hvps_ccerr_vbits = CAM_M_HVPSVF_VOLT  | CAM_M_HVPSVF_OVLE  |
+epicsInt32 hvps_ccerr_vbits = CAM_M_HVPSVF_VOLT  | CAM_M_HVPSVF_OVLE  |
 			CAM_M_HVPSVF_INHLE | CAM_M_HVPSVF_LVINH |
 			CAM_M_HVPSVF_STAT;
 
-int32_t adc_ccerr_vbits  = CAM_M_ADCVF_RANGE   | CAM_M_ADCVF_OFFSET  |
+epicsInt32 adc_ccerr_vbits  = CAM_M_ADCVF_RANGE   | CAM_M_ADCVF_OFFSET  |
 			CAM_M_ADCVF_ACQMODE | CAM_M_ADCVF_CNVGAIN |
 			CAM_M_ADCVF_LLD     | CAM_M_ADCVF_ULD     |
 			CAM_M_ADCVF_ZERO    | CAM_M_ADCVF_ANTIC   |
 			CAM_M_ADCVF_LATEC   | CAM_M_ADCVF_DELPK   |
 			CAM_M_ADCVF_NONOV   | CAM_M_ADCVF_LTCPUR;
 
-int32_t amp_ccerr_vbits  = CAM_M_AMPVF_PRAMPT  | CAM_M_AMPVF_HWGAIN1 |
+epicsInt32 amp_ccerr_vbits  = CAM_M_AMPVF_PRAMPT  | CAM_M_AMPVF_HWGAIN1 |
 			CAM_M_AMPVF_HWGAIN3 | CAM_M_AMPVF_SHAPEM  |
 			CAM_M_AMPVF_BLRTYPE | CAM_M_AMPVF_DTCTYPE |
 			CAM_M_AMPVF_DIFF    | CAM_M_AMPVF_NEGPOL  |
@@ -159,7 +160,7 @@ static ICB_PARAM_LIST hvps_flag_list[] = {
 /* same order as the above parameter list.	*/
 /*----------------------------------------------*/
 
-static int32_t hvps_flag_bits[] = {
+static epicsInt32 hvps_flag_bits[] = {
 	CAM_M_HVPSF_OVLE,
 	CAM_M_HVPSF_INHLE,
 	CAM_M_HVPSF_LVINH,
@@ -183,7 +184,7 @@ static int32_t hvps_flag_bits[] = {
 /*			"ICB 9645",*/
 /*			0};*/
 
-/*static int32_t hvps_types_int[] = {*/
+/*static epicsInt32 hvps_types_int[] = {*/
 /*			ICB_K_MTYPE_CI9641,*/	/* 2000 Volt supply	*/
 /*			ICB_K_MTYPE_CI9645,*/	/* 6000 Volt supply	*/
 /*			0};*/			/* End of list		*/
@@ -225,7 +226,7 @@ static ICB_PARAM_LIST adc_flag_list[] = {
 /* same order as the above parameter list.	*/
 /*----------------------------------------------*/
 
-static int32_t adc_flag_bits[] = {
+static epicsInt32 adc_flag_bits[] = {
 	CAM_M_ADCF_ANTIC,
 	CAM_M_ADCF_LATEC,
 	CAM_M_ADCF_DELPK,
@@ -244,7 +245,7 @@ static int32_t adc_flag_bits[] = {
 /*			"ICB 9635",*/
 /*			0};*/
 
-/*static int32_t adc_types_int[] = {*/
+/*static epicsInt32 adc_types_int[] = {*/
 /*			ICB_K_MTYPE_CI9633,*/	/* 16K chan ADC		*/
 /*			ICB_K_MTYPE_CI9635,*/	/* 8K chan ADC		*/
 /*			0};*/			/* End of list		*/
@@ -290,7 +291,7 @@ static ICB_PARAM_LIST amp_flag_list[] = {
 /* same order as the above parameter list.	*/
 /*----------------------------------------------*/
 
-static int32_t amp_flag_bits[] = {
+static epicsInt32 amp_flag_bits[] = {
 	CAM_M_AMPF_DIFF,
 	CAM_M_AMPF_NEGPOL,
 	CAM_M_AMPF_COMPINH,
@@ -311,7 +312,7 @@ static int32_t amp_flag_bits[] = {
 /*			"ICB 9615",*/
 /*			0};*/
 
-/*static int32_t amp_types_int[] = {*/
+/*static epicsInt32 amp_types_int[] = {*/
 /*			ICB_K_MTYPE_CI9615,*/	/* Standard Amp		*/
 /*			0};*/			/* End of list		*/
 
@@ -323,7 +324,7 @@ static int32_t amp_flag_bits[] = {
 
 static struct {
 	float real_val;
-	int32_t dac_val;
+	epicsInt32 dac_val;
 } amp_hwgain1_tbl[] =  {{500.0, 0x0F},
 			{250.0, 0x0D},
 			{100.0, 0x0B},
@@ -353,7 +354,7 @@ static float amp_shape_time[]  = {0.5, 1.0, 2.0,   4.0, 6.0,  12.0, 0.0};
 /*						hvps_flag_list, NULL};*/
 
 
-/*static int32_t (*icb_hdlr_summary[])()  = {icb_adc_hdlr,*/
+/*static epicsInt32 (*icb_hdlr_summary[])()  = {icb_adc_hdlr,*/
 /*					icb_amp_hdlr,*/
 /*					icb_hvps_hdlr, NULL};*/
 
@@ -363,7 +364,7 @@ static float amp_shape_time[]  = {0.5, 1.0, 2.0,   4.0, 6.0,  12.0, 0.0};
 * (rather than the cache) during a read operation.
 */
 
-static int32_t icb_req_read_plist[] = {CAM_L_HVPSFPOL,
+static epicsInt32 icb_req_read_plist[] = {CAM_L_HVPSFPOL,
 				    CAM_L_HVPSFOV,
 				    CAM_L_HVPSFINH,
 				    CAM_L_HVPSFSTAT,
@@ -402,17 +403,17 @@ static int32_t icb_req_read_plist[] = {CAM_L_HVPSFPOL,
 *
 *******************************************************************************/
 
-int32_t icb_hvps_hdlr (int32_t index,
+epicsInt32 icb_hvps_hdlr (epicsInt32 index,
 		    ICB_PARAM_LIST *params,
-		    int32_t flags)
+		    epicsInt32 flags)
 
 {
-  int32_t s;
+  epicsInt32 s;
   ICB_CCNIM_HVPS *hvps;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *plist;
-  int32_t reset;
-  int32_t present;
+  epicsInt32 reset;
+  epicsInt32 present;
 
 /*
 * First make sure that the module exists and is the correct type.
@@ -506,17 +507,17 @@ int32_t icb_hvps_hdlr (int32_t index,
 *
 *******************************************************************************/
 
-int32_t icb_adc_hdlr (int32_t index,
+epicsInt32 icb_adc_hdlr (epicsInt32 index,
 		   ICB_PARAM_LIST *params,
-		   int32_t flags)
+		   epicsInt32 flags)
 
 {
-  int32_t s;
+  epicsInt32 s;
   ICB_CCNIM_ADC *adc;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *plist;
-  int32_t reset;
-  int32_t present;
+  epicsInt32 reset;
+  epicsInt32 present;
 
 /*
 * First make sure that the module exists and is the correct type.
@@ -606,17 +607,17 @@ int32_t icb_adc_hdlr (int32_t index,
 *
 *******************************************************************************/
 
-int32_t icb_amp_hdlr (int32_t index,
+epicsInt32 icb_amp_hdlr (epicsInt32 index,
 		   ICB_PARAM_LIST *params,
-		   int32_t flags)
+		   epicsInt32 flags)
 
 {
-  int32_t s;
+  epicsInt32 s;
   ICB_CCNIM_AMP *amp;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *plist;
-  int32_t reset;
-  int32_t present;
+  epicsInt32 reset;
+  epicsInt32 present;
 
 /*
 * First make sure that the module exists and is the correct type.
@@ -706,18 +707,18 @@ int32_t icb_amp_hdlr (int32_t index,
 *
 *******************************************************************************/
 
-int icb_validate_module (int32_t index,
+int icb_validate_module (epicsInt32 index,
 			 ICB_PARAM_LIST *params,
-			 int32_t *present,
-			 int32_t *reset,
-			 int32_t flags)
+			 epicsInt32 *present,
+			 epicsInt32 *reset,
+			 epicsInt32 flags)
 
 {
-  int32_t i, j;
-  int32_t s;
+  epicsInt32 i, j;
+  epicsInt32 s;
   ICB_MODULE_INFO *entry;
-  uint8_t register_list[16];
-  int32_t do_read;
+  epicsUInt8 register_list[16];
+  epicsInt32 do_read;
   ICB_CCNIM_ANY *ccany;
 
 /*
@@ -827,11 +828,11 @@ int icb_validate_module (int32_t index,
 *
 *******************************************************************************/
 
-int icb_init_ccnim_cache (int32_t index,
-		      int32_t flags)
+int icb_init_ccnim_cache (epicsInt32 index,
+		      epicsInt32 flags)
 
 {
-  int32_t i, j;
+  epicsInt32 i, j;
   ICB_MODULE_INFO *entry;
   ICB_CCNIM_ANY *ccany;
   ICB_PARAM_LIST *plist=NULL, *flist=NULL;
@@ -923,8 +924,8 @@ int icb_init_ccnim_cache (int32_t index,
 ICB_PARAM_LIST *icb_build_cached_plist (ICB_CCNIM_ANY *ccany)
 
 {
-  int32_t i, j;
-  int32_t pcount = 0;
+  epicsInt32 i, j;
+  epicsInt32 pcount = 0;
   ICB_PARAM_LIST *plist;
 
 /*
@@ -982,7 +983,7 @@ int icb_set_cached_flags (ICB_CCNIM_ANY *ccany,
 		      ICB_PARAM_LIST *params)
 
 {
-  int32_t i, j;
+  epicsInt32 i, j;
 
 /*
 * For each parameter, find it's entry (if any) in the cached parameter
@@ -1022,20 +1023,20 @@ int icb_set_cached_flags (ICB_CCNIM_ANY *ccany,
 *
 *******************************************************************************/
 
-int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
+epicsInt32 icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 		     ICB_PARAM_LIST *params,
-		     int32_t flags)
+		     epicsInt32 flags)
 
 {
-  int32_t i;
-  int32_t s=OK;
-  int32_t index;
-  uint32_t fbits;
+  epicsInt32 i;
+  epicsInt32 s=OK;
+  epicsInt32 index;
+  epicsUInt32 fbits;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *flag_list;
-  int32_t *flag_vals;
-  uint8_t reg_val;
-  int32_t local_flags;
+  epicsInt32 *flag_vals;
+  epicsUInt8 reg_val;
+  epicsInt32 local_flags;
   float level;
   ICB_PARAM_LIST *params_start;
 
@@ -1127,11 +1128,11 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 		/* Build a flag parameter list based on the flag bit settings */
 
 		     flag_list = (ICB_PARAM_LIST *) malloc (sizeof (hvps_flag_list));
-		     flag_vals = (int32_t *) malloc (sizeof (hvps_flag_bits));
+		     flag_vals = (epicsInt32 *) malloc (sizeof (hvps_flag_bits));
 		     memcpy (flag_list, hvps_flag_list, sizeof (hvps_flag_list));
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0) {
-			fbits = *((int32_t *) params->value);
+			fbits = *((epicsInt32 *) params->value);
 			for (i = 0; flag_list[i].pcode != 0; i++) {
 			    flag_vals[i] = ((hvps_flag_bits[i] & fbits) != 0);
 			    flag_list[i].value = &flag_vals[i];
@@ -1153,7 +1154,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 		/* Set or clear the overload latch enable bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.ovle = *((int32_t *) params->value);
+			hvps->flags.bit.ovle = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (hvps->flags.bit.ovle)
@@ -1173,7 +1174,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 		/* Set or clear the inhibit latch enable bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.inhle = *((int32_t *) params->value);
+			hvps->flags.bit.inhle = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (hvps->flags.bit.inhle)
@@ -1193,7 +1194,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 		/* Set or clear the 12V level inhibit enable bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.lvinh = *((int32_t *) params->value);
+			hvps->flags.bit.lvinh = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (hvps->flags.bit.lvinh)
@@ -1211,7 +1212,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 					/*------------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.pol = *((int32_t *) params->value);
+			hvps->flags.bit.pol = *((epicsInt32 *) params->value);
 		     break;
 
 					/*------------------------------*/
@@ -1221,7 +1222,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 		/* Set or clear the On/Off bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.stat = *((int32_t *) params->value);
+			hvps->flags.bit.stat = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		/* If module is being turned off, terminate the ramp process */
@@ -1277,7 +1278,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 					 /*-----------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			if (*((int32_t *) params->value) == 0) break;
+			if (*((epicsInt32 *) params->value) == 0) break;
 
 		/* Reset the HVPS */
 
@@ -1291,7 +1292,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 					 /*-----------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.fastramp = *((int32_t *) params->value);
+			hvps->flags.bit.fastramp = *((epicsInt32 *) params->value);
 		     break;
 
 					/*------------------------------*/
@@ -1299,7 +1300,7 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 					/*------------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			hvps->flags.bit.atten = *((int32_t *) params->value);
+			hvps->flags.bit.atten = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (hvps->flags.bit.atten)
@@ -1359,14 +1360,14 @@ int32_t icb_hvps_write (ICB_CCNIM_HVPS *hvps,
 *
 *******************************************************************************/
 
-int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
+epicsInt32 icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 		    ICB_PARAM_LIST *params,
-		    int32_t flags)
+		    epicsInt32 flags)
 
 {
-  int32_t i;
-  uint32_t reg;
-  int32_t index;
+  epicsInt32 i;
+  epicsUInt32 reg;
+  epicsInt32 index;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *params_start;
 
@@ -1412,28 +1413,28 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 		case CAM_L_HVPSFLAGS:	/* Flags field			*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.lword;
+		     *((epicsUInt32 *) params->value) = hvps->flags.lword;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSFOVLE:	/* Overload latch enable	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.ovle;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.ovle;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSFINHLE:	/* Inhibit latch enable		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.inhle;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.inhle;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSFLVINH:	/* 5v/12v inhibit		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.lvinh;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.lvinh;
 		     break;
 
 					/*------------------------------*/
@@ -1441,12 +1442,12 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 					/*------------------------------*/
 
 		     if (!entry) {
-			*((uint32_t *) params->value) = hvps->flags.bit.pol;
+			*((epicsUInt32 *) params->value) = hvps->flags.bit.pol;
 			break;
 		     }
 
-		     reg = ((uint32_t) entry->registers[1]);
-		     *((uint32_t *) params->value) = i = ((reg & HVPS_M_R3_POLARITY_NEG) != 0);
+		     reg = ((epicsUInt32) entry->registers[1]);
+		     *((epicsUInt32 *) params->value) = i = ((reg & HVPS_M_R3_POLARITY_NEG) != 0);
 
 		     if (i != hvps->flags.bit.pol) {
 			hvps->flags.bit.pol = i;
@@ -1459,10 +1460,10 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 					/*------------------------------*/
 
 		     if (entry) {
-			reg = ((uint32_t) entry->registers[1]);
+			reg = ((epicsUInt32) entry->registers[1]);
 			hvps->flags.bit.inh = ((reg & HVPS_M_R3_INHIBIT) == 0);
 		     }
-		     *((uint32_t *) params->value) = hvps->flags.bit.inh;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.inh;
 		     break;
 
 					/*------------------------------*/
@@ -1470,10 +1471,10 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 					/*------------------------------*/
 
 		     if (entry) {
-			reg = ((uint32_t) entry->registers[1]);
+			reg = ((epicsUInt32) entry->registers[1]);
 			hvps->flags.bit.ov = ((reg & HVPS_M_R3_OVERLOAD) == 0);
 		     }
-		     *((uint32_t *) params->value) = hvps->flags.bit.ov;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.ov;
 		     break;
 
 					/*------------------------------*/
@@ -1484,35 +1485,35 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 			reg = entry->registers[0];
 			hvps->flags.bit.stat = ((reg & HVPS_M_R2_STATUS_ON) != 0);
 		     }
-		     *((uint32_t *) params->value) = hvps->flags.bit.stat;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.stat;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSFONLINE:	/* Module on-line		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.online;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.online;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSFATTEN:	/* Module requires attention	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.atten;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.atten;
 		     break;
 
 					 /*-----------------------------*/
 		case CAM_L_HVPSFASTRAMP: /* Fast Ramp Flag		*/
 					 /*-----------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.fastramp;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.fastramp;
 		     break;
 
 					 /*-----------------------------*/
 		case CAM_L_HVPSFBUSY:	 /* Ramp in progress flag	*/
 					 /*-----------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->flags.bit.busy;
+		     *((epicsUInt32 *) params->value) = hvps->flags.bit.busy;
 		     break;
 
 		/*======================================================*/
@@ -1523,56 +1524,56 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 		case CAM_L_HVPSVFLAGS:	/* Verify Flags field		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.lword;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.lword;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFID:	/* VF: Module ID		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.id;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.id;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFVOLT:	/* VF: Voltage			*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.volt;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.volt;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFOVLE:	/* VF: Overload latch		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.ovle;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.ovle;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFINHLE:	/* VF: Inhibit latch 		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.inhle;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.inhle;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFLVINH:	/* VF: 5v/12v inhibit		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.lvinh;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.lvinh;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFPOL:	/* VF: Output polarity 		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.id;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.id;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_HVPSVFSTAT:	/* VF: Status (on/off)		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = hvps->vflags.bit.stat;
+		     *((epicsUInt32 *) params->value) = hvps->vflags.bit.stat;
 		     break;
 
 					/*------------------------------*/
@@ -1612,21 +1613,21 @@ int32_t icb_hvps_read (ICB_CCNIM_HVPS *hvps,
 *
 *  "flags" (longword, by reference) is the reserved flags field
 *
-*  "reg_list" (uint8_t *) The list of ICB registers.  This should be NULL
+*  "reg_list" (epicsUInt8 *) The list of ICB registers.  This should be NULL
 *  when ICB_HVPS_VERIFY() is called from the outside.
 *
 *******************************************************************************/
 
-int32_t icb_hvps_verify (ICB_CCNIM_HVPS *hvps,
+epicsInt32 icb_hvps_verify (ICB_CCNIM_HVPS *hvps,
 		      ICB_PARAM_LIST *params,
-		      int32_t flags,
-		      uint8_t *reg_list)
+		      epicsInt32 flags,
+		      epicsUInt8 *reg_list)
 
 {
-  int32_t s;
-  uint8_t registers[14];
-  uint8_t lreg;
-  uint8_t mreg;
+  epicsInt32 s;
+  epicsUInt8 registers[14];
+  epicsUInt8 lreg;
+  epicsUInt8 mreg;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -1748,7 +1749,7 @@ int32_t icb_hvps_verify (ICB_CCNIM_HVPS *hvps,
 *
 *******************************************************************************/
 
-int32_t icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps)
+epicsInt32 icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps)
 
 /* 
    This routine runs as an AST on VMS systems.  This means it runs as
@@ -1757,7 +1758,7 @@ int32_t icb_hvps_ramp_voltage (ICB_CCNIM_HVPS *hvps)
    could simply make this routine run as a separate vxWorks task.
 */
 {
-  int32_t s = OK;					/* Assume true status	*/
+  epicsInt32 s = OK;					/* Assume true status	*/
   float hvps_diff;
   float level;
   double delay = 5.0;	/* Delta time of 5 seconds */
@@ -1830,13 +1831,13 @@ while (1) {
 *
 *******************************************************************************/
 
-int32_t icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps,
+epicsInt32 icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps,
 			    float voltage,
-			    int32_t flags)
+			    epicsInt32 flags)
 
 {
-  int32_t s;
-  int32_t index;
+  epicsInt32 s;
+  epicsInt32 index;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -1893,11 +1894,11 @@ int32_t icb_hvps_send_voltage (ICB_CCNIM_HVPS *hvps,
 *
 *******************************************************************************/
 
-int32_t icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps,
+epicsInt32 icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps,
 			       float *voltage,
-			       int32_t flags)
+			       epicsInt32 flags)
 {
-  uint32_t dac;
+  epicsUInt32 dac;
   float hvps_step;
   ICB_MODULE_INFO *entry;
 
@@ -1956,13 +1957,13 @@ int32_t icb_hvps_convert_voltage (ICB_CCNIM_HVPS *hvps,
 *
 *******************************************************************************/
 
-int32_t icb_hvps_set_state (ICB_CCNIM_HVPS *hvps,
-			 int32_t state,
-			 int32_t flags)
+epicsInt32 icb_hvps_set_state (ICB_CCNIM_HVPS *hvps,
+			 epicsInt32 state,
+			 epicsInt32 flags)
 
 {
-  int32_t s;
-  int32_t index;
+  epicsInt32 s;
+  epicsInt32 index;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -2014,22 +2015,22 @@ int32_t icb_hvps_set_state (ICB_CCNIM_HVPS *hvps,
 *
 *******************************************************************************/
 
-int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
+epicsInt32 icb_adc_write (ICB_CCNIM_ADC *adc,
 		    ICB_PARAM_LIST *params,
-		    int32_t flags)
+		    epicsInt32 flags)
 
 {
-  int32_t i;
-  int32_t s=OK;
-  uint32_t dac;
-  uint32_t fbits;
-  int32_t load_dac = FALSE;
-  int32_t index;
+  epicsInt32 i;
+  epicsInt32 s=OK;
+  epicsUInt32 dac;
+  epicsUInt32 fbits;
+  epicsInt32 load_dac = FALSE;
+  epicsInt32 index;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *flag_list;
-  int32_t *flag_vals;
-  uint8_t reg_val;
-  int32_t local_flags;
+  epicsInt32 *flag_vals;
+  epicsUInt8 reg_val;
+  epicsInt32 local_flags;
   ICB_PARAM_LIST *params_start;
 
 /*
@@ -2062,7 +2063,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Convert range in channels to the format the module expects */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->range = *((int32_t *) params->value);
+			adc->range = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     dac = icb_adc_encode_chns (adc->range) << 4;
@@ -2081,7 +2082,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Convert offset in channels to the format the module expects */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->offset = *((int32_t *) params->value);
+			adc->offset = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     dac = ~(adc->offset >> 7);
@@ -2119,7 +2120,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Convert cnvgain channels to the format the module expects */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->cnvgain = *((int32_t *) params->value);
+			adc->cnvgain = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     dac = icb_adc_encode_chns (adc->cnvgain);
@@ -2210,11 +2211,11 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Build a flag parameter list based on the flag bit settings */
 
 		     flag_list = (ICB_PARAM_LIST *) malloc (sizeof (adc_flag_list));
-		     flag_vals = (int32_t *) malloc (sizeof (adc_flag_bits));
+		     flag_vals = (epicsInt32 *) malloc (sizeof (adc_flag_bits));
 		     memcpy (flag_list, adc_flag_list, sizeof (adc_flag_list));
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0) {
-			fbits = *((int32_t *) params->value);
+			fbits = *((epicsInt32 *) params->value);
 			for (i = 0; flag_list[i].pcode != 0; i++) {
 			    flag_vals[i] = ((adc_flag_bits[i] & fbits) != 0);
 			    flag_list[i].value = &flag_vals[i];
@@ -2236,7 +2237,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Set / Clear the anticoincidence mode bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->flags.bit.antic = *((int32_t *) params->value);
+			adc->flags.bit.antic = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (adc->flags.bit.antic)
@@ -2256,7 +2257,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Set / Clear the late coincidence mode bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->flags.bit.latec = *((int32_t *) params->value);
+			adc->flags.bit.latec = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (adc->flags.bit.latec)
@@ -2276,7 +2277,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Set / Clear the delayed peak detect bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->flags.bit.delpk = *((int32_t *) params->value);
+			adc->flags.bit.delpk = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (adc->flags.bit.delpk)
@@ -2296,7 +2297,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Set / Clear the non-overlap transfer bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->flags.bit.nonov = *((int32_t *) params->value);
+			adc->flags.bit.nonov = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (adc->flags.bit.nonov)
@@ -2316,7 +2317,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 		/* Set / Clear the LTC/PUR EOC bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->flags.bit.ltcpur = *((int32_t *) params->value);
+			adc->flags.bit.ltcpur = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (adc->flags.bit.ltcpur)
@@ -2334,7 +2335,7 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 					/*------------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			adc->flags.bit.atten = *((int32_t *) params->value);
+			adc->flags.bit.atten = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (adc->flags.bit.atten)
@@ -2404,12 +2405,12 @@ int32_t icb_adc_write (ICB_CCNIM_ADC *adc,
 *
 *******************************************************************************/
 
-int32_t icb_adc_read (ICB_CCNIM_ADC *adc,
+epicsInt32 icb_adc_read (ICB_CCNIM_ADC *adc,
 		   ICB_PARAM_LIST *params,
-		   int32_t flags)
+		   epicsInt32 flags)
 
 {
-  int32_t index;
+  epicsInt32 index;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *params_start;
 
@@ -2439,14 +2440,14 @@ int32_t icb_adc_read (ICB_CCNIM_ADC *adc,
 		case CAM_L_ADCRANGE:	/* Range			*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->range;
+		     *((epicsInt32 *) params->value) = adc->range;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCOFFSET:	/* Offset			*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->offset;
+		     *((epicsInt32 *) params->value) = adc->offset;
 		     break;
 
 					/*------------------------------*/
@@ -2460,7 +2461,7 @@ int32_t icb_adc_read (ICB_CCNIM_ADC *adc,
 		case CAM_L_CNVGAIN:	/* Conversion Gain		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->cnvgain;
+		     *((epicsInt32 *) params->value) = adc->cnvgain;
 		     break;
 
 					/*------------------------------*/
@@ -2488,56 +2489,56 @@ int32_t icb_adc_read (ICB_CCNIM_ADC *adc,
 		case CAM_L_ADCFLAGS:	/* ADC Mode flags		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = adc->flags.lword;
+		     *((epicsUInt32 *) params->value) = adc->flags.lword;
 		     continue;
 
 					/*------------------------------*/
 		case CAM_L_ADCFANTIC:	/* Anti-coincidence mode	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->flags.bit.antic;
+		     *((epicsInt32 *) params->value) = adc->flags.bit.antic;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCFLATEC:	/* Late (vs early) coinc mode	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->flags.bit.latec;
+		     *((epicsInt32 *) params->value) = adc->flags.bit.latec;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCFDELPK:	/* Delayed (vs auto) peak detect*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->flags.bit.delpk;
+		     *((epicsInt32 *) params->value) = adc->flags.bit.delpk;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCFNONOV:	/* Non-overlap transfer mode	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->flags.bit.nonov;
+		     *((epicsInt32 *) params->value) = adc->flags.bit.nonov;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCFLTCPUR:	/* LTC/PUR Output signal	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->flags.bit.ltcpur;
+		     *((epicsInt32 *) params->value) = adc->flags.bit.ltcpur;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCFONLINE:	/* Module on-line		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = adc->flags.bit.online;
+		     *((epicsUInt32 *) params->value) = adc->flags.bit.online;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCFATTEN:	/* Module requires attention	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = adc->flags.bit.atten;
+		     *((epicsUInt32 *) params->value) = adc->flags.bit.atten;
 		     break;
 
 		/*======================================================*/
@@ -2548,98 +2549,98 @@ int32_t icb_adc_read (ICB_CCNIM_ADC *adc,
 		case CAM_L_ADCVFLAGS:	/* Verify Flags field		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = adc->vflags.lword;
+		     *((epicsUInt32 *) params->value) = adc->vflags.lword;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFID:	/* VF: Module ID 		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.id;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.id;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFRANGE:	/* VF: Range			*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.range;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.range;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFOFFSET:	/* VF: Offset			*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.offset;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.offset;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFACQMODE:/* VF: Acquisition Mode		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.acqmode;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.acqmode;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFCNVGAIN:/* VF: Conversion Gain		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.cnvgain;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.cnvgain;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFLLD:	/* VF: Lower level discriminator*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.lld;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.lld;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFULD:	/* VF: Upper level discriminator*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.uld;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.uld;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFZERO:	/* VF: Zero			*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.zero;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.zero;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFANTIC:	/* VF: Anti-coinc. mode		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.antic;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.antic;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFLATEC:	/* VF: Late coinc mode		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.latec;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.latec;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFDELPK:	/* VF: Delayed peak detect	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.delpk;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.delpk;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFNONOV:	/* VF: Non-overlap transfer	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.nonov;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.nonov;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_ADCVFLTCPUR:	/* VF: LTC/PUR Output	 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = adc->vflags.bit.ltcpur;
+		     *((epicsInt32 *) params->value) = adc->vflags.bit.ltcpur;
 		     break;
 
 					/*------------------------------*/
@@ -2680,21 +2681,21 @@ int32_t icb_adc_read (ICB_CCNIM_ADC *adc,
 *
 *  "flags" (longword, by reference) is the reserved flags field
 *
-*  "reg_list" (uint8_t *) The list of ICB registers.  This should be NULL
+*  "reg_list" (epicsUInt8 *) The list of ICB registers.  This should be NULL
 *  when ICB_ADC_VERIFY() is called from the outside.
 *
 *******************************************************************************/
 
-int32_t icb_adc_verify (ICB_CCNIM_ADC *adc,
+epicsInt32 icb_adc_verify (ICB_CCNIM_ADC *adc,
 		     ICB_PARAM_LIST *params,
-		     int32_t flags,
-		     uint8_t *reg_list)
+		     epicsInt32 flags,
+		     epicsUInt8 *reg_list)
 
 {
-  int32_t s;
-  uint8_t registers[14];
-  uint8_t lreg;
-  uint8_t mreg;
+  epicsInt32 s;
+  epicsUInt8 registers[14];
+  epicsUInt8 lreg;
+  epicsUInt8 mreg;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -2874,20 +2875,20 @@ int32_t icb_adc_verify (ICB_CCNIM_ADC *adc,
 *
 *******************************************************************************/
 
-int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
+epicsInt32 icb_amp_write (ICB_CCNIM_AMP *amp,
 		    ICB_PARAM_LIST *params,
-		    int32_t flags)
+		    epicsInt32 flags)
 
 {
-  int32_t i;
-  int32_t s=OK;
-  uint32_t dac;
-  uint32_t fbits;
-  int32_t index;
+  epicsInt32 i;
+  epicsInt32 s=OK;
+  epicsUInt32 dac;
+  epicsUInt32 fbits;
+  epicsInt32 index;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *flag_list;
-  int32_t *flag_vals;
-  int32_t local_flags;
+  epicsInt32 *flag_vals;
+  epicsInt32 local_flags;
   ICB_PARAM_LIST *params_start;
 
 /*
@@ -3031,7 +3032,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 					/*------------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			amp->pz = *((int32_t *) params->value);
+			amp->pz = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		/* Store the pole zero in the module */
@@ -3094,11 +3095,11 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 		/* Build a flag parameter list based on the flag bit settings */
 			
 		     flag_list = (ICB_PARAM_LIST *) malloc (sizeof (amp_flag_list));
-		     flag_vals = (int32_t *) malloc (sizeof (amp_flag_bits));
+		     flag_vals = (epicsInt32 *) malloc (sizeof (amp_flag_bits));
 		     memcpy (flag_list, amp_flag_list, sizeof (amp_flag_list));
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0) {
-			fbits = *((int32_t *) params->value);
+			fbits = *((epicsInt32 *) params->value);
 			for (i = 0; flag_list[i].pcode != 0; i++) {
 			    flag_vals[i] = ((amp_flag_bits[i] & fbits) != 0);
 			    flag_list[i].value = &flag_vals[i];
@@ -3120,7 +3121,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 		/* Set or clear the differential input bit */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			amp->flags.bit.diff = *((int32_t *) params->value);
+			amp->flags.bit.diff = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (amp->flags.bit.diff)
@@ -3140,7 +3141,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 		/* Set or clear the input polarity bit (1=negative) */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			amp->flags.bit.negpol = *((int32_t *) params->value);
+			amp->flags.bit.negpol = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (amp->flags.bit.negpol)
@@ -3160,7 +3161,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 		/* Set or clear the inhibit polarity bit  */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			amp->flags.bit.compinh = *((int32_t *) params->value);
+			amp->flags.bit.compinh = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (amp->flags.bit.compinh)
@@ -3180,7 +3181,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 		/* Set or clear the pileup reject bit (1=negative) */
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			amp->flags.bit.purej = *((int32_t *) params->value);
+			amp->flags.bit.purej = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (amp->flags.bit.purej)
@@ -3198,7 +3199,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 					/*------------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) != 0) break;
-		     if (*((int32_t *) params->value) == 0) break;
+		     if (*((epicsInt32 *) params->value) == 0) break;
 
 		/* Performing an automatic pole zero in the AMP is too */
 		/* complicated to be done here in a switch statement.  */
@@ -3212,7 +3213,7 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 					/*------------------------------*/
 
 		     if ((flags & ICB_M_HDLR_INITIALIZE) == 0)
-			amp->flags.bit.atten = *((int32_t *) params->value);
+			amp->flags.bit.atten = *((epicsInt32 *) params->value);
 		     if (!entry) break;
 
 		     if (amp->flags.bit.atten)
@@ -3273,14 +3274,14 @@ int32_t icb_amp_write (ICB_CCNIM_AMP *amp,
 *
 *******************************************************************************/
 
-int32_t icb_amp_read (ICB_CCNIM_AMP *amp,
+epicsInt32 icb_amp_read (ICB_CCNIM_AMP *amp,
 		   ICB_PARAM_LIST *params,
-		   int32_t flags)
+		   epicsInt32 flags)
 
 {
-  int32_t i;
-  uint32_t reg;
-  int32_t  index;
+  epicsInt32 i;
+  epicsUInt32 reg;
+  epicsInt32  index;
   ICB_MODULE_INFO *entry;
   ICB_PARAM_LIST *params_start;
 
@@ -3352,7 +3353,7 @@ int32_t icb_amp_read (ICB_CCNIM_AMP *amp,
 		case CAM_L_AMPPZ:	/* Amplifier pole zero	 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->pz;
+		     *((epicsInt32 *) params->value) = amp->pz;
 		     break;
 
 					/*------------------------------*/
@@ -3382,7 +3383,7 @@ int32_t icb_amp_read (ICB_CCNIM_AMP *amp,
 		/* Logic 0 indicates the setting.  Bit 0 ==> 0.5 */
 		/* Bit 5 ==> 12 us				 */
 
-		     reg = ((uint32_t) entry->registers[5]);
+		     reg = ((epicsUInt32) entry->registers[5]);
 		     for (i = 0; i < 6; i++, reg >>= 1)
 			if ((reg & 1) == 0) break;
 		     *((float *) params->value) = amp_shape_time[i];
@@ -3397,77 +3398,77 @@ int32_t icb_amp_read (ICB_CCNIM_AMP *amp,
 		case CAM_L_AMPFLAGS:	/* Amplifier Mode flags	  	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.lword;
+		     *((epicsUInt32 *) params->value) = amp->flags.lword;
 		     continue;
 
 					/*--------------------------------*/
 		case CAM_L_AMPFDIFF:	/* Differential (vs normal) input */
 					/*--------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.diff;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.diff;
 		     break;
 
 					/*---------------------------------*/
 		case CAM_L_AMPFNEGPOL:	/* Negative (vs positive) polarity */
 					/*---------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.negpol;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.negpol;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPFCOMPINH:	/* Complement inhibit polarity	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.compinh;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.compinh;
 		     break;
 
 					/*--------------------------------*/
 		case CAM_L_AMPFPUREJ:	/* Pileup reject (enable/disable) */
 					/*--------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.purej;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.purej;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPFONLINE:	/* Module on-line		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.online;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.online;
 		     break;
 
 					 /*-------------------------------*/
 		case CAM_L_AMPFMOTRBUSY: /* Motor Busy 			  */
 					 /*-------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.motrbusy;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.motrbusy;
 		     break;
 
 					/*--------------------------------*/
 		case CAM_L_AMPFPZBUSY:	/* Pole Zero Busy		  */
 					/*--------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.pzbusy;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.pzbusy;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPFATTEN:	/* Module requires attention	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.atten;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.atten;
 		     break;
 
 					/*--------------------------------*/
 		case CAM_L_AMPFPZFAIL:	/* Pole Zero Failed		  */
 					/*--------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.pzfail;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.pzfail;
 		     break;
 
 					/*--------------------------------*/
 		case CAM_L_AMPFMOTRFAIL:/* Fine Gain Motor Failed	  */
 					/*--------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->flags.bit.motrfail;
+		     *((epicsUInt32 *) params->value) = amp->flags.bit.motrfail;
 		     break;
 
 		/*======================================================*/
@@ -3478,105 +3479,105 @@ int32_t icb_amp_read (ICB_CCNIM_AMP *amp,
 		case CAM_L_AMPVFLAGS:	/* Verify Flags field		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->vflags.lword;
+		     *((epicsUInt32 *) params->value) = amp->vflags.lword;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFID:	/* VF: Module ID 		*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.id;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.id;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFPRAMPT:	/* VF: Preamplifier type 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.prampt;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.prampt;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFHWGAIN1:/* VF: Course GAIN	 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.hwgain1;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.hwgain1;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFHWGAIN2:/* VF: Fine Gain	 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.hwgain2;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.hwgain2;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFHWGAIN3:/* VF: Super Fine Gain	 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.hwgain3;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.hwgain3;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFSHAPEM:	/* VF: Amplifier shaping mode	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.shapem;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.shapem;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFPZ:	/* VF: Amplifier pole zero 	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.pz;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.pz;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFBLRTYPE:/* VF: Base-line restore	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.blrtype;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.blrtype;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFDTCTYPE:/* VF: Dead-time control	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.dtctype;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.dtctype;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFTC:	/* VF: Amplifier time constant	*/
 					/*------------------------------*/
 
-		     *((int32_t *) params->value) = amp->vflags.bit.tc;
+		     *((epicsInt32 *) params->value) = amp->vflags.bit.tc;
 		     break;
 
 					/*-------------------------------*/
 		case CAM_L_AMPVFDIFF:	/* VF: Differential input	 */
 					/*-------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->vflags.bit.diff;
+		     *((epicsUInt32 *) params->value) = amp->vflags.bit.diff;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFNEGPOL:	/* VF: Negative polarity	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->vflags.bit.negpol;
+		     *((epicsUInt32 *) params->value) = amp->vflags.bit.negpol;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFCOMPINH:/* VF: Comp. inhibit polarity	*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->vflags.bit.compinh;
+		     *((epicsUInt32 *) params->value) = amp->vflags.bit.compinh;
 		     break;
 
 					/*------------------------------*/
 		case CAM_L_AMPVFPUREJ:	/* VF: Pileup reject 		*/
 					/*------------------------------*/
 
-		     *((uint32_t *) params->value) = amp->vflags.bit.purej;
+		     *((epicsUInt32 *) params->value) = amp->vflags.bit.purej;
 		     break;
 
 					/*------------------------------*/
@@ -3615,22 +3616,22 @@ int32_t icb_amp_read (ICB_CCNIM_AMP *amp,
 *
 *  "flags" (longword, by reference) is the reserved flags field
 *
-*  "reg_list" (uint8_t *) The list of ICB registers.  This should be NULL
+*  "reg_list" (epicsUInt8 *) The list of ICB registers.  This should be NULL
 *  when ICB_AMP_VERIFY() is called from the outside.
 *
 *******************************************************************************/
 
-int32_t icb_amp_verify (ICB_CCNIM_AMP *amp,
+epicsInt32 icb_amp_verify (ICB_CCNIM_AMP *amp,
 		     ICB_PARAM_LIST *params,
-		     int32_t flags,
-		     uint8_t *reg_list)
+		     epicsInt32 flags,
+		     epicsUInt8 *reg_list)
 
 {
-  int32_t i;
-  int32_t s;
-  uint8_t registers[14];
-  uint8_t lreg;
-  uint8_t mreg;
+  epicsInt32 i;
+  epicsInt32 s;
+  epicsUInt8 registers[14];
+  epicsUInt8 lreg;
+  epicsUInt8 mreg;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -3828,11 +3829,11 @@ int32_t icb_amp_verify (ICB_CCNIM_AMP *amp,
 *
 *******************************************************************************/
 
-int32_t icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp,
-			      int32_t flags)
+epicsInt32 icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp,
+			      epicsInt32 flags)
 
 {
-  int32_t i;		/* Loop counter			*/
+  epicsInt32 i;		/* Loop counter			*/
   float vg;		/* Intermediate virtual gain	*/
   static float cg;	/* Computed course gain		*/
   static float fg;	/* Computed fine gain		*/
@@ -3906,7 +3907,7 @@ int32_t icb_amp_vgain_to_hwgain (ICB_CCNIM_AMP *amp,
 *
 *******************************************************************************/
 
-int32_t icb_amp_write_gain2 (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_write_gain2 (ICB_CCNIM_AMP *amp)
 /* 
    This routine runs as an AST on VMS systems.  This means it runs as
    a separate "thread".  Under EPICS this routine presently runs inline
@@ -3916,9 +3917,9 @@ int32_t icb_amp_write_gain2 (ICB_CCNIM_AMP *amp)
 */
 
 {
-  int32_t s;
-  int32_t nvpos;
-  uint32_t pos;
+  epicsInt32 s;
+  epicsInt32 nvpos;
+  epicsUInt32 pos;
   ICB_MODULE_INFO *entry;
   double dt_qsec = 0.25;
 
@@ -3997,12 +3998,12 @@ while (1) {
 *
 *******************************************************************************/
 
-int32_t icb_amp_complete_position (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_complete_position (ICB_CCNIM_AMP *amp)
 
 {
-  int32_t s;
-  uint8_t temp[4];
-  uint32_t pos;
+  epicsInt32 s;
+  epicsUInt8 temp[4];
+  epicsUInt32 pos;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -4063,7 +4064,7 @@ int32_t icb_amp_complete_position (ICB_CCNIM_AMP *amp)
 *
 *******************************************************************************/
 
-int32_t icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp)
 /* 
    This routine runs as an AST on VMS systems.  This means it runs as
    a separate "thread".  Under EPICS this routine presently runs inline
@@ -4073,9 +4074,9 @@ int32_t icb_amp_test_gain2_complete (ICB_CCNIM_AMP *amp)
 */
 
 {
-  int32_t s;
-  uint32_t pos;
-  uint8_t temp[4];
+  epicsInt32 s;
+  epicsUInt32 pos;
+  epicsUInt8 temp[4];
   ICB_MODULE_INFO *entry;
   double dt_qsec = 0.25;
 
@@ -4146,8 +4147,8 @@ while (1) {
 int icb_amp_home_motor (ICB_CCNIM_AMP *amp)
 
 {
-  int32_t s;
-  uint8_t temp[4];
+  epicsInt32 s;
+  epicsUInt8 temp[4];
   ICB_MODULE_INFO *entry;
 
 /*
@@ -4199,7 +4200,7 @@ int icb_amp_home_motor (ICB_CCNIM_AMP *amp)
 *
 *******************************************************************************/
 
-int32_t icb_amp_test_home (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_test_home (ICB_CCNIM_AMP *amp)
 /* 
    This routine runs as an AST on VMS systems.  This means it runs as
    a separate "thread".  Under EPICS this routine presently runs inline
@@ -4209,8 +4210,8 @@ int32_t icb_amp_test_home (ICB_CCNIM_AMP *amp)
 */
 
 {
-  int32_t s;
-  uint8_t temp[4];
+  epicsInt32 s;
+  epicsUInt8 temp[4];
   ICB_MODULE_INFO *entry;
   double dt_qsec= .25;
 
@@ -4268,11 +4269,11 @@ while (1) {
 *
 *******************************************************************************/
 
-uint32_t icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp)
+epicsUInt32 icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp)
 
 {
 
-  int32_t pos;
+  epicsInt32 pos;
 
 /*
 * Make sure the fine gain value is reasonable before computing the
@@ -4309,15 +4310,15 @@ uint32_t icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp)
 
 int icb_amp_get_nvram_motor_pos (index, nvpos, flags)
 
-int32_t index;
-int32_t *nvpos;
-int32_t flags;
+epicsInt32 index;
+epicsInt32 *nvpos;
+epicsInt32 flags;
 
 {
-  int32_t s;
-  int32_t i;
-  uint32_t nibble;
-  uint8_t reg_val;
+  epicsInt32 s;
+  epicsInt32 i;
+  epicsUInt32 nibble;
+  epicsUInt8 reg_val;
 
 /*
 * Map the second page of NVRAM.
@@ -4333,7 +4334,7 @@ int32_t flags;
 	*nvpos  = 0;
 	nibble = 0;
 	for (i = 2; i >= 0; i--) {
-	    s = icb_read_nvram (index, i, (int32_t *) &nibble);
+	    s = icb_read_nvram (index, i, (epicsInt32 *) &nibble);
 	    if (s != OK) return s;
 	    *nvpos = (*nvpos * 16)  | nibble;
 	}
@@ -4372,16 +4373,16 @@ int32_t flags;
 
 int icb_amp_put_nvram_motor_pos (index, nvpos, flags)
 
-int32_t index;
-int32_t nvpos;
-int32_t flags;
+epicsInt32 index;
+epicsInt32 nvpos;
+epicsInt32 flags;
 
 {
-  int32_t s;
-  int32_t i;
-  uint8_t reg_val;
+  epicsInt32 s;
+  epicsInt32 i;
+  epicsUInt8 reg_val;
   int8_t nibble;
-  uint32_t temp;
+  epicsUInt32 temp;
   struct icb_module_info_struct *entry;  
 
 /*
@@ -4446,13 +4447,13 @@ int32_t flags;
 
 int icb_amp_put_motor_pos (index, pos, flags)
 
-int32_t index;
-int32_t pos;
-int32_t flags;
+epicsInt32 index;
+epicsInt32 pos;
+epicsInt32 flags;
 
 {
-  int32_t s;
-  uint8_t temp[4];
+  epicsInt32 s;
+  epicsUInt8 temp[4];
   ICB_MODULE_INFO *entry;
   double wait_time = 0.1;	/* for taskDelay */
 
@@ -4528,11 +4529,11 @@ int32_t flags;
 *
 *******************************************************************************/
 
-int32_t icb_amp_start_pz (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_start_pz (ICB_CCNIM_AMP *amp)
 
 {
-  int32_t s=OK;
-  uint8_t reg_val;
+  epicsInt32 s=OK;
+  epicsUInt8 reg_val;
   ICB_MODULE_INFO *entry;
   double dt_qsec = 0.25;
 
@@ -4602,11 +4603,11 @@ abort:
 *
 *******************************************************************************/
 
-int32_t icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_test_pz_complete (ICB_CCNIM_AMP *amp)
 
 {
-  int32_t s;
-  uint8_t temp[4];
+  epicsInt32 s;
+  epicsUInt8 temp[4];
   ICB_MODULE_INFO *entry;
   double dt_qsec = 0.25;
 
@@ -4667,10 +4668,10 @@ while (1) {
 *
 *******************************************************************************/
 
-int32_t icb_amp_write_pz (ICB_CCNIM_AMP *amp)
+epicsInt32 icb_amp_write_pz (ICB_CCNIM_AMP *amp)
 
 {
-  int32_t s;
+  epicsInt32 s;
   ICB_MODULE_INFO *entry;
 
 /*
@@ -4726,11 +4727,11 @@ int32_t icb_amp_write_pz (ICB_CCNIM_AMP *amp)
 
 int icb_adc_encode_chns (chns)
 
-uint32_t chns;
+epicsUInt32 chns;
 
 {
-  int32_t i;
-  uint32_t mask;
+  epicsInt32 i;
+  epicsUInt32 mask;
 
 /*
 * Find the first set bit.
@@ -4773,14 +4774,14 @@ uint32_t chns;
 *******************************************************************************/
 
 int icb_write_csr (ICB_CCNIM_ANY *ccnim,
-	       int32_t perm_bits,
-	       int32_t temp_bits,
-	       int32_t mask)
+	       epicsInt32 perm_bits,
+	       epicsInt32 temp_bits,
+	       epicsInt32 mask)
 
 {
-  int32_t s;
-  uint8_t csr;
-  uint8_t register_list[16];
+  epicsInt32 s;
+  epicsUInt8 csr;
+  epicsUInt8 register_list[16];
   ICB_MODULE_INFO *entry;
 
 /*
@@ -4836,12 +4837,12 @@ int icb_write_csr (ICB_CCNIM_ANY *ccnim,
 int icb_monitor_modules ()
 
 {
-  int32_t i;
+  epicsInt32 i;
   ICB_MODULE_INFO *entry;
   static float tc;
-  static int32_t tc_verify;
-  static int32_t inhibit;
-  static int32_t overload;
+  static epicsInt32 tc_verify;
+  static epicsInt32 inhibit;
+  static epicsInt32 overload;
   static ICB_PARAM_LIST amp_plist[]  = {{CAM_F_AMPTC,    0, &tc},
 					{CAM_L_AMPVFTC,  0, &tc_verify},
 					{0,              0, 0}};
