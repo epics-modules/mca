@@ -30,7 +30,6 @@
 #include "drvIcbAsyn.h"
 #include "icbDsp.h"
 
-#include "ndtypes.h"
 #include "nmc_sys_defs.h"
 #include "icb_user_subs.h"
 #include "icb_sys_defs.h"

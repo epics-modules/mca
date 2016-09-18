@@ -10,7 +10,6 @@
 #include        <stdlib.h>
 #include        <string.h>
 
-#include "ndtypes.h"
 #include "nmc_sys_defs.h"
 #include "mcamsgdef.h"
 #include "icb_user_subs.h"

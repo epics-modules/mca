@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "ndtypes.h"
+#include "epicsTypes.h"
 
 #define OK 0
 	
@@ -17,17 +17,17 @@
 *
 *  "status" is the status of the operation. Any errors have been signaled.
 *
-*  "str"  (CHAR *) the destination zero terminated string.
+*  "str"  (epicsInt8 *) the destination zero terminated string.
 *
 *  "dsc"  (struct dsc$descriptor *) is the source descriptor
 *
-*  "str"  (LONG) is the max length of the string.
+*  "str"  (epicsInt32) is the max length of the string.
 *
 *******************************************************************************/
 
-int icb_dsc2str (CHAR *str,
-	     CHAR *dsc,
-	     LONG max_len)
+int icb_dsc2str (epicsInt8 *str,
+	     epicsInt8 *dsc,
+	     epicsInt32 max_len)
 {
 
 /*
@@ -55,12 +55,12 @@ int icb_dsc2str (CHAR *str,
 *
 *  "dsc"  (struct dsc$descriptor *) is the destination descriptor
 *
-*  "str"  (CHAR *) the source zero terminated string.
+*  "str"  (epicsInt8 *) the source zero terminated string.
 *
 *******************************************************************************/
 
-int icb_str2dsc (CHAR *dsc,
-	     CHAR *str)
+int icb_str2dsc (epicsInt8 *dsc,
+	     epicsInt8 *str)
 {
 
 /*
@@ -94,19 +94,19 @@ int icb_str2dsc (CHAR *dsc,
 *
 *  "status" is the status of the operation. != 0 if strings are the same
 *
-*  "s1"  (CHAR *) string 1
+*  "s1"  (epicsInt8 *) string 1
 *
-*  "s2"  (CHAR *) string 2
+*  "s2"  (epicsInt8 *) string 2
 *
 *  "len" (int)    Length of strings to compare
 *
 *******************************************************************************/
 
-int StrNCmp (CHAR *s1,
-	     CHAR *s2,
+int StrNCmp (epicsInt8 *s1,
+	     epicsInt8 *s2,
 		 int len)
 {
-  LONG i;
+  epicsInt32 i;
 
 	if (strlen(s1) < len) len = strlen(s1);
 	if (strlen(s2) < len) len = strlen(s2);
@@ -128,19 +128,19 @@ int StrNCmp (CHAR *s1,
 *
 *  "status" is the status of the operation.
 *
-*  "dst"  (CHAR *) destination string
+*  "dst"  (epicsInt8 *) destination string
 *
-*  "src"  (CHAR *) source string
+*  "src"  (epicsInt8 *) source string
 *
 *  "len" (int)    Maximum length
 *
 *******************************************************************************/
 
-int StrUpCase (CHAR *dst,
-	     CHAR *src,
+int StrUpCase (epicsInt8 *dst,
+	     epicsInt8 *src,
 		 int len)
 {
-  LONG i;
+  epicsInt32 i;
 
 	if (strlen(src) < len) len = strlen(src);
 	strncpy(dst, src, len);
@@ -163,9 +163,9 @@ int StrUpCase (CHAR *dst,
 *
 *  "status" is the status of the operation.
 *
-*  "dst"  (CHAR *) destination string
+*  "dst"  (epicsInt8 *) destination string
 *
-*  "src"  (CHAR *) source string
+*  "src"  (epicsInt8 *) source string
 *
 *  "len" (int)    Maximum length
 *
@@ -173,12 +173,12 @@ int StrUpCase (CHAR *dst,
 *
 *******************************************************************************/
 
-int StrTrim (CHAR *dst,
-	     CHAR *src,
+int StrTrim (epicsInt8 *dst,
+	     epicsInt8 *src,
 		 int len,
 		 int *trim_len)
 {
-  LONG i;
+  epicsInt32 i;
 
 	if (strlen(src) < len) len = strlen(src);
 	*trim_len = 0;
