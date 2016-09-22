@@ -29,6 +29,11 @@
 * Declare standard data types for VAX (VMS and ULTRIX) systems
 */
 
+#ifdef __MINGW32__
+/* This will define LONG and is included for pcap so we need to always use it */
+  #include <windows.h>   
+#endif
+
 #if defined(VAX)
 
 typedef int LONG;			/* 32 bit signed integer */
@@ -100,13 +105,17 @@ typedef long HMEM;
 
 #ifdef vxWorks
 #else
-typedef unsigned int ULONG;		/* 32 bit unsigned integer */
-typedef unsigned short int USHORT;	/* 16 bit unsigned integer */
-typedef unsigned char UCHAR; 		/* 8 bit unsigned integer */
+#ifndef __MINGW32__
+  typedef unsigned int ULONG;		/* 32 bit unsigned integer */
+#endif
+  typedef unsigned short int USHORT;	/* 16 bit unsigned integer */
+  typedef unsigned char UCHAR; 		/* 8 bit unsigned integer */
 #endif
 typedef char CHAR;			/* 8 bit signed integer */
 typedef short int SHORT;		/* 16 bit signed integer */
-typedef int LONG;			/* 32 bit signed integer */
+#ifndef __MINGW32__
+  typedef int LONG;			/* 32 bit signed integer */
+#endif
 typedef unsigned char UBYTE;		/* 8 bit unsigned integer */
 typedef float REAL;			/* 32 bit floating point */
 typedef double DOUBLE;			/* 64 bit floating point */
@@ -149,6 +158,9 @@ typedef long HMEM;
 #define HUGE
 #define FAR
 #define FARPASCAL
-#define PASCAL
+#ifdef PASCAL
+  #undef PASCAL
+  #define PASCAL
+#endif
 
 #endif
