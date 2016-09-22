@@ -4143,7 +4143,7 @@ while (1) {
 *
 *******************************************************************************/
 
-int icb_amp_home_motor (ICB_CCNIM_AMP *amp)
+LONG icb_amp_home_motor (ICB_CCNIM_AMP *amp)
 
 {
   LONG s;
@@ -4307,7 +4307,7 @@ ULONG icb_amp_compute_motor_pos (ICB_CCNIM_AMP *amp)
 *
 *******************************************************************************/
 
-int icb_amp_get_nvram_motor_pos (index, nvpos, flags)
+LONG icb_amp_get_nvram_motor_pos (index, nvpos, flags)
 
 LONG index;
 LONG *nvpos;
@@ -4370,7 +4370,7 @@ LONG flags;
 *
 *******************************************************************************/
 
-int icb_amp_put_nvram_motor_pos (index, nvpos, flags)
+LONG icb_amp_put_nvram_motor_pos (index, nvpos, flags)
 
 LONG index;
 LONG nvpos;
@@ -4444,7 +4444,7 @@ LONG flags;
 *
 *******************************************************************************/
 
-int icb_amp_put_motor_pos (index, pos, flags)
+LONG icb_amp_put_motor_pos (index, pos, flags)
 
 LONG index;
 LONG pos;
@@ -4724,7 +4724,7 @@ LONG icb_amp_write_pz (ICB_CCNIM_AMP *amp)
 *
 *******************************************************************************/
 
-int icb_adc_encode_chns (chns)
+LONG icb_adc_encode_chns (chns)
 
 ULONG chns;
 
@@ -4772,7 +4772,7 @@ ULONG chns;
 *
 *******************************************************************************/
 
-int icb_write_csr (ICB_CCNIM_ANY *ccnim,
+LONG icb_write_csr (ICB_CCNIM_ANY *ccnim,
 	       LONG perm_bits,
 	       LONG temp_bits,
 	       LONG mask)
@@ -4833,7 +4833,7 @@ int icb_write_csr (ICB_CCNIM_ANY *ccnim,
 *
 *******************************************************************************/
 
-int icb_monitor_modules ()
+LONG icb_monitor_modules ()
 
 {
   LONG i;
