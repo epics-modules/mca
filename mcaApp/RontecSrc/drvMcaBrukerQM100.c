@@ -27,8 +27,8 @@
 #include "mca.h"
 #include "drvMca.h"
 
-#include <WTypes.h>
-#include <WinBase.h>
+#include <wtypes.h>
+#include <winbase.h>
 #include <epicsExport.h>
 
 
