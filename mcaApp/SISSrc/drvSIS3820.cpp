@@ -244,6 +244,12 @@ drvSIS3820::drvSIS3820(const char *portName, int baseAddress, int interruptVecto
 
   erase();
 
+  /* Set IRQ method to Release on Acknowledge (ROAK)*/  
+  asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: irq ROAK = 0x%08x\n", 
+            driverName, functionName, registers_->irq_config_reg);
+
+  registers_->irq_config_reg |= SIS3820_IRQ_ROAK;
+
   /* Enable interrupts in hardware */  
   asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, 
             "%s:%s: irq before enabling interrupts= 0x%08x\n", 
