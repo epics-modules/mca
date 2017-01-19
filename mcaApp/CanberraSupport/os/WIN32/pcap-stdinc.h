@@ -66,7 +66,10 @@
 #define strdup _strdup
 #endif
 
+/* Need to define inline if not C++ */
+#ifndef __cplusplus
 #define inline __inline 
+#endif
 
 #ifdef __MINGW32__
 #include <stdint.h>
