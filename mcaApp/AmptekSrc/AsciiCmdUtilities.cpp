@@ -1,5 +1,4 @@
 #include "AsciiCmdUtilities.h"
-#pragma warning(disable:4996)
 
 CAsciiCmdUtilities::CAsciiCmdUtilities(void)
 {
@@ -42,7 +41,7 @@ string CAsciiCmdUtilities::RemWhitespace(string strLine)
 string CAsciiCmdUtilities::GetDP5CfgStr(string strFilename)
 {
 	FILE *txtFile;
-	char chLine[LINE_MAX];
+	char chLine[DPP_LINE_MAX];
 	string strCfg;
 	string strLine;
 	long bytesCfg;
@@ -56,7 +55,7 @@ string CAsciiCmdUtilities::GetDP5CfgStr(string strFilename)
 		return "";
 	}
 	strCfg = "";
-	while((fgets(chLine, LINE_MAX, txtFile)) != NULL) {
+	while((fgets(chLine, DPP_LINE_MAX, txtFile)) != NULL) {
 		strLine = strfn.Format("%s",chLine);
 		bytesCfg = (long)strCfg.length();
 		bytesLine = (long)strLine.length();
