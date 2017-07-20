@@ -1,12 +1,11 @@
 
 #include <iostream>
+#include <string.h>
+#include <epicsThread.h>
 #include "ConsoleHelper.h"
 #include "stringSplit.h"
 #include "stringex.h"
 using namespace stringSplit;
-
-#pragma warning(disable:4309)
-#pragma warning(disable:4996)
 
 CConsoleHelper::CConsoleHelper(void)
 {
@@ -131,11 +130,11 @@ bool CConsoleHelper::DppSocket_Connect_Default_DPP(char szDPP_Send[])
 	DppSocket_NumDevices = 0;
 	DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
 	if (DppSocket.NumDevices == 0) {	// try again
-		Sleep(1000);
+	  epicsThreadSleep(1.0);
 		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
 	}
 	if (DppSocket.NumDevices == 0) {	// one last try
-		Sleep(1000);
+	  epicsThreadSleep(1.0);
 		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
 	}
 	DppSocket_NumDevices = DppSocket.NumDevices;
@@ -146,10 +145,10 @@ bool CConsoleHelper::DppSocket_Connect_Default_DPP(char szDPP_Send[])
 			DppSocket_isConnected = true;
 			DppSocket.deviceConnected = true;
 			DppSocket.SetDppAddress(szNetAddress[idxDpp]);
-			Sleep(1000);
+	  epicsThreadSleep(1.0);
 			doAmptekNetFinderPacket(&DppSocket,szNetAddress[idxDpp]);
 			//for (int i=0;i<3;i++) {
-			//	Sleep(1000);
+	    //  epicsThreadSleep(1.0);
 			//	doSpectrumAndStatus(&DppSocket,szNetAddress[idxDpp]);
 			//}
 			break;
@@ -179,8 +178,8 @@ bool CConsoleHelper::DppSocket_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
 	if (DppSocket.deviceConnected) { 
 		bHaveBuffer = (bool) SndCmd.DP5_CMD(DP5Proto.BufferOUT, XmtCmd);
 		if (bHaveBuffer) {
-			DP5Proto.ACK_Received = FALSE;
-			DP5Proto.Packet_Received = FALSE; // a response packet is always expected
+			DP5Proto.ACK_Received = false;
+			DP5Proto.Packet_Received = false; // a response packet is always expected
 			DP5Proto.PIN.STATUS = 0xFF;   // packet invalid - will be overwritten soon by response/ACK packet
 			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn);
 			if (bSentPkt) {
@@ -250,8 +249,8 @@ bool CConsoleHelper::DppSocket_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, C
 	if (DppSocket.deviceConnected) { 
 		bHaveBuffer = (bool) SndCmd.DP5_CMD_Config(DP5Proto.BufferOUT, XmtCmd, CfgOptions);
 		if (bHaveBuffer) {
-			DP5Proto.ACK_Received = FALSE;
-			DP5Proto.Packet_Received = FALSE; // a response packet is always expected
+			DP5Proto.ACK_Received = false;
+			DP5Proto.Packet_Received = false; // a response packet is always expected
 			DP5Proto.PIN.STATUS = 0xFF;   // packet invalid - will be overwritten soon by response/ACK packet
 			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn);
 			if (bSentPkt) {
@@ -327,7 +326,7 @@ void CConsoleHelper::ProcessSpectrumEx(Packet_In PIN, DppStateType DppState)
 	long idxSpectrum;
 	long idxStatus;
     
-	DP5Proto.SPECTRUM.CHANNELS = (SHORT)(256 * pow(2.0,(((PIN.PID2 - 1) & 14) / 2)));
+	DP5Proto.SPECTRUM.CHANNELS = (short)(256 * pow(2.0,(((PIN.PID2 - 1) & 14) / 2)));
 
 	for(idxSpectrum=0;idxSpectrum<DP5Proto.SPECTRUM.CHANNELS;idxSpectrum++) {
         DP5Proto.SPECTRUM.DATA[idxSpectrum] = (long)(PIN.DATA[idxSpectrum * 3]) + (long)(PIN.DATA[idxSpectrum * 3 + 1]) * 256 + (long)(PIN.DATA[idxSpectrum * 3 + 2]) * 65536;
@@ -878,7 +877,7 @@ void CConsoleHelper::SaveSpectrumStringToFile(string strData)
 	strFilename = "SpectrumData.mca";
 
 	if ( (out = fopen(strFilename.c_str(),"wb")) == (FILE *) NULL)
-		strError = strfn.Format("Couldn't open %s for writing.\n", strFilename);
+		strError = strfn.Format("Couldn't open %s for writing.\n", strFilename.c_str());
 	else
 	{
 		fprintf(out,"%s",strData.c_str());
