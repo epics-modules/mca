@@ -1,7 +1,6 @@
 #include "DP5Status.h"
 #include "stringex.h"
 #include "DppConst.h"
-#pragma warning(disable:4996)
 
 CDP5Status::CDP5Status(void)
 {
