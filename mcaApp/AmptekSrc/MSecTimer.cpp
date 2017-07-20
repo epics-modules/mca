@@ -1,4 +1,4 @@
-#include ".\msectimer.h"
+#include "MSecTimer.h"
 
 CMSecTimer::CMSecTimer(void)
 {
