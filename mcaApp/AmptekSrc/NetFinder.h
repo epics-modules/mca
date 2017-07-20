@@ -1,8 +1,18 @@
 #pragma once
-#include "X11Color.h"
 
+#include <string>
+#include <osiSock.h>
 /////////////////////////////////////////////////////////////////////////////
 // NetFinder Data
+
+typedef char BYTE;
+typedef unsigned int UINT;
+typedef unsigned short USHORT;
+typedef unsigned long ULONG;
+typedef std::string CString;
+typedef char* CDialog; 
+typedef bool BOOL;
+typedef int COLORREF;
 
 typedef struct NETDISPLAY_ENTRY {
 	BYTE alert_level;
