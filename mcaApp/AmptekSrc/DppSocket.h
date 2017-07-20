@@ -4,13 +4,8 @@
  
 #if !defined(DppSocket_H__INCLUDED_)
 #define DppSocket_H__INCLUDED_
- 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
 
-#define _WINSOCK_DEPRECATED_NO_WARNINGS 1
-#include "winsock2.h"
+#include <osiSock.h>
 
 class CDppSocket  
 {
@@ -20,11 +15,11 @@ public:
 		int CreateRand();
 		void SetTimeOut(long tv_sec, long tv_usec);
         int SendBroadCast(int m_rand);
-        int UDPSendTo(const unsigned char FAR * buf, int len, const char* lpIP, int nPort);
-        int UDPRecvFrom(unsigned char FAR * buf, int len, char* lpIP, int &nPort);
+        int UDPSendTo(const unsigned char * buf, int len, const char* lpIP, int nPort);
+        int UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort);
 		int BroadCastSendTo(const void* lpBuf, int nBufLen,
-					UINT nHostPort, LPCTSTR lpszHostAddress = NULL, int nFlags = 0);
-		int HaveDatagram(unsigned char FAR * buf, int len);
+					unsigned int nHostPort, const char * lpszHostAddress = NULL, int nFlags = 0);
+		int HaveDatagram(unsigned char * buf, int len);
 		int UDP_recvfrom_TimeOut();
 		int GetLocalSocketInfo();
 		void AddAddress(const char * address, char addrArr[][20], int iIndex);
