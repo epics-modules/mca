@@ -1,35 +1,31 @@
 // DppSocket.cpp: implementation of the CDppSocket class.
 //
 //////////////////////////////////////////////////////////////////////
- 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <osiSock.h>
+#include <epicsThread.h>
+
 #include "DppSocket.h"
-#include "stdio.h"
-#include "tchar.h"
-#include "ws2tcpip.h"
 //#include <iostream>
 //using namespace std;
-#pragma comment(lib, "Ws2_32.lib")
-#pragma warning(disable:4309)
-#pragma warning(disable:4996)
-#pragma warning(disable:4838)
 
 CDppSocket::CDppSocket()
 {
-	WSADATA wsaData;
-	m_rand = 0;
-	WORD wVersionRequested = MAKEWORD( 2, 2 );
-	int iResult = WSAStartup( wVersionRequested, &wsaData);
-	if (iResult != 0) {
+  if (osiSockAttach() == 0) {
 			m_nStartupOK = false;
 	} else {
 			m_nStartupOK = true;
 	}
 	timeout.tv_sec = 3;			// 3 sec, 500 usec timeout for recvfrom
 	timeout.tv_usec = 500;		// reset timeout with SetTimeOut
-	m_hDppSocket = WSASocket(AF_INET,SOCK_DGRAM,0, 0, 0, 0);	// CDppSocket Socktype is always UDP
+	m_hDppSocket = epicsSocketCreate(AF_INET,SOCK_DGRAM,IPPROTO_UDP);	// CDppSocket Socktype is always UDP
 
 	sockaddr_in sin={0};
-	int addrlen = sizeof(sin);
+	socklen_t addrlen = sizeof(sin);
 	int local_port=0;
 	int iRes;
 	iRes = getsockname(m_hDppSocket,(struct sockaddr *)&sin, &addrlen);
@@ -46,8 +42,8 @@ CDppSocket::CDppSocket()
  
 CDppSocket::~CDppSocket()
 {
-	if (m_hDppSocket != INVALID_SOCKET) closesocket(m_hDppSocket);
-	if (m_nStartupOK == 1) WSACleanup();
+	if (m_hDppSocket != INVALID_SOCKET) epicsSocketDestroy(m_hDppSocket);
+	if (m_nStartupOK == 1) osiSockRelease();
 }
 
 // for Sending Dpp Style NetFinder Broadcast Identity Request Packets
@@ -66,31 +62,29 @@ int CDppSocket::CreateRand()
 int CDppSocket::SendBroadCast(int m_rand)
 {
 	int iRetSock;
-	BOOL broadcast = 1;
-	int iPort = 3040;
-	char buff[6] = { 0,0,0,0,0xF4,0xFA };
-	char szIP[100]={"255.255.255.255"};
+	bool broadcast = 1;
+	unsigned char buff[6] = { 0,0,0,0,0xF4,0xFA };
 
 	iRetSock = setsockopt(m_hDppSocket,SOL_SOCKET,SO_BROADCAST,(char*)&broadcast,sizeof(broadcast));
-	if(iRetSock==SOCKET_ERROR) { return iRetSock; }
+	if(iRetSock != 0) { return iRetSock; }
 	buff[2] = (m_rand >> 8);
 	buff[3] = (m_rand & 0x00FF);
 	iRetSock = BroadCastSendTo(buff, 6, 3040, NULL);
-	if(iRetSock==SOCKET_ERROR) { return iRetSock; }
+	if(iRetSock !=0) { return iRetSock; }
 	return 0;
 }
 
-int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, UINT nHostPort, LPCTSTR lpszHostAddress, int nFlags)
+int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char* lpszHostAddress, int nFlags)
 {
-	SOCKADDR_IN sockAddr;
+	sockaddr_in sockAddr;
 	int iRet;
 
 	memset(&sockAddr,0,sizeof(sockAddr));
 
-	LPSTR lpszAscii;
+	const char* lpszAscii;
 	if (lpszHostAddress != NULL)		// broadcast only
 	{
-		return FALSE;
+		return 0;
 	}
 	else
 	{
@@ -103,37 +97,37 @@ int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, UINT nHostPort, 
 		sockAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
 	else
 	{
-		return SOCKET_ERROR;
+		return -1;
 	}
 
 	sockAddr.sin_port = htons((u_short)nHostPort);
-	iRet = sendto(m_hDppSocket, (LPSTR)lpBuf, nBufLen, nFlags, (SOCKADDR*)&sockAddr, sizeof(sockAddr));
+	iRet = sendto(m_hDppSocket, (const char*)lpBuf, nBufLen, nFlags, (sockaddr*)&sockAddr, sizeof(sockAddr));
 	return iRet;
 }
 
 
-int CDppSocket::UDPSendTo(const unsigned char FAR * buf, int len, const char* lpIP, int nPort)
+int CDppSocket::UDPSendTo(const unsigned char * buf, int len, const char* lpIP, int nPort)
 {      
     sockaddr_in SockAddress;
     SockAddress.sin_family=AF_INET;
     if (lpIP == NULL)
             SockAddress.sin_addr.s_addr = htonl (INADDR_BROADCAST);
     else
-            SockAddress.sin_addr.S_un.S_addr=inet_addr(lpIP);
+            SockAddress.sin_addr.s_addr=inet_addr(lpIP);
     SockAddress.sin_port=htons(nPort);
-    int nSen=sendto(m_hDppSocket, (reinterpret_cast<const char*>(buf)), len, 0, (LPSOCKADDR)&SockAddress,sizeof(SockAddress));
+    int nSen=sendto(m_hDppSocket, (reinterpret_cast<const char*>(buf)), len, 0, (sockaddr*)&SockAddress,sizeof(SockAddress));
     return nSen;
 }
 
-int CDppSocket::UDPRecvFrom(unsigned char FAR * buf, int len, char* lpIP, int &nPort)   
+int CDppSocket::UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort)   
 {
     sockaddr_in SockAddress={0};
-    int fromlen=sizeof(SOCKADDR);
+    socklen_t fromlen=sizeof(sockaddr);
     int nRcv;
 
 	nRcv = UDP_recvfrom_TimeOut();
 	if (nRcv > 0) {
-		nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, 0, (LPSOCKADDR)&SockAddress,&fromlen);
+		nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, 0, (sockaddr*)&SockAddress,&fromlen);
  		if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
 		nPort = ntohs(SockAddress.sin_port);
 	}
@@ -141,14 +135,14 @@ int CDppSocket::UDPRecvFrom(unsigned char FAR * buf, int len, char* lpIP, int &n
 }
 
 // get buffer, return number of bytes, leave the data in the rcv socket buffer
-int CDppSocket::HaveDatagram(unsigned char FAR * buf, int len)
+int CDppSocket::HaveDatagram(unsigned char * buf, int len)
 {
     sockaddr_in SockAddress={0};
-    int fromlen=sizeof(SOCKADDR);
+    socklen_t fromlen=sizeof(sockaddr);
     int nRcv;
 	nRcv = UDP_recvfrom_TimeOut();
 	if (nRcv > 0) {
-		nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, MSG_PEEK, (LPSOCKADDR)&SockAddress,&fromlen);
+		nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, MSG_PEEK, (sockaddr*)&SockAddress,&fromlen);
 	}
     return nRcv;
 }
@@ -157,7 +151,7 @@ int CDppSocket::HaveDatagram(unsigned char FAR * buf, int len)
 int CDppSocket::UDP_recvfrom_TimeOut()
 {
   struct timeval UDP_timeout;
-  struct fd_set fds;
+  fd_set fds;
   SOCKET m_socket;
   m_socket = m_hDppSocket;
   UDP_timeout.tv_sec = timeout.tv_sec;
@@ -176,7 +170,7 @@ void CDppSocket::SetTimeOut(long tv_sec, long tv_usec)
 int CDppSocket::GetLocalSocketInfo()
 {
 	sockaddr_in sin={0};
-	int addrlen = sizeof(sin);
+	socklen_t addrlen = sizeof(sin);
 	int local_port=0;
 	if(getsockname(m_hDppSocket,(struct sockaddr *)&sin, &addrlen) == 0) {
 		if (sin.sin_family == AF_INET) {
@@ -232,7 +226,7 @@ bool CDppSocket::SendPacketInet(unsigned char Buffer[], CDppSocket *DppSocket, u
 
 	PLen = (Buffer[4] * 256) + Buffer[5] + 8;
 	success = DppSocket->UDPSendTo(Buffer, PLen, DppSocket->DppAddr, 10001);
- 	Sleep(50);				// 20110907 Added to improve usb communications while running other processes
+ 	epicsThreadSleep(0.05);				// 20110907 Added to improve usb communications while running other processes
 	if (success) {
 		do {	// get all the spectrum packets and status
 				// the data is directly loaded into the data buffer
