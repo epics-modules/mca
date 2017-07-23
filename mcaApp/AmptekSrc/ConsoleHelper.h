@@ -36,7 +36,7 @@ public:
 	/// DppSocket number of devices found.
 	int DppSocket_NumDevices;
 	/// DppSocket connect to the default DPP.
-	bool DppSocket_Connect_Default_DPP(char szDPP_Send[]);
+	bool DppSocket_Connect_Default_DPP(const char *broadcastAddress, char szDPP_Send[]);
 	/// DppSocket close the current connection.
 	void DppSocket_Close_Connection();
 	/// DppSocket send a command that does not require additional processing.
@@ -46,7 +46,7 @@ public:
 	///  DppSocket receive data.
 	bool DppSocket_ReceiveData();
 
-	int doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20], bool bNewSearch=false);
+	int doNetFinderBroadcast(CDppSocket *DppSock, const char *broadcastAddress, char addrArr[][20], bool bNewSearch=false);
 	void doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send[]);
 	void doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[]);
 
