@@ -35,8 +35,9 @@ CDppSocket::CDppSocket()
 				local_port = ntohs(sin.sin_port);
 			}
 		}
+printf("CDppSocket::CDppSocket socket=%d, sin_addr=0x%x, sin_port=%d, local_port=%d\n", m_hDppSocket, sin.sin_addr.s_addr, sin.sin_port, local_port);
 	} else {
-		printf("%d\r\n",iRes);
+		printf("CDppSocket::CDppSocket getsockname failed, return=%d\n",iRes);
 	}
 }
  
@@ -59,49 +60,40 @@ int CDppSocket::CreateRand()
 }
 
 // Send Dpp Style NetFinder Broadcast Identity Request Packets
-int CDppSocket::SendBroadCast(int m_rand)
+int CDppSocket::SendBroadCast(const char *broadcastAddress, int m_rand)
 {
 	int iRetSock;
-	bool broadcast = 1;
+	int broadcast = 1;
 	unsigned char buff[6] = { 0,0,0,0,0xF4,0xFA };
 
 	iRetSock = setsockopt(m_hDppSocket,SOL_SOCKET,SO_BROADCAST,(char*)&broadcast,sizeof(broadcast));
-	if(iRetSock != 0) { return iRetSock; }
+	if(iRetSock != 0) { 
+printf("CDppSocket::SendBroadCast setsockopt returned %d, errno=%d, error=%s\n", iRetSock, errno, strerror(errno));
+	  return iRetSock; 
+	}
 	buff[2] = (m_rand >> 8);
 	buff[3] = (m_rand & 0x00FF);
-	iRetSock = BroadCastSendTo(buff, 6, 3040, NULL);
+	iRetSock = BroadCastSendTo(buff, 6, 3040, broadcastAddress);
 	if(iRetSock !=0) { return iRetSock; }
 	return 0;
 }
 
-int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char* lpszHostAddress, int nFlags)
+int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char* broadcastAddress, int nFlags)
 {
 	sockaddr_in sockAddr;
 	int iRet;
 
+printf("CDppSocket::BroadCastSendTo entry broadcastAddress=%s\n", broadcastAddress);
 	memset(&sockAddr,0,sizeof(sockAddr));
-
-	const char* lpszAscii;
-	if (lpszHostAddress != NULL)		// broadcast only
-	{
-		return 0;
-	}
-	else
-	{
-		lpszAscii = NULL;
-	}
 
 	sockAddr.sin_family = AF_INET;
 
-	if (lpszAscii == NULL)
-		sockAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-	else
-	{
-		return -1;
-	}
+	sockAddr.sin_addr.s_addr = inet_addr(broadcastAddress);
+printf("CDppSocket::BroadCastSendTo sockAddr.sin_addr.s_addr=0x%x\n", sockAddr.sin_addr.s_addr);
 
 	sockAddr.sin_port = htons((u_short)nHostPort);
 	iRet = sendto(m_hDppSocket, (const char*)lpBuf, nBufLen, nFlags, (sockaddr*)&sockAddr, sizeof(sockAddr));
+printf("CDppSocket::BroadCastSendTo sendto returned %d\n", iRet);
 	return iRet;
 }
 
