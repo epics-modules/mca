@@ -18,7 +18,7 @@ CConsoleHelper::~CConsoleHelper(void)
 {
 }
 
-int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20], bool bNewSearch)
+int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, const char *broadcastAddress, char addrArr[][20], bool bNewSearch)
 {
 	unsigned char szBuffer[1024]={0};
 	int nPort;
@@ -38,12 +38,13 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
 	if (bNewSearch) {
 		DppSock->m_rand = DppSock->CreateRand();	// this rand is returned by responding dpps
 	}
-	DppSock->SendBroadCast(DppSock->m_rand);
+	DppSock->SendBroadCast(broadcastAddress, DppSock->m_rand);
 
 	nPort = 3040;
 	do {				// get all the responding devices from netfinder LAN broadcast
 		memset(&szDPP,0,sizeof(szDPP));
 		iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
+printf("CConsoleHelper::doNetFinderBroadcast response size=%d\n", iSize);
 		if (iSize > 0) {
 			if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {	// test if from our broadcast 
 				printf("Address: %s  Port: %d   bytes:%d\r\n",szDPP,nPort,iSize);
@@ -116,7 +117,7 @@ void CConsoleHelper::doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[])
 
 }
 
-bool CConsoleHelper::DppSocket_Connect_Default_DPP(char szDPP_Send[])
+bool CConsoleHelper::DppSocket_Connect_Default_DPP(const char *broadcastAddress, char szDPP_Send[])
 {
 	char szNetAddress[10][20];
 	//char szDPP_Send[20]={"192.168.0.238"};		// the test DPP
@@ -128,14 +129,14 @@ bool CConsoleHelper::DppSocket_Connect_Default_DPP(char szDPP_Send[])
 	DppSocket.deviceConnected = false;
 	memset(&szNetAddress,0,sizeof(szNetAddress));
 	DppSocket_NumDevices = 0;
-	DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
+	DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, broadcastAddress, szNetAddress, true);
 	if (DppSocket.NumDevices == 0) {	// try again
 	  epicsThreadSleep(1.0);
-		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
+		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, broadcastAddress, szNetAddress, true);
 	}
 	if (DppSocket.NumDevices == 0) {	// one last try
 	  epicsThreadSleep(1.0);
-		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
+		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, broadcastAddress, szNetAddress, true);
 	}
 	DppSocket_NumDevices = DppSocket.NumDevices;
 	lTestAddr = inet_addr(szDPP_Send);
