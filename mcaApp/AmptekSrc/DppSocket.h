@@ -14,7 +14,7 @@ public:
         virtual ~CDppSocket();
 		int CreateRand();
 		void SetTimeOut(long tv_sec, long tv_usec);
-        int SendBroadCast(int m_rand);
+        int SendBroadCast(const char* broadcastAddress, int m_rand);
         int UDPSendTo(const unsigned char * buf, int len, const char* lpIP, int nPort);
         int UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort);
 		int BroadCastSendTo(const void* lpBuf, int nBufLen,
