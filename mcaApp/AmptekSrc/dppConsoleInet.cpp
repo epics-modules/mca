@@ -18,14 +18,14 @@ bool bHaveConfigFromHW = false;			// have configuration from hardware
 
 // connect to default dpp
 //		CConsoleHelper::DppSocket_Connect_Default_DPP	// Network connect to default DPP
-bool ConnectToDefaultDPP(char szDPP_Send[])
+bool ConnectToDefaultDPP(const char *broadcastAddress, char szDPP_Send[])
 {
 	bool isConnected=false;
 	cout << endl;
 	cout << "Running DPP Network tests from console..." << endl;
 	cout << endl;
 	cout << "\tConnecting to default Network device..." << endl;
-	if (chdpp.DppSocket_Connect_Default_DPP(szDPP_Send)) {
+	if (chdpp.DppSocket_Connect_Default_DPP(broadcastAddress, szDPP_Send)) {
 		cout << "\t\tNetwork DPP device connected." << endl;
 		cout << "\t\tNetwork DPP devices present: "  << chdpp.DppSocket_NumDevices << endl;
 		isConnected = true;
@@ -165,7 +165,6 @@ void AcquireSpectrum()
 			if (chdpp.DppSocket_SendCommand(XMTPT_SEND_SPECTRUM_STATUS)) {	// request spectrum+status
 				if (chdpp.DppSocket_ReceiveData()) {
 					bDisableMCA = true;				// we are aquiring data, disable mca when done
-					system("cls");
 					chdpp.ConsoleGraph(chdpp.DP5Proto.SPECTRUM.DATA,chdpp.DP5Proto.SPECTRUM.CHANNELS,true,chdpp.DppStatusString);
 					epicsThreadSleep(2.0);
 				}
@@ -312,18 +311,19 @@ void SaveSpectrumFile()
 int main(int argc, char* argv[])
 {
 
-	/// set the test DPP IP address here
-	char szDPP_Send[20]={"164.54.160.174"};		
-
-	system("cls");
-	if (! ConnectToDefaultDPP(szDPP_Send)) {
+  if (argc != 3) {
+    printf("Usage: dppConsoleInet broadcastAddress moduleInetAddress\n");
+    return 1;
+  }
+	
+	if (! ConnectToDefaultDPP(argv[1], argv[2])) {
 		system("Pause");
 		return 1;
 	} else {
 		system("Pause");
 	}
 
-	system("cls");
+	chdpp.DP5Stat.m_DP5_Status.SerialNumber = 0;
 	chdpp.DP5Stat.m_DP5_Status.SerialNumber = 0;
 	GetDppStatus();
 	system("Pause");
@@ -334,33 +334,26 @@ int main(int argc, char* argv[])
 	//////	SendConfigFileToDpp("PX5_Console_Test.txt");    // calls SendCommandString
 	//////	system("Pause");
 
-	system("cls");
 	ReadDppConfigurationFromHardware(false);
 	system("Pause");
 
-	system("cls");
 	DisplayPresets();
 	system("Pause");
 
-	system("cls");
 	SendPresetAcquisitionTime("PRET=20;");
 	SaveSpectrumConfig();
 	system("Pause");
 
-	system("cls");
 	AcquireSpectrum();
 	SaveSpectrumFile();
 	system("Pause");
 
-	system("cls");
 	SendPresetAcquisitionTime("PRET=OFF;");
 	system("Pause");
 
-	system("cls");
 	ReadConfigFile();
 	system("Pause");
 
-	system("cls");
 	CloseConnection();
 	system("Pause");
 
