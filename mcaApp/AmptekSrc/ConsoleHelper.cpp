@@ -44,7 +44,6 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, const char *broadc
 	do {				// get all the responding devices from netfinder LAN broadcast
 		memset(&szDPP,0,sizeof(szDPP));
 		iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
-printf("CConsoleHelper::doNetFinderBroadcast response size=%d\n", iSize);
 		if (iSize > 0) {
 			if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {	// test if from our broadcast 
 				printf("Address: %s  Port: %d   bytes:%d\r\n",szDPP,nPort,iSize);
