@@ -317,16 +317,16 @@ int main(int argc, char* argv[])
   }
 	
 	if (! ConnectToDefaultDPP(argv[1], argv[2])) {
-		system("Pause");
+//		system("Pause");
 		return 1;
 	} else {
-		system("Pause");
+//		system("Pause");
 	}
 
 	chdpp.DP5Stat.m_DP5_Status.SerialNumber = 0;
 	chdpp.DP5Stat.m_DP5_Status.SerialNumber = 0;
 	GetDppStatus();
-	system("Pause");
+//	system("Pause");
 
 	if (chdpp.DP5Stat.m_DP5_Status.SerialNumber == 0) { return 1; }
 
@@ -335,27 +335,27 @@ int main(int argc, char* argv[])
 	//////	system("Pause");
 
 	ReadDppConfigurationFromHardware(false);
-	system("Pause");
+//	system("Pause");
 
 	DisplayPresets();
-	system("Pause");
+//	system("Pause");
 
 	SendPresetAcquisitionTime("PRET=20;");
 	SaveSpectrumConfig();
-	system("Pause");
+//	system("Pause");
 
 	AcquireSpectrum();
 	SaveSpectrumFile();
-	system("Pause");
+//	system("Pause");
 
 	SendPresetAcquisitionTime("PRET=OFF;");
-	system("Pause");
+//	system("Pause");
 
 	ReadConfigFile();
-	system("Pause");
+//	system("Pause");
 
 	CloseConnection();
-	system("Pause");
+//	system("Pause");
 
 	return 0;
 }
