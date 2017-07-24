@@ -35,7 +35,6 @@ CDppSocket::CDppSocket()
 				local_port = ntohs(sin.sin_port);
 			}
 		}
-printf("CDppSocket::CDppSocket socket=%d, sin_addr=0x%x, sin_port=%d, local_port=%d\n", m_hDppSocket, sin.sin_addr.s_addr, sin.sin_port, local_port);
 	} else {
 		printf("CDppSocket::CDppSocket getsockname failed, return=%d\n",iRes);
 	}
@@ -68,7 +67,6 @@ int CDppSocket::SendBroadCast(const char *broadcastAddress, int m_rand)
 
 	iRetSock = setsockopt(m_hDppSocket,SOL_SOCKET,SO_BROADCAST,(char*)&broadcast,sizeof(broadcast));
 	if(iRetSock != 0) { 
-printf("CDppSocket::SendBroadCast setsockopt returned %d, errno=%d, error=%s\n", iRetSock, errno, strerror(errno));
 	  return iRetSock; 
 	}
 	buff[2] = (m_rand >> 8);
@@ -83,17 +81,14 @@ int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHo
 	sockaddr_in sockAddr;
 	int iRet;
 
-printf("CDppSocket::BroadCastSendTo entry broadcastAddress=%s\n", broadcastAddress);
 	memset(&sockAddr,0,sizeof(sockAddr));
 
 	sockAddr.sin_family = AF_INET;
 
 	sockAddr.sin_addr.s_addr = inet_addr(broadcastAddress);
-printf("CDppSocket::BroadCastSendTo sockAddr.sin_addr.s_addr=0x%x\n", sockAddr.sin_addr.s_addr);
 
 	sockAddr.sin_port = htons((u_short)nHostPort);
 	iRet = sendto(m_hDppSocket, (const char*)lpBuf, nBufLen, nFlags, (sockaddr*)&sockAddr, sizeof(sockAddr));
-printf("CDppSocket::BroadCastSendTo sendto returned %d\n", iRet);
 	return iRet;
 }
 
@@ -150,7 +145,7 @@ int CDppSocket::UDP_recvfrom_TimeOut()
   UDP_timeout.tv_usec = timeout.tv_usec;
   FD_ZERO(&fds);
   FD_SET(m_socket, &fds);
-  return select(0, &fds, 0, 0, &UDP_timeout);
+  return select(m_socket+1, &fds, 0, 0, &UDP_timeout);
 }
 
 void CDppSocket::SetTimeOut(long tv_sec, long tv_usec)
@@ -191,9 +186,10 @@ void CDppSocket::SetDppAddress(char addrArr[])
 bool CDppSocket::HaveNetFinderPacket(const unsigned char buffer[], int m_rand, int num_bytes)
 {
 	bool bHaveNetFinderPacket=false;
+
 	if ((num_bytes >= 32) && 
 		(buffer[0] == 0x01) && 
-		(buffer[2] == (m_rand >> 8)) && 
+		(buffer[2] == ((m_rand >> 8) & 0x00FF)) && 
 		(buffer[3] == (m_rand & 0x00FF))) 
 	{		// have Silicon Labs Netfinder packet
 		bHaveNetFinderPacket = true;	
