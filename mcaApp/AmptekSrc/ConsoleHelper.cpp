@@ -1,11 +1,11 @@
 
 #include <iostream>
-#include <string.h>
-#include <epicsThread.h>
 #include "ConsoleHelper.h"
 #include "stringSplit.h"
 #include "stringex.h"
 using namespace stringSplit;
+#pragma warning(disable:4309)
+#include "NetFinder.h"
 
 CConsoleHelper::CConsoleHelper(void)
 {
@@ -18,7 +18,7 @@ CConsoleHelper::~CConsoleHelper(void)
 {
 }
 
-int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, const char *broadcastAddress, char addrArr[][20], bool bNewSearch)
+int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20], bool bNewSearch)
 {
 	unsigned char szBuffer[1024]={0};
 	int nPort;
@@ -30,7 +30,7 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, const char *broadc
 	int iNetFinderLoops = 0;
 
 	//CDppSocket DppSock;
-	printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
+	// printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
 
 	//seed random number generator		// this must be done to provide a new unique rand 
 	srand((unsigned)time(NULL));		// Seed the random-number generator with current time
@@ -38,45 +38,113 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, const char *broadc
 	if (bNewSearch) {
 		DppSock->m_rand = DppSock->CreateRand();	// this rand is returned by responding dpps
 	}
-	DppSock->SendBroadCast(broadcastAddress, DppSock->m_rand);
-
+	DppSock->SendNetFinderBroadCast(DppSock->m_rand);
 	nPort = 3040;
+	Sleep(100);			// give netfinder time for devices to respond
 	do {				// get all the responding devices from netfinder LAN broadcast
 		memset(&szDPP,0,sizeof(szDPP));
+#ifdef WIN32
 		iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
+#else
+		iSize = DppSock->UDPRecvFromNfAddr(szBuffer, 1024, szDPP, nPort);
+#endif
+		printf("size: %d\n", iSize);
 		if (iSize > 0) {
 			if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {	// test if from our broadcast 
-				printf("Address: %s  Port: %d   bytes:%d\r\n",szDPP,nPort,iSize);
+				printf("Address: %s  Port: %d   bytes:%d\n\n",szDPP,nPort,iSize);
 				DppSock->AddAddress(szDPP, addrArr, iDpps);
 				iDpps++;
 			}
 		} else {
-			iNetFinderLoops += 6;		// exit loop
+			iNetFinderLoops += MAX_ENTRIES;		// exit loop
 		}
 		iNetFinderLoops++;
-	} while ((iSize > 0) && (iNetFinderLoops < 6));
+	} while ((iSize > 0) && (iNetFinderLoops < MAX_ENTRIES));
 	printf("found %d units, doNetFinderBroadcast done\r\n", iDpps);
- 	//system("pause");
 	return iDpps;
 }
 
-void CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send[])
+//void CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send[])
+//{
+//	unsigned char szBuffer[1024]={0};
+//	char szDPP[20]={0};
+//	unsigned char szIn[100]={ 0xF5, 0xFA, 0x03, 0x07, 0x00, 0x00, 0xFE, 0x07 };	// Request Netfinder Packet
+//	int nPort;
+//	int iSize;
+//	//char szDPP_Send[20]={"192.168.0.238"};
+//
+//	printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
+//	nPort = 10001;
+//	//DppSock->SetTimeOut(1,0);		// uncomment this line to set the timeout to 1 sec
+//	DppSock->UDPSendTo(szIn, 8, szDPP_Send, 10001);
+//	// only one read is needed for request netfinder "0x02, 0x03" command
+//	iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
+//	printf("amptek netfinder packet bytes:%d  \r\n", iSize);
+//	printf("doNetFinderBroadcast done\r\n");
+//}
+
+int CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send[])
 {
-	unsigned char szBuffer[1024]={0};
-	char szDPP[20]={0};
+	unsigned char szBuffer[1024];
+	char szDPP[20];
 	unsigned char szIn[100]={ 0xF5, 0xFA, 0x03, 0x07, 0x00, 0x00, 0xFE, 0x07 };	// Request Netfinder Packet
 	int nPort;
 	int iSize;
+	CNetFinder FindDpp;					// netfinder helper class
+	int iBufferSize;
+	int idxBuff;
+	int iNumDevices;
+	FindDpp.InitAllEntries();
+	iNumDevices = 0;
+	memset(&szBuffer,0,sizeof(szBuffer));
+	memset(&szDPP,0,sizeof(szDPP));
 	//char szDPP_Send[20]={"192.168.0.238"};
 
-	printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
-	nPort = 10001;
+	if (bConsoleHelperDebug) printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
+	if (bConsoleHelperDebug) printf("IP: %s\r\n", szDPP_Send);
+	if (bConsoleHelperDebug) nPort = 10001;
+	if (bConsoleHelperDebug) printf("nPort: %d\r\n",	nPort);
 	//DppSock->SetTimeOut(1,0);		// uncomment this line to set the timeout to 1 sec
 	DppSock->UDPSendTo(szIn, 8, szDPP_Send, 10001);
+	Sleep(50);
 	// only one read is needed for request netfinder "0x02, 0x03" command
 	iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
-	printf("amptek netfinder packet bytes:%d  \r\n", iSize);
-	printf("doNetFinderBroadcast done\r\n");
+	if (bConsoleHelperDebug) printf("amptek netfinder packet bytes:%d  \r\n", iSize);
+	if (bConsoleHelperDebug) printf("doNetFinderBroadcast done\r\n");
+
+	//---------------------------------------------------------------
+	// Verify NetFinder Packet
+	//---------------------------------------------------------------
+	// check for Amptek protocol Netfinder packet
+	if ((szBuffer[0] == 0xF5) && 
+		(szBuffer[1] == 0xFA) && 
+		(szBuffer[2] == 0x82) && 
+		(szBuffer[3] == 0x08)) {
+		iBufferSize = (int)(szBuffer[4] << 8) + (int)szBuffer[5];
+		if (iBufferSize < iSize) {	// fix the buffer for NetFinder class
+			for(idxBuff=0;idxBuff<iBufferSize;idxBuff++){
+				szBuffer[idxBuff] = szBuffer[idxBuff+6];
+			}
+			for(idxBuff=iBufferSize;idxBuff<iBufferSize+6;idxBuff++){
+				szBuffer[idxBuff] = NULL;
+			}
+			// have Amptek protocol Netfinder packet
+			iNumDevices = 1;
+			if (FindDpp.LastEntry == NO_ENTRIES) {	// Add entry
+				FindDpp.LastEntry = 0;
+				FindDpp.AddEntry(&FindDpp.DppEntries[FindDpp.LastEntry], szBuffer, nPort);
+				DppSock->ulNetFinderAddr = FindDpp.DppEntries[0].SockAddr;
+			}
+		}
+	}
+	if (bConsoleHelperDebug) {
+		memset(&szBuffer,0,sizeof(szBuffer));
+		memset(&szDPP,0,sizeof(szDPP));
+		iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
+		printf("doAmptekNetFinderPacket Socket Clear %d \r\n", iSize);
+		printf("doAmptekNetFinderPacket iNumDevices: %d \r\n", iNumDevices);
+	}
+	return iNumDevices;
 }
 
 void CConsoleHelper::doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[])
@@ -90,7 +158,7 @@ void CConsoleHelper::doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[])
 	int iDataLoops = 0;
 	//char szDPP_Send[20]={"192.168.0.238"};
 
-	printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
+	if (bConsoleHelperDebug) printf("Port: %d\r\n",	DppSock->GetLocalSocketInfo());
 	nPort = 10001;
 	//DppSock->SetTimeOut(1,0);		// uncomment this line to set the timeout to 1 sec
 	DppSock->UDPSendTo(szIn, 8, szDPP_Send, 10001);
@@ -111,12 +179,12 @@ void CConsoleHelper::doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[])
 		}
 		iDataLoops++;
 	} while ((iSize > 0) && (iDataLoops < 50));  // there can be up to 48 packets
-	printf("Spectrum And Status bytes total:%d\r\n", iTotal);
-	printf("doSpectrumAndStatus done\r\n");
+	if (bConsoleHelperDebug) printf("Spectrum And Status bytes total:%d\r\n", iTotal);
+	if (bConsoleHelperDebug) printf("doSpectrumAndStatus done\r\n");
 
 }
 
-bool CConsoleHelper::DppSocket_Connect_Default_DPP(const char *broadcastAddress, char szDPP_Send[])
+bool CConsoleHelper::DppSocket_Connect_Default_DPP(char szDPP_Send[])
 {
 	char szNetAddress[10][20];
 	//char szDPP_Send[20]={"192.168.0.238"};		// the test DPP
@@ -128,14 +196,17 @@ bool CConsoleHelper::DppSocket_Connect_Default_DPP(const char *broadcastAddress,
 	DppSocket.deviceConnected = false;
 	memset(&szNetAddress,0,sizeof(szNetAddress));
 	DppSocket_NumDevices = 0;
-	DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, broadcastAddress, szNetAddress, true);
+
+	//doAmptekNetFinderPacket(&DppSocket, szDPP_Send);
+
+	DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
 	if (DppSocket.NumDevices == 0) {	// try again
-	  epicsThreadSleep(1.0);
-		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, broadcastAddress, szNetAddress, true);
+		Sleep(1000);
+		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
 	}
 	if (DppSocket.NumDevices == 0) {	// one last try
-	  epicsThreadSleep(1.0);
-		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, broadcastAddress, szNetAddress, true);
+		Sleep(1000);
+		DppSocket.NumDevices = doNetFinderBroadcast(&DppSocket, szNetAddress, true);
 	}
 	DppSocket_NumDevices = DppSocket.NumDevices;
 	lTestAddr = inet_addr(szDPP_Send);
@@ -145,10 +216,10 @@ bool CConsoleHelper::DppSocket_Connect_Default_DPP(const char *broadcastAddress,
 			DppSocket_isConnected = true;
 			DppSocket.deviceConnected = true;
 			DppSocket.SetDppAddress(szNetAddress[idxDpp]);
-	  epicsThreadSleep(1.0);
+			Sleep(1000);
 			doAmptekNetFinderPacket(&DppSocket,szNetAddress[idxDpp]);
 			//for (int i=0;i<3;i++) {
-	    //  epicsThreadSleep(1.0);
+			//	Sleep(1000);
 			//	doSpectrumAndStatus(&DppSocket,szNetAddress[idxDpp]);
 			//}
 			break;
@@ -156,6 +227,41 @@ bool CConsoleHelper::DppSocket_Connect_Default_DPP(const char *broadcastAddress,
 	}
 	return (DppSocket_isConnected);
 }
+
+//===================================================================
+//===================================================================
+//===================================================================
+bool CConsoleHelper::DppSocket_Connect_Direct_DPP(char szDPP_Send[])
+{
+	unsigned long lTestAddr;
+	unsigned long lDppAddr;
+	DppSocket_isConnected = false;
+	DppSocket.deviceConnected = false;
+	DppSocket_NumDevices = 0;
+	DppSocket.ulNetFinderAddr = 0;
+	DppSocket.NumDevices = doAmptekNetFinderPacket(&DppSocket, szDPP_Send);
+	if (DppSocket.NumDevices == 0) {	// try again
+		Sleep(1000);
+		DppSocket.NumDevices = doAmptekNetFinderPacket(&DppSocket, szDPP_Send);
+	}
+	if (DppSocket.NumDevices == 0) {	// one last try
+		Sleep(1000);
+		DppSocket.NumDevices = doAmptekNetFinderPacket(&DppSocket, szDPP_Send);
+	}
+	DppSocket_NumDevices = DppSocket.NumDevices;
+	lTestAddr = inet_addr(szDPP_Send);
+	lDppAddr = DppSocket.ulNetFinderAddr;
+	if (lTestAddr == lDppAddr) {
+		DppSocket_isConnected = true;
+		DppSocket.deviceConnected = true;
+		DppSocket.SetDppAddress(szDPP_Send);
+	}
+	return (DppSocket_isConnected);
+}
+
+//===================================================================
+//===================================================================
+//===================================================================
 
 void CConsoleHelper::DppSocket_Close_Connection()
 {
@@ -173,17 +279,36 @@ bool CConsoleHelper::DppSocket_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
     bool bHaveBuffer;
     bool bSentPkt;
 	bool bMessageSent;
-
+	bool bHaveReturnSize;
+	int iReturnSize = 24648;
+	bHaveReturnSize = false;
+	if (bConsoleHelperDebug) cout << "" << endl;
 	bMessageSent = false;
 	if (DppSocket.deviceConnected) { 
+		if (bConsoleHelperDebug) cout << "Device Socket Connected" << endl;
 		bHaveBuffer = (bool) SndCmd.DP5_CMD(DP5Proto.BufferOUT, XmtCmd);
+		if (bConsoleHelperDebug) cout << "Have Send Buffer" << endl;
 		if (bHaveBuffer) {
 			DP5Proto.ACK_Received = false;
 			DP5Proto.Packet_Received = false; // a response packet is always expected
 			DP5Proto.PIN.STATUS = 0xFF;   // packet invalid - will be overwritten soon by response/ACK packet
-			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn);
+			if (bConsoleHelperDebug) cout << "Packet ready to send" << endl;
+			if (XmtCmd == XMTPT_SEND_STATUS) {
+				iReturnSize = 72;
+				bHaveReturnSize = true;
+			}
+			
+			if (bHaveReturnSize) {
+				bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn, iReturnSize);
+			} else {
+				bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn);
+			}
+			if (bConsoleHelperDebug) cout << "Packet Sent" << endl;
 			if (bSentPkt) {
+				if (bConsoleHelperDebug) cout << "Packet transmit successful" << endl;
 	            bMessageSent = true;
+			} else {
+				if (bConsoleHelperDebug) cout << "Packet transmit error" << endl;
 			}
 		}
 	}
@@ -252,7 +377,7 @@ bool CConsoleHelper::DppSocket_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, C
 			DP5Proto.ACK_Received = false;
 			DP5Proto.Packet_Received = false; // a response packet is always expected
 			DP5Proto.PIN.STATUS = 0xFF;   // packet invalid - will be overwritten soon by response/ACK packet
-			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn);
+			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn, 8);
 			if (bSentPkt) {
 				bMessageSent = true;
 			}
@@ -966,4 +1091,3 @@ vector<string> CConsoleHelper::MakeDp5CmdList()
 	strCfgArr.push_back("BOOT");
 	return strCfgArr;
 }
-

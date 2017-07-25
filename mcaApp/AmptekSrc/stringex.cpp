@@ -58,13 +58,3 @@ std::string stringex::MakeLower(string StdString)
   }
   return StdString;
 }
-
-
-
-
-
-
-
-
-
-

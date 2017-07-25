@@ -113,7 +113,7 @@ bool CSendCommand::DP5_CMD(unsigned char Buffer[], TRANSMIT_PACKET_TYPE XmtCmd)
 			//break;
         //case XMTPT_SEND_ROI_OR_FIXED_BLOCK:
 			//break;
-   //     case XMTPT_PX4_STYLE_CONFIG_PACKET:
+        //case XMTPT_PX4_STYLE_CONFIG_PACKET:
 			//break;
 		case XMTPT_SCA_READ_CONFIG_PACKET:
 			strCfg = "";
@@ -296,7 +296,7 @@ bool CSendCommand::DP5_CMD_Config(unsigned char Buffer[], TRANSMIT_PACKET_TYPE X
 				strCfg = AsciiCmdUtil.RemoveCmd("GAIA",strCfg);
 				strCfg = AsciiCmdUtil.RemoveCmd("GAIF",strCfg);
 			}
-			strCfg = AsciiCmdUtil.RemoveCmdByDeviceType(strCfg, CfgOptions.PC5_PRESENT, CfgOptions.DppType);
+			strCfg = AsciiCmdUtil.RemoveCmdByDeviceType(strCfg, CfgOptions.PC5_PRESENT, CfgOptions.DppType, CfgOptions.isDP5_RevDxGains, CfgOptions.DPP_ECO);
 			lLen = (long)strCfg.length();
 			if (lLen > 0) {
 				strCfg = AsciiCmdUtil.MakeUpper(strCfg);
@@ -325,7 +325,7 @@ bool CSendCommand::DP5_CMD_Config(unsigned char Buffer[], TRANSMIT_PACKET_TYPE X
 			//		CfgOptions.PC5_PRESENT
 			//		CfgOptions.DppType
 			strCfg = "";
-			strCfg = AsciiCmdUtil.CreateFullReadBackCmd(CfgOptions.PC5_PRESENT, CfgOptions.DppType);
+			strCfg = AsciiCmdUtil.CreateFullReadBackCmd(CfgOptions.PC5_PRESENT, CfgOptions.DppType, CfgOptions.isDP5_RevDxGains, CfgOptions.DPP_ECO);
 			lLen = (long)strCfg.length();
 			if (lLen > 0) {
 				strCfg = AsciiCmdUtil.MakeUpper(strCfg);

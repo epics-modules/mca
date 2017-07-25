@@ -1,6 +1,9 @@
 #include "DP5Status.h"
 #include "stringex.h"
 #include "DppConst.h"
+#ifdef _WIN32
+    #pragma warning(disable:4996)
+#endif
 
 CDP5Status::CDP5Status(void)
 {
@@ -13,6 +16,7 @@ CDP5Status::~CDP5Status(void)
 void CDP5Status::Process_Status(DP4_FORMAT_STATUS *m_DP5_Status)
 {
 	bool bDMCA_LiveTime = false;
+	unsigned int uiFwBuild = 0;
 
 	m_DP5_Status->DEVICE_ID = m_DP5_Status->RAW[39];
     m_DP5_Status->FastCount = DppUtil.LongWordToDouble(0, m_DP5_Status->RAW);
@@ -63,7 +67,7 @@ void CDP5Status::Process_Status(DP4_FORMAT_STATUS *m_DP5_Status)
 
     m_DP5_Status->PresetRtDone = ((m_DP5_Status->RAW[35] & 128) == 128);
 
-	//BYTE:35 BIT:D6 
+	//unsigned char:35 BIT:D6 
 	// == Preset LiveTime Done for MCA8000D
 	// == FAST Thresh locked for other dpp devices
 	m_DP5_Status->PresetLtDone = false;
@@ -111,6 +115,7 @@ void CDP5Status::Process_Status(DP4_FORMAT_STATUS *m_DP5_Status)
 	m_DP5_Status->HPGe_HV_INH_POL = false;
 	m_DP5_Status->AU34_2 = false;
 	m_DP5_Status->isAscInstalled = false;
+	m_DP5_Status->isDP5_RevDxGains = false;
 	if (m_DP5_Status->DEVICE_ID == dppPX5) {
 		if (m_DP5_Status->DPP_options == PX5_OPTION_HPGe_HVPS) {
 			m_DP5_Status->HPGe_HV_INH = ((m_DP5_Status->RAW[42] & 32) == 32);
@@ -121,10 +126,48 @@ void CDP5Status::Process_Status(DP4_FORMAT_STATUS *m_DP5_Status)
 			}
 		}
 	} else if ((m_DP5_Status->DEVICE_ID == dppDP5G) || (m_DP5_Status->DEVICE_ID == dppTB5)) {
-		if (m_DP5_Status->DPP_ECO == 1) {
+		if ((m_DP5_Status->DPP_ECO == 1) || (m_DP5_Status->DPP_ECO == 2)) {
+			// DPP_ECO == 2 80MHz option added 20150409
 			m_DP5_Status->bScintHas80MHzOption = true;
 		}
+	} else if (m_DP5_Status->DEVICE_ID == dppDP5) {
+		uiFwBuild = m_DP5_Status->Firmware;
+		uiFwBuild = uiFwBuild << 8;
+		uiFwBuild = uiFwBuild + m_DP5_Status->Build;
+		// uiFwBuild - firmware with build for comparison
+		if (uiFwBuild >= 0x686) {
+			// 0xFF Value indicates old Analog Gain Count of 16
+			// Values < 0xFF indicate new gain count of 24 and new board rev
+			// "DP5 G3 Configuration P" will not be used (==0xFF)
+			if (m_DP5_Status->DPP_ECO < 0xFF) {		
+				m_DP5_Status->isDP5_RevDxGains = true;
+			}
+			
+		}
+
 	}
+}
+
+string CDP5Status::DP5_Dx_OptionFlags(unsigned char DP5_Dx_Options) {
+	unsigned char D7D6;
+	unsigned char D5D4;
+	unsigned char D3D0;
+	string strRev("");
+	stringex strfn;
+
+	//D7-D6: 0 = DP5 Rev D
+	//       1 = DP5 Rev E (future)
+	//       2 = DP5 Rev F (future)
+	//       3 = DP5 Rev G (future)
+	D7D6 = ((DP5_Dx_Options >> 6) & 0x03) + 'D';
+	//D5-D4: minor rev, 0-3 (i.e. Rev D0, D1 etc.)
+	D5D4 = ((DP5_Dx_Options >> 4) & 0x03);
+	//D3-D0: Configuration 0 = A, 1=B, 2=C... 15=P.
+	D3D0 = (DP5_Dx_Options & 0x0F) + 'A';
+
+	strRev = strfn.Format("DP5 Rev %c%d Configuration %c",D7D6,D5D4,D3D0);
+	return(strRev);
+
 }
 
 string CDP5Status::ShowStatusValueStrings(DP4_FORMAT_STATUS m_DP5_Status) 
@@ -330,7 +373,7 @@ void CDP5Status::Process_Diagnostics(Packet_In PIN, DiagDataType *dd, int device
     dd->SRAMTestPass = (dd->SRAMTestData == 0xFFFFFF);
     dd->TempOffset = PIN.DATA[180] + 256 * (PIN.DATA[180] > 127);  // 8-bit signed value
 
-	if (device_type == devtypeDP5) {
+	if ((device_type == devtypeDP5) || (device_type == devtypeDP5X)) {
 		for(idxVal=0;idxVal<10;idxVal++){
 			dd->ADC_V[idxVal] = (float)((((PIN.DATA[5 + idxVal * 2] & 3) * 256) + PIN.DATA[6 + idxVal * 2]) * 2.44 / 1024.0 * DP5_ADC_Gain[idxVal]); // convert counts to engineering units (C or V)
 		}
@@ -395,15 +438,15 @@ void CDP5Status::Process_Diagnostics(Packet_In PIN, DiagDataType *dd, int device
 	for(idxVal=0;idxVal<=191;idxVal++) {
         dd->DiagData[idxVal] = PIN.DATA[idxVal + 39];
     }
-	//string cstrData;
-	//cstrData = DisplayBufferArray(PIN.DATA, 256);
-	//SaveStringDataToFile(cstrData);
+	//string strData;
+	//strData = DisplayBufferArray(PIN.DATA, 256);
+	//SaveStringDataToFile(strData);
 }
 
 string CDP5Status::DiagnosticsToString(DiagDataType dd, int device_type)
 {
     long idxVal;
-	string cstrVal;
+	string strVal;
     string strDiag;
 	stringex strfn;
     
@@ -416,7 +459,7 @@ string CDP5Status::DiagnosticsToString(DiagDataType dd, int device_type)
         strDiag += "ERROR @ 0x" + FmtHex(dd.SRAMTestData, 6) + "\r\n";
     }
 
-	if (device_type == devtypeDP5) {
+	if ((device_type == devtypeDP5) || (device_type == devtypeDP5X)) {
 		strDiag += "DP5 Temp (raw): " + dd.strTempRaw + "\r\n";
 		strDiag += "DP5 Temp (cal'd): " + dd.strTempCal + "\r\n";
 		strDiag += "PWR: " + FmtPc5Pwr(dd.ADC_V[2]) + "\r\n";
@@ -431,10 +474,10 @@ string CDP5Status::DiagnosticsToString(DiagDataType dd, int device_type)
 		strDiag += "\r\n";
 		if (dd.PC5_PRESENT) {
 			strDiag += "PC5: Present\r\n";
-			cstrVal = strfn.Format("%dV",(int)(dd.PC5_V[0]));
-			strDiag += "HV: " + cstrVal + "\r\n";
-			cstrVal = strfn.Format("%#.1fK",dd.PC5_V[1]);
-			strDiag += "Detector Temp: " + cstrVal + "\r\n";
+			strVal = strfn.Format("%dV",(int)(dd.PC5_V[0]));
+			strDiag += "HV: " + strVal + "\r\n";
+			strVal = strfn.Format("%#.1fK",dd.PC5_V[1]);
+			strDiag += "Detector Temp: " + strVal + "\r\n";
 			strDiag += "+8.5/5V: " + FmtPc5Pwr(dd.PC5_V[2]) + "\r\n";
 			if (dd.PC5_SN > -1) {
 				strDiag += "PC5 S/N: " + FmtLng(dd.PC5_SN) + "\r\n";
@@ -491,7 +534,7 @@ string CDP5Status::DiagnosticsToString(DiagDataType dd, int device_type)
 string CDP5Status::DiagStrPX5Option(DiagDataType dd, int device_type)
 {
     long idxVal;
-	string cstrVal;
+	string strVal;
     string strDiag;
  	stringex strfn;
    
@@ -536,57 +579,57 @@ string CDP5Status::DiagStrPX5Option(DiagDataType dd, int device_type)
 
 string CDP5Status::FmtHvPwr(float fVal) 
 {
-	string cstrVal;
+	string strVal;
 	stringex strfn;
-	cstrVal = strfn.Format("%#.1fV", fVal);	// "#.##0V"
-	return cstrVal;
+	strVal = strfn.Format("%#.1fV", fVal);	// "#.##0V"
+	return strVal;
 }
 
 string CDP5Status::FmtPc5Pwr(float fVal) 
 {
-	string cstrVal;
+	string strVal;
 	stringex strfn;
-	cstrVal = strfn.Format("%#.3fV", fVal);	// "#.##0V"
-	return cstrVal;
+	strVal = strfn.Format("%#.3fV", fVal);	// "#.##0V"
+	return strVal;
 }
 
 string CDP5Status::FmtPc5Temp(float fVal) 
 {
-	string cstrVal;
+	string strVal;
 	stringex strfn;
-	cstrVal = strfn.Format("%#.1fK", fVal);	// "#.##0V"
-	return cstrVal;
+	strVal = strfn.Format("%#.1fK", fVal);	// "#.##0V"
+	return strVal;
 }
 
 string CDP5Status::FmtHex(long FmtHex, long HexDig) 
 {
-	string cstrHex;
-	string cstrFmt;
+	string strHex;
+	string strFmt;
 	stringex strfn;
-	cstrFmt = strfn.Format("%d",HexDig);		// max size of 0 pad
-	cstrFmt = "%0" + cstrFmt + "X";		// string format specifier
-	cstrHex = strfn.Format(cstrFmt.c_str(), FmtHex);	// create padded string
-	return cstrHex;
+	strFmt = strfn.Format("%d",HexDig);		// max size of 0 pad
+	strFmt = "%0" + strFmt + "X";		// string format specifier
+	strHex = strfn.Format(strFmt.c_str(), FmtHex);	// create padded string
+	return strHex;
 }
 
 string CDP5Status::FmtLng(long lVal) 
 {
-	string cstrVal;
+	string strVal;
 	stringex strfn;
-	cstrVal = strfn.Format("%d", lVal);
-	return cstrVal;
+	strVal = strfn.Format("%d", lVal);
+	return strVal;
 }
 
 string CDP5Status::VersionToStr(unsigned char bVersion)
 {
-	string cstrVerMajor;
-	string cstrVerMinor;
-	string cstrVer;
+	string strVerMajor;
+	string strVerMinor;
+	string strVer;
 	stringex strfn;
-	cstrVerMajor = strfn.Format("%d",((bVersion & 0xF0) / 16));
-	cstrVerMinor = strfn.Format("%02d",(bVersion & 0x0F));
-	cstrVer = cstrVerMajor + "." + cstrVerMinor;
-	return (cstrVer);
+	strVerMajor = strfn.Format("%d",((bVersion & 0xF0) / 16));
+	strVerMinor = strfn.Format("%02d",(bVersion & 0x0F));
+	strVer = strVerMajor + "." + strVerMinor;
+	return (strVer);
 }
 
 string CDP5Status::OnOffStr(bool bOn)
@@ -609,50 +652,53 @@ string CDP5Status::IsAorB(bool bIsA, string strA, string strB)
 
 string CDP5Status::GetDeviceNameFromVal(int DeviceTypeVal) 
 {
-    string cstrDeviceType;
+    string strDeviceType;
 	switch(DeviceTypeVal) {
 		case 0:
-            cstrDeviceType = "DP5";
+            strDeviceType = "DP5";
 			break;
 		case 1:
-            cstrDeviceType = "PX5";
+            strDeviceType = "PX5";
 			break;
 		case 2:
-            cstrDeviceType = "DP5G";
+            strDeviceType = "DP5G";
 			break;
 		case 3:
-            cstrDeviceType = "MCA8000D";
+            strDeviceType = "MCA8000D";
 			break;
 		case 4:
-            cstrDeviceType = "TB5";
+            strDeviceType = "TB5";
+			break;
+		case 5:
+            strDeviceType = "DP5-X";
 			break;
 		default:           //if unknown set to DP5
-            cstrDeviceType = "DP5";
+            strDeviceType = "DP5";
 			break;
 	}
-    return cstrDeviceType;
+    return strDeviceType;
 }
 
 string CDP5Status::DisplayBufferArray(unsigned char buffer[], unsigned long bufSizeIn)
 {
     unsigned long i;
-	string cstrVal("");
-	string cstrMsg("");
+	string strVal("");
+	string strMsg("");
 	stringex strfn;
 	for(i=0;i<bufSizeIn;i++) {
-		cstrVal = strfn.Format("%.2X ",buffer[i]);
-		cstrMsg += cstrVal;
+		strVal = strfn.Format("%.2X ",buffer[i]);
+		strMsg += strVal;
 		//if (((i+1) % 16) == 0 ) { 
-		//	cstrMsg += "\r\n";
+		//	strMsg += "\r\n";
 		//} else 
 		if (((i+1) % 8) == 0 ) {
-		//	cstrMsg += "   ";
-			//cstrMsg += "\r\n";
-			cstrMsg += "\n";
+		//	strMsg += "   ";
+			//strMsg += "\r\n";
+			strMsg += "\n";
 		}
 	}
-	//cstrMsg += "\n";
-	return cstrMsg;
+	//strMsg += "\n";
+	return strMsg;
 }
 
 void CDP5Status::SaveStringDataToFile(string strData)

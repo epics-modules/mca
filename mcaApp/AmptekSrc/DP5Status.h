@@ -74,11 +74,12 @@ typedef struct DP5_DP4_FORMAT_STATUS
 	bool isAscInstalled;
 	bool isAscEnabled;
 	bool bScintHas80MHzOption;
+	bool isDP5_RevDxGains;
 } DP4_FORMAT_STATUS, *PDP4_FORMAT_STATUS;
 
 typedef struct _DiagDataType
 {
-    float ADC_V[12];
+    float ADC_V[11];
     float PC5_V[3];
     bool PC5_PRESENT;
     long PC5_SN;
@@ -115,6 +116,7 @@ public:
 	DiagDataType DiagData;
 	/// Convert a DPP status packet into DP4_FORMAT_STATUS data.
 	void Process_Status(DP4_FORMAT_STATUS *m_DP5_Status);
+	string DP5_Dx_OptionFlags(unsigned char DP5_Dx_Options);
 	/// Convert DP4_FORMAT_STATUS data into a status display string.
 	string ShowStatusValueStrings(DP4_FORMAT_STATUS m_DP5_Status);
 	string PX5_OptionsString(DP4_FORMAT_STATUS m_DP5_Status);

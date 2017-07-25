@@ -9,7 +9,8 @@ typedef struct _CONFIG_OPTIONS
     int DppType;					/// device type indicator
 	string HwCfgDP5Out;				/// custom configuration string
 	bool SendCoarseFineGain;		/// false=Send GAIN, true=Send GAIA,GAIF
-
+	bool isDP5_RevDxGains;			/// use dp5 dx gains
+	unsigned char DPP_ECO;			/// holds eco indicator
 } CONFIG_OPTIONS;
 
 /** CSendCommand prepares all command packets to be sent.

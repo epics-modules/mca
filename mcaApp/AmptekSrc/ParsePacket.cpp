@@ -48,26 +48,26 @@ void CParsePacket::ParsePacketStatus(unsigned char P[], Packet_In *PIN)
 
 string CParsePacket::PID2_TextToString(string strPacketSource, unsigned char PID2)
 {
-	string cstrPID2;
-	cstrPID2 = "";
+	string strPID2;
+	strPID2 = "";
 	switch (PID2) {
 		case PID2_ACK_OK:    // ACK OK
             //PID2_TextToString = strPacketSource + ": OK\t";
-            //cstrPID2 = "ACK_OK";
-			cstrPID2 = "";
+            //strPID2 = "ACK_OK";
+			strPID2 = "";
             //ACK_Received = True
  			break;
         case PID2_ACK_SYNC_ERROR:
-            cstrPID2 = strPacketSource + ": Sync Error\t";
+            strPID2 = strPacketSource + ": Sync Error\t";
 			break;
         case PID2_ACK_PID_ERROR:
-            cstrPID2 = strPacketSource + ": PID Error\t";
+            strPID2 = strPacketSource + ": PID Error\t";
 			break;
         case PID2_ACK_LEN_ERROR:
-            cstrPID2 = strPacketSource + ": Length Error\t";
+            strPID2 = strPacketSource + ": Length Error\t";
 			break;
         case PID2_ACK_CHECKSUM_ERROR:
-            cstrPID2 = strPacketSource + ": Checksum Error\t";
+            strPID2 = strPacketSource + ": Checksum Error\t";
 			break;
         case PID2_ACK_BAD_PARAM:	// now msg includes bad parameter
 			// put the error extractor in a new function
@@ -77,45 +77,41 @@ string CParsePacket::PID2_TextToString(string strPacketSource, unsigned char PID
       //      		[] T$ = T$ + Chr(PIN.DATA(X))
       //      	[] Next X
       //      	[] End If
-            cstrPID2 = strPacketSource + ": Bad Parameter\t";
+            strPID2 = strPacketSource + ": Bad Parameter\t";
 			break;
         case PID2_ACK_BAD_HEX_REC:
-            cstrPID2 = strPacketSource + ": Bad HEX Record\t";
+            strPID2 = strPacketSource + ": Bad HEX Record\t";
 			break;
-
-
-
-
         case PID2_ACK_FPGA_ERROR:
-            cstrPID2 = strPacketSource + ": FPGA not initialized\t";
+            strPID2 = strPacketSource + ": FPGA not initialized\t";
 			break;
         case PID2_ACK_CP2201_NOT_FOUND:
-            cstrPID2 = strPacketSource + ": CP2201 not found\t";
+            strPID2 = strPacketSource + ": CP2201 not found\t";
 			break;
         case PID2_ACK_SCOPE_DATA_NOT_AVAIL:
-            cstrPID2 = strPacketSource + ": No scope data\t";
+            strPID2 = strPacketSource + ": No scope data\t";
 			break;
         case PID2_ACK_PC5_NOT_PRESENT:
-            cstrPID2 = strPacketSource + ": PC5 not present\t";
+            strPID2 = strPacketSource + ": PC5 not present\t";
 			break;
         case PID2_ACK_OK_ETHERNET_SHARE_REQ:
-            cstrPID2 = strPacketSource + ": Ethernet sharing request\t";
+            strPID2 = strPacketSource + ": Ethernet sharing request\t";
 			break;
         case PID2_ACK_ETHERNET_BUSY:
-            cstrPID2 = strPacketSource + ": Ethernet sharing request\t";
+            strPID2 = strPacketSource + ": Ethernet sharing request\t";
 			break;
     		//[] Case :TextLog "ACK: PC5 NOT DETECTED '" + T$ + "'" + vbCrLf
         case PID2_ACK_CAL_DATA_NOT_PRESENT:
-            cstrPID2 = strPacketSource + ": Calibration data not present\t";
+            strPID2 = strPacketSource + ": Calibration data not present\t";
 			break;
         case PID2_ACK_UNRECOG:
-            cstrPID2 = strPacketSource + ": Unrecognized Command\t";
+            strPID2 = strPacketSource + ": Unrecognized Command\t";
 			break;
 		default:
-			cstrPID2 = strPacketSource + ": Unrecognized Error\t";
+			strPID2 = strPacketSource + ": Unrecognized Error\t";
 			break;
 	}
-	return cstrPID2;
+	return strPID2;
 }
 
 long CParsePacket::ParsePacket(unsigned char P[], Packet_In *PIN)
