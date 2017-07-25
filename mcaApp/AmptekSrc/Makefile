@@ -13,7 +13,7 @@ DBD += mcaAmptekSupport.dbd
 
 # Linux
 LIBRARY_IOC += mcaAmptek
-PROD_IOC    += dppConsoleInet
+PROD_IOC    += gccDppConsoleInet
 PROD_IOC    += mcaAmptekApp
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
@@ -56,9 +56,9 @@ mcaAmptekApp_DBD += sscanSupport.dbd
 
 
 #=============================
-dppConsoleInet_SRCS += dppConsoleInet.cpp 
-dppConsoleInet_LIBS += mcaAmptek
-dppConsoleInet_LIBS += $(EPICS_BASE_IOC_LIBS)
+gccDppConsoleInet_SRCS += gccDppConsoleInet.cpp 
+gccDppConsoleInet_LIBS += mcaAmptek
+gccDppConsoleInet_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 
 include $(TOP)/configure/RULES
