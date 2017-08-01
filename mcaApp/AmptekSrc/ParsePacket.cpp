@@ -1,4 +1,5 @@
 #include "ParsePacket.h"
+#include <stdio.h>
 
 CParsePacket::CParsePacket(void)
 {
@@ -119,6 +120,7 @@ long CParsePacket::ParsePacket(unsigned char P[], Packet_In *PIN)
 	long ParsePkt;
     ParsePkt = preqProcessNone;
     ParsePacketStatus (P, PIN);
+printf("CParsePacket::ParsePacket PIN->STATUS=0x%x, PIN->PID1=0x%x\n", PIN->STATUS, PIN->PID1);
     if (PIN->STATUS == PID2_ACK_OK) { // no errors
         if ((PIN->PID1 == PID1_RCV_STATUS) && (PIN->PID2 == PID2_SEND_DP4_STYLE_STATUS)) { // DP4-style status
             ParsePkt = preqProcessStatus;
