@@ -2,6 +2,7 @@
 
 // gccDppConsoleInet.cpp : Defines the entry point for the console application.
 #include <iostream>
+#include <string.h>
 using namespace std; 
 #include "ConsoleHelper.h"
 #ifndef WIN32
@@ -394,7 +395,9 @@ int main(int argc, char * argv[])
 	// DemonstrationMode(DEMO_ACQUIRE);			// DEMO_ALL, DEMO_ACQUIRE, DEMO_STATUS, DEMO_FIND
 
 	// Find the DPP Device
-	char szDPP_Send[20]={"10.87.112.238"};	// set the test DPP IP address here	
+	char szDPP_Send[20];
+	
+	strcpy(szDPP_Send, argv[1]);
 	ConsoleClear();
 
 //=================================================================================================
