@@ -15,6 +15,7 @@
 
 #include <epicsTime.h>
 #include <epicsTypes.h>
+#include <epicsThread.h>
 #include <epicsString.h>
 #include <iocsh.h>
 #include <cantProceed.h>
@@ -32,7 +33,7 @@
 
 static const char *driverName = "drvAmptek";
 
-drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo, int serialNumber)
+drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo)
    : asynPortDriver(portName, 
                     1, /* Maximum address */
                     0, /* Unused, number of parameters */
@@ -41,8 +42,8 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
                     ASYN_CANBLOCK, /* asynFlags.  This driver can block and is not multi-device */
                     1, /* Autoconnect */
                     0, /* Default priority */
-                    0), /* Default stack size*/
-    numModules_(0)
+                    0) /* Default stack size*/
+
 {
     const char *functionName = "drvAmptek";
     
@@ -74,160 +75,97 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(mcaElapsedCountsString,             asynParamFloat64, &mcaElapsedCounts_);          /* float64, read */
 
     interfaceType_ = (amptekInterface_t)interfaceType;
-    serialNumber_ = serialNumber;
+    switch(interfaceType_) {
+        case amptekInterfaceEthernet:
+        case amptekInterfaceUSB:
+        case amptekInterfaceSerial:
+        break;
+        default:
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s unknown interface type=%d\n", 
+                driverName, functionName, interfaceType_);
+            return;
+    }
     addressInfo_ = epicsStrDup(addressInfo);
     
     status = connectDevice();
     if (status) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s cannot connect to device on interface type=%d addressInfo=%s, serialNumber=%d status=%d\n",
-            driverName, functionName, interfaceType_, addressInfo_, serialNumber_, status);
+            "%s::%s cannot connect to device on interface type=%d addressInfo=%s, status=%d\n",
+            driverName, functionName, interfaceType_, addressInfo_, status);
     }
 }
 
 asynStatus drvAmptek::connectDevice()
 {
-    char tempString[256];
-    asynStatus status;
     static const char *functionName = "connectDevice";
 
+    isConnected_ = false;
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
-            strcpy(udpBroadcastPortName_, "UDP_Broadcast_");
-            strcat(udpBroadcastPortName_, portName);
-            strcpy(udpCommandPortName_, "UDP_Command_");
-            strcat(udpCommandPortName_, portName);
-            sprintf(tempString, "%s:%d UDP*", addressInfo_, BROADCAST_PORT);
-            status = (asynStatus)drvAsynIPPortConfigure(udpBroadcastPortName_, tempString, 0, 0, 0);
-            if (status) {
+            if (consoleHelper.DppSocket_Connect_Direct_DPP(addressInfo_)) {
+                asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+                    "%s::%s Network DPP device %s connected, total devices found=%d\n",
+                    driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
+                isConnected_ = true;
+          	} else {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error calling drvAsynIPPortConfigure for broadcast port=%s, IP=%s, status=%d\n", 
-                    driverName, functionName, udpBroadcastPortName_, tempString, status);
-                return asynError;
-            }
-        
-            // Connect to the broadcast port
-            status = pasynOctetSyncIO->connect(udpBroadcastPortName_, 0, &pasynUserUDPBroadcast_, NULL);
-            if (status) {
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error connecting to UDP port, status=%d, error=%s\n", 
-                    driverName, functionName, status, pasynUserUDPBroadcast_->errorMessage);
-                return asynError;
-            }
-            
-            // Find module on network
-            status = findModule();
-            if (status) {
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error finding module, running asynReport to list modules found\n", 
-                    driverName, functionName);
-                report(stdout, 1);
-                return asynError;
-            }
+                    "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
+                    driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
+                isConnected_ = false;
+          	}
+
             break;
 
         case amptekInterfaceUSB:
+            break;
         
         case amptekInterfaceSerial:
-        
-        default:
-            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s unknown interface type=%d\n", 
-                driverName, functionName, interfaceType_);
+            break;
     }
-    return asynSuccess;
-
-}
-
-asynStatus drvAmptek::findModule()
-{
-    size_t nwrite;
-    size_t nread;
-    epicsTimeStamp start;
-    epicsTimeStamp now;
-    epicsFloat64 deltaTime;
-    int status;
-    int eomReason;
-  	unsigned char outBuff[6] = {0,0,0,0,0xF4,0xFA};
-    unsigned char inBuff[1024];
-    char tempString[256];
-    int i;
-    static const char *functionName="findModule";
-
-    epicsTimeGetCurrent(&start);
-    
-    // Put the  current nanoseconds in the buffer as a "random" number
-    outBuff[2] = (start.nsec >> 8);
-    outBuff[3] = (start.nsec & 0x00FF);
-    status = pasynOctetSyncIO->write(pasynUserUDPBroadcast_, (char*)outBuff, sizeof(outBuff), 1.0, &nwrite);
-    if (status) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
-            "%s::%s error calling pasynOctetSyncIO->write to send broadcast messages\n", 
+    consoleHelper.DP5Stat.m_DP5_Status.SerialNumber = 0;
+    if (consoleHelper.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {	// request status
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error calling SendCommand for XMTPT_SEND_STATUS\n",
             driverName, functionName);
         return asynError;
     }
-
-    while (1) {
-        epicsTimeGetCurrent(&now);
-        deltaTime = epicsTimeDiffInSeconds(&now, &start);
-        if (deltaTime > BROADCAST_TIMEOUT) break;
-        status = pasynOctetSyncIO->read(pasynUserUDPBroadcast_, (char*)inBuff, sizeof(inBuff), 0.01, &nread, &eomReason);
-        if ((status == asynTimeout) && (nread > 32)) {
-printf("drvAmptek::findModule nsec1=0x%x, nsec2=0x%x, nread=%d, inBuff=0x%x 0x%x 0x%x 0x%x\n", 
-(int)((start.nsec >> 8) & 0x00FF), (int)(start.nsec & 0x00FF), (int)nread, inBuff[0], inBuff[1], inBuff[2], inBuff[3]);
-            if ((inBuff[0] == 0x01) && 
-                (inBuff[2] == ((start.nsec >> 8) & 0x00FF)) && 
-                (inBuff[3] == (start.nsec & 0x00FF))) {
-printf("Found an Amptek module\n");
-                   // This is an Amptek module
-                   // Get the IP address and serial number
-                   sprintf(moduleInfo_[numModules_].moduleIP, "%d.%d.%d.%d", inBuff[20], inBuff[21], inBuff[22], inBuff[23]);
-                   sscanf((char *)&inBuff[49], "%d", &moduleInfo_[numModules_].serialNumber);
-                   numModules_++;
-            }
-        } else if (status != asynTimeout) {
-            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
-                "%s::%s error calling pasynOctetSyncIO->read to receive broadcast reply\n", 
-                driverName, functionName);
-            return asynError;
-        }
-    }
-
-    // See if the specified module was found
-    for (i=0; i<numModules_; i++) {
-        if (moduleInfo_[i].serialNumber == serialNumber_) break;
-    }
-    
-    if (i == numModules_) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, 
-            "%s:%s: cannot find requested module %d on network\n", 
-            driverName, functionName, serialNumber_);
-        return asynError;
-    }
-    
-    // Create UDP command port
-    epicsSnprintf(tempString, sizeof(tempString), "%s:%d UDP", moduleInfo_[i].moduleIP, COMMAND_PORT);
-    status = drvAsynIPPortConfigure(udpCommandPortName_, tempString, 0, 0, 0);
-    if (status) {
+    if (consoleHelper.DppSocket_ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s:%s: error calling drvAsyIPPortConfigure for UDP command port %s, IP=%s, status=%d\n", 
-            driverName, functionName, udpCommandPortName_, moduleInfo_[i].moduleIP, status);
+            "%s::%s error calling ReceiveData() for XMTPT_SEND_STATUS\n",
+            driverName, functionName);
         return asynError;
     }
-
-    // Connect to UDP command port
-    status = pasynOctetSyncIO->connect(udpCommandPortName_, 0, &pasynUserUDPCommand_, NULL);
-    if (status) {
-        printf("%s:%s: error calling pasynOctetSyncIO->connect for UDP command port, status=%d, error=%s\n", 
-               driverName, functionName, status, pasynUserUDPCommand_->errorMessage);
-        return asynError;
-    }
-    pasynOctetSyncIO->setInputEos(pasynUserUDPCommand_, "\r\n", 2);
-    pasynOctetSyncIO->setOutputEos(pasynUserUDPCommand_, "\r", 1);
- 
+    readConfigurationFromHardware();
+    
     return asynSuccess;
+
 }
 
+asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
+{
+    static const char *functionName = "sendCommand";
+    bool status=true;
+    
+    switch(interfaceType_) {
+        case amptekInterfaceEthernet:
+		        status = consoleHelper.DppSocket_SendCommand(command);
+            break;
+        
+        case amptekInterfaceUSB:
+            break;
+        
+        case amptekInterfaceSerial:
+            break;
+    }
+    if (status == false) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error calling consoleHelper.DppSocket_SendCommand(%d)\n",
+            driverName, functionName, command);
+        return asynError;
+    }
+    return asynSuccess;
+}
 
 asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
@@ -239,14 +177,20 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     if (command == mcaStartAcquire_) {
         if (!acquiring_) {
             acquiring_ = true;
+		        status = sendCommand(XMTPT_ENABLE_MCA_MCS);
             setIntegerParam(mcaAcquiring_, acquiring_);
         }
     }  
     else if (command == mcaStopAcquire_) {
-        ;
+        status = sendCommand(XMTPT_DISABLE_MCA_MCS);
     }
     else if (command == mcaErase_) {
+        status = sendCommand(XMTPT_SEND_CLEAR_SPECTRUM_STATUS);
         memset(pData_, 0, numChannels_ * sizeof(epicsInt32));
+    }
+    else if (command == mcaReadStatus_) {
+        status = sendCommand(XMTPT_SEND_STATUS);
+			  consoleHelper.DppSocket_ReceiveData();
     }
     else if (command == mcaNumChannels_) {
         if ((value >0) && (value != (int)numChannels_)) {
@@ -259,29 +203,125 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     return status;
 }
 
-asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
+asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
+    static const char *functionName = "readInt32";
+
+    if (command == mcaAcquiring_) {
+        *value = consoleHelper.DP5Stat.m_DP5_Status.MCA_EN;
+        acquiring_ = *value;
+    }
+    else {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+            "%s::%s got illegal command %d\n",
+            driverName, functionName, command);
+        status = asynError;
+    }
+    return status;
+}
+
+asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
+{
+    int command = pasynUser->reason;
+    asynStatus status=asynSuccess;
+    static const char *functionName = "readFloat64";
+
+    if (command == mcaDwellTime_) {
+        *value = 0.;
+    }
+    else if (command == mcaElapsedLiveTime_) {
+        *value = consoleHelper.DP5Stat.m_DP5_Status.AccumulationTime;
+    }
+    else if (command == mcaElapsedRealTime_) {
+        *value = consoleHelper.DP5Stat.m_DP5_Status.RealTime;
+    }
+    else if (command == mcaElapsedCounts_) {
+        *value = consoleHelper.DP5Stat.m_DP5_Status.SlowCount;
+    }
+    else {
+        asynPrint(pasynUser, ASYN_TRACE_ERROR,
+            "%s::%s got illegal command %d\n",
+            driverName, functionName, command);
+        status = asynError;
+    }
+    return status;
+}
+
+
+asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
+{
+    int command = pasynUser->reason;
+    CONFIG_OPTIONS CfgOptions;
+    asynStatus status=asynSuccess;
+    char tempString[20];
 
     /* Set the parameter in the parameter library. */
     status = setDoubleParam(command, value);
-    if (command == mcaPresetRealTime_) {
-    }
-    else if (command == mcaPresetLiveTime_) {
+    if ((command == mcaPresetRealTime_) || 
+        (command == mcaPresetLiveTime_)) {
+        consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
+        sprintf(tempString, "%s =%f", command == mcaPresetRealTime_ ? "PREL" : "PRET", value);
+        CfgOptions.HwCfgDP5Out = tempString;
+printf("drvAmptek::writeFloat64 CfgOptions.HwCfgDP5Out=%s\n", CfgOptions.HwCfgDP5Out.c_str());
+epicsThreadSleep(1.0);
+        consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, CfgOptions);
+        readConfigurationFromHardware();
     }
     callParamCallbacks();
     return status;
 }
 
 asynStatus drvAmptek::readInt32Array(asynUser *pasynUser,
-                                        epicsInt32 *data, size_t maxChans, 
-                                        size_t *nactual)
+                                     epicsInt32 *data, size_t maxChans, 
+                                     size_t *nactual)
 {
+    int numChannels;
+    int i;
+    static const char *functionName="readInt32Array";
 
-    if (maxChans > numChannels_) maxChans = numChannels_;
-    memcpy(data, pData_, maxChans * sizeof(epicsInt32));
-    *nactual = maxChans;
+    sendCommand(XMTPT_SEND_SPECTRUM_STATUS);
+    if (consoleHelper.DppSocket_ReceiveData() == false) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error calling ReceiveData() for XMTPT_SEND_SPECTRUM_STATUS\n",
+            driverName, functionName);
+        *nactual = 0;
+        return asynError;
+    }
+    numChannels = consoleHelper.DP5Proto.SPECTRUM.CHANNELS;
+    if (numChannels > (int)maxChans) numChannels = maxChans;
+ printf("numChannels=%d, channel 1000=%ld\n", numChannels, consoleHelper.DP5Proto.SPECTRUM.DATA[1000]);
+    for (i=0; i<numChannels; i++) {
+        data[i] = consoleHelper.DP5Proto.SPECTRUM.DATA[i];
+    }
+    *nactual = numChannels;
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::readConfigurationFromHardware()
+{
+    static const char *functionName="readConfigurationFromHardware";
+    CONFIG_OPTIONS CfgOptions;
+ 
+    consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
+		consoleHelper.ClearConfigReadFormatFlags();	// clear all flags, set flags only for specific readback properties
+		consoleHelper.CfgReadBack = true; // requesting general readback format
+    if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == false) {	// request full configuration
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error calling SendCommand_Config() for XMTPT_FULL_READ_CONFIG_PACKET\n",
+            driverName, functionName);
+        return asynError;
+    }
+    if (consoleHelper.DppSocket_ReceiveData() == false) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error calling ReceiveData() for XMTPT_FULL_READ_CONFIG_PACKET\n",
+            driverName, functionName);
+        return asynError;
+    }
+    if (consoleHelper.HwCfgReady) {		// config is ready
+      haveConfigFromHW_ = true;
+    }
     return asynSuccess;
 }
 
@@ -289,22 +329,32 @@ asynStatus drvAmptek::readInt32Array(asynUser *pasynUser,
 /* Report  parameters */
 void drvAmptek::report(FILE *fp, int details)
 {
-    int i;
     fprintf(fp, "drvAmptek %s interfaceType=%d, addressInfo=%s, serial number=%d\n", 
-            portName, interfaceType_, addressInfo_, serialNumber_);
-    fprintf(fp, "  Number of modules found on network=%d\n", numModules_);
-    for (i=0; i<numModules_; i++) {
-        fprintf(fp, "    Module %d\n", i);
-        fprintf(fp, "      Serial #:  %d\n", moduleInfo_[i].serialNumber);
-        fprintf(fp, "      IP address: %s\n", moduleInfo_[i].moduleIP);
+            portName, interfaceType_, addressInfo_, (int)consoleHelper.DP5Stat.m_DP5_Status.SerialNumber);
+    fprintf(fp, "  Number of modules found on network=%d\n", consoleHelper.DppSocket_NumDevices);
+    if (details > 0) {
+        if (haveConfigFromHW_) {
+            fprintf(fp, "  Preset mode:      %s\n", consoleHelper.strPresetCmd.c_str());
+            fprintf(fp, "  Preset settings:  %s\n", consoleHelper.strPresetVal.c_str());
+            fprintf(fp, "  Accumulation time:  %f\n", consoleHelper.DP5Stat.m_DP5_Status.AccumulationTime);
+            fprintf(fp, "  Real time:          %f\n", consoleHelper.DP5Stat.m_DP5_Status.RealTime);
+            fprintf(fp, "  Live time:          %f\n", consoleHelper.DP5Stat.m_DP5_Status.LiveTime);
+            fprintf(fp, "  MCA_EN:             %d\n", consoleHelper.DP5Stat.m_DP5_Status.MCA_EN);
+            fprintf(fp, "  PRECNT_REACHED:     %d\n", consoleHelper.DP5Stat.m_DP5_Status.PRECNT_REACHED);
+            fprintf(fp, "  PresetRtDone:       %d\n", consoleHelper.DP5Stat.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  PresetRtDone:       %d\n", consoleHelper.DP5Stat.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  Status:\n%s\n", consoleHelper.DP5Stat.GetStatusValueStrings(consoleHelper.DP5Stat.m_DP5_Status).c_str());
+            fprintf(fp, "  Configuration:\n%s\n", consoleHelper.HwCfgDP5.c_str());
+            
+        }
     }
     asynPortDriver::report(fp, details);
 }
 
 extern "C" {
-int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo, int serialNumber)
+int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo)
 {
-    new drvAmptek(portName, interfaceType, addressInfo, serialNumber);
+    new drvAmptek(portName, interfaceType, addressInfo);
     return asynSuccess;
 }
 
@@ -312,15 +362,13 @@ int drvAmptekConfigure(const char *portName, int interfaceType, const char *addr
 static const iocshArg configArg0 = { "portName", iocshArgString};
 static const iocshArg configArg1 = { "interface", iocshArgInt};
 static const iocshArg configArg2 = { "address info", iocshArgString};
-static const iocshArg configArg3 = { "serial number", iocshArgInt};
 static const iocshArg * const configArgs[] = {&configArg0,
                                               &configArg1,
-                                              &configArg2,
-                                              &configArg3};
-static const iocshFuncDef configFuncDef = {"drvAmptekConfigure", 4, configArgs};
+                                              &configArg2};
+static const iocshFuncDef configFuncDef = {"drvAmptekConfigure", 3, configArgs};
 static void configCallFunc(const iocshArgBuf *args)
 {
-    drvAmptekConfigure(args[0].sval, args[1].ival, args[2].sval, args[3].ival);
+    drvAmptekConfigure(args[0].sval, args[1].ival, args[2].sval);
 }
 
 void drvAmptekRegister(void)
