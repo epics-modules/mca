@@ -19,6 +19,8 @@
 #include <asynPortDriver.h>
 #include <epicsTypes.h>
 
+#include <ConsoleHelper.h>
+
 typedef enum {
   amptekInterfaceEthernet,
   amptekInterfaceUSB,
@@ -29,21 +31,17 @@ typedef enum {
 #define MAX_IPNAME_LEN 16
 #define MAX_PORTNAME_LEN 32
 
-typedef struct {
-    int serialNumber;
-    char moduleIP[MAX_IPNAME_LEN];
-} moduleInfo_t;
-
-
 class drvAmptek : public asynPortDriver
 {
   
   public:
-  drvAmptek(const char *portName, int interfaceType, const char *addressInfo, int serialNumber);
+  drvAmptek(const char *portName, int interfaceType, const char *addressInfo);
 
   // These are the methods we override from asynPortDriver
   asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
+  asynStatus readInt32(asynUser *pasynUser, epicsInt32 *value);
   asynStatus writeFloat64(asynUser *pasynUser, epicsFloat64 value);
+  asynStatus readFloat64(asynUser *pasynUser, epicsFloat64 *value);
   asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *data, 
                             size_t maxChans, size_t *nactual);
   virtual void report(FILE *fp, int details);
@@ -75,18 +73,16 @@ class drvAmptek : public asynPortDriver
   int mcaElapsedCounts_;
 
   private:
+  CConsoleHelper consoleHelper;
   asynStatus connectDevice();
   asynStatus findModule();
+  asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
+  asynStatus readConfigurationFromHardware();
+  bool isConnected_;
   bool acquiring_;
+  bool haveConfigFromHW_;
   amptekInterface_t interfaceType_;
-  moduleInfo_t moduleInfo_[MAX_MODULES];
   char *addressInfo_;
-  int serialNumber_;
-  int numModules_;
-  char udpBroadcastPortName_[MAX_PORTNAME_LEN];
-  char udpCommandPortName_[MAX_PORTNAME_LEN];
-  asynUser *pasynUserUDPBroadcast_;
-  asynUser *pasynUserUDPCommand_;
   epicsInt32 *pData_;
   size_t numChannels_;
 };
