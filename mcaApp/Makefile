@@ -19,6 +19,10 @@ SISSrc_DEPEND_DIRS = mcaSrc
 DIRS += RontecSrc
 RontecSrc_DEPEND_DIRS = mcaSrc
 
+# Support for Amptek
+DIRS += AmptekSrc
+AmptecSrc_DEPEND_DIRS = mcaSrc
+
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *db*))
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *Db*))
 include $(TOP)/configure/RULES_DIRS
