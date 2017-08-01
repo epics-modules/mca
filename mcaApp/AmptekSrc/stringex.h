@@ -1,7 +1,7 @@
 #pragma once
 #ifndef STRINGEX_H
 #define STRINGEX_H
-#pragma warning(disable:4996)  // uses _vsnprintf, disable warning, can use _CRT_SECURE_NO_WARNINGS
+//#pragma warning(disable:4996)  // uses _vsnprintf, disable warning, can use _CRT_SECURE_NO_WARNINGS
 //#ifdef _MSC_VER
 //	#define _CRT_SECURE_NO_WARNINGS
 //#endif
