@@ -1,5 +1,7 @@
 
 #include <iostream>
+#include <string.h>
+
 #include "ConsoleHelper.h"
 #include "stringSplit.h"
 #include "stringex.h"
@@ -408,6 +410,7 @@ bool CConsoleHelper::ReceiveData()
 
 	bDataReceived = true;
 	ParsePkt.DppState.ReqProcess = ParsePkt.ParsePacket(DP5Proto.PacketIn, &DP5Proto.PIN);
+printf("CConsoleHelper::ReceiveData ParsePkt.DppState.ReqProcess=%ld\n", ParsePkt.DppState.ReqProcess);
 	switch (ParsePkt.DppState.ReqProcess) {
 		case preqProcessStatus:
 			long idxStatus;
