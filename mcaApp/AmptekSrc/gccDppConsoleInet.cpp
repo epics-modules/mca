@@ -444,7 +444,7 @@ int main(int argc, char * argv[])
 	////	SendConfigFileToDpp("PX5_Console_Test.txt");    // calls SendCommandString
 	////	ConsolePause();
 	ConsoleClear();
-	ReadDppConfigurationFromHardware(false);
+	ReadDppConfigurationFromHardware(true);
 	ConsolePause();
 
 	// Display and Set Presets
