@@ -72,7 +72,7 @@ void ConsoleClear()
 #ifdef WIN32
 	system("cls");
 #else
-	system("clear");
+//	system("clear");
 #endif
 }
 
@@ -245,7 +245,10 @@ void AcquireSpectrum()
 					ConsoleClear();
 					chdpp.ConsoleGraph(chdpp.DP5Proto.SPECTRUM.DATA,chdpp.DP5Proto.SPECTRUM.CHANNELS,true,chdpp.DppStatusString);
 					Sleep(1000);
-				}
+				} else {
+				  cout << "\t\tProblem calling DppSocket_ReceiveData() when acquiring spectrum." << endl;
+				  break;
+			  }
 			} else {
 				cout << "\t\tProblem acquiring spectrum." << endl;
 				break;
@@ -394,7 +397,7 @@ int main(int argc, char * argv[])
 	// DemonstrationMode(DEMO_ACQUIRE);			// DEMO_ALL, DEMO_ACQUIRE, DEMO_STATUS, DEMO_FIND
 
 	// Find the DPP Device
-	char szDPP_Send[20]={"10.87.112.238"};	// set the test DPP IP address here	
+	char szDPP_Send[20]={"164.54.160.201"};	// set the test DPP IP address here	
 	ConsoleClear();
 
 //=================================================================================================
@@ -441,7 +444,7 @@ int main(int argc, char * argv[])
 	////	SendConfigFileToDpp("PX5_Console_Test.txt");    // calls SendCommandString
 	////	ConsolePause();
 	ConsoleClear();
-	ReadDppConfigurationFromHardware(false);
+	ReadDppConfigurationFromHardware(true);
 	ConsolePause();
 
 	// Display and Set Presets
