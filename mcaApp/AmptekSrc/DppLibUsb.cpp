@@ -15,7 +15,7 @@ int CDppLibUsb::InitializeLibusb()
 	int iStatus=0;
 	iStatus = libusb_init(NULL);
 	if (iStatus != 0) {
-		fprintf(stderr, "Unable to initialize libusb.\n", libusb_strerror((libusb_error)iStatus));
+		fprintf(stderr, "Unable to initialize libusb. %s\n", libusb_strerror((libusb_error)iStatus));
 	}
 	return iStatus;
 }
@@ -106,8 +106,6 @@ int CDppLibUsb::SendPacketUSB(libusb_device_handle *devh, unsigned char data_out
 	unsigned int timeout = 5000;
 	int result = 0;
 	int length = 0; 
-	//memset(&data_out[0],0,sizeof(data_out));
-	memset(&data_in[0],0,sizeof(data_in));
 	
 	if ((data_out[2] == PID1_REQ_SCOPE_MISC_TO) && data_out[3] == PID2_SEND_DIAGNOSTIC_DATA_TO) {
 		timeout = DP5_DIAGDATA_TIMEOUT;
