@@ -2,7 +2,6 @@
 
 // gccDppConsoleInet.cpp : Defines the entry point for the console application.
 #include <iostream>
-#include <string.h>
 using namespace std; 
 #include "ConsoleHelper.h"
 #ifndef WIN32
@@ -395,20 +394,18 @@ int main(int argc, char * argv[])
 	// DemonstrationMode(DEMO_ACQUIRE);			// DEMO_ALL, DEMO_ACQUIRE, DEMO_STATUS, DEMO_FIND
 
 	// Find the DPP Device
-	char szDPP_Send[20];
-	
-	strcpy(szDPP_Send, argv[1]);
+	char szDPP_Send[20]={"10.87.112.238"};	// set the test DPP IP address here	
 	ConsoleClear();
 
 //=================================================================================================
 // Added for Linux Broadcast Testing
 //=================================================================================================
-	if (! chdpp.DppSocket_Connect_Default_DPP(szDPP_Send)) {
-		ConsolePause();
-		return 1;
-	} else {
-		ConsolePause();
-	}
+	//if (! chdpp.DppSocket_Connect_Default_DPP(szDPP_Send)) {
+	//	ConsolePause();
+	//	return 1;
+	//} else {
+	//	ConsolePause();
+	//}
 //=================================================================================================
 // Added for Linux Broadcast Testing
 //=================================================================================================
@@ -417,12 +414,12 @@ int main(int argc, char * argv[])
 //=================================================================================================
 // Commented Out for Linux Broadcast Testing
 //=================================================================================================
-	//if (! ConnectToDefaultDPP(szDPP_Send)) {
-	//	ConsolePause();
-	//	return 1;
-	//} else {
-	//	ConsolePause();
-	//}
+	if (! ConnectToDefaultDPP(szDPP_Send)) {
+		ConsolePause();
+		return 1;
+	} else {
+		ConsolePause();
+	}
 	if (!bRunUpToStatus) {
 		CloseConnection();
 		return 0;			// quit here if DEMO_FIND mode
@@ -444,7 +441,7 @@ int main(int argc, char * argv[])
 	////	SendConfigFileToDpp("PX5_Console_Test.txt");    // calls SendCommandString
 	////	ConsolePause();
 	ConsoleClear();
-	ReadDppConfigurationFromHardware(true);
+	ReadDppConfigurationFromHardware(false);
 	ConsolePause();
 
 	// Display and Set Presets
