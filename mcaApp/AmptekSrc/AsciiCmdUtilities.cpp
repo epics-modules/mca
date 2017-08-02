@@ -110,7 +110,6 @@ string CAsciiCmdUtilities::CreateResTestReadBackCmd(bool bSendCoarseFineGain, in
 	return strCfg;
 }
 
-
 string CAsciiCmdUtilities::CreateFullReadBackCmd(bool PC5_PRESENT, int DppType, bool isDP5_RevDxGains, unsigned char DPP_ECO)
 {
 	string strCfg("");
@@ -366,8 +365,8 @@ string CAsciiCmdUtilities::RemoveCmdByDeviceTypeDP5DxK(string strCfgDataIn, bool
     isPAPS = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
     isTECS = (((DppType == devtypeDP5) && PC5_PRESENT) || (DppType == devtypePX5) || (DppType == devtypeDP5X));
     isVOLU = (DppType == devtypePX5);
-    isCON1 = ((DppType != devtypeDP5) &&  (DppType != devtypeDP5X));
-    isCON2 = ((DppType != devtypeDP5) &&  (DppType != devtypeDP5X));
+    isCON1 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
+    isCON2 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
     isINOF = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
 	isSCTC = (DppType == devtypeDP5G) || (DppType == devtypeTB5);
     isBOOT = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
