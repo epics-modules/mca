@@ -16,8 +16,6 @@ USR_CXXFLAGS_WIN32 += -DWIN32
 
 # Linux
 LIBRARY_IOC += mcaAmptek
-PROD_IOC    += gccDppConsoleInet
-PROD_IOC    += mcaAmptekApp
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAmptek_SRCS += AsciiCmdUtilities.cpp 
@@ -37,6 +35,7 @@ mcaAmptek_LIBS += asyn
 mcaAmptek_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
+PROD_IOC    += mcaAmptekApp
 mcaAmptekApp_SRCS += mcaAmptekApp_registerRecordDeviceDriver.cpp
 mcaAmptekApp_SRCS_DEFAULT += mcaAmptekAppMain.cpp
 mcaAmptekApp_SRCS_vxWorks += -nil-
@@ -61,9 +60,13 @@ mcaAmptekApp_DBD += sscanSupport.dbd
 
 
 #=============================
+PROD_IOC    += gccDppConsoleInet
 gccDppConsoleInet_SRCS += gccDppConsoleInet.cpp 
 gccDppConsoleInet_LIBS += mcaAmptek
-gccDppConsoleInet_LIBS += $(EPICS_BASE_IOC_LIBS)
+
+PROD_IOC    += amptekTest1
+amptekTest1_SRCS += amptekTest1.cpp 
+amptekTest1_LIBS += mcaAmptek
 
 
 include $(TOP)/configure/RULES
