@@ -12,7 +12,7 @@ using namespace std;
 	#define LINE_MAX 256
 #endif
 #define DP4_PX4_OLD_CFG_SIZE 64
-#define DP5_MAX_CFG_SIZE 512			/// 512 + 8 Bytes (2 SYNC,2 PID,2 LEN,2 CHKSUM)
+#define DP5_MAX_CFG_SIZE 512		/// 512 + 8 Bytes (2 SYNC,2 PID,2 LEN,2 CHKSUM)
 #define Whitespace "\t\n\v\f\r\0x20"	/// $ = Chr$(0) + Chr$(9) + Chr$(10) + Chr$(11) + Chr$(12) + Chr$(13) + Chr$(32)
 
 class CAsciiCmdUtilities
@@ -29,7 +29,7 @@ public:
 	std::string CreateResTestReadBackCmd(bool bSendCoarseFineGain, int DppType);
 	/// Generates a configuration readback command from a list of all commands.
 	std::string CreateFullReadBackCmd(bool PC5_PRESENT, int DppType, bool isDP5_RevDxGains, unsigned char DPP_ECO);
-	//std::string CreateFullReadBackCmd(bool PC5_PRESENT, int DppType);
+	/// Generates a configuration readback command from a list of all commands.
 	std::string CreateFullReadBackCmdMCA8000D(int DppType);
 	/// Remove a specified command from the command stream.
 	std::string RemoveCmd(std::string strCmd, std::string strCfgData);
