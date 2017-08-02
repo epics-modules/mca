@@ -1,10 +1,10 @@
 // DppSocket.cpp: implementation of the CDppSocket class.
 //
 //////////////////////////////////////////////////////////////////////
-#include <string.h>
-#include <stdlib.h>
 
 #include "DppSocket.h"
+#include <string.h>
+#include <stdlib.h>
 CDppSocket::CDppSocket()
 {
 	m_rand = 0;
@@ -210,6 +210,7 @@ int CDppSocket::UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort
 		if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
 		nPort = ntohs(SockAddress.sin_port);
 		nPort = 3040;
+		printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
 	} else {
 		nRcv = 0;
 	}
@@ -432,11 +433,13 @@ int CDppSocket::CreateRand()
 bool CDppSocket::HaveNetFinderPacket(const unsigned char buffer[], int m_rand, int num_bytes)
 {
 	bool bHaveNetFinderPacket=false;
+	printf("m_rand: %X b0: %X b1: %X b2: %X\n",m_rand,buffer[0],buffer[2],buffer[3]);
 	if ((num_bytes >= 32) && 
 		(buffer[0] == 0x01) && 
 		(buffer[2] == (m_rand >> 8)) && 
 		(buffer[3] == (m_rand & 0x00FF))) 
 	{		// have Silicon Labs Netfinder packet
+		printf("NetFinder Packet Found\n");
 		bHaveNetFinderPacket = true;	
 	}  else if((buffer[0] == 0x00) && 
 		(buffer[2] == (m_rand >> 8)) && 
