@@ -1,6 +1,5 @@
 #include "ParsePacket.h"
 #include <stdio.h>
-
 CParsePacket::CParsePacket(void)
 {
 }
@@ -45,6 +44,8 @@ void CParsePacket::ParsePacketStatus(unsigned char P[], Packet_In *PIN)
     } else {
         PIN->STATUS = PID2_ACK_SYNC_ERROR ;               // sync error
     }
+printf("CParsePacket::ParsePacketStatus PIN->STATUS=%d, PIN->LEN=%d, PIN->PID1=%d, PIN->PID2=%d\n",
+PIN->STATUS, PIN->LEN, PIN->PID1, PIN->PID2);
 }
 
 string CParsePacket::PID2_TextToString(string strPacketSource, unsigned char PID2)
@@ -120,7 +121,6 @@ long CParsePacket::ParsePacket(unsigned char P[], Packet_In *PIN)
 	long ParsePkt;
     ParsePkt = preqProcessNone;
     ParsePacketStatus (P, PIN);
-printf("CParsePacket::ParsePacket PIN->STATUS=0x%x, PIN->PID1=0x%x\n", PIN->STATUS, PIN->PID1);
     if (PIN->STATUS == PID2_ACK_OK) { // no errors
         if ((PIN->PID1 == PID1_RCV_STATUS) && (PIN->PID2 == PID2_SEND_DP4_STYLE_STATUS)) { // DP4-style status
             ParsePkt = preqProcessStatus;
