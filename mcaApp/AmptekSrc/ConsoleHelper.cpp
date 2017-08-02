@@ -1,13 +1,12 @@
 
 #include <iostream>
-#include <string.h>
-
 #include "ConsoleHelper.h"
 #include "stringSplit.h"
 #include "stringex.h"
 using namespace stringSplit;
 #pragma warning(disable:4309)
 #include "NetFinder.h"
+#include <string.h>
 
 CConsoleHelper::CConsoleHelper(void)
 {
@@ -353,6 +352,8 @@ void CConsoleHelper::CreateConfigOptions(CONFIG_OPTIONS *CfgOptions, string strC
 	// bUseCoarseFineGain=true;  //uses GAIA,GAIF (coarse with fine gain);  
 	// bUseCoarseFineGain=false; //uses GAIN (total gain);
 	CfgOptions->SendCoarseFineGain = bUseCoarseFineGain;		//select gain configuration control commands
+	CfgOptions->isDP5_RevDxGains = DP5Stat.m_DP5_Status.isDP5_RevDxGains;
+	CfgOptions->DPP_ECO = DP5Stat.m_DP5_Status.DPP_ECO;
 }
 
 // COMMAND (CONFIG_OPTIONS Needed)
@@ -410,7 +411,6 @@ bool CConsoleHelper::ReceiveData()
 
 	bDataReceived = true;
 	ParsePkt.DppState.ReqProcess = ParsePkt.ParsePacket(DP5Proto.PacketIn, &DP5Proto.PIN);
-printf("CConsoleHelper::ReceiveData ParsePkt.DppState.ReqProcess=%ld\n", ParsePkt.DppState.ReqProcess);
 	switch (ParsePkt.DppState.ReqProcess) {
 		case preqProcessStatus:
 			long idxStatus;
