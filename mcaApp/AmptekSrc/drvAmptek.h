@@ -27,6 +27,18 @@ typedef enum {
   amptekInterfaceSerial
 } amptekInterface_t;
 
+#define amptekInputPolarityString   "AMPTEK_POLARITY"
+#define amptekClockString           "AMPTEK_CLOCK"
+#define amptekGainString            "AMPTEK_GAIN"
+#define amptekGateString            "AMPTEK_GATE"
+#define amptekMCASourceString       "AMPTEK_MCA_SOURCE"
+#define amptekPUREnableString       "AMPTEK_PUR_ENABLE"
+#define amptekRTDEnableString       "AMPTEK_RTD_ENABLE"
+#define amptekFastThresholdString   "AMPTEK_FAST_THRESHOLD"
+#define amptekSlowThresholdString   "AMPTEK_SLOW_THRESHOLD"
+#define amptekPeakingTimeString     "AMPTEK_PEAKING_TIME"
+#define amptekFastPeakingTimeString "AMPTEK_FAST_PEAKING_TIME"
+
 #define MAX_MODULES 16
 #define MAX_IPNAME_LEN 16
 #define MAX_PORTNAME_LEN 32
@@ -49,7 +61,8 @@ class drvAmptek : public asynPortDriver
   // These are the methods that are new to this class
   
   protected:
-  #define FIRST_FAST_SWEEP_PARAM mcaStartAcquire_
+  // These are the standard MCA commands
+  #define FIRST_AMPTEK_PARAM mcaStartAcquire_
   int mcaStartAcquire_;
   int mcaStopAcquire_;
   int mcaErase_;
@@ -71,12 +84,27 @@ class drvAmptek : public asynPortDriver
   int mcaElapsedLiveTime_;
   int mcaElapsedRealTime_;
   int mcaElapsedCounts_;
-
+  
+  // These are the Amptek specific commands
+  int amptekInputPolarity_;
+  int amptekClock_;
+  int amptekGain_;
+  int amptekGate_;
+  int amptekMCASource_;
+  int amptekPUREnable_;
+  int amptekRTDEnable_;
+  int amptekFastThreshold_;
+  int amptekSlowThreshold_;
+  int amptekPeakingTime_;
+  int amptekFastPeakingTime_;
+  
   private:
   CConsoleHelper consoleHelper;
+  CONFIG_OPTIONS configOptions_;
   asynStatus connectDevice();
   asynStatus findModule();
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
+  asynStatus sendConfigString(const char *configCommand);
   asynStatus readConfigurationFromHardware();
   bool isConnected_;
   bool acquiring_;
