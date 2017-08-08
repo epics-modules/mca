@@ -202,18 +202,27 @@ int CDppSocket::UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort
     sockaddr_in SockAddress;
     socklen_t fromlen=sizeof(sockaddr);
     int nRcv = 0;
-	memset(&SockAddress, 0, sizeof(SockAddress));
-	SetBlockingMode();
-	nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, 0, (sockaddr *)&SockAddress,&fromlen);
-	if (nRcv > 0) {
-		if (bSocketDebug) printf("UDPRecvFrom data done %d\r\n", nRcv);
-		if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
-		nPort = ntohs(SockAddress.sin_port);
-		nPort = 3040;
-		printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
-	} else {
-		nRcv = 0;
-	}
+
+    memset(&SockAddress, 0, sizeof(SockAddress));
+    SetBlockingMode();
+    
+    nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, 0, (sockaddr *)&SockAddress,&fromlen);
+    // If the first read failed then sleep for timeout time and try once more
+    if (nRcv < 0) {
+        int ms = (int)(timeout.tv_sec*1000. + timeout.tv_usec/1000.);
+        Sleep(ms);
+        nRcv = recvfrom(m_hDppSocket, (reinterpret_cast<char*>(buf)), len, 0, (sockaddr *)&SockAddress,&fromlen);
+        //printf("CDppSocket::UDPRecvFrom trying again, nRcv=%d\n", nRcv);
+    }
+    if (nRcv > 0) {
+        if (bSocketDebug) printf("UDPRecvFrom data done %d\r\n", nRcv);
+        if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
+	      nPort = ntohs(SockAddress.sin_port);
+        nPort = 3040;
+        if (bSocketDebug) printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
+    } else {
+        nRcv = 0;
+    } 
     return nRcv;
 }
 
