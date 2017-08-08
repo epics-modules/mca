@@ -44,8 +44,8 @@ void CParsePacket::ParsePacketStatus(unsigned char P[], Packet_In *PIN)
     } else {
         PIN->STATUS = PID2_ACK_SYNC_ERROR ;               // sync error
     }
-printf("CParsePacket::ParsePacketStatus PIN->STATUS=%d, PIN->LEN=%d, PIN->PID1=%d, PIN->PID2=%d\n",
-PIN->STATUS, PIN->LEN, PIN->PID1, PIN->PID2);
+    if (PIN->STATUS != 0) printf("CParsePacket::ParsePacketStatus PIN->STATUS=%d, PIN->LEN=%d, PIN->PID1=%d, PIN->PID2=%d\n",
+        PIN->STATUS, PIN->LEN, PIN->PID1, PIN->PID2);
 }
 
 string CParsePacket::PID2_TextToString(string strPacketSource, unsigned char PID2)
