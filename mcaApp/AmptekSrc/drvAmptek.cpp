@@ -27,7 +27,7 @@
 #include <drvMca.h>
 #include <drvAmptek.h>
 
-#define BROADCAST_TIMEOUT 0.2
+#define TIMEOUT         0.01
 #define COMMAND_PORT    10001
 #define BROADCAST_PORT  3040
 
@@ -74,6 +74,18 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(mcaElapsedRealTimeString,           asynParamFloat64, &mcaElapsedRealTime_);        /* float64, read */
     createParam(mcaElapsedCountsString,             asynParamFloat64, &mcaElapsedCounts_);          /* float64, read */
 
+    createParam(amptekInputPolarityString,            asynParamInt32, &amptekInputPolarity_);
+    createParam(amptekClockString,                    asynParamInt32, &amptekClock_);
+    createParam(amptekGainString,                   asynParamFloat64, &amptekGain_);
+    createParam(amptekGateString,                     asynParamInt32, &amptekGate_);
+    createParam(amptekMCASourceString,                asynParamInt32, &amptekMCASource_);
+    createParam(amptekPUREnableString,                asynParamInt32, &amptekPUREnable_);
+    createParam(amptekRTDEnableString,                asynParamInt32, &amptekRTDEnable_);
+    createParam(amptekFastThresholdString,          asynParamFloat64, &amptekFastThreshold_);
+    createParam(amptekSlowThresholdString,          asynParamFloat64, &amptekSlowThreshold_);
+    createParam(amptekPeakingTimeString,            asynParamFloat64, &amptekPeakingTime_);
+    createParam(amptekFastPeakingTimeString,          asynParamInt32, &amptekFastPeakingTime_);
+
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
@@ -114,6 +126,7 @@ asynStatus drvAmptek::connectDevice()
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
                 isConnected_ = false;
           	}
+          	consoleHelper.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
 
             break;
 
@@ -137,6 +150,7 @@ asynStatus drvAmptek::connectDevice()
         return asynError;
     }
     readConfigurationFromHardware();
+    consoleHelper.CreateConfigOptions(&configOptions_, "", consoleHelper.DP5Stat, false);
     
     return asynSuccess;
 
@@ -167,10 +181,38 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     return asynSuccess;
 }
 
+asynStatus drvAmptek::sendConfigString(const char *configString)
+{
+    static const char *functionName = "sendConfigString";
+    bool status=true;
+    
+    configOptions_.HwCfgDP5Out = configString;
+    switch(interfaceType_) {
+        case amptekInterfaceEthernet:
+            status = consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_);
+            if (status == false) {
+                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                    "%s::%s error onsoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+                    driverName, functionName, configString);
+                return asynError;
+            }
+            break;
+        
+        case amptekInterfaceUSB:
+            break;
+        
+        case amptekInterfaceSerial:
+            break;
+    }
+    readConfigurationFromHardware();
+    return asynSuccess;
+}
+
 asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
+    char tempString[20];
 
     /* Set the parameter in the parameter library. */
     status = setIntegerParam(command, value);
@@ -193,10 +235,12 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
 			  consoleHelper.DppSocket_ReceiveData();
     }
     else if (command == mcaNumChannels_) {
-        if ((value >0) && (value != (int)numChannels_)) {
+        if (value > 0) {
             numChannels_ = value;
             if (pData_) free(pData_);
             pData_ = (epicsInt32 *)calloc(numChannels_, sizeof(epicsInt32));
+            sprintf(tempString, "MCAC=%d;", value);
+            status = sendConfigString(tempString);
         }
     }
     callParamCallbacks();
@@ -253,7 +297,6 @@ asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
 asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 {
     int command = pasynUser->reason;
-    CONFIG_OPTIONS CfgOptions;
     asynStatus status=asynSuccess;
     char tempString[20];
 
@@ -261,14 +304,9 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     status = setDoubleParam(command, value);
     if ((command == mcaPresetRealTime_) || 
         (command == mcaPresetLiveTime_)) {
-        consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
-        sprintf(tempString, "%s =%f", command == mcaPresetRealTime_ ? "PREL" : "PRET", value);
-        CfgOptions.HwCfgDP5Out = tempString;
-printf("drvAmptek::writeFloat64 CfgOptions.HwCfgDP5Out=%s\n", CfgOptions.HwCfgDP5Out.c_str());
-epicsThreadSleep(1.0);
-        consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, CfgOptions);
-        readConfigurationFromHardware();
-    }
+        sprintf(tempString, "%s=%f;", command == mcaPresetRealTime_ ? "PRER" : "PRET", value);
+        status = sendConfigString(tempString);
+     }
     callParamCallbacks();
     return status;
 }
@@ -291,7 +329,6 @@ asynStatus drvAmptek::readInt32Array(asynUser *pasynUser,
     }
     numChannels = consoleHelper.DP5Proto.SPECTRUM.CHANNELS;
     if (numChannels > (int)maxChans) numChannels = maxChans;
- printf("numChannels=%d, channel 1000=%ld\n", numChannels, consoleHelper.DP5Proto.SPECTRUM.DATA[1000]);
     for (i=0; i<numChannels; i++) {
         data[i] = consoleHelper.DP5Proto.SPECTRUM.DATA[i];
     }
