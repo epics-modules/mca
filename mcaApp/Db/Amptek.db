@@ -1,0 +1,263 @@
+# Database for Amptek MCAs
+#   Mark Rivers
+#   August 8, 2017
+
+record(bo,"$(P)$(R)InputPolarity") {
+    field(DESC,"Polarity control")
+    field(ZNAM,"Positive")
+    field(ONAM,"Negative")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_INPUT_POLARITY")
+}
+
+record(bi,"$(P)$(R)InputPolarity_RBV") {
+    field(DESC,"Polarity control")
+    field(ZNAM,"Positive")
+    field(ONAM,"Negative")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_INPUT_POLARITY")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(R)Clock") {
+    field(DESC,"FPGA clock")
+    field(ZRST,"Auto")
+    field(ZRVL,"0")
+    field(ONST,"20 MHz")
+    field(ONVL,"1")
+    field(TWST,"80 MHz")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_CLOCK")
+}
+
+record(mbbi,"$(P)$(R)Clock_RBV") {
+    field(DESC,"FPGA clock")
+    field(ZRST,"Auto")
+    field(ZRVL,"0")
+    field(ONST,"20 MHz")
+    field(ONVL,"1")
+    field(TWST,"80 MHz")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_CLOCK")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao,"$(P)$(R)Gain") {
+    field(DESC,"Gain")
+    field(PREC,"2")
+    field(DRVL, "0.75")
+    field(DRVH, "500")
+    field(VAL,"1")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT))AMPTEK_GAIN")
+}
+
+record(ai,"$(P)$(R)Gain_RBV") {
+    field(DESC,"Gain")
+    field(PREC,"2")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))AMPTEK_GAIN")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(R)Gate") {
+    field(DESC,"FPGA clock")
+    field(ZRST,"Off")
+    field(ZRVL,"0")
+    field(ONST,"High")
+    field(ONVL,"1")
+    field(TWST,"Low")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_GATE")
+}
+
+record(mbbi,"$(P)$(R)Gate_RBV") {
+    field(DESC,"FPGA clock")
+    field(ZRST,"Off")
+    field(ZRVL,"0")
+    field(ONST,"High")
+    field(ONVL,"1")
+    field(TWST,"Low")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_GATE")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao,"$(P)$(R)PeakingTime") {
+    field(DESC,"Peaking time")
+    field(PREC,"2")
+    field(DRVL, "0.8")
+    field(DRVH, "102.4")
+    field(VAL,"10")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT))AMPTEK_PEAKING_TIME")
+}
+
+record(ai,"$(P)$(R)PeakingTime_RBV") {
+    field(DESC,"PeakingTime")
+    field(PREC,"2")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))AMPTEK_PEAKING_TIME")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(R)FastPeakingTime") {
+    field(DESC,"Fast peaking time")
+    field(ZRST,"50")
+    field(ZRVL,"0")
+    field(ONST,"100")
+    field(ONVL,"1")
+    field(TWST,"200")
+    field(TWVL,"2")
+    field(THST,"400")
+    field(THVL,"3")
+    field(FRST,"800")
+    field(FRVL,"4")
+    field(FVST,"1600")
+    field(FVVL,"5")
+    field(SXST,"3200")
+    field(SXVL,"6")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_FAST_PEAKING_TIME")
+}
+
+record(mbbi,"$(P)$(R)FastPeakingTime_RBV") {
+    field(DESC,"Fast peaking time")
+    field(ZRST,"50")
+    field(ZRVL,"0")
+    field(ONST,"100")
+    field(ONVL,"1")
+    field(TWST,"200")
+    field(TWVL,"2")
+    field(THST,"400")
+    field(THVL,"3")
+    field(FRST,"800")
+    field(FRVL,"4")
+    field(FVST,"1600")
+    field(FVVL,"5")
+    field(SXST,"3200")
+    field(SXVL,"6")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_FAST_PEAKING_TIME")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao,"$(P)$(R)FlatTopTime") {
+    field(DESC,"Flat top time")
+    field(PREC,"2")
+    field(DRVL, "0.0125")
+    field(DRVH, "50.4")
+    field(VAL,"0")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT))AMPTEK_FLAT_TOP_TIME")
+}
+
+record(ai,"$(P)$(R)FlatTopTime_RBV") {
+    field(DESC,"Flat top time")
+    field(PREC,"2")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))AMPTEK_FLAT_TOP_TIME")
+    field(SCAN, "I/O Intr")
+}
+
+
+record(ao,"$(P)$(R)SlowThreshold") {
+    field(DESC,"Slow threshold")
+    field(PREC,"2")
+    field(DRVL, "0.0")
+    field(DRVH, "24.9")
+    field(VAL,"0")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT))AMPTEK_SLOW_THRESHOLD")
+}
+
+record(ai,"$(P)$(R)SlowThreshold_RBV") {
+    field(DESC,"Slow threshold")
+    field(PREC,"2")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))AMPTEK_SLOW_THRESHOLD")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao,"$(P)$(R)FastThreshold") {
+    field(DESC,"Fast threshold")
+    field(PREC,"2")
+    field(DRVL, "0.0")
+    field(DRVH, "511.93")
+    field(VAL,"0")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT))AMPTEK_FAST_THRESHOLD")
+}
+
+record(ai,"$(P)$(R)FastThreshold_RBV") {
+    field(DESC,"Fast threshold")
+    field(PREC,"2")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))AMPTEK_FAST_THRESHOLD")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(R)PUREnable") {
+    field(DESC,"PUR enable")
+    field(ZRST,"On")
+    field(ZRVL,"0")
+    field(ONST,"Off")
+    field(ONVL,"1")
+    field(TWST,"Max")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_PUR_ENABLE")
+}
+
+record(mbbi,"$(P)$(R)PUREnable_RBV") {
+    field(DESC,"PUR enable")
+    field(ZRST,"On")
+    field(ZRVL,"0")
+    field(ONST,"Off")
+    field(ONVL,"1")
+    field(TWST,"Max")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_PUR_ENABLE")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(R)MCASource") {
+    field(DESC,"MCA source")
+    field(ZRST,"MCA")
+    field(ZRVL,"0")
+    field(ONST,"MCS")
+    field(ONVL,"1")
+    field(TWST,"FAST")
+    field(TWVL,"2")
+    field(THST,"PUR")
+    field(THVL,"3")
+    field(FRST,"RTD")
+    field(FRVL,"4")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_MCA_SOURCE")
+}
+
+record(mbbi,"$(P)$(R)MCASource_RBV") {
+    field(DESC,"MCA source")
+    field(ZRST,"MCA")
+    field(ZRVL,"0")
+    field(ONST,"MCS")
+    field(ONVL,"1")
+    field(TWST,"FAST")
+    field(TWVL,"2")
+    field(THST,"PUR")
+    field(THVL,"3")
+    field(FRST,"RTD")
+    field(FRVL,"4")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_MCA_SOURCE")
+    field(SCAN, "I/O Intr")
+}
+
+
+
