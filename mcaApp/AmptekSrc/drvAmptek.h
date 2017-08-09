@@ -27,7 +27,7 @@ typedef enum {
   amptekInterfaceSerial
 } amptekInterface_t;
 
-#define amptekInputPolarityString   "AMPTEK_POLARITY"
+#define amptekInputPolarityString   "AMPTEK_INPUT_POLARITY"
 #define amptekClockString           "AMPTEK_CLOCK"
 #define amptekGainString            "AMPTEK_GAIN"
 #define amptekGateString            "AMPTEK_GATE"
@@ -38,6 +38,7 @@ typedef enum {
 #define amptekSlowThresholdString   "AMPTEK_SLOW_THRESHOLD"
 #define amptekPeakingTimeString     "AMPTEK_PEAKING_TIME"
 #define amptekFastPeakingTimeString "AMPTEK_FAST_PEAKING_TIME"
+#define amptekFlatTopTimeString     "AMPTEK_FLAT_TOP_TIME"
 
 #define MAX_MODULES 16
 #define MAX_IPNAME_LEN 16
@@ -97,6 +98,7 @@ class drvAmptek : public asynPortDriver
   int amptekSlowThreshold_;
   int amptekPeakingTime_;
   int amptekFastPeakingTime_;
+  int amptekFlatTopTime_;
   
   private:
   CConsoleHelper consoleHelper;
@@ -104,7 +106,7 @@ class drvAmptek : public asynPortDriver
   asynStatus connectDevice();
   asynStatus findModule();
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
-  asynStatus sendConfigString(const char *configCommand);
+  asynStatus sendConfiguration();
   asynStatus readConfigurationFromHardware();
   bool isConnected_;
   bool acquiring_;
