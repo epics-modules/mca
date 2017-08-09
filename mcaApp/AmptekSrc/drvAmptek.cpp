@@ -27,6 +27,13 @@
 #include <drvMca.h>
 #include <drvAmptek.h>
 
+static const char *clockStrings[]           = {"AUTO", "20", "80"};
+static const char *polarityStrings[]        = {"POS", "NEG"};
+static const char *gateStrings[]            = {"OFF", "HIGH", "LOW"};
+static const char *purEnableStrings[]       = {"ON", "OFF", "MAX"};
+static const char *mcaSourceStrings[]       = {"NORM", "MCS", "FAST", "PUR", "RTD"};
+static const char *fastPeakingTimeStrings[] = {"50", "100", "200", "400", "800", "1600", "3200"};
+
 #define TIMEOUT         0.01
 #define COMMAND_PORT    10001
 #define BROADCAST_PORT  3040
@@ -85,6 +92,7 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekSlowThresholdString,          asynParamFloat64, &amptekSlowThreshold_);
     createParam(amptekPeakingTimeString,            asynParamFloat64, &amptekPeakingTime_);
     createParam(amptekFastPeakingTimeString,          asynParamInt32, &amptekFastPeakingTime_);
+    createParam(amptekFlatTopTimeString,            asynParamFloat64, &amptekFlatTopTime_);
 
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
@@ -181,19 +189,97 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     return asynSuccess;
 }
 
-asynStatus drvAmptek::sendConfigString(const char *configString)
+asynStatus drvAmptek::sendConfiguration()
 {
-    static const char *functionName = "sendConfigString";
+    static const char *functionName = "sendConfiguration";
     bool status=true;
+    int itemp;
+    double dtemp;
+    char tempString[20];
+    string configString;
+    
+    // Clock rate
+    getIntegerParam(amptekClock_, &itemp);
+    sprintf(tempString, "CLCK=%s;", clockStrings[itemp]);
+    configString.append(tempString);
+    
+    // Analog input polarity
+    getIntegerParam(amptekInputPolarity_, &itemp);
+    sprintf(tempString, "AINP=%s;", polarityStrings[itemp]);
+    configString.append(tempString);
+    
+    // Peaking time
+    getDoubleParam(amptekPeakingTime_, &dtemp);
+    sprintf(tempString, "TPEA=%f;", dtemp);
+    configString.append(tempString);
+    
+    // Fast peaking time
+    getIntegerParam(amptekFastPeakingTime_, &itemp);
+    sprintf(tempString, "TPFA=%s;", fastPeakingTimeStrings[itemp]);
+    configString.append(tempString);
+
+    // Flat top time
+    getDoubleParam(amptekFlatTopTime_, &dtemp);
+    sprintf(tempString, "TFLA=%f;", dtemp);
+    configString.append(tempString);
+
+    //  Gain
+    getDoubleParam(amptekGain_, &dtemp);
+    sprintf(tempString, "GAIN=%f;", dtemp);
+    configString.append(tempString);
+
+    // Slow threshold
+    getDoubleParam(amptekSlowThreshold_, &dtemp);
+    sprintf(tempString, "THSL=%f;", dtemp);
+    configString.append(tempString);
+    
+    // Fast threshold
+    getDoubleParam(amptekFastThreshold_, &dtemp);
+    sprintf(tempString, "THFA=%f;", dtemp);
+    configString.append(tempString);
+    
+    // Number of MCA channels
+    getIntegerParam(mcaNumChannels_, &itemp);
+    sprintf(tempString, "MCAC=%d;", itemp);
+    configString.append(tempString);
+    
+    // Gate
+    getIntegerParam(amptekGate_, &itemp);
+    sprintf(tempString, "GATE=%s;", gateStrings[itemp]);
+    configString.append(tempString);
+    
+    //  Preset real time
+    getDoubleParam(mcaPresetRealTime_, &dtemp);
+    sprintf(tempString, "PRER=%f;", dtemp);
+    configString.append(tempString);
+    
+    //  Preset live time
+    getDoubleParam(mcaPresetLiveTime_, &dtemp);
+    sprintf(tempString, "PRET=%f;", dtemp);
+    configString.append(tempString);
+
+    // MCA source
+    getIntegerParam(amptekMCASource_, &itemp);
+    sprintf(tempString, "MCAS=%s;", mcaSourceStrings[itemp]);
+    configString.append(tempString);
+
+    // PUR enable
+    getIntegerParam(amptekPUREnable_, &itemp);
+    sprintf(tempString, "PURE=%s;", purEnableStrings[itemp]);
+    configString.append(tempString);
     
     configOptions_.HwCfgDP5Out = configString;
+    asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+      "%s::%s sending configuration string:\n%s\n",
+      driverName, functionName, configString.c_str());
+
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
             status = consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_);
             if (status == false) {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error onsoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
-                    driverName, functionName, configString);
+                    "%s::%s error callingg consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+                    driverName, functionName, configString.c_str());
                 return asynError;
             }
             break;
@@ -212,7 +298,6 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
-    char tempString[20];
 
     /* Set the parameter in the parameter library. */
     status = setIntegerParam(command, value);
@@ -234,13 +319,20 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         status = sendCommand(XMTPT_SEND_STATUS);
 			  consoleHelper.DppSocket_ReceiveData();
     }
-    else if (command == mcaNumChannels_) {
+    else if ((command == mcaNumChannels_)        ||
+             (command == amptekInputPolarity_)   ||
+             (command == amptekClock_)           ||
+             (command == amptekGate_)            ||
+             (command == amptekFastPeakingTime_) ||
+             (command == amptekPUREnable_)       ||
+             (command == amptekMCASource_)) {
+        status = sendConfiguration();
+    }
+    if (command == mcaNumChannels_) {
         if (value > 0) {
             numChannels_ = value;
             if (pData_) free(pData_);
             pData_ = (epicsInt32 *)calloc(numChannels_, sizeof(epicsInt32));
-            sprintf(tempString, "MCAC=%d;", value);
-            status = sendConfigString(tempString);
         }
     }
     callParamCallbacks();
@@ -251,17 +343,14 @@ asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
-    static const char *functionName = "readInt32";
+    //static const char *functionName = "readInt32";
 
     if (command == mcaAcquiring_) {
         *value = consoleHelper.DP5Stat.m_DP5_Status.MCA_EN;
         acquiring_ = *value;
     }
     else {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-            "%s::%s got illegal command %d\n",
-            driverName, functionName, command);
-        status = asynError;
+        status = asynPortDriver::readInt32(pasynUser, value);
     }
     return status;
 }
@@ -270,7 +359,7 @@ asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
-    static const char *functionName = "readFloat64";
+    //static const char *functionName = "readFloat64";
 
     if (command == mcaDwellTime_) {
         *value = 0.;
@@ -285,10 +374,7 @@ asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
         *value = consoleHelper.DP5Stat.m_DP5_Status.SlowCount;
     }
     else {
-        asynPrint(pasynUser, ASYN_TRACE_ERROR,
-            "%s::%s got illegal command %d\n",
-            driverName, functionName, command);
-        status = asynError;
+        status = asynPortDriver::readFloat64(pasynUser, value);
     }
     return status;
 }
@@ -298,15 +384,18 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
-    char tempString[20];
 
     /* Set the parameter in the parameter library. */
     status = setDoubleParam(command, value);
-    if ((command == mcaPresetRealTime_) || 
-        (command == mcaPresetLiveTime_)) {
-        sprintf(tempString, "%s=%f;", command == mcaPresetRealTime_ ? "PRER" : "PRET", value);
-        status = sendConfigString(tempString);
-     }
+    if ((command == mcaPresetRealTime_)   || 
+        (command == mcaPresetLiveTime_)   ||
+        (command == amptekGain_)          ||
+        (command == amptekPeakingTime_)   ||
+        (command == amptekFlatTopTime_)   ||
+        (command == amptekSlowThreshold_) ||
+        (command == amptekFastThreshold_)) {
+        status = sendConfiguration();
+    }
     callParamCallbacks();
     return status;
 }
@@ -340,12 +429,22 @@ asynStatus drvAmptek::readConfigurationFromHardware()
 {
     static const char *functionName="readConfigurationFromHardware";
     CONFIG_OPTIONS CfgOptions;
+    int i;
  
     consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
 		consoleHelper.ClearConfigReadFormatFlags();	// clear all flags, set flags only for specific readback properties
 		consoleHelper.CfgReadBack = true; // requesting general readback format
-    if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == false) {	// request full configuration
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+		// This function is normally called after sending the new configuration, which can take time before the unit will respond
+		// to the next command.  Loop for up to 1 second waiting.
+		for (i=0; i<100; i++) {
+		    // request full configuration
+        if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
+            break;
+        }
+        epicsThreadSleep(0.01);
+    }
+    if (i == 100) {
+         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling SendCommand_Config() for XMTPT_FULL_READ_CONFIG_PACKET\n",
             driverName, functionName);
         return asynError;
