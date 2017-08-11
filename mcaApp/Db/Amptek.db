@@ -4,16 +4,17 @@
 
 record(bo,"$(P)$(R)InputPolarity") {
     field(DESC,"Polarity control")
-    field(ZNAM,"Positive")
-    field(ONAM,"Negative")
+    field(PINI,"YES")
+    field(ZNAM,"Pos")
+    field(ONAM,"Neg")
     field(DTYP, "asynInt32")
     field(OUT,"@asyn($(PORT),0)AMPTEK_INPUT_POLARITY")
 }
 
 record(bi,"$(P)$(R)InputPolarity_RBV") {
     field(DESC,"Polarity control")
-    field(ZNAM,"Positive")
-    field(ONAM,"Negative")
+    field(ZNAM,"Pos")
+    field(ONAM,"Neg")
     field(DTYP, "asynInt32")
     field(INP,"@asyn($(PORT),0)AMPTEK_INPUT_POLARITY")
     field(SCAN, "I/O Intr")
@@ -21,6 +22,7 @@ record(bi,"$(P)$(R)InputPolarity_RBV") {
 
 record(mbbo,"$(P)$(R)Clock") {
     field(DESC,"FPGA clock")
+    field(PINI,"YES")
     field(ZRST,"Auto")
     field(ZRVL,"0")
     field(ONST,"20 MHz")
@@ -46,6 +48,7 @@ record(mbbi,"$(P)$(R)Clock_RBV") {
 
 record(ao,"$(P)$(R)Gain") {
     field(DESC,"Gain")
+    field(PINI,"YES")
     field(PREC,"2")
     field(DRVL, "0.75")
     field(DRVH, "500")
@@ -64,6 +67,7 @@ record(ai,"$(P)$(R)Gain_RBV") {
 
 record(mbbo,"$(P)$(R)Gate") {
     field(DESC,"FPGA clock")
+    field(PINI,"YES")
     field(ZRST,"Off")
     field(ZRVL,"0")
     field(ONST,"High")
@@ -89,6 +93,7 @@ record(mbbi,"$(P)$(R)Gate_RBV") {
 
 record(ao,"$(P)$(R)PeakingTime") {
     field(DESC,"Peaking time")
+    field(PINI,"YES")
     field(PREC,"2")
     field(DRVL, "0.8")
     field(DRVH, "102.4")
@@ -107,6 +112,7 @@ record(ai,"$(P)$(R)PeakingTime_RBV") {
 
 record(mbbo,"$(P)$(R)FastPeakingTime") {
     field(DESC,"Fast peaking time")
+    field(PINI,"YES")
     field(ZRST,"50")
     field(ZRVL,"0")
     field(ONST,"100")
@@ -148,6 +154,7 @@ record(mbbi,"$(P)$(R)FastPeakingTime_RBV") {
 
 record(ao,"$(P)$(R)FlatTopTime") {
     field(DESC,"Flat top time")
+    field(PINI,"YES")
     field(PREC,"2")
     field(DRVL, "0.0125")
     field(DRVH, "50.4")
@@ -167,6 +174,7 @@ record(ai,"$(P)$(R)FlatTopTime_RBV") {
 
 record(ao,"$(P)$(R)SlowThreshold") {
     field(DESC,"Slow threshold")
+    field(PINI,"YES")
     field(PREC,"2")
     field(DRVL, "0.0")
     field(DRVH, "24.9")
@@ -185,6 +193,7 @@ record(ai,"$(P)$(R)SlowThreshold_RBV") {
 
 record(ao,"$(P)$(R)FastThreshold") {
     field(DESC,"Fast threshold")
+    field(PINI,"YES")
     field(PREC,"2")
     field(DRVL, "0.0")
     field(DRVH, "511.93")
@@ -203,6 +212,7 @@ record(ai,"$(P)$(R)FastThreshold_RBV") {
 
 record(mbbo,"$(P)$(R)PUREnable") {
     field(DESC,"PUR enable")
+    field(PINI,"YES")
     field(ZRST,"On")
     field(ZRVL,"0")
     field(ONST,"Off")
@@ -228,6 +238,7 @@ record(mbbi,"$(P)$(R)PUREnable_RBV") {
 
 record(mbbo,"$(P)$(R)MCASource") {
     field(DESC,"MCA source")
+    field(PINI,"YES")
     field(ZRST,"MCA")
     field(ZRVL,"0")
     field(ONST,"MCS")
@@ -259,5 +270,112 @@ record(mbbi,"$(P)$(R)MCASource_RBV") {
     field(SCAN, "I/O Intr")
 }
 
+record(waveform, "$(P)$(R)ConfigFileName")
+{
+    field(PINI, "YES")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),0)AMPTEK_CONFIG_FILE")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+}
+
+record(bo, "$(P)$(R)LoadConfigFile")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0)AMPTEK_LOAD_CONFIG_FILE")
+    field(ZNAM, "Done")
+    field(ONAM, "Load")
+}
+
+record(bo, "$(P)$(R)SaveConfigFile")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0)AMPTEK_SAVE_CONFIG_FILE")
+    field(ZNAM, "Done")
+    field(ONAM, "Save")
+}
+
+# This record will read the Amptek status even when the MCA is not acquiring
+record(bo, "$(P)$(R)ReadAmptekStatus")
+{
+    field(DTYP, "asynInt32")
+    field(OUT,  "@asyn($(PORT),0)MCA_READ_STATUS")
+    field(ZNAM, "Done")
+    field(ONAM, "Read")
+    field(SCAN, "1 second")
+}
+
+
+record(ai,"$(P)$(R)SlowCounts") {
+    field(DESC,"Slow counts")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))AMPTEK_SLOW_COUNTS")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)$(R)FastCounts") {
+    field(DESC,"Fast counts")
+    field(DTYP, "asynFloat64")
+    field(INP, "@asyn($(PORT))AMPTEK_FAST_COUNTS")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)$(R)DetTemp") {
+    field(DESC,"Detector temperature")
+    field(DTYP, "asynFloat64")
+    field(INP, "@asyn($(PORT))AMPTEK_DET_TEMP")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao,"$(P)$(R)SetDetTemp") {
+    field(DESC,"Set detector temperature")
+    field(PINI,"YES")
+    field(DTYP, "asynFloat64")
+    field(OUT, "@asyn($(PORT))AMPTEK_SET_DET_TEMP")
+    field(PREC, "1")
+}
+
+record(ai,"$(P)$(R)SetDetTemp_RBV") {
+    field(DESC,"Set detector temperature")
+    field(DTYP, "asynFloat64")
+    field(INP, "@asyn($(PORT))AMPTEK_SET_DET_TEMP")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)$(R)BoardTemp") {
+    field(DESC,"Board temperature")
+    field(DTYP, "asynFloat64")
+    field(INP, "@asyn($(PORT))AMPTEK_BOARD_TEMP")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)$(R)HighVoltage") {
+    field(DESC,"High voltage")
+    field(DTYP, "asynFloat64")
+    field(INP, "@asyn($(PORT))AMPTEK_HIGH_VOLTAGE")
+    field(PREC, "0")
+    field(SCAN, "I/O Intr")
+}
+
+record(ao,"$(P)$(R)SetHighVoltage") {
+    field(DESC,"Set high voltage")
+    field(PINI,"YES")
+    field(DTYP, "asynFloat64")
+    field(OUT, "@asyn($(PORT))AMPTEK_SET_HIGH_VOLTAGE")
+    field(PREC, "1")
+}
+
+record(ai,"$(P)$(R)SetHighVoltage_RBV") {
+    field(DESC,"Set high voltage")
+    field(DTYP, "asynFloat64")
+    field(INP, "@asyn($(PORT))AMPTEK_SET_HIGH_VOLTAGE")
+    field(PREC, "1")
+    field(SCAN, "I/O Intr")
+}
 
 
