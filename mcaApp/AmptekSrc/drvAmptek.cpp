@@ -44,8 +44,8 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
    : asynPortDriver(portName, 
                     1, /* Maximum address */
                     0, /* Unused, number of parameters */
-                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynDrvUserMask, /* Interface mask */
-                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask,                   /* Interrupt mask */
+                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask, /* Interface mask */
+                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                   /* Interrupt mask */
                     ASYN_CANBLOCK, /* asynFlags.  This driver can block and is not multi-device */
                     1, /* Autoconnect */
                     0, /* Default priority */
@@ -93,6 +93,16 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekPeakingTimeString,            asynParamFloat64, &amptekPeakingTime_);
     createParam(amptekFastPeakingTimeString,          asynParamInt32, &amptekFastPeakingTime_);
     createParam(amptekFlatTopTimeString,            asynParamFloat64, &amptekFlatTopTime_);
+    createParam(amptekConfigFileString,               asynParamOctet, &amptekConfigFile_);
+    createParam(amptekSaveConfigFileString,           asynParamInt32, &amptekSaveConfigFile_);
+    createParam(amptekLoadConfigFileString,           asynParamInt32, &amptekLoadConfigFile_);
+    createParam(amptekSlowCountsString,             asynParamFloat64, &amptekSlowCounts_);
+    createParam(amptekFastCountsString,             asynParamFloat64, &amptekFastCounts_);
+    createParam(amptekDetTempString,                asynParamFloat64, &amptekDetTemp_);
+    createParam(amptekSetDetTempString,             asynParamFloat64, &amptekSetDetTemp_);
+    createParam(amptekBoardTempString,              asynParamFloat64, &amptekBoardTemp_);
+    createParam(amptekHighVoltageString,            asynParamFloat64, &amptekHighVoltage_);
+    createParam(amptekSetHighVoltageString,         asynParamFloat64, &amptekSetHighVoltage_);
 
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
@@ -128,13 +138,13 @@ asynStatus drvAmptek::connectDevice()
                     "%s::%s Network DPP device %s connected, total devices found=%d\n",
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
                 isConnected_ = true;
-          	} else {
+              } else {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                     "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
                 isConnected_ = false;
-          	}
-          	consoleHelper.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
+              }
+              consoleHelper.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
 
             break;
 
@@ -145,7 +155,7 @@ asynStatus drvAmptek::connectDevice()
             break;
     }
     consoleHelper.DP5Stat.m_DP5_Status.SerialNumber = 0;
-    if (consoleHelper.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {	// request status
+    if (consoleHelper.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling SendCommand for XMTPT_SEND_STATUS\n",
             driverName, functionName);
@@ -171,7 +181,7 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
-		        status = consoleHelper.DppSocket_SendCommand(command);
+                status = consoleHelper.DppSocket_SendCommand(command);
             break;
         
         case amptekInterfaceUSB:
@@ -189,10 +199,93 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     return asynSuccess;
 }
 
+asynStatus drvAmptek::saveConfigurationFile(string fileName)
+{
+    FILE  *out;
+    static const char *functionName="saveConfigurationFile";
+
+    if ( (out = fopen(fileName.c_str(),"w")) == NULL) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s Couldn't open %s for writing.\n", 
+            driverName, functionName, fileName.c_str());
+        return asynError;
+    }
+    fprintf(out,"%s\n",consoleHelper.HwCfgDP5.c_str());
+    fclose(out);
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::sendConfigurationFile(string fileName)
+{
+    std::string strCfg;
+    int lCfgLen=0;                //ASCII Configuration Command String Length
+    bool isPC5Present=false;
+    int DppType=0;
+    int idxSplitCfg=0;            //Configuration split position, only if necessary
+    bool bSplitCfg=false;         //Configuration split flag
+    std::string strSplitCfg("");  //Configuration split string second buffer
+    bool isDP5_RevDxGains;
+    unsigned char DPP_ECO;
+    asynStatus status;
+    //static const char *functionName="sendConfigurationFile";
+
+    isPC5Present = consoleHelper.DP5Stat.m_DP5_Status.PC5_PRESENT;
+    // Note: we need to add 5 to the DEVICE_ID to get the deviceType used by AsciiCmdUtil.RemoveCmdByDeviceType
+    DppType = consoleHelper.DP5Stat.m_DP5_Status.DEVICE_ID+5;
+    isDP5_RevDxGains = consoleHelper.DP5Stat.m_DP5_Status.isDP5_RevDxGains;
+    DPP_ECO = consoleHelper.DP5Stat.m_DP5_Status.DPP_ECO;
+
+    strCfg = consoleHelper.SndCmd.AsciiCmdUtil.GetDP5CfgStr(fileName);
+    strCfg = consoleHelper.SndCmd.AsciiCmdUtil.RemoveCmdByDeviceType(strCfg,isPC5Present,DppType,isDP5_RevDxGains,DPP_ECO);
+    lCfgLen = (int)strCfg.length();
+    if (lCfgLen > 512) {    // configuration too large, needs fix
+        bSplitCfg = true;
+        idxSplitCfg = consoleHelper.SndCmd.AsciiCmdUtil.GetCmdChunk(strCfg);
+        cout << "\t\t\tConfiguration Split at: " << idxSplitCfg << endl;
+        strSplitCfg = strCfg.substr(idxSplitCfg);
+        strCfg = strCfg.substr(0, idxSplitCfg);
+    }
+    status = sendCommandString(strCfg);
+    if (bSplitCfg) {
+        // Sleep(40);            // may need delay here
+        status = sendCommandString(strSplitCfg);
+    }
+    return status;
+}
+
+asynStatus drvAmptek::sendCommandString(string commandString)
+{
+    asynStatus status;
+    static const char *functionName = "sendCommandString";
+
+    configOptions_.HwCfgDP5Out = commandString;
+    asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+        "%s::%s sending configuration string:\n%s\n",
+        driverName, functionName, commandString.c_str());
+
+    switch(interfaceType_) {
+        case amptekInterfaceEthernet:
+            if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_) == false) {
+                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                    "%s::%s error callingg consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+                    driverName, functionName, commandString.c_str());
+                return asynError;
+            }
+            break;
+        
+        case amptekInterfaceUSB:
+            break;
+        
+        case amptekInterfaceSerial:
+            break;
+    }
+    status = readConfigurationFromHardware();
+    return status;
+}
+
 asynStatus drvAmptek::sendConfiguration()
 {
-    static const char *functionName = "sendConfiguration";
-    bool status=true;
+    //static const char *functionName = "sendConfiguration";
     int itemp;
     double dtemp;
     char tempString[20];
@@ -267,31 +360,18 @@ asynStatus drvAmptek::sendConfiguration()
     getIntegerParam(amptekPUREnable_, &itemp);
     sprintf(tempString, "PURE=%s;", purEnableStrings[itemp]);
     configString.append(tempString);
-    
-    configOptions_.HwCfgDP5Out = configString;
-    asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
-      "%s::%s sending configuration string:\n%s\n",
-      driverName, functionName, configString.c_str());
 
-    switch(interfaceType_) {
-        case amptekInterfaceEthernet:
-            status = consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_);
-            if (status == false) {
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error callingg consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
-                    driverName, functionName, configString.c_str());
-                return asynError;
-            }
-            break;
-        
-        case amptekInterfaceUSB:
-            break;
-        
-        case amptekInterfaceSerial:
-            break;
-    }
-    readConfigurationFromHardware();
-    return asynSuccess;
+    // High voltage
+    getDoubleParam(amptekSetHighVoltage_, &dtemp);
+    sprintf(tempString, "HVSE=%f;", dtemp);
+    configString.append(tempString);
+    
+    // Detector temperature
+    getDoubleParam(amptekSetDetTemp_, &dtemp);
+    sprintf(tempString, "TECS=%f;", dtemp);
+    configString.append(tempString);
+    
+    return sendCommandString(configString);
 }
 
 asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
@@ -304,7 +384,7 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     if (command == mcaStartAcquire_) {
         if (!acquiring_) {
             acquiring_ = true;
-		        status = sendCommand(XMTPT_ENABLE_MCA_MCS);
+                status = sendCommand(XMTPT_ENABLE_MCA_MCS);
             setIntegerParam(mcaAcquiring_, acquiring_);
         }
     }  
@@ -317,7 +397,12 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
     else if (command == mcaReadStatus_) {
         status = sendCommand(XMTPT_SEND_STATUS);
-			  consoleHelper.DppSocket_ReceiveData();
+        consoleHelper.DppSocket_ReceiveData();
+        setDoubleParam(amptekSlowCounts_,  consoleHelper.DP5Stat.m_DP5_Status.SlowCount);
+        setDoubleParam(amptekFastCounts_,  consoleHelper.DP5Stat.m_DP5_Status.FastCount);
+        setDoubleParam(amptekDetTemp_,     consoleHelper.DP5Stat.m_DP5_Status.DET_TEMP);
+        setDoubleParam(amptekBoardTemp_,   consoleHelper.DP5Stat.m_DP5_Status.DP5_TEMP);
+        setDoubleParam(amptekHighVoltage_, consoleHelper.DP5Stat.m_DP5_Status.HV);
     }
     else if ((command == mcaNumChannels_)        ||
              (command == amptekInputPolarity_)   ||
@@ -327,6 +412,16 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
              (command == amptekPUREnable_)       ||
              (command == amptekMCASource_)) {
         status = sendConfiguration();
+    }
+    else if (command == amptekLoadConfigFile_) {
+        string configFileName;
+        getStringParam(amptekConfigFile_, configFileName);
+        status = sendConfigurationFile(configFileName);
+    }
+    else if (command == amptekSaveConfigFile_) {
+        string configFileName;
+        getStringParam(amptekConfigFile_, configFileName);
+        status = saveConfigurationFile(configFileName);
     }
     if (command == mcaNumChannels_) {
         if (value > 0) {
@@ -393,7 +488,9 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
         (command == amptekPeakingTime_)   ||
         (command == amptekFlatTopTime_)   ||
         (command == amptekSlowThreshold_) ||
-        (command == amptekFastThreshold_)) {
+        (command == amptekFastThreshold_) ||
+        (command == amptekSetDetTemp_)    ||
+        (command == amptekSetHighVoltage_)) {
         status = sendConfiguration();
     }
     callParamCallbacks();
@@ -432,12 +529,12 @@ asynStatus drvAmptek::readConfigurationFromHardware()
     int i;
  
     consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
-		consoleHelper.ClearConfigReadFormatFlags();	// clear all flags, set flags only for specific readback properties
-		consoleHelper.CfgReadBack = true; // requesting general readback format
-		// This function is normally called after sending the new configuration, which can take time before the unit will respond
-		// to the next command.  Loop for up to 1 second waiting.
-		for (i=0; i<100; i++) {
-		    // request full configuration
+        consoleHelper.ClearConfigReadFormatFlags();    // clear all flags, set flags only for specific readback properties
+        consoleHelper.CfgReadBack = true; // requesting general readback format
+        // This function is normally called after sending the new configuration, which can take time before the unit will respond
+        // to the next command.  Loop for up to 1 second waiting.
+        for (i=0; i<100; i++) {
+            // request full configuration
         if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
             break;
         }
@@ -455,7 +552,7 @@ asynStatus drvAmptek::readConfigurationFromHardware()
             driverName, functionName);
         return asynError;
     }
-    if (consoleHelper.HwCfgReady) {		// config is ready
+    if (consoleHelper.HwCfgReady) {        // config is ready
       haveConfigFromHW_ = true;
     }
     return asynSuccess;
@@ -481,7 +578,6 @@ void drvAmptek::report(FILE *fp, int details)
             fprintf(fp, "  PresetRtDone:       %d\n", consoleHelper.DP5Stat.m_DP5_Status.PresetRtDone);
             fprintf(fp, "  Status:\n%s\n", consoleHelper.DP5Stat.GetStatusValueStrings(consoleHelper.DP5Stat.m_DP5_Status).c_str());
             fprintf(fp, "  Configuration:\n%s\n", consoleHelper.HwCfgDP5.c_str());
-            
         }
     }
     asynPortDriver::report(fp, details);
