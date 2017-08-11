@@ -39,6 +39,16 @@ typedef enum {
 #define amptekPeakingTimeString     "AMPTEK_PEAKING_TIME"
 #define amptekFastPeakingTimeString "AMPTEK_FAST_PEAKING_TIME"
 #define amptekFlatTopTimeString     "AMPTEK_FLAT_TOP_TIME"
+#define amptekConfigFileString      "AMPTEK_CONFIG_FILE"
+#define amptekSaveConfigFileString  "AMPTEK_SAVE_CONFIG_FILE"
+#define amptekLoadConfigFileString  "AMPTEK_LOAD_CONFIG_FILE"
+#define amptekSlowCountsString      "AMPTEK_SLOW_COUNTS"
+#define amptekFastCountsString      "AMPTEK_FAST_COUNTS"
+#define amptekDetTempString         "AMPTEK_DET_TEMP"
+#define amptekSetDetTempString      "AMPTEK_SET_DET_TEMP"
+#define amptekBoardTempString       "AMPTEK_BOARD_TEMP"
+#define amptekHighVoltageString     "AMPTEK_HIGH_VOLTAGE"
+#define amptekSetHighVoltageString  "AMPTEK_SET_HIGH_VOLTAGE"
 
 #define MAX_MODULES 16
 #define MAX_IPNAME_LEN 16
@@ -99,6 +109,16 @@ class drvAmptek : public asynPortDriver
   int amptekPeakingTime_;
   int amptekFastPeakingTime_;
   int amptekFlatTopTime_;
+  int amptekConfigFile_;
+  int amptekSaveConfigFile_;
+  int amptekLoadConfigFile_;
+  int amptekSlowCounts_;
+  int amptekFastCounts_;
+  int amptekDetTemp_;
+  int amptekSetDetTemp_;
+  int amptekBoardTemp_;
+  int amptekHighVoltage_;
+  int amptekSetHighVoltage_;
   
   private:
   CConsoleHelper consoleHelper;
@@ -106,7 +126,10 @@ class drvAmptek : public asynPortDriver
   asynStatus connectDevice();
   asynStatus findModule();
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
+  asynStatus sendCommandString(string commandString);
   asynStatus sendConfiguration();
+  asynStatus sendConfigurationFile(string fileName);
+  asynStatus saveConfigurationFile(string fileName);
   asynStatus readConfigurationFromHardware();
   bool isConnected_;
   bool acquiring_;
