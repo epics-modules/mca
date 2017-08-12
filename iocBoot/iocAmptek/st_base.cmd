@@ -1,4 +1,3 @@
-< envPaths
 epicsEnvSet(STARTUP,$(TOP)/iocBoot/$(IOC))
 
 dbLoadDatabase("../../dbd/mcaAmptekApp.dbd",0,0)
