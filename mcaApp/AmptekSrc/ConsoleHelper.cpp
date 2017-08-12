@@ -4,7 +4,7 @@
 #include "stringSplit.h"
 #include "stringex.h"
 using namespace stringSplit;
-#pragma warning(disable:4309)
+//#pragma warning(disable:4309)
 #include "NetFinder.h"
 #include <string.h>
 
@@ -42,6 +42,7 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
 	DppSock->SendNetFinderBroadCast(DppSock->m_rand);
 	nPort = 3040;
 	Sleep(100);			// give netfinder time for devices to respond
+	printf("Searching for Amptek modules on network:\n");
 	do {				// get all the responding devices from netfinder LAN broadcast
 		memset(&szDPP,0,sizeof(szDPP));
 #ifdef WIN32
@@ -49,10 +50,10 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
 #else
 		iSize = DppSock->UDPRecvFromNfAddr(szBuffer, 1024, szDPP, nPort);
 #endif
-		printf("size: %d\n", iSize);
+		//printf("size: %d\n", iSize);
 		if (iSize > 0) {
 			if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {	// test if from our broadcast 
-				printf("Address: %s  Port: %d   bytes:%d\n\n",szDPP,nPort,iSize);
+				printf("  Address: %s  Port: %d   bytes:%d\n",szDPP,nPort,iSize);
 				DppSock->AddAddress(szDPP, addrArr, iDpps);
 				iDpps++;
 			}
@@ -61,7 +62,7 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
 		}
 		iNetFinderLoops++;
 	} while ((iSize > 0) && (iNetFinderLoops < MAX_ENTRIES));
-	printf("found %d units, doNetFinderBroadcast done\r\n", iDpps);
+	printf("Found %d Amptek units\n", iDpps);
 	return iDpps;
 }
 
@@ -127,7 +128,7 @@ int CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send
 				szBuffer[idxBuff] = szBuffer[idxBuff+6];
 			}
 			for(idxBuff=iBufferSize;idxBuff<iBufferSize+6;idxBuff++){
-				szBuffer[idxBuff] = NULL;
+				szBuffer[idxBuff] = 0;
 			}
 			// have Amptek protocol Netfinder packet
 			iNumDevices = 1;
