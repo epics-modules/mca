@@ -133,7 +133,7 @@ asynStatus drvAmptek::connectDevice()
     isConnected_ = false;
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
-            if (consoleHelper.DppSocket_Connect_Direct_DPP(addressInfo_)) {
+            if (consoleHelper.DppSocket_Connect_Default_DPP(addressInfo_)) {
                 asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
                     "%s::%s Network DPP device %s connected, total devices found=%d\n",
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
