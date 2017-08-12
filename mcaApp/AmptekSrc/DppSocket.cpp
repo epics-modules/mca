@@ -27,7 +27,7 @@ CDppSocket::CDppSocket()
 			cout << "DppSocket creation failed (socket())" << endl;
 			m_nStartupOK = false;
 		} else {
-			cout << "DppSocket created" << endl;
+			//cout << "DppSocket created" << endl;
 			m_nStartupOK = true;
 		}
 	#endif
@@ -50,11 +50,11 @@ CDppSocket::CDppSocket()
 		if (sin.sin_family == AF_INET) {
 			if (addrlen == sizeof(sin)) {
 				local_port = ntohs(sin.sin_port);
-				cout << local_port << endl;
+				if (bSocketDebug) cout << local_port << endl;
 			}
 		}
 	} else {
-		printf("%d\r\n",iRes);
+		if (bSocketDebug) printf("%d\r\n",iRes);
 	}
 }
  
@@ -116,9 +116,7 @@ int CDppSocket::SendNetFinderBroadCast(int m_rand)
 #else
 	int broadcast = 1;
 #endif
-	int iPort = 3040;
-	char buff[6] = { 0,0,0,0,0xF4,0xFA };
-	char szIP[100]={"255.255.255.255"};
+	unsigned char buff[6] = { 0,0,0,0,0xF4,0xFA };
 
 #ifdef WIN32
 	//windows
@@ -251,7 +249,7 @@ int CDppSocket::UDPRecvFromNfAddr(unsigned char * buf, int len, char* lpIP, int 
 		    sprintf(lpIP,"%d.%d.%d.%d",nf_ip[0],nf_ip[1],nf_ip[2],nf_ip[3]);
 		}
 		
-		printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
+		if (bSocketDebug) printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
 	} else {
 		nRcv = 0;
 	}
@@ -442,13 +440,13 @@ int CDppSocket::CreateRand()
 bool CDppSocket::HaveNetFinderPacket(const unsigned char buffer[], int m_rand, int num_bytes)
 {
 	bool bHaveNetFinderPacket=false;
-	printf("m_rand: %X b0: %X b1: %X b2: %X\n",m_rand,buffer[0],buffer[2],buffer[3]);
+	if (bSocketDebug) printf("m_rand: %X b0: %X b1: %X b2: %X\n",m_rand,buffer[0],buffer[2],buffer[3]);
 	if ((num_bytes >= 32) && 
 		(buffer[0] == 0x01) && 
 		(buffer[2] == (m_rand >> 8)) && 
 		(buffer[3] == (m_rand & 0x00FF))) 
 	{		// have Silicon Labs Netfinder packet
-		printf("NetFinder Packet Found\n");
+		if (bSocketDebug) printf("NetFinder Packet Found\n");
 		bHaveNetFinderPacket = true;	
 	}  else if((buffer[0] == 0x00) && 
 		(buffer[2] == (m_rand >> 8)) && 
