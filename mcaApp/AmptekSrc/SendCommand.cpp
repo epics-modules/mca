@@ -27,7 +27,7 @@ bool CSendCommand::TestPacketCkSumOK(unsigned char Data[])
     CS = (CS ^ 0xFFFF) + 1;
     CHKSUM_MSB = (unsigned char)((CS & 0xFF00) / 256);	// calculated checksum
     CHKSUM_LSB = (unsigned char)(CS & 0xFF);
-	if ((Data[PktLen + 6] == CHKSUM_MSB) && (Data[PktLen + 7] == (CS & 0xFF))) {
+	if ((Data[PktLen + 6] == CHKSUM_MSB) && (Data[PktLen + 7] == CHKSUM_LSB)) {
 		return true;
 	} else {
 		return false;
