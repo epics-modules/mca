@@ -374,6 +374,42 @@ asynStatus drvAmptek::sendConfiguration()
     return sendCommandString(configString);
 }
 
+asynStatus drvAmptek::parseConfigDouble(const char *str, int param)
+{
+    const char *configString = consoleHelper.HwCfgDP5.c_str();
+    const char *pos;
+    int n;
+    double dtemp;
+    static const char *functionName = "parseConfigDouble";
+
+    pos = strstr(configString, str);
+    if (pos == 0) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s string %s not found in configuration\n",
+            driverName, functionName, str);
+        return asynError;
+    }
+    pos += strlen(str);
+    n = sscanf(pos, "%lf", &dtemp);
+    if (n != 1) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s value for %s not found in configuration\n",
+            driverName, functionName, str);
+        return asynError;
+    }
+    setDoubleParam(param, dtemp);
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::parseConfiguration()
+{
+    //static const char *functionName = "parseConfiguration";
+
+    // Peaking time
+    parseConfigDouble("TPEA=", amptekPeakingTime_);
+    return asynSuccess;
+}
+
 asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
     int command = pasynUser->reason;
@@ -555,7 +591,8 @@ asynStatus drvAmptek::readConfigurationFromHardware()
     if (consoleHelper.HwCfgReady) {        // config is ready
       haveConfigFromHW_ = true;
     }
-    return asynSuccess;
+    
+    return parseConfiguration();
 }
 
 
