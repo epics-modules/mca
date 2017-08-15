@@ -49,6 +49,8 @@ typedef enum {
 #define amptekBoardTempString       "AMPTEK_BOARD_TEMP"
 #define amptekHighVoltageString     "AMPTEK_HIGH_VOLTAGE"
 #define amptekSetHighVoltageString  "AMPTEK_SET_HIGH_VOLTAGE"
+#define amptekMCSLowChannelString   "AMPTEK_MCS_LOW_CHANNEL"
+#define amptekMCSHighChannelString  "AMPTEK_MCS_HIGH_CHANNEL"
 
 #define MAX_MODULES 16
 #define MAX_IPNAME_LEN 16
@@ -119,7 +121,9 @@ class drvAmptek : public asynPortDriver
   int amptekBoardTemp_;
   int amptekHighVoltage_;
   int amptekSetHighVoltage_;
-  
+  int amptekMCSLowChannel_;
+  int amptekMCSHighChannel_;
+ 
   private:
   CConsoleHelper consoleHelper;
   CONFIG_OPTIONS configOptions_;
@@ -133,6 +137,7 @@ class drvAmptek : public asynPortDriver
   asynStatus readConfigurationFromHardware();
   asynStatus parseConfiguration();
   asynStatus parseConfigDouble(const char *str, int param);
+  asynStatus parseConfigInt(const char *str, int param);
   asynStatus parseConfigEnum(const char *str, const char *enumStrs[], int numEnums, int param);
   bool isConnected_;
   bool acquiring_;
