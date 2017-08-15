@@ -104,6 +104,8 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekBoardTempString,              asynParamFloat64, &amptekBoardTemp_);
     createParam(amptekHighVoltageString,            asynParamFloat64, &amptekHighVoltage_);
     createParam(amptekSetHighVoltageString,         asynParamFloat64, &amptekSetHighVoltage_);
+    createParam(amptekMCSLowChannelString,            asynParamInt32, &amptekMCSLowChannel_);
+    createParam(amptekMCSHighChannelString,           asynParamInt32, &amptekMCSHighChannel_);
 
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
@@ -370,7 +372,22 @@ asynStatus drvAmptek::sendConfiguration()
     getDoubleParam(amptekSetDetTemp_, &dtemp);
     sprintf(tempString, "TECS=%f;", dtemp);
     configString.append(tempString);
+
+    // MCS low channel
+    getIntegerParam(amptekMCSLowChannel_, &itemp);
+    sprintf(tempString, "MCSL=%d;", itemp);
+    configString.append(tempString);
     
+    // MCS high channel
+    getIntegerParam(amptekMCSHighChannel_, &itemp);
+    sprintf(tempString, "MCSH=%d;", itemp);
+    configString.append(tempString);
+
+    // MCS time base
+    getDoubleParam(mcaDwellTime_, &dtemp);
+    sprintf(tempString, "MCST=%f;", dtemp);
+    configString.append(tempString);
+   
     return sendCommandString(configString);
 }
 
@@ -402,6 +419,37 @@ asynStatus drvAmptek::parseConfigDouble(const char *str, int param)
         }
     }
     setDoubleParam(param, dtemp);
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::parseConfigInt(const char *str, int param)
+{
+    const char *configString = consoleHelper.HwCfgDP5.c_str();
+    const char *pos;
+    int n;
+    int itemp;
+    static const char *functionName = "parseConfigInt";
+
+    pos = strstr(configString, str);
+    if (pos == 0) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s string %s not found in configuration\n",
+            driverName, functionName, str);
+        return asynError;
+    }
+    pos += strlen(str);
+    if (strncmp(pos, "OFF", 3) == 0) {
+        itemp = 0;
+    } else {
+        n = sscanf(pos, "%d", &itemp);
+        if (n != 1) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s value for %s not found in configuration\n",
+                driverName, functionName, str);
+            return asynError;
+        }
+    }
+    setIntegerParam(param, itemp);
     return asynSuccess;
 }
 
@@ -437,8 +485,7 @@ asynStatus drvAmptek::parseConfiguration()
     //static const char *functionName = "parseConfiguration";
 
     // Clock rate
-//    getIntegerParam(amptekClock_, &itemp);
-//    sprintf(tempString, "CLCK=%s;", clockStrings[itemp]);
+    parseConfigEnum("CLCK=", clockStrings, sizeof(clockStrings)/sizeof(clockStrings[0]), amptekClock_);
     
     // Analog input polarity
     parseConfigEnum("AINP=", polarityStrings, sizeof(polarityStrings)/sizeof(polarityStrings[0]), amptekInputPolarity_);
@@ -462,8 +509,7 @@ asynStatus drvAmptek::parseConfiguration()
     parseConfigDouble("THFA=", amptekFastThreshold_);
 
     // Number of MCA channels
-    //getIntegerParam(mcaNumChannels_, &itemp);
-    //sprintf(tempString, "MCAC=%d;", itemp);
+    parseConfigInt("MCAC=", mcaNumChannels_);
     
     // Gate
     parseConfigEnum("GATE=", gateStrings, sizeof(gateStrings)/sizeof(gateStrings[0]), amptekGate_);
@@ -486,6 +532,15 @@ asynStatus drvAmptek::parseConfiguration()
     // Detector temperature
     parseConfigDouble("TECS=", amptekSetDetTemp_);
 
+    // MCS low channel
+    parseConfigInt("MCSL=", amptekMCSLowChannel_);
+    
+    // MCS high channel
+    parseConfigInt("MCSH=", amptekMCSHighChannel_);
+
+    // MCS time base
+    parseConfigDouble("MCST=", mcaDwellTime_);
+   
     return asynSuccess;
 }
 
@@ -525,6 +580,8 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
              (command == amptekGate_)            ||
              (command == amptekFastPeakingTime_) ||
              (command == amptekPUREnable_)       ||
+             (command == amptekMCSLowChannel_)   ||
+             (command == amptekMCSHighChannel_)  ||
              (command == amptekMCASource_)) {
         status = sendConfiguration();
     }
@@ -571,10 +628,7 @@ asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
     asynStatus status=asynSuccess;
     //static const char *functionName = "readFloat64";
 
-    if (command == mcaDwellTime_) {
-        *value = 0.;
-    }
-    else if (command == mcaElapsedLiveTime_) {
+    if (command == mcaElapsedLiveTime_) {
         *value = consoleHelper.DP5Stat.m_DP5_Status.AccumulationTime;
     }
     else if (command == mcaElapsedRealTime_) {
@@ -599,6 +653,7 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     status = setDoubleParam(command, value);
     if ((command == mcaPresetRealTime_)   || 
         (command == mcaPresetLiveTime_)   ||
+        (command == mcaDwellTime_)        ||
         (command == amptekGain_)          ||
         (command == amptekPeakingTime_)   ||
         (command == amptekFlatTopTime_)   ||
