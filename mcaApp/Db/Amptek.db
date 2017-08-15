@@ -270,6 +270,55 @@ record(mbbi,"$(P)$(R)MCASource_RBV") {
     field(SCAN, "I/O Intr")
 }
 
+record(longout,"$(P)$(R)MCSLowChannel") {
+    field(DESC,"MCS low channel")
+    field(PINI,"YES")
+    field(DRVL, "0")
+    field(DRVH, "16383")
+    field(VAL,"0")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT))AMPTEK_MCS_LOW_CHANNEL")
+}
+
+record(longin,"$(P)$(R)MCSLowChannel_RBV") {
+    field(DESC,"MCS low channel")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT))AMPTEK_MCS_LOW_CHANNEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout,"$(P)$(R)MCSHighChannel") {
+    field(DESC,"MCS high channel")
+    field(PINI,"YES")
+    field(DRVL, "0")
+    field(DRVH, "16383")
+    field(VAL,"100")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT))AMPTEK_MCS_HIGH_CHANNEL")
+}
+
+record(longin,"$(P)$(R)MCSHighChannel_RBV") {
+    field(DESC,"MCS high channel")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT))AMPTEK_MCS_HIGH_CHANNEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(ai,"$(P)$(R)MCSDwellTime_RBV") {
+    field(DESC,"MCS dwell time")
+    field(PREC,"2")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT))MCA_DWELL_TIME")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)MCANumChannels_RBV") {
+    field(DESC,"Number of MCA channels")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT))MCA_NUM_CHANNELS")
+    field(SCAN, "I/O Intr")
+}
+
 record(waveform, "$(P)$(R)ConfigFileName")
 {
     field(PINI, "YES")
@@ -296,7 +345,7 @@ record(bo, "$(P)$(R)SaveConfigFile")
 }
 
 # This record will read the Amptek status even when the MCA is not acquiring
-record(bo, "$(P)$(R)ReadAmptekStatus")
+record(bo, "$(P)$(R)ReadStatus")
 {
     field(DTYP, "asynInt32")
     field(OUT,  "@asyn($(PORT),0)MCA_READ_STATUS")
@@ -304,7 +353,6 @@ record(bo, "$(P)$(R)ReadAmptekStatus")
     field(ONAM, "Read")
     field(SCAN, "1 second")
 }
-
 
 record(ai,"$(P)$(R)SlowCounts") {
     field(DESC,"Slow counts")
