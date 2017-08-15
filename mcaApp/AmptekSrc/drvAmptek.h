@@ -133,6 +133,7 @@ class drvAmptek : public asynPortDriver
   asynStatus readConfigurationFromHardware();
   asynStatus parseConfiguration();
   asynStatus parseConfigDouble(const char *str, int param);
+  asynStatus parseConfigEnum(const char *str, const char *enumStrs[], int numEnums, int param);
   bool isConnected_;
   bool acquiring_;
   bool haveConfigFromHW_;
