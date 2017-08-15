@@ -140,12 +140,12 @@ asynStatus drvAmptek::connectDevice()
                     "%s::%s Network DPP device %s connected, total devices found=%d\n",
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
                 isConnected_ = true;
-              } else {
+            } else {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                     "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
                 isConnected_ = false;
-              }
+            }
             break;
 
         case amptekInterfaceUSB:
