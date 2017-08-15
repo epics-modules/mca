@@ -17,6 +17,7 @@
 #include <epicsTypes.h>
 #include <epicsThread.h>
 #include <epicsString.h>
+#include <epicsExit.h>
 #include <iocsh.h>
 #include <cantProceed.h>
 
@@ -29,7 +30,7 @@
 
 static const char *clockStrings[]           = {"AUTO", "20", "80"};
 static const char *polarityStrings[]        = {"POS", "NEG"};
-static const char *gateStrings[]            = {"OFF", "HIGH", "LOW"};
+static const char *gateStrings[]            = {"OFF", "HI", "LOW"};
 static const char *purEnableStrings[]       = {"ON", "OFF", "MAX"};
 static const char *mcaSourceStrings[]       = {"NORM", "MCS", "FAST", "PUR", "RTD"};
 static const char *fastPeakingTimeStrings[] = {"50", "100", "200", "400", "800", "1600", "3200"};
@@ -133,6 +134,7 @@ asynStatus drvAmptek::connectDevice()
     isConnected_ = false;
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
+            consoleHelper.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
             if (consoleHelper.DppSocket_Connect_Default_DPP(addressInfo_)) {
                 asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
                     "%s::%s Network DPP device %s connected, total devices found=%d\n",
@@ -144,8 +146,6 @@ asynStatus drvAmptek::connectDevice()
                     driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
                 isConnected_ = false;
               }
-              consoleHelper.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
-
             break;
 
         case amptekInterfaceUSB:
@@ -390,23 +390,102 @@ asynStatus drvAmptek::parseConfigDouble(const char *str, int param)
         return asynError;
     }
     pos += strlen(str);
-    n = sscanf(pos, "%lf", &dtemp);
-    if (n != 1) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s value for %s not found in configuration\n",
-            driverName, functionName, str);
-        return asynError;
+    if (strncmp(pos, "OFF", 3) == 0) {
+        dtemp = 0;
+    } else {
+        n = sscanf(pos, "%lf", &dtemp);
+        if (n != 1) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s value for %s not found in configuration\n",
+                driverName, functionName, str);
+            return asynError;
+        }
     }
     setDoubleParam(param, dtemp);
     return asynSuccess;
+}
+
+asynStatus drvAmptek::parseConfigEnum(const char *str, const char *enumStrs[], int numEnums, int param)
+{
+    const char *configString = consoleHelper.HwCfgDP5.c_str();
+    const char *pos;
+    int i;
+    static const char *functionName = "parseConfigEnum";
+
+    pos = strstr(configString, str);
+    if (pos == 0) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s string %s not found in configuration\n",
+            driverName, functionName, str);
+        return asynError;
+    }
+    pos += strlen(str);
+    for (i=0; i<numEnums; i++) {
+        if (strncmp(pos, enumStrs[i], strlen(enumStrs[i])) == 0) {
+            setIntegerParam(param, i);
+            return asynSuccess;
+        }
+    }
+    asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+        "%s::%s value for %s not found in configuration\n",
+        driverName, functionName, str);
+    return asynError;
 }
 
 asynStatus drvAmptek::parseConfiguration()
 {
     //static const char *functionName = "parseConfiguration";
 
+    // Clock rate
+//    getIntegerParam(amptekClock_, &itemp);
+//    sprintf(tempString, "CLCK=%s;", clockStrings[itemp]);
+    
+    // Analog input polarity
+    parseConfigEnum("AINP=", polarityStrings, sizeof(polarityStrings)/sizeof(polarityStrings[0]), amptekInputPolarity_);
+    
     // Peaking time
     parseConfigDouble("TPEA=", amptekPeakingTime_);
+
+    // Fast peaking time
+    parseConfigEnum("TPFA=", fastPeakingTimeStrings, sizeof(fastPeakingTimeStrings)/sizeof(fastPeakingTimeStrings[0]), amptekFastPeakingTime_);
+
+    // Flat top time
+    parseConfigDouble("TFLA=", amptekFlatTopTime_);
+
+    //  Gain
+    parseConfigDouble("GAIN=", amptekGain_);
+
+    // Slow threshold
+    parseConfigDouble("THSL=", amptekSlowThreshold_);
+    
+    // Fast threshold
+    parseConfigDouble("THFA=", amptekFastThreshold_);
+
+    // Number of MCA channels
+    //getIntegerParam(mcaNumChannels_, &itemp);
+    //sprintf(tempString, "MCAC=%d;", itemp);
+    
+    // Gate
+    parseConfigEnum("GATE=", gateStrings, sizeof(gateStrings)/sizeof(gateStrings[0]), amptekGate_);
+    
+    //  Preset real time
+    parseConfigDouble("PRER=", mcaPresetRealTime_);
+     
+    //  Preset live time
+    parseConfigDouble("PRET=", mcaPresetLiveTime_);
+
+    // MCA source
+    parseConfigEnum("MCAS=", mcaSourceStrings, sizeof(mcaSourceStrings)/sizeof(mcaSourceStrings[0]), amptekMCASource_);
+
+    // PUR enable
+    parseConfigEnum("PURE=", purEnableStrings, sizeof(purEnableStrings)/sizeof(purEnableStrings[0]), amptekPUREnable_);
+
+    // High voltage
+    parseConfigDouble("HVSE=", amptekSetHighVoltage_);
+    
+    // Detector temperature
+    parseConfigDouble("TECS=", amptekSetDetTemp_);
+
     return asynSuccess;
 }
 
@@ -565,12 +644,12 @@ asynStatus drvAmptek::readConfigurationFromHardware()
     int i;
  
     consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
-        consoleHelper.ClearConfigReadFormatFlags();    // clear all flags, set flags only for specific readback properties
-        consoleHelper.CfgReadBack = true; // requesting general readback format
-        // This function is normally called after sending the new configuration, which can take time before the unit will respond
-        // to the next command.  Loop for up to 1 second waiting.
-        for (i=0; i<100; i++) {
-            // request full configuration
+    consoleHelper.ClearConfigReadFormatFlags();    // clear all flags, set flags only for specific readback properties
+    consoleHelper.CfgReadBack = true; // requesting general readback format
+    // This function is normally called after sending the new configuration, which can take time before the unit will respond
+    // to the next command.  Loop for up to 1 second waiting.
+    for (i=0; i<100; i++) {
+        // request full configuration
         if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
             break;
         }
