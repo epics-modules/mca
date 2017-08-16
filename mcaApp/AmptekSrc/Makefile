@@ -14,8 +14,9 @@ DBD += mcaAmptekSupport.dbd
 # Amptek's code uses WIN32 rather than _WIN32 
 USR_CXXFLAGS_WIN32 += -DWIN32
 
-# Linux
-LIBRARY_IOC += mcaAmptek
+# We only build this on Linux and Windows
+LIBRARY_IOC_Linux += mcaAmptek
+LIBRARY_IOC_WIN32 += mcaAmptek
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAmptek_SRCS += AsciiCmdUtilities.cpp 
@@ -35,7 +36,8 @@ mcaAmptek_LIBS += asyn
 mcaAmptek_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-PROD_IOC    += mcaAmptekApp
+PROD_IOC_Linux    += mcaAmptekApp
+PROD_IOC_WIN32    += mcaAmptekApp
 mcaAmptekApp_SRCS += mcaAmptekApp_registerRecordDeviceDriver.cpp
 mcaAmptekApp_SRCS_DEFAULT += mcaAmptekAppMain.cpp
 mcaAmptekApp_SRCS_vxWorks += -nil-
@@ -60,11 +62,13 @@ mcaAmptekApp_DBD += sscanSupport.dbd
 
 
 #=============================
-PROD_IOC    += gccDppConsoleInet
+PROD_IOC_Linux    += gccDppConsoleInet
+PROD_IOC_WIN32    += gccDppConsoleInet
 gccDppConsoleInet_SRCS += gccDppConsoleInet.cpp 
 gccDppConsoleInet_LIBS += mcaAmptek
 
-PROD_IOC    += amptekTest1
+PROD_IOC_Linux   += amptekTest1
+PROD_IOC_WIN32   += amptekTest1
 amptekTest1_SRCS += amptekTest1.cpp 
 amptekTest1_LIBS += mcaAmptek
 
