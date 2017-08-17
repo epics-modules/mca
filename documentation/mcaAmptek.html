@@ -1,0 +1,418 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Amptek Driver</title>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type" />
+</head>
+<body>
+  <h1>
+    Amptek Driver</h1>
+  <address>
+    Mark Rivers</address>
+  <hr />
+  <h2>
+    Contents</h2>
+  <ul>
+    <li><a href="#Overview">Overview</a></li>
+    <li><a href="#Hardware_configuration">Hardware configuration</a></li>
+    <li><a href="#Software_architecture">Software architecture</a></li>
+    <li><a href="#Startup">Startup script</a></li>
+    <li><a href="#Restrictions">Restrictions</a></li>
+  </ul>
+  <h2 id="Overview">
+    Overview</h2>
+  <p>
+    This is an <a href="http://www.aps.anl.gov/epics/">EPICS</a> driver for the <a href="mca.html">
+      EPICS mca module</a> that supports the DP5 series MCAs from <a href="http://www.amptek.com/">
+        Amptek (Ametek)</a>. These MCAs are integrated into the X-123 model detectors
+    from Amptek. The driver supports both MCA (spectrum) mode, and MCS (multi-channel
+    scaler mode) which produces counts in a user-defined spectral Region-Of-Interest
+    as function of time.
+  </p>
+  <p>
+    The DP5 MCAs support USB, Ethernet, and RS-232 communication. This driver currently
+    only supports Ethernet, but support for USB may be added in the future.
+  </p>
+  <h2 id="Hardware_configuration">
+    Hardware configuration</h2>
+  <p>
+    The DP5 MCA can be configured either for DHCP or fixed IP address. If using DHCP
+    then one can determine the actual IP address in use in two ways.</p>
+  <ol>
+    <li>Use the DppMCA Windows program from Amptek. Press the "Find DP5 IP" button. That
+      should show you what IP address the module has. Press the "Connect" button. You
+      should now be able to control the detector over Ethernet.</li>
+    <li>Run the IOC using an arbitrary IP address for the module in the drvAmptekConfigure()
+      command. The IOC application will list the IP addresses of all Amptek DP5 modules
+      that it finds on the local subnet.</li>
+  </ol>
+  <h2 id="Software_architecture">
+    Software architecture</h2>
+  <p>
+    The driver inherits from asynPortDriver, which is part of asyn. The driver uses
+    the standard device-independent asyn device support for the MCA record. The INP
+    link is of the form INP=@asyn(PORT, 0), where PORT is the name of the asyn port
+    that has been created with the drvAmptekConfigure() command.</p>
+  <p>
+    In addition to the functions supported by the MCA record, this driver has additional
+    functions supported by records in the Amptek.db database. These records correspond
+    to the parameters documented in the <a href="DP5 Programmer's Guide B1.pdf">DP5 Programmer's
+      Guide</a>. This database contains the following records:</p>
+  <table border="1">
+    <tbody>
+      <tr align="center">
+        <th>
+          Record</th>
+        <th>
+          Record type</th>
+        <th>
+          Description</th>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)InputPolarity<br />
+          $(P)$(R)InputPolarity_RBV </td>
+        <td>
+          bo<br />
+          bi</td>
+        <td>
+          Polarity of the detector signal into MCA. Choices are:<br />
+          0: Pos<br />
+          1: Neg </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Clock<br />
+          $(P)$(R)Clock_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Clock frequency in DP5 MCA. Choices are:<br />
+          0: Auto<br />
+          1: 20 MHz<br />
+          2: 80 MHz </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Gain<br />
+          $(P)$(R)Gain_RBV </td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          Gain of the MCA, which controls the number of eV/bin in the spectrum. Range is model
+          dependent, but is always within 0.75 to 500.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Gate<br />
+          $(P)$(R)Gate_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Controls whether the MCA is gated by an external signal. Choices are:<br />
+          0: Off<br />
+          1: High<br />
+          2: Low</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)PeakingTime<br />
+          $(P)$(R)PeakingTime_RBV </td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          Peaking time of the slow shaper in the MCA. The range depends on the model and CLOCK,
+          but is always within 0.8 and 102.4 microseconds.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)FastPeakingTime<br />
+          $(P)$(R)FastPeakingTime_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          The peaking time of the fast shaper in the MCA in ns. Choices are:<br />
+          0: 50<br />
+          1: 100<br />
+          2: 200<br />
+          3: 400<br />
+          4: 800<br />
+          5: 1600<br />
+          6: 3200</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)FlatTopTime<br />
+          $(P)$(R)FlatTopTime_RBV</td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          Flat top time of the slow shaper in the MCA. The range depends on the model and
+          CLOCK, but is always within 0.015 and 50.4 microseconds.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SlowThreshold<br />
+          $(P)$(R)SlowThreshold_RBV </td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          Threshold of the slow shaper in the MCA. The range is from 0 to 24.9%.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)FastThreshold<br />
+          $(P)$(R)FastThreshold_RBV </td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          Threshold of the fast shaper in the MCA. The range is from 0 to 511.93% which corresponds
+          to 0 to 100%.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)PUREnable<br />
+          $(P)$(R)PUREnable_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Pile Up Reject (PUR) enable control. Choices are:<br />
+          0: On<br />
+          1: Off<br />
+          2: Max</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)MCASource<br />
+          $(P)$(R)MCASource_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Source of the MCA spectra data. Choices are:<br />
+          0: MCA<br />
+          1: MCS<br />
+          2: PUR<br />
+          4: RTD</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)MCSLowChannel<br />
+          $(P)$(R)MCSLowChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          Low channel for the MCS spectral window. Range is 0 to MAXCHANS-1.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)MCSHighChannel<br />
+          $(P)$(R)MCSHighChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          High channel for the MCS spectral window. Range is 0 to MAXCHANS-1.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)MCSDwellTime_RBV</td>
+        <td>
+          ai</td>
+        <td>
+          Readback for the MCS dwell time. The dwell time is set with the .DWEL field of the
+          MCA record.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)MCANumChannels_RBV</td>
+        <td>
+          longin</td>
+        <td>
+          Readback for the number of MCA channels. The number of channels is set with the
+          .NUSE field of the MCA record.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)ConfigFileName</td>
+        <td>
+          waveform</td>
+        <td>
+          Name of configuration file to load or save.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)LoadConfigFile</td>
+        <td>
+          bo</td>
+        <td>
+          Processing this record will read the configuration file specifed by ConfigGFileName
+          and send it to the DP5.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SaveConfigFile</td>
+        <td>
+          bo</td>
+        <td>
+          Processing this record will read the configuration from the DP5 and save it to file
+          specifed by ConfigGFileName.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)ReadStatus</td>
+        <td>
+          bo</td>
+        <td>
+          Processing this record will read the status information from the DP5. The MCA record
+          will read the status information at the rate specified by the $(P)$(M)Status record
+          in the MCA database, but only when acquisition active. This record can be used to
+          enable reading the temperature and high voltage even when acquisition is stopped.
+        </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SlowCounts</td>
+        <td>
+          ai</td>
+        <td>
+          Total number of counts detected by the slow shaper. </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)FastCounts</td>
+        <td>
+          ai</td>
+        <td>
+          Total number of counts detected by the fast shaper. </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)DetTemp</td>
+        <td>
+          ai</td>
+        <td>
+          The detector temperature in Kelvin. </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SetDetTemp<br />
+          $(P)$(R)SetDetTemp_RBV </td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The setpoint for the detector temperature.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)BoardTemp</td>
+        <td>
+          ai</td>
+        <td>
+          The board temperature in degrees C. </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)HighVoltage</td>
+        <td>
+          ai</td>
+        <td>
+          The actual high voltage. </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SetHighVoltage<br />
+          $(P)$(R)SetHighVoltage_RBV </td>
+        <td>
+          ao<br />
+          ai</td>
+        <td>
+          The setpoint for the detector high voltage.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    The following shows the MEDM screen for the Amptek control</p>
+  <div style="text-align: center">
+    <h3 style="text-align: center">
+      Amptek.adl with 1-2-3 CdTe detector</h3>
+    <img alt="Amptek.png" src="Amptek.png" /></div>
+  <p>
+    The following shows the MEDM screen for the Amptek MCA display with a 1-2-3 CdTe
+    detector and a Cd109 radioactive source</p>
+  <div style="text-align: center">
+    <h3 style="text-align: center">
+      mca.adl</h3>
+    <img alt="Amptek_mca.png" src="Amptek_mca.png" /></div>
+  <h2 id="Startup">
+    Startup script</h2>
+  <p>
+    The mca/iocBoot/iocAmptek contains example startup scripts for the Amptek detectors.</p>
+  <p>
+    The command to configure the Amptek driver is drvAmptekConfigure().</p>
+  <pre>int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo)
+  The arguments are:
+      portName:            # The name of the asyn port to be created
+      interfaceType:       # The interface to use: 0=Ethernet, 1=USB, 2=serial
+      addressInfo          # The device address information. For Ethernet this is the IP address of the module.
+</pre>
+  <h2 id="Restrictions">
+    Restrictions</h2>
+  <p>
+    The driver currently has the following restrictions. These may be addressed in future
+    releases.</p>
+  <ul>
+    <li>Only the Ethernet interface is currently supported. USB may be supported in the
+      future. Unforunately the vendor SDK is not written to be device independent, so
+      this is not as easy as it should be.</li>
+    <li>Currently only Amptek models that use the DP5 version of their MCA are supported.
+      This means that the driver will not work correctly with the PX5, DP5G, TB5, or MCA8000D.</li>
+    <li>The driver only provides EPICS records to control a subset of all of the DPP parameters.
+      The following parameters cannot currently be controlled by EPICS:
+      <ul>
+        <li>Auxilliary outputs (AU34, AUO1, AUO2, CON1, CON2)</li>
+        <li>Baseline restorer (BLRD, BLRM, BLRU)</li>
+        <li>Power-on state (BOOT)</li>
+        <li>List mode (CLKL, LMM0, SYNC)</li>
+        <li>Non-trapezoidal shaping (CUSP)</li>
+        <li>DAC control (DACF, DACO)</li>
+        <li>General purpose counter (GPED, GPGA, GPIN, GPMC, GPME)</li>
+        <li>Input offset (INOF, INOG)</li>
+        <li>Preamp control (PAPS, PAPZ)</li>
+        <li>Peak detect mode (PDMD)</li>
+        <li>Preset counts (PRCL, PRCH, PREC)</li>
+        <li>Reset configuration (RESC)</li>
+        <li>Reset lockout interval (RESL)</li>
+        <li>Risetime discriminator control (RTDD, RTDE, RTDS, RTDT, RTDW)</li>
+        <li>SCA control (SCAH, SCAI, SCAL, SCAO, SCAW)</li>
+        <li>Digital scope control (SCOE, SCOG, SCOT)</li>
+        <li>Scintillator time constant (SCTC)</li>
+        <li>Spectrum offset (SOFF)</li>
+        <li>Lower level discriminator (TLLD)</li>
+        <li>Test pulser mode (TPMO)</li>
+        <li>PX5 speaker (VOLU)</li>
+      </ul>
+      Note that while EPICS cannot directly control the above parameters, they can be
+      controlled by manually editing a configuration file and then using the EPICS driver
+      to upload that configuration file to the device. </li>
+  </ul>
+  <hr />
+  <address>
+    Suggestions and comments to: <a href="mailto:rivers@cars.uchicago.edu">Mark Rivers
+    </a>: (rivers@cars.uchicago.edu)
+    <br />
+  </address>
+</body>
+</html>
