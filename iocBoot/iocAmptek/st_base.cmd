@@ -20,4 +20,4 @@ iocInit()
 # save settings every thirty seconds
 create_monitor_set("auto_settings.req",30,"P=mcaTest:,M=mca1,R=Amptek1:")
 
-asynReport 10 Amptek1
+#asynReport 1 Amptek1
