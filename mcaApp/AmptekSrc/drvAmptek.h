@@ -20,6 +20,7 @@
 #include <epicsTypes.h>
 
 #include <ConsoleHelper.h>
+//#include <DppConst.h>
 
 typedef enum {
   amptekInterfaceEthernet,
@@ -51,9 +52,14 @@ typedef enum {
 #define amptekSetHighVoltageString  "AMPTEK_SET_HIGH_VOLTAGE"
 #define amptekMCSLowChannelString   "AMPTEK_MCS_LOW_CHANNEL"
 #define amptekMCSHighChannelString  "AMPTEK_MCS_HIGH_CHANNEL"
+#define amptekModelString           "AMPTEK_MODEL"
+#define amptekFirmwareString        "AMPTEK_FIRMWARE"
+#define amptekBuildString           "AMPTEK_BUILD"
+#define amptekFPGAString            "AMPTEK_FPGA"
+#define amptekSerialNumberString    "AMPTEK_SERIAL_NUMBER"
 
 #define MAX_MODULES 16
-#define MAX_IPNAME_LEN 16
+#define MAX_IPNAME_LEN 32
 #define MAX_PORTNAME_LEN 32
 
 class drvAmptek : public asynPortDriver
@@ -123,9 +129,15 @@ class drvAmptek : public asynPortDriver
   int amptekSetHighVoltage_;
   int amptekMCSLowChannel_;
   int amptekMCSHighChannel_;
+  int amptekModel_;
+  int amptekFirmware_;
+  int amptekBuild_;
+  int amptekFPGA_;
+  int amptekSerialNumber_;
  
   private:
-  CConsoleHelper consoleHelper;
+  CConsoleHelper CH_;
+  CDP5Status dppStat_;
   CONFIG_OPTIONS configOptions_;
   asynStatus connectDevice();
   asynStatus findModule();
@@ -139,6 +151,7 @@ class drvAmptek : public asynPortDriver
   asynStatus parseConfigDouble(const char *str, int param);
   asynStatus parseConfigInt(const char *str, int param);
   asynStatus parseConfigEnum(const char *str, const char *enumStrs[], int numEnums, int param);
+  dp5DppTypes dppType_;
   bool isConnected_;
   bool acquiring_;
   bool haveConfigFromHW_;
