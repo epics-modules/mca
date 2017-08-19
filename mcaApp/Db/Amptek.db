@@ -426,4 +426,43 @@ record(ai,"$(P)$(R)SetHighVoltage_RBV") {
     field(SCAN, "I/O Intr")
 }
 
+record(stringin,"$(P)$(R)Model") {
+    field(DESC,"Amptek model")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))AMPTEK_MODEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringin,"$(P)$(R)Firmware") {
+    field(DESC,"Amptek firmware")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))AMPTEK_FIRMWARE")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringin,"$(P)$(R)FPGA") {
+    field(DESC,"Amptek FPGA")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))AMPTEK_FPGA")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)Build") {
+    field(DESC,"Amptek build")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))AMPTEK_BUILD")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)SerialNumber") {
+    field(DESC,"Amptek serial number")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))AMPTEK_SERIAL_NUMBER")
+    field(SCAN, "I/O Intr")
+}
+
+
+
+
+
 
