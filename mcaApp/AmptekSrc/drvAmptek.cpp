@@ -53,12 +53,13 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
                     0) /* Default stack size*/
 
 {
-    const char *functionName = "drvAmptek";
-    
     asynStatus status;
+    const char *functionName = "drvAmptek";
 
     // Uncomment this line to enable asynTraceFlow during the constructor
     //pasynTrace->setTraceMask(pasynUserSelf, 0x11);
+    
+    dppStat_ = CH_.DP5Stat;
 
     createParam(mcaStartAcquireString,                asynParamInt32, &mcaStartAcquire_);
     createParam(mcaStopAcquireString,                 asynParamInt32, &mcaStopAcquire_);            /* int32, write */
@@ -106,6 +107,11 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekSetHighVoltageString,         asynParamFloat64, &amptekSetHighVoltage_);
     createParam(amptekMCSLowChannelString,            asynParamInt32, &amptekMCSLowChannel_);
     createParam(amptekMCSHighChannelString,           asynParamInt32, &amptekMCSHighChannel_);
+    createParam(amptekModelString,                    asynParamOctet, &amptekModel_);
+    createParam(amptekFirmwareString,                 asynParamOctet, &amptekFirmware_);
+    createParam(amptekBuildString,                    asynParamInt32, &amptekBuild_);
+    createParam(amptekFPGAString,                     asynParamOctet, &amptekFPGA_);
+    createParam(amptekSerialNumberString,             asynParamInt32, &amptekSerialNumber_);
 
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
@@ -131,21 +137,23 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
 
 asynStatus drvAmptek::connectDevice()
 {
+    string strTemp;
+    int build=0;
     static const char *functionName = "connectDevice";
 
     isConnected_ = false;
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
-            consoleHelper.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
-            if (consoleHelper.DppSocket_Connect_Default_DPP(addressInfo_)) {
+            CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
+            if (CH_.DppSocket_Connect_Default_DPP(addressInfo_)) {
                 asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
                     "%s::%s Network DPP device %s connected, total devices found=%d\n",
-                    driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
+                    driverName, functionName, addressInfo_, CH_.DppSocket_NumDevices);
                 isConnected_ = true;
             } else {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
                     "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
-                    driverName, functionName, addressInfo_, consoleHelper.DppSocket_NumDevices);
+                    driverName, functionName, addressInfo_, CH_.DppSocket_NumDevices);
                 isConnected_ = false;
             }
             break;
@@ -156,21 +164,35 @@ asynStatus drvAmptek::connectDevice()
         case amptekInterfaceSerial:
             break;
     }
-    consoleHelper.DP5Stat.m_DP5_Status.SerialNumber = 0;
-    if (consoleHelper.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
+    dppStat_.m_DP5_Status.SerialNumber = 0;
+    if (CH_.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling SendCommand for XMTPT_SEND_STATUS\n",
             driverName, functionName);
         return asynError;
     }
-    if (consoleHelper.DppSocket_ReceiveData() == false) {
+    if (CH_.DppSocket_ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_SEND_STATUS\n",
             driverName, functionName);
         return asynError;
     }
     readConfigurationFromHardware();
-    consoleHelper.CreateConfigOptions(&configOptions_, "", consoleHelper.DP5Stat, false);
+    dppType_ = (dp5DppTypes)dppStat_.m_DP5_Status.DEVICE_ID;
+printf("%s::%s dppType_=%d\n", driverName, functionName, dppType_);
+    strTemp = dppStat_.GetDeviceNameFromVal(dppStat_.m_DP5_Status.DEVICE_ID);
+    setStringParam(amptekModel_, strTemp.c_str());
+    setIntegerParam(amptekSerialNumber_, dppStat_.m_DP5_Status.SerialNumber);
+    strTemp = dppStat_.DppUtil.BYTEVersionToString(dppStat_.m_DP5_Status.Firmware);   
+    if (dppStat_.m_DP5_Status.Firmware > 0x65) {
+        build = dppStat_.m_DP5_Status.Build;
+	  }
+    setIntegerParam(amptekBuild_, build);
+    setStringParam(amptekFirmware_, strTemp.c_str());
+    strTemp = dppStat_.DppUtil.BYTEVersionToString(dppStat_.m_DP5_Status.FPGA); 
+    setStringParam(amptekFPGA_, strTemp.c_str());
+  
+    CH_.CreateConfigOptions(&configOptions_, "", CH_.DP5Stat, false);
     
     return asynSuccess;
 
@@ -183,7 +205,7 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
-                status = consoleHelper.DppSocket_SendCommand(command);
+                status = CH_.DppSocket_SendCommand(command);
             break;
         
         case amptekInterfaceUSB:
@@ -194,7 +216,7 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     }
     if (status == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s error calling consoleHelper.DppSocket_SendCommand(%d)\n",
+            "%s::%s error calling CH_.DppSocket_SendCommand(%d)\n",
             driverName, functionName, command);
         return asynError;
     }
@@ -212,7 +234,7 @@ asynStatus drvAmptek::saveConfigurationFile(string fileName)
             driverName, functionName, fileName.c_str());
         return asynError;
     }
-    fprintf(out,"%s\n",consoleHelper.HwCfgDP5.c_str());
+    fprintf(out,"%s\n",CH_.HwCfgDP5.c_str());
     fclose(out);
     return asynSuccess;
 }
@@ -231,18 +253,18 @@ asynStatus drvAmptek::sendConfigurationFile(string fileName)
     asynStatus status;
     //static const char *functionName="sendConfigurationFile";
 
-    isPC5Present = consoleHelper.DP5Stat.m_DP5_Status.PC5_PRESENT;
+    isPC5Present = dppStat_.m_DP5_Status.PC5_PRESENT;
     // Note: we need to add 5 to the DEVICE_ID to get the deviceType used by AsciiCmdUtil.RemoveCmdByDeviceType
-    DppType = consoleHelper.DP5Stat.m_DP5_Status.DEVICE_ID+5;
-    isDP5_RevDxGains = consoleHelper.DP5Stat.m_DP5_Status.isDP5_RevDxGains;
-    DPP_ECO = consoleHelper.DP5Stat.m_DP5_Status.DPP_ECO;
+    DppType = dppStat_.m_DP5_Status.DEVICE_ID+5;
+    isDP5_RevDxGains = dppStat_.m_DP5_Status.isDP5_RevDxGains;
+    DPP_ECO = dppStat_.m_DP5_Status.DPP_ECO;
 
-    strCfg = consoleHelper.SndCmd.AsciiCmdUtil.GetDP5CfgStr(fileName);
-    strCfg = consoleHelper.SndCmd.AsciiCmdUtil.RemoveCmdByDeviceType(strCfg,isPC5Present,DppType,isDP5_RevDxGains,DPP_ECO);
+    strCfg = CH_.SndCmd.AsciiCmdUtil.GetDP5CfgStr(fileName);
+    strCfg = CH_.SndCmd.AsciiCmdUtil.RemoveCmdByDeviceType(strCfg,isPC5Present,DppType,isDP5_RevDxGains,DPP_ECO);
     lCfgLen = (int)strCfg.length();
     if (lCfgLen > 512) {    // configuration too large, needs fix
         bSplitCfg = true;
-        idxSplitCfg = consoleHelper.SndCmd.AsciiCmdUtil.GetCmdChunk(strCfg);
+        idxSplitCfg = CH_.SndCmd.AsciiCmdUtil.GetCmdChunk(strCfg);
         cout << "\t\t\tConfiguration Split at: " << idxSplitCfg << endl;
         strSplitCfg = strCfg.substr(idxSplitCfg);
         strCfg = strCfg.substr(0, idxSplitCfg);
@@ -267,9 +289,9 @@ asynStatus drvAmptek::sendCommandString(string commandString)
 
     switch(interfaceType_) {
         case amptekInterfaceEthernet:
-            if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_) == false) {
+            if (CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_) == false) {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error callingg consoleHelper.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+                    "%s::%s error callingg CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
                     driverName, functionName, commandString.c_str());
                 return asynError;
             }
@@ -393,7 +415,7 @@ asynStatus drvAmptek::sendConfiguration()
 
 asynStatus drvAmptek::parseConfigDouble(const char *str, int param)
 {
-    const char *configString = consoleHelper.HwCfgDP5.c_str();
+    const char *configString = CH_.HwCfgDP5.c_str();
     const char *pos;
     int n;
     double dtemp;
@@ -424,7 +446,7 @@ asynStatus drvAmptek::parseConfigDouble(const char *str, int param)
 
 asynStatus drvAmptek::parseConfigInt(const char *str, int param)
 {
-    const char *configString = consoleHelper.HwCfgDP5.c_str();
+    const char *configString = CH_.HwCfgDP5.c_str();
     const char *pos;
     int n;
     int itemp;
@@ -455,7 +477,7 @@ asynStatus drvAmptek::parseConfigInt(const char *str, int param)
 
 asynStatus drvAmptek::parseConfigEnum(const char *str, const char *enumStrs[], int numEnums, int param)
 {
-    const char *configString = consoleHelper.HwCfgDP5.c_str();
+    const char *configString = CH_.HwCfgDP5.c_str();
     const char *pos;
     int i;
     static const char *functionName = "parseConfigEnum";
@@ -567,12 +589,12 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
     else if (command == mcaReadStatus_) {
         status = sendCommand(XMTPT_SEND_STATUS);
-        consoleHelper.DppSocket_ReceiveData();
-        setDoubleParam(amptekSlowCounts_,  consoleHelper.DP5Stat.m_DP5_Status.SlowCount);
-        setDoubleParam(amptekFastCounts_,  consoleHelper.DP5Stat.m_DP5_Status.FastCount);
-        setDoubleParam(amptekDetTemp_,     consoleHelper.DP5Stat.m_DP5_Status.DET_TEMP);
-        setDoubleParam(amptekBoardTemp_,   consoleHelper.DP5Stat.m_DP5_Status.DP5_TEMP);
-        setDoubleParam(amptekHighVoltage_, consoleHelper.DP5Stat.m_DP5_Status.HV);
+        CH_.DppSocket_ReceiveData();
+        setDoubleParam(amptekSlowCounts_,  dppStat_.m_DP5_Status.SlowCount);
+        setDoubleParam(amptekFastCounts_,  dppStat_.m_DP5_Status.FastCount);
+        setDoubleParam(amptekDetTemp_,     dppStat_.m_DP5_Status.DET_TEMP);
+        setDoubleParam(amptekBoardTemp_,   dppStat_.m_DP5_Status.DP5_TEMP);
+        setDoubleParam(amptekHighVoltage_, dppStat_.m_DP5_Status.HV);
     }
     else if ((command == mcaNumChannels_)        ||
              (command == amptekInputPolarity_)   ||
@@ -613,7 +635,7 @@ asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
     //static const char *functionName = "readInt32";
 
     if (command == mcaAcquiring_) {
-        *value = consoleHelper.DP5Stat.m_DP5_Status.MCA_EN;
+        *value = dppStat_.m_DP5_Status.MCA_EN;
         acquiring_ = *value;
     }
     else {
@@ -629,13 +651,13 @@ asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
     //static const char *functionName = "readFloat64";
 
     if (command == mcaElapsedLiveTime_) {
-        *value = consoleHelper.DP5Stat.m_DP5_Status.AccumulationTime;
+        *value = dppStat_.m_DP5_Status.AccumulationTime;
     }
     else if (command == mcaElapsedRealTime_) {
-        *value = consoleHelper.DP5Stat.m_DP5_Status.RealTime;
+        *value = dppStat_.m_DP5_Status.RealTime;
     }
     else if (command == mcaElapsedCounts_) {
-        *value = consoleHelper.DP5Stat.m_DP5_Status.SlowCount;
+        *value = dppStat_.m_DP5_Status.SlowCount;
     }
     else {
         status = asynPortDriver::readFloat64(pasynUser, value);
@@ -676,17 +698,17 @@ asynStatus drvAmptek::readInt32Array(asynUser *pasynUser,
     static const char *functionName="readInt32Array";
 
     sendCommand(XMTPT_SEND_SPECTRUM_STATUS);
-    if (consoleHelper.DppSocket_ReceiveData() == false) {
+    if (CH_.DppSocket_ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_SEND_SPECTRUM_STATUS\n",
             driverName, functionName);
         *nactual = 0;
         return asynError;
     }
-    numChannels = consoleHelper.DP5Proto.SPECTRUM.CHANNELS;
+    numChannels = CH_.DP5Proto.SPECTRUM.CHANNELS;
     if (numChannels > (int)maxChans) numChannels = maxChans;
     for (i=0; i<numChannels; i++) {
-        data[i] = consoleHelper.DP5Proto.SPECTRUM.DATA[i];
+        data[i] = CH_.DP5Proto.SPECTRUM.DATA[i];
     }
     *nactual = numChannels;
     return asynSuccess;
@@ -698,14 +720,14 @@ asynStatus drvAmptek::readConfigurationFromHardware()
     CONFIG_OPTIONS CfgOptions;
     int i;
  
-    consoleHelper.CreateConfigOptions(&CfgOptions, "", consoleHelper.DP5Stat, false);
-    consoleHelper.ClearConfigReadFormatFlags();    // clear all flags, set flags only for specific readback properties
-    consoleHelper.CfgReadBack = true; // requesting general readback format
+    CH_.CreateConfigOptions(&CfgOptions, "", CH_.DP5Stat, false);
+    CH_.ClearConfigReadFormatFlags();    // clear all flags, set flags only for specific readback properties
+    CH_.CfgReadBack = true; // requesting general readback format
     // This function is normally called after sending the new configuration, which can take time before the unit will respond
     // to the next command.  Loop for up to 1 second waiting.
     for (i=0; i<100; i++) {
         // request full configuration
-        if (consoleHelper.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
+        if (CH_.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
             break;
         }
         epicsThreadSleep(0.01);
@@ -716,13 +738,13 @@ asynStatus drvAmptek::readConfigurationFromHardware()
             driverName, functionName);
         return asynError;
     }
-    if (consoleHelper.DppSocket_ReceiveData() == false) {
+    if (CH_.DppSocket_ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_FULL_READ_CONFIG_PACKET\n",
             driverName, functionName);
         return asynError;
     }
-    if (consoleHelper.HwCfgReady) {        // config is ready
+    if (CH_.HwCfgReady) {        // config is ready
       haveConfigFromHW_ = true;
     }
     
@@ -734,21 +756,21 @@ asynStatus drvAmptek::readConfigurationFromHardware()
 void drvAmptek::report(FILE *fp, int details)
 {
     fprintf(fp, "drvAmptek %s interfaceType=%d, addressInfo=%s, serial number=%d\n", 
-            portName, interfaceType_, addressInfo_, (int)consoleHelper.DP5Stat.m_DP5_Status.SerialNumber);
-    fprintf(fp, "  Number of modules found on network=%d\n", consoleHelper.DppSocket_NumDevices);
+            portName, interfaceType_, addressInfo_, (int)dppStat_.m_DP5_Status.SerialNumber);
+    fprintf(fp, "  Number of modules found on network=%d\n", CH_.DppSocket_NumDevices);
     if (details > 0) {
         if (haveConfigFromHW_) {
-            fprintf(fp, "  Preset mode:      %s\n", consoleHelper.strPresetCmd.c_str());
-            fprintf(fp, "  Preset settings:  %s\n", consoleHelper.strPresetVal.c_str());
-            fprintf(fp, "  Accumulation time:  %f\n", consoleHelper.DP5Stat.m_DP5_Status.AccumulationTime);
-            fprintf(fp, "  Real time:          %f\n", consoleHelper.DP5Stat.m_DP5_Status.RealTime);
-            fprintf(fp, "  Live time:          %f\n", consoleHelper.DP5Stat.m_DP5_Status.LiveTime);
-            fprintf(fp, "  MCA_EN:             %d\n", consoleHelper.DP5Stat.m_DP5_Status.MCA_EN);
-            fprintf(fp, "  PRECNT_REACHED:     %d\n", consoleHelper.DP5Stat.m_DP5_Status.PRECNT_REACHED);
-            fprintf(fp, "  PresetRtDone:       %d\n", consoleHelper.DP5Stat.m_DP5_Status.PresetRtDone);
-            fprintf(fp, "  PresetRtDone:       %d\n", consoleHelper.DP5Stat.m_DP5_Status.PresetRtDone);
-            fprintf(fp, "  Status:\n%s\n", consoleHelper.DP5Stat.GetStatusValueStrings(consoleHelper.DP5Stat.m_DP5_Status).c_str());
-            fprintf(fp, "  Configuration:\n%s\n", consoleHelper.HwCfgDP5.c_str());
+            fprintf(fp, "  Preset mode:      %s\n", CH_.strPresetCmd.c_str());
+            fprintf(fp, "  Preset settings:  %s\n", CH_.strPresetVal.c_str());
+            fprintf(fp, "  Accumulation time:  %f\n", dppStat_.m_DP5_Status.AccumulationTime);
+            fprintf(fp, "  Real time:          %f\n", dppStat_.m_DP5_Status.RealTime);
+            fprintf(fp, "  Live time:          %f\n", dppStat_.m_DP5_Status.LiveTime);
+            fprintf(fp, "  MCA_EN:             %d\n", dppStat_.m_DP5_Status.MCA_EN);
+            fprintf(fp, "  PRECNT_REACHED:     %d\n", dppStat_.m_DP5_Status.PRECNT_REACHED);
+            fprintf(fp, "  PresetRtDone:       %d\n", dppStat_.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  PresetRtDone:       %d\n", dppStat_.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  Status:\n%s\n", dppStat_.GetStatusValueStrings(dppStat_.m_DP5_Status).c_str());
+            fprintf(fp, "  Configuration:\n%s\n", CH_.HwCfgDP5.c_str());
         }
     }
     asynPortDriver::report(fp, details);
