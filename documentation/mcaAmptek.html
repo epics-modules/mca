@@ -6,11 +6,16 @@
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type" />
 </head>
 <body>
-  <h1>
-    EPICS MCA Amptek Driver</h1>
-  <address>
-    Mark Rivers</address>
-  <hr />
+  <div style="text-align: center">
+    <h1>
+      EPICS MCA Amptek Driver</h1>
+    <h2>
+      August 20, 2017</h2>
+    <h2>
+      Mark Rivers</h2>
+    <h2>
+      University of Chicago</h2>
+  </div>
   <h2>
     Contents</h2>
   <ul>
@@ -25,11 +30,17 @@
   <p>
     This is an <a href="http://www.aps.anl.gov/epics/">EPICS</a> driver for the <a href="mca.html">
       EPICS mca module</a> that supports the DP5 series MCAs from <a href="http://www.amptek.com/">
-        Amptek (Ametek)</a>. These MCAs are integrated into the X-123 model detectors
-    from Amptek. The driver supports both MCA (spectrum) mode, and MCS (multi-channel
-    scaler mode) which produces counts in a user-defined spectral Region-Of-Interest
-    as function of time.
-  </p>
+        Amptek (Ametek)</a>. These include:</p>
+  <ul>
+    <li>The digital pulse processing MCAs integrated into the X-123 CdTe, SDD, and Si-PIN
+      detectors</li>
+    <li>The standalone PX5 digital pulse processing MCA and power-supply</li>
+    <li>The MCA8000D standalone MCA which works with analog pulse shaping electronics</li>
+  </ul>
+  <p>
+    The driver supports both MCA (spectrum) mode, and MCS (multi-channel scaler mode)
+    which produces counts in a user-defined spectral Region-Of-Interest as function
+    of time.</p>
   <p>
     The DP5 MCAs support USB, Ethernet, and RS-232 communication. This driver currently
     only supports Ethernet, but support for USB may be added in the future.
@@ -47,6 +58,9 @@
       command. The IOC application will list the IP addresses of all Amptek DP5 modules
       that it finds on the local subnet.</li>
   </ol>
+  <p>
+    To configure the DP5 to use a static IP address use the Firmware Manager software
+    from Amptek.</p>
   <h2 id="Software_architecture">
     Software architecture</h2>
   <p>
@@ -68,6 +82,54 @@
           Record type</th>
         <th>
           Description</th>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Version information</b> </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Model</td>
+        <td>
+          stringin</td>
+        <td>
+          Model name of the Amptek device (DP5, PX5, MCA8000D, etc.).</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SerialNumber</td>
+        <td>
+          longin</td>
+        <td>
+          Serial number of the Amptek device.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Firmware</td>
+        <td>
+          stringin</td>
+        <td>
+          Firmware version of the Amptek device.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Build</td>
+        <td>
+          longin</td>
+        <td>
+          Firmware build of the Amptek device.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)FPGA</td>
+        <td>
+          stringin</td>
+        <td>
+          FPGA version of the Amptek device.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Detector configuration</b> </td>
       </tr>
       <tr>
         <td>
@@ -117,6 +179,10 @@
           0: Off<br />
           1: High<br />
           2: Low</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Pulse shaping</b> </td>
       </tr>
       <tr>
         <td>
@@ -192,6 +258,10 @@
           2: Max</td>
       </tr>
       <tr>
+        <td align="center" colspan="3">
+          <b>MCA source and MCS settings</b> </td>
+      </tr>
+      <tr>
         <td>
           $(P)$(R)MCASource<br />
           $(P)$(R)MCASource_RBV</td>
@@ -245,6 +315,10 @@
           .NUSE field of the MCA record.</td>
       </tr>
       <tr>
+        <td align="center" colspan="3">
+          <b>Configuration file</b> </td>
+      </tr>
+      <tr>
         <td>
           $(P)$(R)ConfigFileName</td>
         <td>
@@ -269,6 +343,10 @@
         <td>
           Processing this record will read the configuration from the DP5 and save it to file
           specifed by ConfigFileName.</td>
+      </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Status information</b> </td>
       </tr>
       <tr>
         <td>
@@ -299,6 +377,10 @@
           Total number of counts detected by the fast shaper. </td>
       </tr>
       <tr>
+        <td align="center" colspan="3">
+          <b>Temperature</b> </td>
+      </tr>
+      <tr>
         <td>
           $(P)$(R)DetTemp</td>
         <td>
@@ -325,6 +407,10 @@
           The board temperature in degrees C. </td>
       </tr>
       <tr>
+        <td align="center" colspan="3">
+          <b>High voltage</b> </td>
+      </tr>
+      <tr>
         <td>
           $(P)$(R)HighVoltage</td>
         <td>
@@ -348,10 +434,10 @@
     The following shows the MEDM screen for the Amptek control</p>
   <div style="text-align: center">
     <h3 style="text-align: center">
-      Amptek.adl with 1-2-3 CdTe detector</h3>
+      Amptek.adl with X-123CdTe detector</h3>
     <img alt="Amptek.png" src="Amptek.png" /></div>
   <p>
-    The following shows the MEDM screen for the Amptek MCA display with a 1-2-3 CdTe
+    The following shows the MEDM screen for the Amptek MCA display with an X-123CdTe
     detector and a Cd109 radioactive source</p>
   <div style="text-align: center">
     <h3 style="text-align: center">
@@ -375,6 +461,12 @@
     The driver currently has the following restrictions. These may be addressed in future
     releases.</p>
   <ul>
+    <li>The driver only works on Linux and Windows because these are what the vendor library
+      supports. The software could be modified to the the EPICS libCom library, and then
+      it could work on other operating systems such as vxWorks.</li>
+    <li>Only the PX5 and X-123CdTe models have been tested. The MCA8000D will probably
+      work, but will likely generate many error messages since it does not support many
+      of the parameters that EPICS controls.</li>
     <li>Only the Ethernet interface is currently supported. USB may be supported in the
       future. Unforunately the vendor SDK is not written to be device independent, so
       this is not as easy as it should be.</li>
