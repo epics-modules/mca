@@ -35,9 +35,8 @@ static const char *purEnableStrings[]       = {"ON", "OFF", "MAX"};
 static const char *mcaSourceStrings[]       = {"NORM", "MCS", "FAST", "PUR", "RTD"};
 static const char *fastPeakingTimeStrings[] = {"50", "100", "200", "400", "800", "1600", "3200"};
 
+// Timeout when waiting for a response
 #define TIMEOUT         0.01
-#define COMMAND_PORT    10001
-#define BROADCAST_PORT  3040
 
 static const char *driverName = "drvAmptek";
 
@@ -59,8 +58,6 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     // Uncomment this line to enable asynTraceFlow during the constructor
     //pasynTrace->setTraceMask(pasynUserSelf, 0x11);
     
-    dppStat_ = CH_.DP5Stat;
-
     createParam(mcaStartAcquireString,                asynParamInt32, &mcaStartAcquire_);
     createParam(mcaStopAcquireString,                 asynParamInt32, &mcaStopAcquire_);            /* int32, write */
     createParam(mcaEraseString,                       asynParamInt32, &mcaErase_);                  /* int32, write */
@@ -164,7 +161,7 @@ asynStatus drvAmptek::connectDevice()
         case amptekInterfaceSerial:
             break;
     }
-    dppStat_.m_DP5_Status.SerialNumber = 0;
+    CH_.DP5Stat.m_DP5_Status.SerialNumber = 0;
     if (CH_.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling SendCommand for XMTPT_SEND_STATUS\n",
@@ -178,18 +175,17 @@ asynStatus drvAmptek::connectDevice()
         return asynError;
     }
     readConfigurationFromHardware();
-    dppType_ = (dp5DppTypes)dppStat_.m_DP5_Status.DEVICE_ID;
-printf("%s::%s dppType_=%d\n", driverName, functionName, dppType_);
-    strTemp = dppStat_.GetDeviceNameFromVal(dppStat_.m_DP5_Status.DEVICE_ID);
+    dppType_ = (dp5DppTypes)CH_.DP5Stat.m_DP5_Status.DEVICE_ID;
+    strTemp = CH_.DP5Stat.GetDeviceNameFromVal(CH_.DP5Stat.m_DP5_Status.DEVICE_ID);
     setStringParam(amptekModel_, strTemp.c_str());
-    setIntegerParam(amptekSerialNumber_, dppStat_.m_DP5_Status.SerialNumber);
-    strTemp = dppStat_.DppUtil.BYTEVersionToString(dppStat_.m_DP5_Status.Firmware);   
-    if (dppStat_.m_DP5_Status.Firmware > 0x65) {
-        build = dppStat_.m_DP5_Status.Build;
+    setIntegerParam(amptekSerialNumber_, CH_.DP5Stat.m_DP5_Status.SerialNumber);
+    strTemp = CH_.DP5Stat.DppUtil.BYTEVersionToString(CH_.DP5Stat.m_DP5_Status.Firmware);   
+    if (CH_.DP5Stat.m_DP5_Status.Firmware > 0x65) {
+        build = CH_.DP5Stat.m_DP5_Status.Build;
 	  }
     setIntegerParam(amptekBuild_, build);
     setStringParam(amptekFirmware_, strTemp.c_str());
-    strTemp = dppStat_.DppUtil.BYTEVersionToString(dppStat_.m_DP5_Status.FPGA); 
+    strTemp = CH_.DP5Stat.DppUtil.BYTEVersionToString(CH_.DP5Stat.m_DP5_Status.FPGA); 
     setStringParam(amptekFPGA_, strTemp.c_str());
   
     CH_.CreateConfigOptions(&configOptions_, "", CH_.DP5Stat, false);
@@ -253,11 +249,11 @@ asynStatus drvAmptek::sendConfigurationFile(string fileName)
     asynStatus status;
     //static const char *functionName="sendConfigurationFile";
 
-    isPC5Present = dppStat_.m_DP5_Status.PC5_PRESENT;
+    isPC5Present = CH_.DP5Stat.m_DP5_Status.PC5_PRESENT;
     // Note: we need to add 5 to the DEVICE_ID to get the deviceType used by AsciiCmdUtil.RemoveCmdByDeviceType
-    DppType = dppStat_.m_DP5_Status.DEVICE_ID+5;
-    isDP5_RevDxGains = dppStat_.m_DP5_Status.isDP5_RevDxGains;
-    DPP_ECO = dppStat_.m_DP5_Status.DPP_ECO;
+    DppType = CH_.DP5Stat.m_DP5_Status.DEVICE_ID+5;
+    isDP5_RevDxGains = CH_.DP5Stat.m_DP5_Status.isDP5_RevDxGains;
+    DPP_ECO = CH_.DP5Stat.m_DP5_Status.DPP_ECO;
 
     strCfg = CH_.SndCmd.AsciiCmdUtil.GetDP5CfgStr(fileName);
     strCfg = CH_.SndCmd.AsciiCmdUtil.RemoveCmdByDeviceType(strCfg,isPC5Present,DppType,isDP5_RevDxGains,DPP_ECO);
@@ -534,8 +530,10 @@ asynStatus drvAmptek::parseConfiguration()
     parseConfigInt("MCAC=", mcaNumChannels_);
     
     // Gate
-    parseConfigEnum("GATE=", gateStrings, sizeof(gateStrings)/sizeof(gateStrings[0]), amptekGate_);
-    
+    if ((dppType_ == dppDP5) || (dppType_ == dppMCA8000D)) {
+        parseConfigEnum("GATE=", gateStrings, sizeof(gateStrings)/sizeof(gateStrings[0]), amptekGate_);
+    }
+
     //  Preset real time
     parseConfigDouble("PRER=", mcaPresetRealTime_);
      
@@ -590,11 +588,11 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     else if (command == mcaReadStatus_) {
         status = sendCommand(XMTPT_SEND_STATUS);
         CH_.DppSocket_ReceiveData();
-        setDoubleParam(amptekSlowCounts_,  dppStat_.m_DP5_Status.SlowCount);
-        setDoubleParam(amptekFastCounts_,  dppStat_.m_DP5_Status.FastCount);
-        setDoubleParam(amptekDetTemp_,     dppStat_.m_DP5_Status.DET_TEMP);
-        setDoubleParam(amptekBoardTemp_,   dppStat_.m_DP5_Status.DP5_TEMP);
-        setDoubleParam(amptekHighVoltage_, dppStat_.m_DP5_Status.HV);
+        setDoubleParam(amptekSlowCounts_,  CH_.DP5Stat.m_DP5_Status.SlowCount);
+        setDoubleParam(amptekFastCounts_,  CH_.DP5Stat.m_DP5_Status.FastCount);
+        setDoubleParam(amptekDetTemp_,     CH_.DP5Stat.m_DP5_Status.DET_TEMP);
+        setDoubleParam(amptekBoardTemp_,   CH_.DP5Stat.m_DP5_Status.DP5_TEMP);
+        setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
     }
     else if ((command == mcaNumChannels_)        ||
              (command == amptekInputPolarity_)   ||
@@ -635,7 +633,7 @@ asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
     //static const char *functionName = "readInt32";
 
     if (command == mcaAcquiring_) {
-        *value = dppStat_.m_DP5_Status.MCA_EN;
+        *value = CH_.DP5Stat.m_DP5_Status.MCA_EN;
         acquiring_ = *value;
     }
     else {
@@ -651,13 +649,13 @@ asynStatus drvAmptek::readFloat64(asynUser *pasynUser, epicsFloat64 *value)
     //static const char *functionName = "readFloat64";
 
     if (command == mcaElapsedLiveTime_) {
-        *value = dppStat_.m_DP5_Status.AccumulationTime;
+        *value = CH_.DP5Stat.m_DP5_Status.AccumulationTime;
     }
     else if (command == mcaElapsedRealTime_) {
-        *value = dppStat_.m_DP5_Status.RealTime;
+        *value = CH_.DP5Stat.m_DP5_Status.RealTime;
     }
     else if (command == mcaElapsedCounts_) {
-        *value = dppStat_.m_DP5_Status.SlowCount;
+        *value = CH_.DP5Stat.m_DP5_Status.SlowCount;
     }
     else {
         status = asynPortDriver::readFloat64(pasynUser, value);
@@ -756,20 +754,20 @@ asynStatus drvAmptek::readConfigurationFromHardware()
 void drvAmptek::report(FILE *fp, int details)
 {
     fprintf(fp, "drvAmptek %s interfaceType=%d, addressInfo=%s, serial number=%d\n", 
-            portName, interfaceType_, addressInfo_, (int)dppStat_.m_DP5_Status.SerialNumber);
+            portName, interfaceType_, addressInfo_, (int)CH_.DP5Stat.m_DP5_Status.SerialNumber);
     fprintf(fp, "  Number of modules found on network=%d\n", CH_.DppSocket_NumDevices);
     if (details > 0) {
         if (haveConfigFromHW_) {
             fprintf(fp, "  Preset mode:      %s\n", CH_.strPresetCmd.c_str());
             fprintf(fp, "  Preset settings:  %s\n", CH_.strPresetVal.c_str());
-            fprintf(fp, "  Accumulation time:  %f\n", dppStat_.m_DP5_Status.AccumulationTime);
-            fprintf(fp, "  Real time:          %f\n", dppStat_.m_DP5_Status.RealTime);
-            fprintf(fp, "  Live time:          %f\n", dppStat_.m_DP5_Status.LiveTime);
-            fprintf(fp, "  MCA_EN:             %d\n", dppStat_.m_DP5_Status.MCA_EN);
-            fprintf(fp, "  PRECNT_REACHED:     %d\n", dppStat_.m_DP5_Status.PRECNT_REACHED);
-            fprintf(fp, "  PresetRtDone:       %d\n", dppStat_.m_DP5_Status.PresetRtDone);
-            fprintf(fp, "  PresetRtDone:       %d\n", dppStat_.m_DP5_Status.PresetRtDone);
-            fprintf(fp, "  Status:\n%s\n", dppStat_.GetStatusValueStrings(dppStat_.m_DP5_Status).c_str());
+            fprintf(fp, "  Accumulation time:  %f\n", CH_.DP5Stat.m_DP5_Status.AccumulationTime);
+            fprintf(fp, "  Real time:          %f\n", CH_.DP5Stat.m_DP5_Status.RealTime);
+            fprintf(fp, "  Live time:          %f\n", CH_.DP5Stat.m_DP5_Status.LiveTime);
+            fprintf(fp, "  MCA_EN:             %d\n", CH_.DP5Stat.m_DP5_Status.MCA_EN);
+            fprintf(fp, "  PRECNT_REACHED:     %d\n", CH_.DP5Stat.m_DP5_Status.PRECNT_REACHED);
+            fprintf(fp, "  PresetRtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  PresetRtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  Status:\n%s\n", CH_.DP5Stat.GetStatusValueStrings(CH_.DP5Stat.m_DP5_Status).c_str());
             fprintf(fp, "  Configuration:\n%s\n", CH_.HwCfgDP5.c_str());
         }
     }
