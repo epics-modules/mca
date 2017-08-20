@@ -9,13 +9,14 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-7 (XXX-Aug-2016)</h2>
+    Release 7-7 (XXX-Aug-2017)</h2>
   <ul>
+    <li>Added support for the Amptek DP5 based MCAs and detectors.</li>
     <li>Moved the repository from Subversion at the APS to <a href="https://github.com/epics-modules/mca">
       github</a>.</li>
-    <li>SIS3801 and SIS3820: Fixed problems when the number of signals being use (maxSignals) was 32. In this
-      case the left shift operator was shifting by 32-bits which is undefined, and could
-      disable all channels rather than enabling all channels on some architectures.</li>
+    <li>SIS3801 and SIS3820: Fixed problems when the number of signals being use (maxSignals)
+      was 32. In this case the left shift operator was shifting by 32-bits which is undefined,
+      and could disable all channels rather than enabling all channels on some architectures.</li>
     <li>Minor change to allow building on mingw.</li>
     <li>Removed building mcaCanberra on cygwin-x86. WinPCAP libraries do not work with
       latest Cygwin version.</li>
