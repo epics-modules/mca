@@ -8,7 +8,7 @@ display {
 		x=77
 		y=134
 		width=785
-		height=640
+		height=700
 	}
 	clr=14
 	bclr=4
@@ -499,32 +499,6 @@ composite {
 			textix="Slow counts"
 			align="horiz. right"
 		}
-	}
-}
-text {
-	object {
-		x=543
-		y=381
-		width=80
-		height=20
-	}
-	"basic attribute" {
-		clr=53
-	}
-	textix="Setup"
-	align="horiz. centered"
-}
-rectangle {
-	object {
-		x=383
-		y=377
-		width=400
-		height=235
-	}
-	"basic attribute" {
-		clr=54
-		fill="outline"
-		width=2
 	}
 }
 rectangle {
@@ -1473,9 +1447,35 @@ composite {
 		}
 	}
 }
+text {
+	object {
+		x=540
+		y=381
+		width=80
+		height=20
+	}
+	"basic attribute" {
+		clr=53
+	}
+	textix="Setup"
+	align="horiz. centered"
+}
+rectangle {
+	object {
+		x=380
+		y=377
+		width=400
+		height=235
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
 "text update" {
 	object {
-		x=678
+		x=675
 		y=532
 		width=75
 		height=20
@@ -1488,124 +1488,113 @@ composite {
 	limits {
 	}
 }
-composite {
+text {
 	object {
-		x=413
+		x=550
+		y=506
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gain"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=450
+		y=480
+		width=140
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Input polarity"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=550
+		y=455
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Gate"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=540
 		y=405
+		width=50
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Clock"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=490
+		y=430
+		width=100
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="PUR enable"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=440
+		y=532
+		width=150
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Board temp. (C)"
+	align="horiz. right"
+}
+text {
+	object {
+		x=470
+		y=581
+		width=120
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="High Voltage"
+	align="horiz. centered"
+}
+text {
+	object {
+		x=410
+		y=554
 		width=180
-		height=196
+		height=20
 	}
-	"composite name"=""
-	children {
-		text {
-			object {
-				x=553
-				y=506
-				width=40
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Gain"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=453
-				y=480
-				width=140
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Input polarity"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=553
-				y=455
-				width=40
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Gate"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=543
-				y=405
-				width=50
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Clock"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=493
-				y=430
-				width=100
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="PUR enable"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=443
-				y=532
-				width=150
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Board temp. (C)"
-			align="horiz. right"
-		}
-		text {
-			object {
-				x=473
-				y=581
-				width=120
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="High Voltage"
-			align="horiz. centered"
-		}
-		text {
-			object {
-				x=413
-				y=554
-				width=180
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Detector temp. (K)"
-			align="horiz. centered"
-		}
+	"basic attribute" {
+		clr=14
 	}
+	textix="Detector temp. (K)"
+	align="horiz. centered"
 }
 composite {
 	object {
-		x=678
+		x=675
 		y=405
 		width=75
 		height=196
@@ -1614,7 +1603,7 @@ composite {
 	children {
 		"text update" {
 			object {
-				x=678
+				x=675
 				y=506
 				width=74
 				height=20
@@ -1629,7 +1618,7 @@ composite {
 		}
 		"text update" {
 			object {
-				x=678
+				x=675
 				y=480
 				width=74
 				height=20
@@ -1644,7 +1633,7 @@ composite {
 		}
 		"text update" {
 			object {
-				x=679
+				x=676
 				y=455
 				width=74
 				height=20
@@ -1659,7 +1648,7 @@ composite {
 		}
 		"text update" {
 			object {
-				x=679
+				x=676
 				y=405
 				width=74
 				height=20
@@ -1674,7 +1663,7 @@ composite {
 		}
 		"text update" {
 			object {
-				x=679
+				x=676
 				y=430
 				width=74
 				height=20
@@ -1689,7 +1678,7 @@ composite {
 		}
 		"text update" {
 			object {
-				x=678
+				x=675
 				y=554
 				width=74
 				height=20
@@ -1704,7 +1693,7 @@ composite {
 		}
 		"text update" {
 			object {
-				x=678
+				x=675
 				y=581
 				width=74
 				height=20
@@ -1721,7 +1710,7 @@ composite {
 }
 composite {
 	object {
-		x=598
+		x=595
 		y=405
 		width=75
 		height=197
@@ -1730,7 +1719,7 @@ composite {
 	children {
 		"text entry" {
 			object {
-				x=598
+				x=595
 				y=505
 				width=75
 				height=22
@@ -1745,7 +1734,7 @@ composite {
 		}
 		menu {
 			object {
-				x=598
+				x=595
 				y=480
 				width=75
 				height=20
@@ -1758,7 +1747,7 @@ composite {
 		}
 		menu {
 			object {
-				x=598
+				x=595
 				y=455
 				width=75
 				height=20
@@ -1771,7 +1760,7 @@ composite {
 		}
 		menu {
 			object {
-				x=598
+				x=595
 				y=405
 				width=75
 				height=20
@@ -1784,7 +1773,7 @@ composite {
 		}
 		menu {
 			object {
-				x=598
+				x=595
 				y=430
 				width=75
 				height=20
@@ -1797,7 +1786,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=598
+				x=595
 				y=553
 				width=75
 				height=22
@@ -1812,7 +1801,7 @@ composite {
 		}
 		"text entry" {
 			object {
-				x=598
+				x=595
 				y=580
 				width=75
 				height=22
@@ -1824,6 +1813,227 @@ composite {
 			}
 			limits {
 			}
+		}
+	}
+}
+rectangle {
+	object {
+		x=380
+		y=615
+		width=400
+		height=80
+	}
+	"basic attribute" {
+		clr=54
+		fill="outline"
+		width=2
+	}
+}
+text {
+	object {
+		x=560
+		y=621
+		width=40
+		height=20
+	}
+	"basic attribute" {
+		clr=53
+	}
+	textix="Info"
+	align="horiz. centered"
+}
+composite {
+	object {
+		x=402
+		y=645
+		width=130
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=457
+				y=645
+				width=75
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)Model"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=402
+				y=645
+				width=50
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Model"
+			align="horiz. right"
+		}
+	}
+}
+composite {
+	object {
+		x=600
+		y=645
+		width=160
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=685
+				y=645
+				width=75
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)SerialNumber"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=600
+				y=645
+				width=80
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Serial #"
+			align="horiz. right"
+		}
+	}
+}
+composite {
+	object {
+		x=390
+		y=670
+		width=145
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=475
+				y=670
+				width=60
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)Firmware"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=390
+				y=670
+				width=80
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Firmware"
+			align="horiz. right"
+		}
+	}
+}
+composite {
+	object {
+		x=669
+		y=670
+		width=105
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=714
+				y=670
+				width=60
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)FPGA"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=669
+				y=670
+				width=40
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="FPGA"
+			align="horiz. right"
+		}
+	}
+}
+composite {
+	object {
+		x=545
+		y=670
+		width=115
+		height=20
+	}
+	"composite name"=""
+	children {
+		"text update" {
+			object {
+				x=600
+				y=670
+				width=60
+				height=20
+			}
+			monitor {
+				chan="$(P)$(R)Build"
+				clr=54
+				bclr=3
+			}
+			limits {
+			}
+		}
+		text {
+			object {
+				x=545
+				y=670
+				width=50
+				height=20
+			}
+			"basic attribute" {
+				clr=14
+			}
+			textix="Build"
+			align="horiz. right"
 		}
 	}
 }
