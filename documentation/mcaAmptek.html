@@ -464,14 +464,20 @@
     <li>The driver only works on Linux and Windows because these are what the vendor library
       supports. The software could be modified to the the EPICS libCom library, and then
       it could work on other operating systems such as vxWorks.</li>
-    <li>Only the PX5 and X-123CdTe models have been tested. The MCA8000D will probably
-      work, but will likely generate many error messages since it does not support many
-      of the parameters that EPICS controls.</li>
+    <li>The following configurations have been tested:
+      <ul>
+        <li>PX5 with XR-100-CdTe</li>
+        <li>PX5 with XR-100-SDD</li>
+        <li>X-123CdTe</li>
+        <li>X-123SDD</li>
+      </ul>
+      The MCA8000D will probably work, but will likely generate many error messages since
+      it does not support many of the parameters that EPICS controls.</li>
     <li>Only the Ethernet interface is currently supported. USB may be supported in the
       future. Unforunately the vendor SDK is not written to be device independent, so
       this is not as easy as it should be.</li>
-    <li>Currently only Amptek models that use the DP5 version of their MCA are supported.
-      This means that the driver will not work correctly with the PX5, DP5G, TB5, or MCA8000D.</li>
+    <li>When exiting the IOC one must wait at least 20 seconds before starting it again.
+      This is the time the DP5 requires to "forget" the previous connection.</li>
     <li>The driver only provides EPICS records to control a subset of all of the DPP parameters.
       The following parameters cannot currently be controlled by EPICS:
       <ul>
