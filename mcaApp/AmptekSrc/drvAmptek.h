@@ -137,7 +137,6 @@ class drvAmptek : public asynPortDriver
  
   private:
   CConsoleHelper CH_;
-  CDP5Status dppStat_;
   CONFIG_OPTIONS configOptions_;
   asynStatus connectDevice();
   asynStatus findModule();
