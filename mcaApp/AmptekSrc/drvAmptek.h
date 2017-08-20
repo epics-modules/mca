@@ -20,7 +20,6 @@
 #include <epicsTypes.h>
 
 #include <ConsoleHelper.h>
-//#include <DppConst.h>
 
 typedef enum {
   amptekInterfaceEthernet,
@@ -58,9 +57,6 @@ typedef enum {
 #define amptekFPGAString            "AMPTEK_FPGA"
 #define amptekSerialNumberString    "AMPTEK_SERIAL_NUMBER"
 
-#define MAX_MODULES 16
-#define MAX_IPNAME_LEN 32
-#define MAX_PORTNAME_LEN 32
 
 class drvAmptek : public asynPortDriver
 {
