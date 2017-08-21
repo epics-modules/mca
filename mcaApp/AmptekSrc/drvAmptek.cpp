@@ -371,6 +371,21 @@ asynStatus drvAmptek::sendConfiguration()
     sprintf(tempString, "PRET=%f;", dtemp);
     configString.append(tempString);
 
+    //  Preset counts
+    getDoubleParam(mcaPresetCounts_, &dtemp);
+    sprintf(tempString, "PREC=%d;", (int)dtemp);
+    configString.append(tempString);
+
+    //  Preset counts low channel
+    getIntegerParam(mcaPresetLowChannel_, &itemp);
+    sprintf(tempString, "PRCL=%d;", itemp);
+    configString.append(tempString);
+
+    //  Preset counts high channel
+    getIntegerParam(mcaPresetHighChannel_, &itemp);
+    sprintf(tempString, "PRCH=%d;", itemp);
+    configString.append(tempString);
+
     // MCA source
     getIntegerParam(amptekMCASource_, &itemp);
     sprintf(tempString, "MCAS=%s;", mcaSourceStrings[itemp]);
@@ -540,6 +555,15 @@ asynStatus drvAmptek::parseConfiguration()
     //  Preset live time
     parseConfigDouble("PRET=", mcaPresetLiveTime_);
 
+    //  Preset counts
+    parseConfigDouble("PREC=", mcaPresetCounts_);
+
+    //  Preset low channel
+    parseConfigInt("PRCL=", mcaPresetLowChannel_);
+
+    //  Preset high channel
+    parseConfigInt("PRCH=", mcaPresetHighChannel_);
+
     // MCA source
     parseConfigEnum("MCAS=", mcaSourceStrings, sizeof(mcaSourceStrings)/sizeof(mcaSourceStrings[0]), amptekMCASource_);
 
@@ -595,6 +619,8 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
     }
     else if ((command == mcaNumChannels_)        ||
+             (command == mcaPresetLowChannel_)   ||
+             (command == mcaPresetHighChannel_)  ||
              (command == amptekInputPolarity_)   ||
              (command == amptekClock_)           ||
              (command == amptekGate_)            ||
@@ -630,11 +656,24 @@ asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
+    int mcaEN, liveTimeDone, realTimeDone, countDone;
     //static const char *functionName = "readInt32";
 
     if (command == mcaAcquiring_) {
-        *value = CH_.DP5Stat.m_DP5_Status.MCA_EN;
-        acquiring_ = *value;
+        countDone = CH_.DP5Stat.m_DP5_Status.PRECNT_REACHED;
+        realTimeDone = CH_.DP5Stat.m_DP5_Status.PresetRtDone;
+        liveTimeDone = CH_.DP5Stat.m_DP5_Status.PresetLtDone;
+        mcaEN = CH_.DP5Stat.m_DP5_Status.MCA_EN;
+        if (countDone || realTimeDone || liveTimeDone || !mcaEN) {
+            // Some preset is reached.  If acquiring_ is true then stop detector
+            if (acquiring_) {
+                status = sendCommand(XMTPT_DISABLE_MCA_MCS);
+            }
+            acquiring_ = 0;
+        } else {
+            acquiring_ = 1;
+        }
+        *value = acquiring_;
     }
     else {
         status = asynPortDriver::readInt32(pasynUser, value);
@@ -673,6 +712,7 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     status = setDoubleParam(command, value);
     if ((command == mcaPresetRealTime_)   || 
         (command == mcaPresetLiveTime_)   ||
+        (command == mcaPresetCounts_)     ||
         (command == mcaDwellTime_)        ||
         (command == amptekGain_)          ||
         (command == amptekPeakingTime_)   ||
@@ -766,7 +806,7 @@ void drvAmptek::report(FILE *fp, int details)
             fprintf(fp, "  MCA_EN:             %d\n", CH_.DP5Stat.m_DP5_Status.MCA_EN);
             fprintf(fp, "  PRECNT_REACHED:     %d\n", CH_.DP5Stat.m_DP5_Status.PRECNT_REACHED);
             fprintf(fp, "  PresetRtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetRtDone);
-            fprintf(fp, "  PresetRtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetRtDone);
+            fprintf(fp, "  PresetLtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetLtDone);
             fprintf(fp, "  Status:\n%s\n", CH_.DP5Stat.GetStatusValueStrings(CH_.DP5Stat.m_DP5_Status).c_str());
             fprintf(fp, "  Configuration:\n%s\n", CH_.HwCfgDP5.c_str());
         }
