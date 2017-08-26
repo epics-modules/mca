@@ -56,6 +56,11 @@ typedef enum {
 #define amptekBuildString           "AMPTEK_BUILD"
 #define amptekFPGAString            "AMPTEK_FPGA"
 #define amptekSerialNumberString    "AMPTEK_SERIAL_NUMBER"
+#define amptekAuxOut1String         "AMPTEK_AUX_OUT1"
+#define amptekAuxOut2String         "AMPTEK_AUX_OUT2"
+#define amptekAuxOut34String        "AMPTEK_AUX_OUT34"
+#define amptekConnect1String        "AMPTEK_CONNECT1"
+#define amptekConnect2String        "AMPTEK_CONNECT2"
 
 
 class drvAmptek : public asynPortDriver
@@ -130,6 +135,11 @@ class drvAmptek : public asynPortDriver
   int amptekBuild_;
   int amptekFPGA_;
   int amptekSerialNumber_;
+  int amptekAuxOut1_;
+  int amptekAuxOut2_;
+  int amptekAuxOut34_;
+  int amptekConnect1_;
+  int amptekConnect2_;
  
   private:
   CConsoleHelper CH_;
