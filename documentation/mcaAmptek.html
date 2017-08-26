@@ -428,6 +428,35 @@
         <td>
           The setpoint for the detector high voltage.</td>
       </tr>
+      <tr>
+        <td align="center" colspan="3">
+          <b>Input/Output</b> </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)AuxOut1<br />
+          $(P)$(R)AuxOut1_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Selects the diagnostic signal for the Aux1 output. Choices are:<br />
+          0: OFF Output is disabled<br />
+          1: ICR Pulse for each fast shaping event<br />
+          2: PILEUP Pulse for each pileup event<br />
+          3: MCSTB Pulse for each MCS timebase increment?<br />
+          4: ONESH One-shot<br />
+          5: DETRES ?<br />
+          6: MCAEN MCA Enable (acquiring)<br />
+          7: PEAKH ?<br />
+          8: SCA8 Pulse when there is an x-ray in the SCA8 channel range?<br />
+          9: RTDOS Rise-time discriminator ?<br />
+          10: RTDREJ Rise-time discriminator reject ?<br />
+          11: VETO ?<br />
+          12: LIVE ?<br />
+          13: STREAM ?<br />
+        </td>
+      </tr>
     </tbody>
   </table>
   <p>
@@ -481,7 +510,6 @@
     <li>The driver only provides EPICS records to control a subset of all of the DPP parameters.
       The following parameters cannot currently be controlled by EPICS:
       <ul>
-        <li>Auxilliary outputs (AU34, AUO1, AUO2, CON1, CON2)</li>
         <li>Baseline restorer (BLRD, BLRM, BLRU)</li>
         <li>Power-on state (BOOT)</li>
         <li>List mode (CLKL, LMM0, SYNC)</li>
@@ -491,7 +519,6 @@
         <li>Input offset (INOF, INOG)</li>
         <li>Preamp control (PAPS, PAPZ)</li>
         <li>Peak detect mode (PDMD)</li>
-        <li>Preset counts (PRCL, PRCH, PREC)</li>
         <li>Reset configuration (RESC)</li>
         <li>Reset lockout interval (RESL)</li>
         <li>Risetime discriminator control (RTDD, RTDE, RTDS, RTDT, RTDW)</li>
