@@ -549,8 +549,11 @@ asynStatus drvAmptek::parseConfigEnum(const char *str, const char *enumStrs[], i
 
 asynStatus drvAmptek::parseConfiguration()
 {
-    //static const char *functionName = "parseConfiguration";
+    static const char *functionName = "parseConfiguration";
 
+    asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+        "%s::%s configuration string from device:\n%s\n",
+        driverName, functionName, CH_.HwCfgDP5.c_str());
     // Clock rate
     parseConfigEnum("CLCK=", clockStrings, sizeof(clockStrings)/sizeof(clockStrings[0]), amptekClock_);
     
