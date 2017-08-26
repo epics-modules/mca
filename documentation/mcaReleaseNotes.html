@@ -21,7 +21,7 @@
     <li>Bruker QM100: Fixed the datatype of the mcaPresetCounts parameter.</li>
     <li>SIS3801 and SIS3820:
       <ul>
-        <li>Fixed problems when the number of signals being use (maxSignals) was 32. In this
+        <li>Fixed problems when the number of signals being used (maxSignals) was 32. In this
           case the left shift operator was shifting by 32-bits which is undefined, and could
           disable all channels rather than enabling all channels on some architectures.</li>
         <li>Changed the VME interrupt release method from the default RORA to ROAK for CPU
