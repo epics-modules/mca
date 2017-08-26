@@ -34,6 +34,10 @@ static const char *gateStrings[]            = {"OFF", "HI", "LOW"};
 static const char *purEnableStrings[]       = {"ON", "OFF", "MAX"};
 static const char *mcaSourceStrings[]       = {"NORM", "MCS", "FAST", "PUR", "RTD"};
 static const char *fastPeakingTimeStrings[] = {"50", "100", "200", "400", "800", "1600", "3200"};
+static const char *auxOutputStrings[]       = {"OFF", "ICR", "PILEUP", "MCSTB", "ONESH", "DETRES", "MCAEN", 
+                                               "PEAKH", "SCA8", "RTDOS", "RTDREJ","VETO", "LIVE", "STREAM"};
+static const char *connect1Strings[]        = {"DAC", "AUXOUT1", "AUXIN1"};
+static const char *connect2Strings[]        = {"AUXOUT2", "AUXIN2", "GATEH", "GATEL"};
 
 // Timeout when waiting for a response
 #define TIMEOUT         0.01
@@ -109,6 +113,11 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekBuildString,                    asynParamInt32, &amptekBuild_);
     createParam(amptekFPGAString,                     asynParamOctet, &amptekFPGA_);
     createParam(amptekSerialNumberString,             asynParamInt32, &amptekSerialNumber_);
+    createParam(amptekAuxOut1String,                  asynParamInt32, &amptekAuxOut1_);
+    createParam(amptekAuxOut2String,                  asynParamInt32, &amptekAuxOut2_);
+    createParam(amptekAuxOut34String,                 asynParamInt32, &amptekAuxOut34_);
+    createParam(amptekConnect1String,                 asynParamInt32, &amptekConnect1_);
+    createParam(amptekConnect2String,                 asynParamInt32, &amptekConnect2_);
 
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
@@ -421,6 +430,31 @@ asynStatus drvAmptek::sendConfiguration()
     sprintf(tempString, "MCST=%f;", dtemp);
     configString.append(tempString);
    
+    // Aux out 1
+    getIntegerParam(amptekAuxOut1_, &itemp);
+    sprintf(tempString, "AUO1=%s;", auxOutputStrings[itemp]);
+    configString.append(tempString);
+
+    // Aux out 2
+    getIntegerParam(amptekAuxOut2_, &itemp);
+    sprintf(tempString, "AUO2=%s;", auxOutputStrings[itemp]);
+    configString.append(tempString);
+
+    // Aux out 34
+    getIntegerParam(amptekAuxOut34_, &itemp);
+    sprintf(tempString, "AU34=%d;", itemp);
+    configString.append(tempString);
+
+    // Connector 1
+    getIntegerParam(amptekConnect1_, &itemp);
+    sprintf(tempString, "CON1=%s;", connect1Strings[itemp]);
+    configString.append(tempString);
+
+    // Connector 2
+    getIntegerParam(amptekConnect2_, &itemp);
+    sprintf(tempString, "CON2=%s;", connect2Strings[itemp]);
+    configString.append(tempString);
+
     return sendCommandString(configString);
 }
 
@@ -585,6 +619,22 @@ asynStatus drvAmptek::parseConfiguration()
     // MCS time base
     parseConfigDouble("MCST=", mcaDwellTime_);
    
+    // Aux out 1
+    parseConfigEnum("AUO1=", auxOutputStrings, sizeof(auxOutputStrings)/sizeof(auxOutputStrings[0]), amptekAuxOut1_);
+
+    // Aux out 2
+    parseConfigEnum("AUO2=", auxOutputStrings, sizeof(auxOutputStrings)/sizeof(auxOutputStrings[0]), amptekAuxOut2_);
+
+    // Aux out 34
+    // For some reason the PX5 does not send AU34 in the configuration
+    //parseConfigInt("AU34=", amptekAuxOut34_);
+
+    // Connector 1
+    parseConfigEnum("CON1=", connect1Strings, sizeof(connect1Strings)/sizeof(connect1Strings[0]), amptekConnect1_);
+
+    // Connector 2
+    parseConfigEnum("CON2=", connect2Strings, sizeof(connect2Strings)/sizeof(connect2Strings[0]), amptekConnect2_);
+
     return asynSuccess;
 }
 
@@ -618,19 +668,6 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         setDoubleParam(amptekBoardTemp_,   CH_.DP5Stat.m_DP5_Status.DP5_TEMP);
         setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
     }
-    else if ((command == mcaNumChannels_)        ||
-             (command == mcaPresetLowChannel_)   ||
-             (command == mcaPresetHighChannel_)  ||
-             (command == amptekInputPolarity_)   ||
-             (command == amptekClock_)           ||
-             (command == amptekGate_)            ||
-             (command == amptekFastPeakingTime_) ||
-             (command == amptekPUREnable_)       ||
-             (command == amptekMCSLowChannel_)   ||
-             (command == amptekMCSHighChannel_)  ||
-             (command == amptekMCASource_)) {
-        status = sendConfiguration();
-    }
     else if (command == amptekLoadConfigFile_) {
         string configFileName;
         getStringParam(amptekConfigFile_, configFileName);
@@ -641,6 +678,11 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         getStringParam(amptekConfigFile_, configFileName);
         status = saveConfigurationFile(configFileName);
     }
+    // All other commands are parameters so we send the configuration
+    else {
+        status = sendConfiguration();
+    }
+
     if (command == mcaNumChannels_) {
         if (value > 0) {
             numChannels_ = value;
@@ -656,15 +698,16 @@ asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
-    int mcaEN, liveTimeDone, realTimeDone, countDone;
+    int mcaEnable, liveTimeDone, realTimeDone, countDone, mcsDone;
     //static const char *functionName = "readInt32";
 
     if (command == mcaAcquiring_) {
         countDone = CH_.DP5Stat.m_DP5_Status.PRECNT_REACHED;
         realTimeDone = CH_.DP5Stat.m_DP5_Status.PresetRtDone;
         liveTimeDone = CH_.DP5Stat.m_DP5_Status.PresetLtDone;
-        mcaEN = CH_.DP5Stat.m_DP5_Status.MCA_EN;
-        if (countDone || realTimeDone || liveTimeDone || !mcaEN) {
+        mcsDone = CH_.DP5Stat.m_DP5_Status.MCS_DONE;
+        mcaEnable = CH_.DP5Stat.m_DP5_Status.MCA_EN;
+        if (countDone || realTimeDone || liveTimeDone || mcsDone || !mcaEnable) {
             // Some preset is reached.  If acquiring_ is true then stop detector
             if (acquiring_) {
                 status = sendCommand(XMTPT_DISABLE_MCA_MCS);
@@ -710,19 +753,10 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 
     /* Set the parameter in the parameter library. */
     status = setDoubleParam(command, value);
-    if ((command == mcaPresetRealTime_)   || 
-        (command == mcaPresetLiveTime_)   ||
-        (command == mcaPresetCounts_)     ||
-        (command == mcaDwellTime_)        ||
-        (command == amptekGain_)          ||
-        (command == amptekPeakingTime_)   ||
-        (command == amptekFlatTopTime_)   ||
-        (command == amptekSlowThreshold_) ||
-        (command == amptekFastThreshold_) ||
-        (command == amptekSetDetTemp_)    ||
-        (command == amptekSetHighVoltage_)) {
-        status = sendConfiguration();
-    }
+
+    // All commands are parameters that require sending the configuration
+    status = sendConfiguration();
+
     callParamCallbacks();
     return status;
 }
@@ -807,6 +841,7 @@ void drvAmptek::report(FILE *fp, int details)
             fprintf(fp, "  PRECNT_REACHED:     %d\n", CH_.DP5Stat.m_DP5_Status.PRECNT_REACHED);
             fprintf(fp, "  PresetRtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetRtDone);
             fprintf(fp, "  PresetLtDone:       %d\n", CH_.DP5Stat.m_DP5_Status.PresetLtDone);
+            fprintf(fp, "  MCS_DONE:           %d\n", CH_.DP5Stat.m_DP5_Status.MCS_DONE);
             fprintf(fp, "  Status:\n%s\n", CH_.DP5Stat.GetStatusValueStrings(CH_.DP5Stat.m_DP5_Status).c_str());
             fprintf(fp, "  Configuration:\n%s\n", CH_.HwCfgDP5.c_str());
         }
