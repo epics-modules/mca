@@ -3,7 +3,7 @@ epicsEnvSet(STARTUP,$(TOP)/iocBoot/$(IOC))
 dbLoadDatabase("../../dbd/mcaAmptekApp.dbd",0,0)
 mcaAmptekApp_registerRecordDeviceDriver(pdbbase) 
 
-drvAmptekConfigure(Amptek1, 0, "164.54.160.200")
+drvAmptekConfigure(Amptek1, 0, "164.54.160.174")
 
 #asynSetTraceMask(Amptek1, 0, 9)
 asynSetTraceIOMask(Amptek1, 0, 2)
