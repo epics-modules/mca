@@ -14,9 +14,21 @@
     <li>Added support for the Amptek DP5 based MCAs and detectors.</li>
     <li>Moved the repository from Subversion at the APS to <a href="https://github.com/epics-modules/mca">
       github</a>.</li>
-    <li>SIS3801 and SIS3820: Fixed problems when the number of signals being use (maxSignals)
-      was 32. In this case the left shift operator was shifting by 32-bits which is undefined,
-      and could disable all channels rather than enabling all channels on some architectures.</li>
+    <li>mcaRecord.dbd: Changed the data type of the preset count (PCT) field from DBF_LONG
+      to DBF_DOUBLE. The value can reasonably be larger than an epicsInt32 will hold.
+      devMcaAsyn.c and most drivers were already (incorrectly) treating the field as a
+      double.</li>
+    <li>Bruker QM100: Fixed the datatype of the mcaPresetCounts parameter.</li>
+    <li>SIS3801 and SIS3820:
+      <ul>
+        <li>Fixed problems when the number of signals being use (maxSignals) was 32. In this
+          case the left shift operator was shifting by 32-bits which is undefined, and could
+          disable all channels rather than enabling all channels on some architectures.</li>
+        <li>Changed the VME interrupt release method from the default RORA to ROAK for CPU
+          boards that use the Tsi148 and rely on software initiated IACK cycles.</li>
+      </ul>
+    </li>
+    <li>Added .NUSE to simple_mca_settings.req.</li>
     <li>Minor change to allow building on mingw.</li>
     <li>Removed building mcaCanberra on cygwin-x86. WinPCAP libraries do not work with
       latest Cygwin version.</li>
