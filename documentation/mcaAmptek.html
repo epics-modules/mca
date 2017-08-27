@@ -22,6 +22,7 @@
     <li><a href="#Overview">Overview</a></li>
     <li><a href="#Hardware_configuration">Hardware configuration</a></li>
     <li><a href="#Software_architecture">Software architecture</a></li>
+    <li><a href="#medm">medm screens</a></li>
     <li><a href="#Startup">Startup script</a></li>
     <li><a href="#Restrictions">Restrictions</a></li>
   </ul>
@@ -346,7 +347,7 @@
           mbbo<br />
           mbbi</td>
         <td>
-          Output level of the SCA output line from the Amptek. Choices are:<br />
+          Output level of the SCA N output line from the Amptek. Choices are:<br />
           0: Off<br />
           1: High (output normally low, high pulse)<br />
           2: Low (output normally high, low pulse) </td>
@@ -528,14 +529,23 @@
       </tr>
     </tbody>
   </table>
+  <h2 id="medm">
+    medm screens</h2>
   <p>
     The following shows the MEDM screen for the Amptek control</p>
   <div style="text-align: center">
     <h3 style="text-align: center">
-      Amptek.adl with PX5 and X-100CdTe detector</h3>
+      Amptek.adl with PX5 and XR-100CdTe detector</h3>
     <img alt="Amptek.png" src="Amptek.png" /></div>
   <p>
-    The following shows the MEDM screen for the MCA display with a PX5, X-100CdTe detector
+    The following shows the MEDM screen for the Amptek single channel analyzer (SCA)
+    configuration</p>
+  <div style="text-align: center">
+    <h3 style="text-align: center">
+      Amptek_ROI_SCA8.adl with PX5 and XR-100SDD detector</h3>
+    <img alt="Amptek_ROI_SCA8.png" src="Amptek_ROI_SCA8.png" /></div>
+  <p>
+    The following shows the MEDM screen for the MCA display with a PX5, XR-100CdTe detector
     and a Cd109 radioactive source</p>
   <div style="text-align: center">
     <h3 style="text-align: center">
@@ -591,7 +601,6 @@
         <li>Reset configuration (RESC)</li>
         <li>Reset lockout interval (RESL)</li>
         <li>Risetime discriminator control (RTDD, RTDE, RTDS, RTDT, RTDW)</li>
-        <li>SCA control (SCAH, SCAI, SCAL, SCAO, SCAW)</li>
         <li>Digital scope control (SCOE, SCOG, SCOT)</li>
         <li>Scintillator time constant (SCTC)</li>
         <li>Spectrum offset (SOFF)</li>
