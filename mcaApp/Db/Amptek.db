@@ -496,7 +496,6 @@ record(mbbo,"$(P)$(R)AuxOut1") {
 
 record(mbbi,"$(P)$(R)AuxOut1_RBV") {
     field(DESC,"Aux out 1")
-    field(PINI,"YES")
     field(ZRST,"OFF")
     field(ZRVL,"0")
     field(ONST,"ICR")
@@ -563,7 +562,6 @@ record(mbbo,"$(P)$(R)AuxOut2") {
 
 record(mbbi,"$(P)$(R)AuxOut2_RBV") {
     field(DESC,"Aux out 2")
-    field(PINI,"YES")
     field(ZRST,"OFF")
     field(ZRVL,"0")
     field(ONST,"ICR")
@@ -610,7 +608,6 @@ record(mbbo,"$(P)$(R)AuxOut34") {
 
 record(mbbi,"$(P)$(R)AuxOut34_RBV") {
     field(DESC,"Aux out 34")
-    field(PINI,"YES")
     field(ZRST,"1")
     field(ZRVL,"1")
     field(ONST,"2")
@@ -637,7 +634,6 @@ record(mbbo,"$(P)$(R)Connector1") {
 
 record(mbbi,"$(P)$(R)Connector1_RBV") {
     field(DESC,"Connector 1")
-    field(PINI,"YES")
     field(ZRST,"DAC")
     field(ZRVL,"0")
     field(ONST,"AUXOUT1")
@@ -666,7 +662,6 @@ record(mbbo,"$(P)$(R)Connector2") {
 
 record(mbbi,"$(P)$(R)Connector2_RBV") {
     field(DESC,"Connector 2")
-    field(PINI,"YES")
     field(ZRST,"AUXOUT2")
     field(ZRVL,"0")
     field(ONST,"AUXIN2")
@@ -680,9 +675,36 @@ record(mbbi,"$(P)$(R)Connector2_RBV") {
     field(SCAN, "I/O Intr")
 }
 
+record(mbbo,"$(P)$(R)SCAOutputWidth") {
+    field(DESC,"SCA Output Width")
+    field(PINI,"YES")
+    field(ZRST,"100")
+    field(ZRVL,"0")
+    field(ONST,"1000")
+    field(ONVL,"1")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)AMPTEK_SCA_OUTPUT_WIDTH")
+}
 
+record(mbbi,"$(P)$(R)SCAOutputWidth_RBV") {
+    field(DESC,"SCA Output Width")
+    field(ZRST,"100")
+    field(ZRVL,"0")
+    field(ONST,"1000")
+    field(ONVL,"1")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)AMPTEK_SCA_OUTPUT_WIDTH")
+    field(SCAN, "I/O Intr")
+}
 
-
-
-
+record(seq, "$(P)$(R)CopyROIsSCAs") {
+    field(LNK1, "$(P)$(R)SCA0CopyROI.PROC PP")
+    field(LNK2, "$(P)$(R)SCA1CopyROI.PROC PP")
+    field(LNK3, "$(P)$(R)SCA2CopyROI.PROC PP")
+    field(LNK4, "$(P)$(R)SCA3CopyROI.PROC PP")
+    field(LNK5, "$(P)$(R)SCA4CopyROI.PROC PP")
+    field(LNK6, "$(P)$(R)SCA5CopyROI.PROC PP")
+    field(LNK7, "$(P)$(R)SCA6CopyROI.PROC PP")
+    field(LNK8, "$(P)$(R)SCA7CopyROI.PROC PP")
+}
 
