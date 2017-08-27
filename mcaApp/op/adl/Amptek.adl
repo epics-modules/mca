@@ -2055,107 +2055,48 @@ text {
 	}
 	textix="Save/restore status"
 }
-composite {
+text {
+	object {
+		x=26
+		y=156
+		width=70
+		height=20
+	}
+	"basic attribute" {
+		clr=14
+	}
+	textix="Elapsed"
+}
+"text update" {
 	object {
 		x=20
-		y=156
+		y=182
 		width=76
-		height=154
+		height=20
 	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=20
-				y=290
-				width=76
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M).PCTH"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		text {
-			object {
-				x=26
-				y=156
-				width=70
-				height=20
-			}
-			"basic attribute" {
-				clr=14
-			}
-			textix="Elapsed"
-		}
-		"text update" {
-			object {
-				x=20
-				y=182
-				width=76
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M).ERTM"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=209
-				width=76
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M).ELTM"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=236
-				width=76
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M).PCT"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
-		"text update" {
-			object {
-				x=20
-				y=263
-				width=76
-				height=20
-			}
-			monitor {
-				chan="$(P)$(M).PCTL"
-				clr=54
-				bclr=4
-			}
-			align="horiz. right"
-			limits {
-			}
-		}
+	monitor {
+		chan="$(P)$(M).ERTM"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
+	}
+}
+"text update" {
+	object {
+		x=20
+		y=209
+		width=76
+		height=20
+	}
+	monitor {
+		chan="$(P)$(M).ELTM"
+		clr=54
+		bclr=4
+	}
+	align="horiz. right"
+	limits {
 	}
 }
 composite {
