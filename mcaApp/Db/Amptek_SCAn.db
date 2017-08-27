@@ -1,0 +1,77 @@
+record(longout,"$(P)$(R)SCA$(N)LowChannel") {
+    field(DESC,"SCA low channel")
+    field(PINI,"YES")
+    field(DRVL, "0")
+    field(DRVH, "8191")
+    field(VAL,"0")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),$(N))AMPTEK_SCA_LOW_CHANNEL")
+}
+
+record(longin,"$(P)$(R)SCA$(N)LowChannel_RBV") {
+    field(DESC,"SCA low channel")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),$(N))AMPTEK_SCA_LOW_CHANNEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(longout,"$(P)$(R)SCA$(N)HighChannel") {
+    field(DESC,"SCA high channel")
+    field(PINI,"YES")
+    field(DRVL, "0")
+    field(DRVH, "8191")
+    field(VAL,"0")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),$(N))AMPTEK_SCA_HIGH_CHANNEL")
+}
+
+record(longin,"$(P)$(R)SCA$(N)HighChannel_RBV") {
+    field(DESC,"SCA high channel")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),$(N))AMPTEK_SCA_HIGH_CHANNEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbo,"$(P)$(R)SCA$(N)OutputLevel") {
+    field(DESC,"SCA output level")
+    field(PINI,"YES")
+    field(ZRST,"Off")
+    field(ZRVL,"0")
+    field(ONST,"High")
+    field(ONVL,"1")
+    field(TWST,"Low")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),$(N))AMPTEK_SCA_OUTPUT_LEVEL")
+}
+
+record(mbbi,"$(P)$(R)SCA$(N)OutputLevel_RBV") {
+    field(DESC,"SCA output level")
+    field(ZRST,"Off")
+    field(ZRVL,"0")
+    field(ONST,"High")
+    field(ONVL,"1")
+    field(TWST,"Low")
+    field(TWVL,"2")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),$(N))AMPTEK_SCA_OUTPUT_LEVEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(seq, "$(P)$(R)SCA$(N)CopyROI") {
+    field(LNK1, "$(P)$(R)SCA$(N)CopyLow.PROC PP")
+    field(LNK2, "$(P)$(R)SCA$(N)CopyHigh.PROC PP")
+}
+
+record(longout, "$(P)$(R)SCA$(N)CopyLow") {
+    field(DOL, "$(P)$(M).R$(N)LO")
+    field(OMSL, "closed_loop")
+    field(OUT, "$(P)$(R)SCA$(N)LowChannel PP")
+}
+
+record(longout, "$(P)$(R)SCA$(N)CopyHigh") {
+    field(DOL, "$(P)$(M).R$(N)HI")
+    field(OMSL, "closed_loop")
+    field(OUT, "$(P)$(R)SCA$(N)HighChannel PP")
+}
+
