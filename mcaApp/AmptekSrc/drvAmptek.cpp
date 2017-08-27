@@ -38,15 +38,19 @@ static const char *auxOutputStrings[]       = {"OFF", "ICR", "PILEUP", "MCSTB", 
                                                "PEAKH", "SCA8", "RTDOS", "RTDREJ","VETO", "LIVE", "STREAM"};
 static const char *connect1Strings[]        = {"DAC", "AUXOUT1", "AUXIN1"};
 static const char *connect2Strings[]        = {"AUXOUT2", "AUXIN2", "GATEH", "GATEL"};
+static const char *scaOutputWidthStrings[]  = {"100", "1000"};
+static const char *scaOutputLevelStrings[]  = {"OFF", "HIGH", "LOW"};
 
+// We only support the 8 SCAs that have hardware outputs
+#define MAX_SCAS 8
 // Timeout when waiting for a response
-#define TIMEOUT         0.01
+#define TIMEOUT  0.01
 
 static const char *driverName = "drvAmptek";
 
 drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo)
    : asynPortDriver(portName, 
-                    1, /* Maximum address */
+                    MAX_SCAS, /* Maximum address */
                     0, /* Unused, number of parameters */
                     asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask, /* Interface mask */
                     asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                   /* Interrupt mask */
@@ -118,6 +122,10 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekAuxOut34String,                 asynParamInt32, &amptekAuxOut34_);
     createParam(amptekConnect1String,                 asynParamInt32, &amptekConnect1_);
     createParam(amptekConnect2String,                 asynParamInt32, &amptekConnect2_);
+    createParam(amptekSCAOutputWidthString,           asynParamInt32, &amptekSCAOutputWidth_);
+    createParam(amptekSCALowChannelString,            asynParamInt32, &amptekSCALowChannel_);
+    createParam(amptekSCAHighChannelString,           asynParamInt32, &amptekSCAHighChannel_);
+    createParam(amptekSCAOutputLevelString,           asynParamInt32, &amptekSCAOutputLevel_);
 
     interfaceType_ = (amptekInterface_t)interfaceType;
     switch(interfaceType_) {
@@ -296,7 +304,7 @@ asynStatus drvAmptek::sendCommandString(string commandString)
         case amptekInterfaceEthernet:
             if (CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_) == false) {
                 asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error callingg CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+                    "%s::%s error calling CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
                     driverName, functionName, commandString.c_str());
                 return asynError;
             }
@@ -310,6 +318,37 @@ asynStatus drvAmptek::sendCommandString(string commandString)
     }
     status = readConfigurationFromHardware();
     return status;
+}
+
+asynStatus drvAmptek::sendSCAs()
+{
+    //static const char *functionName = "sendConfiguration";
+    int itemp;
+    int i;
+    char tempString[20];
+    string configString;
+
+    for (i=0; i<MAX_SCAS; i++) {    
+        // SCA index
+        sprintf(tempString, "SCAI=%d;", i+1);
+        configString.append(tempString);
+
+        // Low channel
+        getIntegerParam(i, amptekSCALowChannel_, &itemp);
+        sprintf(tempString, "SCAL=%d;", itemp);
+        configString.append(tempString);
+
+        // High channel
+        getIntegerParam(i, amptekSCAHighChannel_, &itemp);
+        sprintf(tempString, "SCAH=%d;", itemp);
+        configString.append(tempString);
+    
+        // Output level
+        getIntegerParam(i, amptekSCAOutputLevel_, &itemp);
+        sprintf(tempString, "SCAO=%s;", scaOutputLevelStrings[itemp]);
+        configString.append(tempString);
+    }
+    return sendCommandString(configString);
 }
 
 asynStatus drvAmptek::sendConfiguration()
@@ -453,6 +492,11 @@ asynStatus drvAmptek::sendConfiguration()
     // Connector 2
     getIntegerParam(amptekConnect2_, &itemp);
     sprintf(tempString, "CON2=%s;", connect2Strings[itemp]);
+    configString.append(tempString);
+
+    // SCA output width
+    getIntegerParam(amptekSCAOutputWidth_, &itemp);
+    sprintf(tempString, "SCAW=%s;", scaOutputWidthStrings[itemp]);
     configString.append(tempString);
 
     return sendCommandString(configString);
@@ -645,9 +689,11 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
+    int addr;
 
+    getAddress(pasynUser, &addr);
     /* Set the parameter in the parameter library. */
-    status = setIntegerParam(command, value);
+    status = setIntegerParam(addr, command, value);
     if (command == mcaStartAcquire_) {
         if (!acquiring_) {
             acquiring_ = true;
@@ -681,6 +727,11 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         getStringParam(amptekConfigFile_, configFileName);
         status = saveConfigurationFile(configFileName);
     }
+    else if ((command == amptekSCALowChannel_) ||
+             (command == amptekSCAHighChannel_) ||
+             (command == amptekSCAOutputLevel_)) {
+        status = sendSCAs();
+    }
     // All other commands are parameters so we send the configuration
     else {
         status = sendConfiguration();
@@ -693,7 +744,7 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
             pData_ = (epicsInt32 *)calloc(numChannels_, sizeof(epicsInt32));
         }
     }
-    callParamCallbacks();
+    callParamCallbacks(addr);
     return status;
 }
 
@@ -753,14 +804,16 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
 {
     int command = pasynUser->reason;
     asynStatus status=asynSuccess;
-
+    int addr;
+    
+    getAddress(pasynUser, &addr);
     /* Set the parameter in the parameter library. */
-    status = setDoubleParam(command, value);
+    status = setDoubleParam(addr, command, value);
 
     // All commands are parameters that require sending the configuration
     status = sendConfiguration();
 
-    callParamCallbacks();
+    callParamCallbacks(addr);
     return status;
 }
 

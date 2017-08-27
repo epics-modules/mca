@@ -61,6 +61,10 @@ typedef enum {
 #define amptekAuxOut34String        "AMPTEK_AUX_OUT34"
 #define amptekConnect1String        "AMPTEK_CONNECT1"
 #define amptekConnect2String        "AMPTEK_CONNECT2"
+#define amptekSCAOutputWidthString  "AMPTEK_SCA_OUTPUT_WIDTH"
+#define amptekSCALowChannelString   "AMPTEK_SCA_LOW_CHANNEL"
+#define amptekSCAHighChannelString  "AMPTEK_SCA_HIGH_CHANNEL"
+#define amptekSCAOutputLevelString  "AMPTEK_SCA_OUTPUT_LEVEL"
 
 
 class drvAmptek : public asynPortDriver
@@ -140,6 +144,10 @@ class drvAmptek : public asynPortDriver
   int amptekAuxOut34_;
   int amptekConnect1_;
   int amptekConnect2_;
+  int amptekSCAOutputWidth_;
+  int amptekSCALowChannel_;
+  int amptekSCAHighChannel_;
+  int amptekSCAOutputLevel_;
  
   private:
   CConsoleHelper CH_;
@@ -149,6 +157,7 @@ class drvAmptek : public asynPortDriver
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
   asynStatus sendCommandString(string commandString);
   asynStatus sendConfiguration();
+  asynStatus sendSCAs();
   asynStatus sendConfigurationFile(string fileName);
   asynStatus saveConfigurationFile(string fileName);
   asynStatus readConfigurationFromHardware();
