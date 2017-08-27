@@ -16,6 +16,7 @@ DB += 16element.db
 DB += 3element.db
 DB += DSA2000_HVPS.db
 DB += Amptek.db
+DB += Amptek_SCAn.db
 DB += RontecXFlash.db
 DB += SIS38XX.template
 DB += SIS38XX_waveform.template
