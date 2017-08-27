@@ -10,7 +10,7 @@
     <h1>
       EPICS MCA Amptek Driver</h1>
     <h2>
-      August 20, 2017</h2>
+      August 27, 2017</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -314,6 +314,74 @@
         <td>
           Readback for the number of MCA channels. The number of channels is set with the
           .NUSE field of the MCA record.</td>
+      </tr>
+      <td align="center" colspan="3">
+        <b>SCA settings</b> </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SCA$(N)LowChannel<br />
+          $(P)$(R)SCA$(N)LowChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          Low channel for SCA N (N=0-7). Range is 0 to MAXCHANS-1.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SCA$(N)HighChannel<br />
+          $(P)$(R)SCA$(N)HighChannel_RBV</td>
+        <td>
+          longout<br />
+          longin</td>
+        <td>
+          High channel for SCA N (N=0-7). Range is 0 to MAXCHANS-1.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SCA$(N)OutputLevel<br />
+          $(P)$(R)SCA$(N)OutputLevel_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Output level of the SCA output line from the Amptek. Choices are:<br />
+          0: Off<br />
+          1: High (output normally low, high pulse)<br />
+          2: Low (output normally high, low pulse) </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SCA$(N)CopyROI</td>
+        <td>
+          seq</td>
+        <td>
+          Processing this record copies the high and low channel settings for ROI N in the
+          MCA record to SCA N, e.g. from $(P)$(M).R0LO to $(P)$(R)SCA0LowChannel and from
+          $(P)$(M).ROHI to $(P)$(R)HighChannel. This allows one to define the ROIs graphically
+          in IDL, for example, and then copy these to the Amptek SCAs.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)CopyROIsSCAs</td>
+        <td>
+          seq</td>
+        <td>
+          Processing this record processed all 8 of the CopyROI records described above, thus
+          copying the first 8 ROIs to the Amptek SCAs.</td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)SCAOutputWidth<br />
+          $(P)$(R)SCAOutputWidth_RBV</td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Width of the output pulse. Choices are:<br />
+          0: 100 ns<br />
+          1: 1000 ns</td>
       </tr>
       <tr>
         <td align="center" colspan="3">
