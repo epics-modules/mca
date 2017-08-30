@@ -109,7 +109,7 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekSetDetTempString,             asynParamFloat64, &amptekSetDetTemp_);
     createParam(amptekBoardTempString,              asynParamFloat64, &amptekBoardTemp_);
     createParam(amptekHighVoltageString,            asynParamFloat64, &amptekHighVoltage_);
-    createParam(amptekSetHighVoltageString,         asynParamFloat64, &amptekSetHighVoltage_);
+    createParam(amptekSetHighVoltageString,           asynParamInt32, &amptekSetHighVoltage_);
     createParam(amptekMCSLowChannelString,            asynParamInt32, &amptekMCSLowChannel_);
     createParam(amptekMCSHighChannelString,           asynParamInt32, &amptekMCSHighChannel_);
     createParam(amptekModelString,                    asynParamOctet, &amptekModel_);
@@ -445,8 +445,8 @@ asynStatus drvAmptek::sendConfiguration()
     configString.append(tempString);
 
     // High voltage
-    getDoubleParam(amptekSetHighVoltage_, &dtemp);
-    sprintf(tempString, "HVSE=%f;", dtemp);
+    getIntegerParam(amptekSetHighVoltage_, &itemp);
+    sprintf(tempString, "HVSE=%d;", itemp);
     configString.append(tempString);
     
     // Detector temperature
@@ -652,7 +652,7 @@ asynStatus drvAmptek::parseConfiguration()
     parseConfigEnum("PURE=", purEnableStrings, sizeof(purEnableStrings)/sizeof(purEnableStrings[0]), amptekPUREnable_);
 
     // High voltage
-    parseConfigDouble("HVSE=", amptekSetHighVoltage_);
+    parseConfigInt("HVSE=", amptekSetHighVoltage_);
     
     // Detector temperature
     parseConfigDouble("TECS=", amptekSetDetTemp_);
