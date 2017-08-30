@@ -410,19 +410,17 @@ record(ai,"$(P)$(R)HighVoltage") {
     field(SCAN, "I/O Intr")
 }
 
-record(ao,"$(P)$(R)SetHighVoltage") {
+record(longout,"$(P)$(R)SetHighVoltage") {
     field(DESC,"Set high voltage")
     field(PINI,"YES")
-    field(DTYP, "asynFloat64")
+    field(DTYP, "asynInt32")
     field(OUT, "@asyn($(PORT))AMPTEK_SET_HIGH_VOLTAGE")
-    field(PREC, "1")
 }
 
-record(ai,"$(P)$(R)SetHighVoltage_RBV") {
+record(longin,"$(P)$(R)SetHighVoltage_RBV") {
     field(DESC,"Set high voltage")
-    field(DTYP, "asynFloat64")
+    field(DTYP, "asynInt32")
     field(INP, "@asyn($(PORT))AMPTEK_SET_HIGH_VOLTAGE")
-    field(PREC, "1")
     field(SCAN, "I/O Intr")
 }
 
