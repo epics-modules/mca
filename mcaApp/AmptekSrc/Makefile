@@ -22,6 +22,11 @@ LIB_INSTALLS_WIN32    += ../os/windows-x64/libusb-1.0.lib
 BIN_INSTALLS_WIN32    += ../os/windows-x64/libusb-1.0.dll
 endif
 
+ifeq ($(SHARED_LIBRARIES),YES)
+  USR_CPPFLAGS_WIN32 += -DDLL_AMPTEK
+  mcaAmptek.dll: USR_CPPFLAGS_WIN32 += -DDLL_EXPORT
+endif
+
 # Amptek's code uses WIN32 rather than _WIN32 
 USR_CXXFLAGS_WIN32 += -DWIN32
 
@@ -48,6 +53,8 @@ mcaAmptek_SRCS += drvAmptek.cpp
 
 mcaAmptek_LIBS += asyn 
 mcaAmptek_LIBS += $(EPICS_BASE_IOC_LIBS)
+mcaAmptek_SYS_LIBS_Linux += usb-1.0
+mcaAmptek_LIBS_WIN32 += libusb-1.0
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 PROD_IOC_Linux    += mcaAmptekApp
