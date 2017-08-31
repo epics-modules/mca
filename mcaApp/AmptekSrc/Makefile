@@ -11,6 +11,17 @@ DBD += mcaAmptekApp.dbd
 mcaAmptekApp_DBD += 
 DBD += mcaAmptekSupport.dbd
 
+# Install USB library for Windows
+# This came from https://sourceforge.net/projects/libusb/files/libusb-1.0/libusb-1.0.21/libusb-1.0.21.7z/download
+INC_WIN32 += libusb.h
+ifeq (win32-x86, $(findstring win32-x86, $(T_A)))
+LIB_INSTALLS_WIN32    += ../os/win32-x86/libusb-1.0.lib 
+BIN_INSTALLS_WIN32    += ../os/win32-x86/libusb-1.0.dll
+else ifeq (windows-x64, $(findstring windows-x64, $(T_A)))
+LIB_INSTALLS_WIN32    += ../os/windows-x64/libusb-1.0.lib 
+BIN_INSTALLS_WIN32    += ../os/windows-x64/libusb-1.0.dll
+endif
+
 # Amptek's code uses WIN32 rather than _WIN32 
 USR_CXXFLAGS_WIN32 += -DWIN32
 
@@ -18,12 +29,15 @@ USR_CXXFLAGS_WIN32 += -DWIN32
 LIBRARY_IOC_Linux += mcaAmptek
 LIBRARY_IOC_WIN32 += mcaAmptek
 
+USR_INCLUDES_Linux += -I/usr/include/libusb-1.0
+
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
 mcaAmptek_SRCS += AsciiCmdUtilities.cpp 
 mcaAmptek_SRCS += ConsoleHelper.cpp 
 mcaAmptek_SRCS += DP5Protocol.cpp 
 mcaAmptek_SRCS += DP5Status.cpp 
 mcaAmptek_SRCS += DppSocket.cpp 
+mcaAmptek_SRCS += DppLibUsb.cpp 
 mcaAmptek_SRCS += stringex.cpp 
 mcaAmptek_SRCS += DppUtilities.cpp 
 mcaAmptek_SRCS += ParsePacket.cpp 
@@ -48,6 +62,8 @@ mcaAmptekApp_LIBS += sscan busy
 mcaAmptekApp_LIBS += asyn
 mcaAmptekApp_LIBS += seq pv
 mcaAmptekApp_LIBS += $(EPICS_BASE_IOC_LIBS)
+mcaAmptekApp_SYS_LIBS_Linux += usb-1.0
+mcaAmptekApp_LIBS_WIN32 += libusb-1.0
 
 mcaAmptekApp_DBD += base.dbd
 mcaAmptekApp_DBD += mcaAmptekSupport.dbd
@@ -66,11 +82,15 @@ PROD_IOC_Linux    += gccDppConsoleInet
 PROD_IOC_WIN32    += gccDppConsoleInet
 gccDppConsoleInet_SRCS += gccDppConsoleInet.cpp 
 gccDppConsoleInet_LIBS += mcaAmptek
+gccDppConsoleInet_SYS_LIBS_Linux += usb-1.0
+gccDppConsoleInet_LIBS_WIN32 += libusb-1.0
 
 PROD_IOC_Linux   += amptekTest1
 PROD_IOC_WIN32   += amptekTest1
 amptekTest1_SRCS += amptekTest1.cpp 
 amptekTest1_LIBS += mcaAmptek
+amptekTest1_SYS_LIBS_Linux += usb-1.0
+amptekTest1_LIBS_WIN32 += libusb-1.0
 
 
 include $(TOP)/configure/RULES
