@@ -12,6 +12,9 @@ CConsoleHelper::CConsoleHelper(void)
 {
 	DppSocket_isConnected = false;
 	DppSocket_NumDevices = 0;
+	DppLibUsb.NumDevices = 0;
+	LibUsb_isConnected = false;
+	LibUsb_NumDevices = 0;
 	DppStatusString = "";
 }
 
@@ -317,6 +320,112 @@ bool CConsoleHelper::DppSocket_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
 	return (bMessageSent);
 }
 
+
+
+// COMMAND (CONFIG_OPTIONS Needed)
+//					Command Description
+//
+// XMTPT_SEND_CONFIG_PACKET_TO_HW (HwCfgDP5Out,SendCoarseFineGain,PC5_PRESENT,DppType)
+//					Processes a configuration string for errors before sending
+//							Allows only one gain setting type (coarse,fine OR total gain)
+//							Removes commands from string that should not be sent to device type
+// XMTPT_SEND_CONFIG_PACKET_EX (HwCfgDP5Out)
+//					Sends the a configuration with minimal error checking
+// XMTPT_FULL_READ_CONFIG_PACKET (PC5_PRESENT,DppType)
+//					Creates and sends a full readback command
+bool CConsoleHelper::DppSocket_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions)
+{
+    bool bHaveBuffer;
+    bool bSentPkt;
+	bool bMessageSent;
+
+	bMessageSent = false;
+	if (DppSocket.deviceConnected) { 
+		bHaveBuffer = (bool) SndCmd.DP5_CMD_Config(DP5Proto.BufferOUT, XmtCmd, CfgOptions);
+		if (bHaveBuffer) {
+			DP5Proto.ACK_Received = false;
+			DP5Proto.Packet_Received = false; // a response packet is always expected
+			DP5Proto.PIN.STATUS = 0xFF;   // packet invalid - will be overwritten soon by response/ACK packet
+			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn, 8);
+			if (bSentPkt) {
+				bMessageSent = true;
+			}
+		}
+	}
+	return (bMessageSent);
+}
+
+bool CConsoleHelper::DppSocket_ReceiveData()
+{
+	bool bDataReceived;
+
+	bDataReceived = true;
+	if (DppSocket.deviceConnected) { 
+		bDataReceived = ReceiveData();
+	}
+	return (bDataReceived);
+}
+
+bool CConsoleHelper::LibUsb_Connect_Default_DPP()
+{
+
+	// flag is for notifications, if already connect will return dusbStatNoAction
+	// use bDeviceConnected to detect connection
+	DppLibUsb.InitializeLibusb();
+	LibUsb_isConnected = false;
+	LibUsb_NumDevices = 0;
+	DppLibUsb.NumDevices = DppLibUsb.CountDP5LibusbDevices();
+	if (DppLibUsb.NumDevices > 1) {
+		// choose dpp device here or default to first device
+	} else if (DppLibUsb.NumDevices == 1) {
+		// default to first device
+	} else {
+	}
+	if (DppLibUsb.NumDevices > 0) {
+		DppLibUsb.CurrentDevice = 1;	// set to default device
+		DppLibUsb.DppLibusbHandle = DppLibUsb.FindUSBDevice(DppLibUsb.CurrentDevice); //connect
+		if (DppLibUsb.bDeviceConnected) { // connection detected
+			LibUsb_isConnected = true;
+			LibUsb_NumDevices = DppLibUsb.NumDevices;
+		}
+	} else {
+		LibUsb_isConnected = false;
+		LibUsb_NumDevices = 0;
+	}
+	return (LibUsb_isConnected);
+}
+
+void CConsoleHelper::LibUsb_Close_Connection()
+{
+	if (DppLibUsb.bDeviceConnected) { // clean-up: close usb connection
+		DppLibUsb.bDeviceConnected = false;
+		DppLibUsb.CloseUSBDevice(DppLibUsb.DppLibusbHandle);
+		LibUsb_isConnected = false;
+		LibUsb_NumDevices = 0;
+		DppLibUsb.DeinitializeLibusb();
+	}
+}
+
+bool CConsoleHelper::LibUsb_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
+{
+    bool bHaveBuffer;
+    int bSentPkt;
+	bool bMessageSent;
+
+	bMessageSent = false;
+	if (DppLibUsb.bDeviceConnected) { 
+		memset(&DP5Proto.BufferOUT[0],0,sizeof(DP5Proto.BufferOUT));
+		bHaveBuffer = (bool) SndCmd.DP5_CMD(DP5Proto.BufferOUT, XmtCmd);
+		if (bHaveBuffer) {
+			bSentPkt = DppLibUsb.SendPacketUSB(DppLibUsb.DppLibusbHandle, DP5Proto.BufferOUT, DP5Proto.PacketIn);
+			if (bSentPkt) {
+	            bMessageSent = true;
+			}
+		}
+	}
+	return (bMessageSent);
+}
+
 // COMMAND (CONFIG_OPTIONS Needed)
 //					Command Description
 //
@@ -368,38 +477,37 @@ void CConsoleHelper::CreateConfigOptions(CONFIG_OPTIONS *CfgOptions, string strC
 //					Sends the a configuration with minimal error checking
 // XMTPT_FULL_READ_CONFIG_PACKET (PC5_PRESENT,DppType)
 //					Creates and sends a full readback command
-bool CConsoleHelper::DppSocket_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions)
+bool CConsoleHelper::LibUsb_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions)
 {
     bool bHaveBuffer;
-    bool bSentPkt;
+    int bSentPkt;
 	bool bMessageSent;
 
 	bMessageSent = false;
-	if (DppSocket.deviceConnected) { 
+	if (DppLibUsb.bDeviceConnected) {
+		memset(&DP5Proto.BufferOUT[0],0,sizeof(DP5Proto.BufferOUT));
 		bHaveBuffer = (bool) SndCmd.DP5_CMD_Config(DP5Proto.BufferOUT, XmtCmd, CfgOptions);
 		if (bHaveBuffer) {
-			DP5Proto.ACK_Received = false;
-			DP5Proto.Packet_Received = false; // a response packet is always expected
-			DP5Proto.PIN.STATUS = 0xFF;   // packet invalid - will be overwritten soon by response/ACK packet
-			bSentPkt = DppSocket.SendPacketInet(DP5Proto.BufferOUT, &DppSocket, DP5Proto.PacketIn, 8);
+			bSentPkt = DppLibUsb.SendPacketUSB(DppLibUsb.DppLibusbHandle, DP5Proto.BufferOUT, DP5Proto.PacketIn);
 			if (bSentPkt) {
-				bMessageSent = true;
+	            bMessageSent = true;
 			}
 		}
 	}
 	return (bMessageSent);
 }
 
-bool CConsoleHelper::DppSocket_ReceiveData()
+bool CConsoleHelper::LibUsb_ReceiveData()
 {
 	bool bDataReceived;
 
 	bDataReceived = true;
-	if (DppSocket.deviceConnected) { 
+	if (DppLibUsb.bDeviceConnected) { 
 		bDataReceived = ReceiveData();
 	}
 	return (bDataReceived);
 }
+
 
 /** ReceiveData receives the incoming packet, 
  *  parses the packet, 
