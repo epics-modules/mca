@@ -7,7 +7,7 @@
 #ifdef LIBUSB_WINUSB_BACKEND 
 	#include "libusb.h"
 	#ifdef _MSC_VER
-		#pragma comment(lib, ".\\DeviceIO\\libusb.lib")
+		// #pragma comment(lib, ".\\DeviceIO\\libusb.lib")
 	#endif
 #else
 	#include <libusb.h>
