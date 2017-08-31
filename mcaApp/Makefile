@@ -21,7 +21,7 @@ RontecSrc_DEPEND_DIRS = mcaSrc
 
 # Support for Amptek
 DIRS += AmptekSrc
-AmptecSrc_DEPEND_DIRS = mcaSrc
+AmptekSrc_DEPEND_DIRS = mcaSrc
 
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *db*))
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *Db*))
