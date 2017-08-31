@@ -3,6 +3,7 @@
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
+#include "DppConfig.h"
 #include "DP5Protocol.h"
 #include "DppUtilities.h"
 
@@ -101,7 +102,7 @@ typedef struct _DiagDataType
     unsigned char DiagData[192];
 } DiagDataType, *PDDiagDataType;
 
-class CDP5Status
+class EXTERN CDP5Status
 {
 public:
 	CDP5Status(void);

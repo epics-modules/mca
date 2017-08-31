@@ -6,6 +6,7 @@
 #include <cctype> // std::toupper, std::tolower
 using namespace std; 
 #include "stringex.h"
+#include "DppConfig.h"
 #include "DppConst.h"
 
 #ifndef LINE_MAX
@@ -15,7 +16,7 @@ using namespace std;
 #define DP5_MAX_CFG_SIZE 512		/// 512 + 8 Bytes (2 SYNC,2 PID,2 LEN,2 CHKSUM)
 #define Whitespace "\t\n\v\f\r\0x20"	/// $ = Chr$(0) + Chr$(9) + Chr$(10) + Chr$(11) + Chr$(12) + Chr$(13) + Chr$(32)
 
-class CAsciiCmdUtilities
+class EXTERN CAsciiCmdUtilities
 {
 public:
 	CAsciiCmdUtilities(void);

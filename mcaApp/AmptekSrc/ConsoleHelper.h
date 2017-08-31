@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include "DppConfig.h"      // Shareable library configuration
 #include "DppSocket.h"			// Socket Support
 #include "DppLibUsb.h"			// LibUsb Support
 #include "DP5Protocol.h"		// DPP Protocol Support
@@ -26,7 +27,7 @@ typedef struct _SpectrumFileType {
 
 const bool bConsoleHelperDebug = false;
 
-class CConsoleHelper
+class EXTERN CConsoleHelper
 {
 public:
 	CConsoleHelper(void);
