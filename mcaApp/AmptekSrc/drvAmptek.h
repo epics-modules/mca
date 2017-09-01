@@ -21,12 +21,6 @@
 
 #include <ConsoleHelper.h>
 
-typedef enum {
-  amptekInterfaceEthernet,
-  amptekInterfaceUSB,
-  amptekInterfaceSerial
-} amptekInterface_t;
-
 #define amptekInputPolarityString   "AMPTEK_INPUT_POLARITY"
 #define amptekClockString           "AMPTEK_CLOCK"
 #define amptekGainString            "AMPTEK_GAIN"
@@ -83,7 +77,8 @@ class drvAmptek : public asynPortDriver
   virtual void report(FILE *fp, int details);
 
   // These are the methods that are new to this class
-  
+  void exitHandler();
+
   protected:
   // These are the standard MCA commands
   #define FIRST_AMPTEK_PARAM mcaStartAcquire_
@@ -166,10 +161,9 @@ class drvAmptek : public asynPortDriver
   asynStatus parseConfigInt(const char *str, int param);
   asynStatus parseConfigEnum(const char *str, const char *enumStrs[], int numEnums, int param);
   dp5DppTypes dppType_;
-  bool isConnected_;
   bool acquiring_;
   bool haveConfigFromHW_;
-  amptekInterface_t interfaceType_;
+  DppInterface_t interfaceType_;
   char *addressInfo_;
   epicsInt32 *pData_;
   size_t numChannels_;
