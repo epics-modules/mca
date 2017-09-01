@@ -44,7 +44,7 @@ public:
   int NumDevices;
   DppInterface_t interfaceType;
   bool ConnectDpp(DppInterface_t interfaceType, const char *addressInfo);
-  void CloseConnection();
+  void Close_Connection();
   bool SendCommand(TRANSMIT_PACKET_TYPE XmtCmd);
   bool SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions);
   
