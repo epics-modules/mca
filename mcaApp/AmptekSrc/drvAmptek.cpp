@@ -48,6 +48,14 @@ static const char *scaOutputLevelStrings[]  = {"OFF", "HIGH", "LOW"};
 
 static const char *driverName = "drvAmptek";
 
+extern "C" {
+static void exitHandlerC(void *arg)
+{
+  drvAmptek *p = (drvAmptek *)arg;
+  p->exitHandler();
+}
+}
+
 drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo)
    : asynPortDriver(portName, 
                     MAX_SCAS, /* Maximum address */
@@ -127,11 +135,11 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     createParam(amptekSCAHighChannelString,           asynParamInt32, &amptekSCAHighChannel_);
     createParam(amptekSCAOutputLevelString,           asynParamInt32, &amptekSCAOutputLevel_);
 
-    interfaceType_ = (amptekInterface_t)interfaceType;
+    interfaceType_ = (DppInterface_t)interfaceType;
     switch(interfaceType_) {
-        case amptekInterfaceEthernet:
-        case amptekInterfaceUSB:
-        case amptekInterfaceSerial:
+        case DppInterfaceEthernet:
+        case DppInterfaceUSB:
+        case DppInterfaceSerial:
         break;
         default:
             asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -147,6 +155,12 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
             "%s::%s cannot connect to device on interface type=%d addressInfo=%s, status=%d\n",
             driverName, functionName, interfaceType_, addressInfo_, status);
     }
+    epicsAtExit(exitHandlerC, this);
+}
+
+void drvAmptek::exitHandler()
+{
+    CH_.Close_Connection();
 }
 
 asynStatus drvAmptek::connectDevice()
@@ -155,37 +169,26 @@ asynStatus drvAmptek::connectDevice()
     int build=0;
     static const char *functionName = "connectDevice";
 
-    isConnected_ = false;
-    switch(interfaceType_) {
-        case amptekInterfaceEthernet:
-            CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
-            if (CH_.DppSocket_Connect_Default_DPP(addressInfo_)) {
-                asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
-                    "%s::%s Network DPP device %s connected, total devices found=%d\n",
-                    driverName, functionName, addressInfo_, CH_.DppSocket_NumDevices);
-                isConnected_ = true;
-            } else {
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
-                    driverName, functionName, addressInfo_, CH_.DppSocket_NumDevices);
-                isConnected_ = false;
-            }
-            break;
-
-        case amptekInterfaceUSB:
-            break;
-        
-        case amptekInterfaceSerial:
-            break;
+    if (interfaceType_ == DppInterfaceEthernet) {
+        CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
+    }
+    if (CH_.ConnectDpp(interfaceType_, addressInfo_)) {
+        asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+            "%s::%s DPP device %s connected, total devices found=%d\n",
+            driverName, functionName, addressInfo_, CH_.NumDevices);
+    } else {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
+            driverName, functionName, addressInfo_, CH_.NumDevices);
     }
     CH_.DP5Stat.m_DP5_Status.SerialNumber = 0;
-    if (CH_.DppSocket_SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
+    if (CH_.SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling SendCommand for XMTPT_SEND_STATUS\n",
             driverName, functionName);
         return asynError;
     }
-    if (CH_.DppSocket_ReceiveData() == false) {
+    if (CH_.ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_SEND_STATUS\n",
             driverName, functionName);
@@ -216,20 +219,10 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     static const char *functionName = "sendCommand";
     bool status=true;
     
-    switch(interfaceType_) {
-        case amptekInterfaceEthernet:
-                status = CH_.DppSocket_SendCommand(command);
-            break;
-        
-        case amptekInterfaceUSB:
-            break;
-        
-        case amptekInterfaceSerial:
-            break;
-    }
+    status = CH_.SendCommand(command);
     if (status == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s error calling CH_.DppSocket_SendCommand(%d)\n",
+            "%s::%s error calling CH_.SendCommand(%d)\n",
             driverName, functionName, command);
         return asynError;
     }
@@ -300,21 +293,11 @@ asynStatus drvAmptek::sendCommandString(string commandString)
         "%s::%s sending configuration string:\n%s\n",
         driverName, functionName, commandString.c_str());
 
-    switch(interfaceType_) {
-        case amptekInterfaceEthernet:
-            if (CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_) == false) {
-                asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                    "%s::%s error calling CH_.DppSocket_SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
-                    driverName, functionName, commandString.c_str());
-                return asynError;
-            }
-            break;
-        
-        case amptekInterfaceUSB:
-            break;
-        
-        case amptekInterfaceSerial:
-            break;
+    if (CH_.SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, configOptions_) == false) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error calling CH_.SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+            driverName, functionName, commandString.c_str());
+        return asynError;
     }
     status = readConfigurationFromHardware();
     return status;
@@ -710,7 +693,7 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     }
     else if (command == mcaReadStatus_) {
         status = sendCommand(XMTPT_SEND_STATUS);
-        CH_.DppSocket_ReceiveData();
+        CH_.ReceiveData();
         setDoubleParam(amptekSlowCounts_,  CH_.DP5Stat.m_DP5_Status.SlowCount);
         setDoubleParam(amptekFastCounts_,  CH_.DP5Stat.m_DP5_Status.FastCount);
         setDoubleParam(amptekDetTemp_,     CH_.DP5Stat.m_DP5_Status.DET_TEMP);
@@ -826,7 +809,7 @@ asynStatus drvAmptek::readInt32Array(asynUser *pasynUser,
     static const char *functionName="readInt32Array";
 
     sendCommand(XMTPT_SEND_SPECTRUM_STATUS);
-    if (CH_.DppSocket_ReceiveData() == false) {
+    if (CH_.ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_SEND_SPECTRUM_STATUS\n",
             driverName, functionName);
@@ -855,7 +838,7 @@ asynStatus drvAmptek::readConfigurationFromHardware()
     // to the next command.  Loop for up to 1 second waiting.
     for (i=0; i<100; i++) {
         // request full configuration
-        if (CH_.DppSocket_SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
+        if (CH_.SendCommand_Config(XMTPT_FULL_READ_CONFIG_PACKET, CfgOptions) == true) {
             break;
         }
         epicsThreadSleep(0.01);
@@ -866,7 +849,7 @@ asynStatus drvAmptek::readConfigurationFromHardware()
             driverName, functionName);
         return asynError;
     }
-    if (CH_.DppSocket_ReceiveData() == false) {
+    if (CH_.ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_FULL_READ_CONFIG_PACKET\n",
             driverName, functionName);
@@ -885,7 +868,7 @@ void drvAmptek::report(FILE *fp, int details)
 {
     fprintf(fp, "drvAmptek %s interfaceType=%d, addressInfo=%s, serial number=%d\n", 
             portName, interfaceType_, addressInfo_, (int)CH_.DP5Stat.m_DP5_Status.SerialNumber);
-    fprintf(fp, "  Number of modules found on network=%d\n", CH_.DppSocket_NumDevices);
+    fprintf(fp, "  Number of modules found=%d\n", CH_.NumDevices);
     if (details > 0) {
         if (haveConfigFromHW_) {
             fprintf(fp, "  Preset mode:      %s\n", CH_.strPresetCmd.c_str());
