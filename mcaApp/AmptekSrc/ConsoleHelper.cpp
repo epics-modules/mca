@@ -22,6 +22,96 @@ CConsoleHelper::~CConsoleHelper(void)
 {
 }
 
+bool CConsoleHelper::ConnectDpp(DppInterface_t ifaceType, const char *addressInfo)
+{
+    interfaceType = ifaceType;
+    bool status = false;
+    
+    isConnected = false;
+    NumDevices = 0;
+    switch(interfaceType) {
+        case DppInterfaceEthernet:
+            status = DppSocket_Connect_Default_DPP((char *)addressInfo);
+            isConnected = DppSocket_isConnected;
+            NumDevices = DppSocket_NumDevices;
+            break;
+        
+        case DppInterfaceUSB:
+            status = LibUsb_Connect_Default_DPP();
+            isConnected = LibUsb_isConnected;
+            NumDevices = LibUsb_NumDevices;
+           break;
+        
+        case DppInterfaceSerial:
+            break;
+            
+        default:
+            break;
+    }
+    return status;
+}
+
+void CConsoleHelper::Close_Connection()
+{
+    switch(interfaceType) {
+        case DppInterfaceEthernet:
+            DppSocket_Close_Connection();
+            break;
+        
+        case DppInterfaceUSB:
+            LibUsb_Close_Connection();
+            break;
+        
+        case DppInterfaceSerial:
+            break;
+            
+        default:
+            break;
+    }
+}
+
+bool CConsoleHelper::SendCommand(TRANSMIT_PACKET_TYPE command)
+{
+    switch(interfaceType) {
+        case DppInterfaceEthernet:
+            return DppSocket_SendCommand(command);
+            break;
+        
+        case DppInterfaceUSB:
+            return LibUsb_SendCommand(command);
+            break;
+        
+        case DppInterfaceSerial:
+            return false;
+            break;
+        
+        default:
+            return false;
+            break;
+    }
+}
+
+bool CConsoleHelper::SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions)
+{
+    switch(interfaceType) {
+        case DppInterfaceEthernet:
+            return DppSocket_SendCommand_Config(XmtCmd, CfgOptions);
+            break;
+        
+        case DppInterfaceUSB:
+            return LibUsb_SendCommand_Config(XmtCmd, CfgOptions);
+            break;
+        
+        case DppInterfaceSerial:
+            return false;
+            break;
+            
+        default:
+            return false;
+            break;
+    }
+}
+
 int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20], bool bNewSearch)
 {
 	unsigned char szBuffer[1024]={0};
@@ -518,6 +608,7 @@ bool CConsoleHelper::ReceiveData()
 {
 	bool bDataReceived;
 
+  if (!isConnected) return false;
 	bDataReceived = true;
 	ParsePkt.DppState.ReqProcess = ParsePkt.ParsePacket(DP5Proto.PacketIn, &DP5Proto.PIN);
 	switch (ParsePkt.DppState.ReqProcess) {
