@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string>
-#include "DppConfig.h"
+#include "DppImportExport.h"
 using namespace std; 
 
-class EXTERN CDppUtilities
+class IMPORT_EXPORT CDppUtilities
 {
 public:
 	CDppUtilities(void);
