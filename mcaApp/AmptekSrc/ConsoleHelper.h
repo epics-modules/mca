@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include "DppConfig.h"      // Shareable library configuration
+#include "DppImportExport.h"      // Shareable library configuration
 #include "DppSocket.h"			// Socket Support
 #include "DppLibUsb.h"			// LibUsb Support
 #include "DP5Protocol.h"		// DPP Protocol Support
@@ -25,14 +25,29 @@ typedef struct _SpectrumFileType {
 	string strSpectrumStatus;
 } SpectrumFileType;
 
+typedef enum {
+  DppInterfaceEthernet,
+  DppInterfaceUSB,
+  DppInterfaceSerial
+} DppInterface_t;
+
 const bool bConsoleHelperDebug = false;
 
-class EXTERN CConsoleHelper
+class IMPORT_EXPORT CConsoleHelper
 {
 public:
 	CConsoleHelper(void);
 	~CConsoleHelper(void);
 
+  /// Interface-independent variables and methods
+  bool isConnected;
+  int NumDevices;
+  DppInterface_t interfaceType;
+  bool ConnectDpp(DppInterface_t interfaceType, const char *addressInfo);
+  void CloseConnection();
+  bool SendCommand(TRANSMIT_PACKET_TYPE XmtCmd);
+  bool SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions);
+  
 	/// dpp socket communications class.
 	CDppSocket DppSocket;
 	/// DppSocket is connected if true.
