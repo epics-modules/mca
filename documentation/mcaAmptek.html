@@ -10,7 +10,7 @@
     <h1>
       EPICS MCA Amptek Driver</h1>
     <h2>
-      August 27, 2017</h2>
+      September 2, 2017</h2>
     <h2>
       Mark Rivers</h2>
     <h2>
@@ -44,13 +44,14 @@
     of time.</p>
   <p>
     The DP5 MCAs support USB, Ethernet, and RS-232 communication. This driver currently
-    only supports Ethernet, but support for USB may be added in the future.
+    supports USB and Ethernet. RS-232 is much slower and seems to offer no advantages
+    compared to Ethernet and USB, but support for RS-232 could be added in the future.
   </p>
   <h2 id="Hardware_configuration">
     Hardware configuration</h2>
   <p>
-    The DP5 MCA can be configured either for DHCP or fixed IP address. If using DHCP
-    then one can determine the actual IP address in use in two ways.</p>
+    When using Ethernet the DP5 MCA can be configured either for DHCP or fixed IP address.
+    If using DHCP then one can determine the actual IP address in use in two ways.</p>
   <ol>
     <li>Use the DppMCA Windows program from Amptek. Press the "Find DP5 IP" button. That
       should show you what IP address the module has. Press the "Connect" button. You
@@ -316,8 +317,9 @@
           Readback for the number of MCA channels. The number of channels is set with the
           .NUSE field of the MCA record.</td>
       </tr>
-      <td align="center" colspan="3">
-        <b>SCA settings</b> </td>
+      <tr>
+        <td align="center" colspan="3">
+          <b>SCA settings</b> </td>
       </tr>
       <tr>
         <td>
@@ -512,20 +514,78 @@
         <td>
           Selects the diagnostic signal for the Aux1 output. Choices are:<br />
           0: OFF Output is disabled<br />
-          1: ICR Pulse for each fast shaping event<br />
-          2: PILEUP Pulse for each pileup event<br />
-          3: MCSTB Pulse for each MCS timebase increment?<br />
-          4: ONESH One-shot<br />
-          5: DETRES ?<br />
-          6: MCAEN MCA Enable (acquiring)<br />
-          7: PEAKH ?<br />
-          8: SCA8 Pulse when there is an x-ray in the SCA8 channel range?<br />
-          9: RTDOS Rise-time discriminator ?<br />
-          10: RTDREJ Rise-time discriminator reject ?<br />
-          11: VETO ?<br />
-          12: LIVE ?<br />
+          1: ICR Produces a pulse when the fast channel detects a peak<br />
+          2: PILEUP Produces a pulse when two or more events are piled up, if Pileup Reject
+          is enabled<br />
+          3: MCSTB Toggles when the MCS timebase expires<br />
+          4: ONESH PUR Oneshot: Goes low during the interval when an event would be considered
+          piled up<br />
+          5: DETRES Detector Reset: Goes low when detector reset is detected, stays low for
+          the configured detector lockout interval<br />
+          6: MCAEN Logic high when the MCA is enabled; low when MCA is disabled<br />
+          7: PEAKH Low-to-high transition indicates peak detect has switched to searching
+          for a maximum; High-to-low transition indicates peak detect has switched to searching
+          for a minimum<br />
+          8: SCA8 Same as SCA8 output - outputs a 100nS or 1uS pulse when an event occurs
+          in ROI defined by SCA8<br />
+          9: RTDOS RTD oneshot - indicates the time window during which the RTD discrimination
+          is performed<br />
+          10: RTDREJ Produces a pulse when RTD rejects an event<br />
+          11: Produces a logic 0 (low) when a piled-up event is vetoed, if PUR is enabled<br />
+          12: LIVE (Reserved)<br />
           13: STREAM ?<br />
         </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)AuxOut2<br />
+          $(P)$(R)AuxOut2_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Selects the diagnostic signal for the Aux2 output. Same choices as AuxOut1 above.>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)AuxOut34<br />
+          $(P)$(R)AuxOut34_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Advanced configuration parameter. Consult the Amptek documentation for more information.
+          Choices are "1", "2", and "3". </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Connector1<br />
+          $(P)$(R)Connector1_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Selects which signal is used for the Aux1 connector. Choices are:<br />
+          0: DAC The DAC output signal from the pulse shaper<br />
+          1: AUXOUT1 The AUXOUT1 signal selected with AuxOut1 above.<br />
+          2: AUXIN1 The AUXIN1 signal. Can be used for general purpose counter. </td>
+      </tr>
+      <tr>
+        <td>
+          $(P)$(R)Connector2<br />
+          $(P)$(R)Connector2_RBV </td>
+        <td>
+          mbbo<br />
+          mbbi</td>
+        <td>
+          Selects which signal is used for the Aux2 connector. Choices are:<br />
+          0: AUXOUT2 The AUXOUT2 signal selected with AuxOut2 above.<br />
+          1: AUXIN2 The AUXIN2 signal. Can be used for general purpose counter.
+          <br />
+          2: GATEH Gate input signal. Rejects events when the Aux2 signal is high.
+          <br />
+          2: GATEL Gate input signal. Rejects events when the Aux2 signal is low. </td>
       </tr>
     </tbody>
   </table>
@@ -560,8 +620,11 @@
   <pre>int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo)
   The arguments are:
       portName:            # The name of the asyn port to be created
-      interfaceType:       # The interface to use: 0=Ethernet, 1=USB, 2=serial
-      addressInfo          # The device address information. For Ethernet this is the IP address of the module.
+      interfaceType:       # The interface to use: 0=Ethernet, 1=USB, 2=RS-232
+      addressInfo          # The device address information. 
+                           # For Ethernet this is the IP address of the module.
+                           # For USB this argument is not used.
+                           # RS-232 is not currently supported.
 </pre>
   <h2 id="Restrictions">
     Restrictions</h2>
@@ -581,11 +644,11 @@
       </ul>
       The MCA8000D will probably work, but will likely generate many error messages since
       it does not support many of the parameters that EPICS controls.</li>
-    <li>Only the Ethernet interface is currently supported. USB may be supported in the
-      future. Unforunately the vendor SDK is not written to be device independent, so
-      this is not as easy as it should be.</li>
-    <li>When exiting the IOC one must wait at least 20 seconds before starting it again.
-      This is the time the DP5 requires to "forget" the previous connection.</li>
+    <li>Only the Ethernet and USB interfaces are currently supported. RS-232 may be supported
+      in the future, but it is much slower than Ethernet and USB, and offers no clear
+      advantages.</li>
+    <li>When using Ethernet and exiting the IOC one must wait at least 20 seconds before
+      starting it again. This is the time the DP5 requires to "forget" the previous connection.</li>
     <li>The driver only provides EPICS records to control a subset of all of the DPP parameters.
       The following parameters cannot currently be controlled by EPICS:
       <ul>
@@ -610,7 +673,8 @@
       </ul>
       Note that while EPICS cannot directly control the above parameters, they can be
       controlled by manually editing a configuration file and then using the EPICS driver
-      to upload that configuration file to the device. </li>
+      to upload that configuration file to the device. It would not be difficult to add
+      support for these parameters if there is a need in the future.</li>
   </ul>
   <hr />
   <address>
