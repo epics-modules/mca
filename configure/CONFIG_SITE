@@ -35,6 +35,13 @@ CHECK_RELEASE = YES
 #HOST_OPT = NO
 #CROSS_OPT = NO
 
+# If your system has libusb-1.0 uncomment this line
+LINUX_LIBUSB-1.0_INSTALLED = YES
+
+# The following control build of Canberra
+LINUX_NET_INSTALLED = YES
+-include $(SUPPORT)/configure/CONFIG_SITE
+
 # These allow developers to override the CONFIG_SITE variable
 # settings without having to modify the configure/CONFIG_SITE
 # file itself.

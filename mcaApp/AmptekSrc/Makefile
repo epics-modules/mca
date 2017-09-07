@@ -30,9 +30,16 @@ endif
 # Amptek's code uses WIN32 rather than _WIN32 
 USR_CXXFLAGS_WIN32 += -DWIN32
 
-# We only build this on Linux and Windows
-LIBRARY_IOC_Linux += mcaAmptek
 LIBRARY_IOC_WIN32 += mcaAmptek
+PROD_IOC_WIN32    += mcaAmptekApp
+PROD_IOC_WIN32    += gccDppConsoleInet
+
+# We only build this on Linux if LINUX_LIBUSB-1.0_INSTALLED is YES
+ifeq ($(LINUX_LIBUSB-1.0_INSTALLED),YES)
+  LIBRARY_IOC_Linux += mcaAmptek
+  PROD_IOC_Linux    += mcaAmptekApp
+  PROD_IOC_Linux    += gccDppConsoleInet
+endif
 
 USR_INCLUDES_Linux += -I/usr/include/libusb-1.0
 
@@ -57,8 +64,6 @@ mcaAmptek_SYS_LIBS_Linux += usb-1.0
 mcaAmptek_LIBS_WIN32 += libusb-1.0
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-PROD_IOC_Linux    += mcaAmptekApp
-PROD_IOC_WIN32    += mcaAmptekApp
 mcaAmptekApp_SRCS += mcaAmptekApp_registerRecordDeviceDriver.cpp
 mcaAmptekApp_SRCS_DEFAULT += mcaAmptekAppMain.cpp
 mcaAmptekApp_SRCS_vxWorks += -nil-
@@ -83,22 +88,11 @@ mcaAmptekApp_DBD += asSupport.dbd
 mcaAmptekApp_DBD += busySupport.dbd
 mcaAmptekApp_DBD += sscanSupport.dbd
 
-
 #=============================
-PROD_IOC_Linux    += gccDppConsoleInet
-PROD_IOC_WIN32    += gccDppConsoleInet
 gccDppConsoleInet_SRCS += gccDppConsoleInet.cpp 
 gccDppConsoleInet_LIBS += mcaAmptek
 gccDppConsoleInet_SYS_LIBS_Linux += usb-1.0
 gccDppConsoleInet_LIBS_WIN32 += libusb-1.0
-
-PROD_IOC_Linux   += amptekTest1
-PROD_IOC_WIN32   += amptekTest1
-amptekTest1_SRCS += amptekTest1.cpp 
-amptekTest1_LIBS += mcaAmptek
-amptekTest1_SYS_LIBS_Linux += usb-1.0
-amptekTest1_LIBS_WIN32 += libusb-1.0
-
 
 include $(TOP)/configure/RULES
 #----------------------------------------
