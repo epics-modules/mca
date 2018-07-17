@@ -7,6 +7,7 @@ It contains:
 * Drivers for Ethernet MCA hardware from [Canberra Industries](http://www.canberra.com)
 * Drivers for VME MCS hardware from [Struck Innovative Systems](http://www.struck.de)
 * Drivers for the XFlash MCA from [From Bruker (formerly Rontec)](http://www.bruker-axs.de)
+* Drivers for the DP5 based MCAs (e.g. PX5) and detectors (e.g. X-123) from [Amptek](http://www.amptek.com)
 
 Additional information:
 * [Home page](http://cars.uchicago.edu/software/epics/mca.html)

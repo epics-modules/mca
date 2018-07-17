@@ -1,0 +1,89 @@
+4 0 1
+beginScreenProperties
+major 4
+minor 0
+release 1
+x 334
+y 152
+w 159
+h 41
+font "helvetica-medium-r-18.0"
+ctlFont "helvetica-bold-r-10.0"
+btnFont "helvetica-medium-r-18.0"
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+textColor rgb 0 0 0
+ctlFgColor1 rgb 64256 62208 18944
+ctlFgColor2 rgb 60928 46592 11008
+ctlBgColor1 rgb 52480 24832 0
+ctlBgColor2 rgb 65280 45056 65280
+topShadowColor rgb 44544 19968 48128
+botShadowColor rgb 13312 13056 34304
+showGrid
+snapToGrid
+gridSize 4
+endScreenProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 1
+release 1
+x 9
+y 10
+w 50
+h 20
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
+useDisplayBg
+value {
+  "Start"
+}
+endObjectProperties
+
+# (Related Display)
+object relatedDisplayClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 66
+y 11
+w 66
+h 20
+fgColor rgb 0 0 0
+bgColor rgb 47872 47872 47872
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+font "helvetica-medium-r-8.0"
+icon
+numPvs 8
+numDsps 4
+displayFileName {
+  0 SIS38XX.edl
+  1 SIS38XX.edl
+  2 scaler32_full.edl
+  3 scaler32_full.edl
+}
+menuLabel {
+  0 SIS3801 MCS
+  1 SIS3820 MCS
+  2 SIS3801 Scaler
+  3 SIS3820 Scaler
+}
+symbols {
+  0 "P=SIS:3801:,M=mca"
+  1 "P=SIS:3820:,M=mca"
+  2 "P=SIS:3801:,S=scaler1"
+  3 "P=SIS:3820:,S=scaler1"
+}
+replaceSymbols {
+  0 1
+  1 1
+  2 1
+  3 1
+}
+endObjectProperties
+

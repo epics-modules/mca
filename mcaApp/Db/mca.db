@@ -134,11 +134,12 @@ grecord(calc,"$(P)$(M)Why4") {
     field(INPL,"$(P)$(M)Why3.P NPP NMS")
 }
 
-grecord(swait,"$(P)$(M)WhenAcqStops") {
-    field(SCAN,"I/O Intr")
-    field(INAN,"$(P)$(M).ACQG")
-    field(OUTN,"$(P)$(M)Why1.PROC")
+grecord(calcout,"$(P)$(M)WhenAcqStops") {
+    field(INPA,"$(P)$(M).ACQG CP")
+    field(OUT, "$(P)$(M)Why1.PROC")
     field(CALC,"A")
+    field(OCAL, "1")
+    field(DOPT, "Use OCAL")
     field(OOPT,"Transition To Zero")
 }
 
