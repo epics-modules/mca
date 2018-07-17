@@ -8,13 +8,13 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 # define INSTALL_LOCATION_APP here
 #INSTALL_LOCATION_APP=<fullpathname>
 
-SUPPORT=/corvette/home/epics/support
+SUPPORT=/corvette/home/epics/devel
 -include $(TOP)/../configure/SUPPORT.$(EPICS_HOST_ARCH)
 
 # Transform record
-CALC=$(SUPPORT)/calc-3-6-1
+CALC=$(SUPPORT)/calc-3-7
 # If calc was built with sscan, we must link against it
-SSCAN=$(SUPPORT)/sscan-2-10-2
+SSCAN=$(SUPPORT)/sscan-2-11-1
 
 # Busy record 
 BUSY=$(SUPPORT)/busy-1-7
@@ -23,19 +23,19 @@ BUSY=$(SUPPORT)/busy-1-7
 STD=$(SUPPORT)/std-3-4-1
 
 # SISSrc uses the sequencer
-SNCSEQ=$(SUPPORT)/seq-2-2-4
+SNCSEQ=$(SUPPORT)/seq-2-2-5
 
 # save_restore
-AUTOSAVE=$(SUPPORT)/autosave-5-8
+AUTOSAVE=$(SUPPORT)/autosave-5-9
 
 # ASYN - for device/driver support
-ASYN=$(SUPPORT)/asyn-4-31
+ASYN=$(SUPPORT)/asyn-4-33
 
 # MCA - this module
-MCA=$(SUPPORT)/mca-7-6
+MCA=$(SUPPORT)/mca-7-7
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics/base-3.15.5
+EPICS_BASE=/corvette/usr/local/epics-devel/base-7.0.1
 -include $(TOP)/../configure/EPICS_BASE.$(EPICS_HOST_ARCH)
 
 #Capfast users may need the following definitions
