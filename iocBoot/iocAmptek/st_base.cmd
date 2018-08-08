@@ -4,7 +4,7 @@ dbLoadDatabase("../../dbd/mcaAmptekApp.dbd",0,0)
 mcaAmptekApp_registerRecordDeviceDriver(pdbbase) 
 
 # Use this line for Ethernet
-drvAmptekConfigure(Amptek1, 0, "164.54.160.174")
+drvAmptekConfigure(Amptek1, 0, "164.54.160.201")
 # Use this line for USB
 #drvAmptekConfigure(Amptek1, 1, "")
 
