@@ -1,6 +1,6 @@
 epicsEnvSet(STARTUP,$(TOP)/iocBoot/$(IOC))
 
-dbLoadDatabase("../../dbd/mcaAmptekApp.dbd",0,0)
+dbLoadDatabase("$(MCA)/dbd/mcaAmptekApp.dbd",0,0)
 mcaAmptekApp_registerRecordDeviceDriver(pdbbase) 
 
 # Use this line for Ethernet
@@ -11,8 +11,8 @@ drvAmptekConfigure(Amptek1, 0, "164.54.160.201")
 #asynSetTraceMask(Amptek1, 0, 9)
 asynSetTraceIOMask(Amptek1, 0, 2)
 
-dbLoadRecords("$(TOP)/db/mca.db","P=mcaTest:,M=mca1,NCHAN=8192,DTYP=asynMCA,INP=@asyn(Amptek1)")
-dbLoadRecords("$(TOP)/db/Amptek.db","P=mcaTest:,R=Amptek1:,PORT=Amptek1")
+dbLoadRecords("$(MCA)/db/mca.db","P=mcaTest:,M=mca1,NCHAN=8192,DTYP=asynMCA,INP=@asyn(Amptek1)")
+dbLoadRecords("$(MCA)/db/Amptek.db","P=mcaTest:,R=Amptek1:,PORT=Amptek1")
 dbLoadTemplate("Amptek_SCAs.substitutions")
 
 dbLoadRecords("$(ASYN)/db/asynRecord.db","P=mcaTest:,R=asyn1,PORT=Amptek1,ADDR=0,OMAX=256,IMAX=256")
