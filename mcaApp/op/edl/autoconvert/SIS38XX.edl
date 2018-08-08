@@ -6,7 +6,7 @@ release 1
 x 155
 y 131
 w 680
-h 625
+h 650
 font "helvetica-medium-r-18.0"
 ctlFont "helvetica-bold-r-10.0"
 btnFont "helvetica-medium-r-18.0"
@@ -52,7 +52,7 @@ release 0
 x 5
 y 41
 w 348
-h 578
+h 603
 lineColor rgb 2560 0 47104
 fillColor rgb 2560 0 47104
 lineWidth 2
@@ -502,19 +502,6 @@ visMax 1
 endObjectProperties
 
 
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 413
-w 257
-h 20
-
-beginGroup
-
 # (Static Text)
 object activeXTextClass
 beginObjectProperties
@@ -533,48 +520,6 @@ value {
   "Input mode"
 }
 endObjectProperties
-
-endGroup
-
-endObjectProperties
-
-
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 588
-w 257
-h 20
-
-beginGroup
-
-# (Static Text)
-object activeXTextClass
-beginObjectProperties
-major 4
-minor 1
-release 1
-x 125
-y 588
-w 90
-h 20
-font "helvetica-medium-r-14.0"
-fgColor rgb 0 0 0
-bgColor index 3
-useDisplayBg
-value {
-  "Read rate"
-}
-endObjectProperties
-
-endGroup
-
-endObjectProperties
-
 
 # (Rectangle)
 object activeRectangleClass
@@ -786,19 +731,6 @@ value {
 }
 endObjectProperties
 
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 388
-w 248
-h 20
-
-beginGroup
-
 # (Text Monitor)
 object activeXTextDspClass:noedit
 beginObjectProperties
@@ -841,11 +773,6 @@ value {
   "Acquire mode"
 }
 endObjectProperties
-
-endGroup
-
-endObjectProperties
-
 
 # (Static Text)
 object activeXTextClass
@@ -1294,18 +1221,24 @@ endGroup
 endObjectProperties
 
 
-# (Group)
-object activeGroupClass
+# (Static Text)
+object activeXTextClass
 beginObjectProperties
 major 4
-minor 0
-release 0
-x 18
-y 438
-w 307
-h 145
-
-beginGroup
+minor 1
+release 1
+x 125
+y 613
+w 90
+h 20
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
+useDisplayBg
+value {
+  "Read rate"
+}
+endObjectProperties
 
 # (Static Text)
 object activeXTextClass
@@ -1314,7 +1247,7 @@ major 4
 minor 1
 release 1
 x 125
-y 438
+y 463
 w 110
 h 20
 font "helvetica-medium-r-14.0"
@@ -1333,26 +1266,7 @@ major 4
 minor 1
 release 1
 x 125
-y 463
-w 150
-h 20
-font "helvetica-medium-r-14.0"
-fgColor rgb 0 0 0
-bgColor index 3
-useDisplayBg
-value {
-  "Output polarity"
-}
-endObjectProperties
-
-# (Static Text)
-object activeXTextClass
-beginObjectProperties
-major 4
-minor 1
-release 1
-x 125
-y 513
+y 538
 w 190
 h 20
 font "helvetica-medium-r-14.0"
@@ -1371,7 +1285,7 @@ major 4
 minor 1
 release 1
 x 125
-y 488
+y 513
 w 200
 h 20
 font "helvetica-medium-r-14.0"
@@ -1390,7 +1304,7 @@ major 4
 minor 7
 release 0
 x 18
-y 538
+y 563
 w 100
 h 20
 controlPv "$(P)LNEOutputDelay"
@@ -1416,7 +1330,7 @@ major 4
 minor 1
 release 1
 x 125
-y 538
+y 563
 w 160
 h 20
 font "helvetica-medium-r-14.0"
@@ -1435,7 +1349,7 @@ major 4
 minor 7
 release 0
 x 18
-y 563
+y 588
 w 100
 h 20
 controlPv "$(P)LNEOutputWidth"
@@ -1461,7 +1375,7 @@ major 4
 minor 1
 release 1
 x 125
-y 563
+y 588
 w 160
 h 20
 font "helvetica-medium-r-14.0"
@@ -1473,14 +1387,43 @@ value {
 }
 endObjectProperties
 
-endGroup
-
-visPv "CALC\\\{(A)\}($(P)Model)"
-visInvert
-visMin 0
-visMax 1
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 1
+release 1
+x 125
+y 488
+w 150
+h 20
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
+useDisplayBg
+value {
+  "Output polarity"
+}
 endObjectProperties
 
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 1
+release 1
+x 125
+y 438
+w 140
+h 20
+font "helvetica-medium-r-14.0"
+fgColor rgb 0 0 0
+bgColor index 3
+useDisplayBg
+value {
+  "Input polarity"
+}
+endObjectProperties
 
 # (Message Button)
 object activeMessageButtonClass
@@ -1724,18 +1667,6 @@ visMin 0
 visMax 1
 endObjectProperties
 
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 413
-w 257
-h 20
-
-beginGroup
 
 # (Menu Button)
 object activeMenuButtonClass
@@ -1756,73 +1687,6 @@ controlPv "$(P)InputMode"
 indicatorPv "$(P)InputMode"
 font "helvetica-medium-r-12.0"
 endObjectProperties
-
-endGroup
-
-endObjectProperties
-
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 588
-w 257
-h 20
-
-beginGroup
-
-# (Menu Button)
-object activeMenuButtonClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 588
-w 100
-h 20
-fgColor rgb 0 0 0
-bgColor rgb 29440 57088 65280
-inconsistentColor rgb 17920 17920 17920
-topShadowColor rgb 55808 55808 55808
-botShadowColor rgb 17920 17920 17920
-controlPv "$(P)ReadAll.SCAN"
-indicatorPv "$(P)ReadAll.SCAN"
-font "helvetica-medium-r-12.0"
-endObjectProperties
-
-# (Message Button)
-object activeMessageButtonClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 225
-y 588
-w 50
-h 20
-fgColor rgb 0 0 0
-onColor rgb 29440 57088 65280
-offColor rgb 29440 57088 65280
-topShadowColor rgb 65280 65280 65280
-botShadowColor rgb 0 0 0
-controlPv "$(P)DoReadAll.VAL"
-pressValue "1"
-releaseValue 
-onLabel "Read"
-offLabel "Read"
-3d
-useEnumNumeric
-font "helvetica-medium-r-12.0"
-endObjectProperties
-
-endGroup
-
-endObjectProperties
-
 
 # (Related Display)
 object relatedDisplayClass
@@ -2179,23 +2043,6 @@ replaceSymbols {
   0 1
 }
 endObjectProperties
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 388
-w 248
-h 20
-
-beginGroup
-
-endGroup
-
-endObjectProperties
-
 
 # (Menu Button)
 object activeMenuButtonClass
@@ -2383,18 +2230,6 @@ endGroup
 
 endObjectProperties
 
-# (Group)
-object activeGroupClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 438
-w 307
-h 145
-
-beginGroup
 
 # (Menu Button)
 object activeMenuButtonClass
@@ -2403,7 +2238,52 @@ major 4
 minor 0
 release 0
 x 18
-y 438
+y 613
+w 100
+h 20
+fgColor rgb 0 0 0
+bgColor rgb 29440 57088 65280
+inconsistentColor rgb 17920 17920 17920
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+controlPv "$(P)ReadAll.SCAN"
+indicatorPv "$(P)ReadAll.SCAN"
+font "helvetica-medium-r-12.0"
+endObjectProperties
+
+# (Message Button)
+object activeMessageButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 225
+y 613
+w 50
+h 20
+fgColor rgb 0 0 0
+onColor rgb 29440 57088 65280
+offColor rgb 29440 57088 65280
+topShadowColor rgb 65280 65280 65280
+botShadowColor rgb 0 0 0
+controlPv "$(P)DoReadAll.VAL"
+pressValue "1"
+releaseValue 
+onLabel "Read"
+offLabel "Read"
+3d
+useEnumNumeric
+font "helvetica-medium-r-12.0"
+endObjectProperties
+
+# (Menu Button)
+object activeMenuButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 18
+y 463
 w 100
 h 20
 fgColor rgb 0 0 0
@@ -2423,27 +2303,7 @@ major 4
 minor 0
 release 0
 x 18
-y 463
-w 100
-h 20
-fgColor rgb 0 0 0
-bgColor rgb 29440 57088 65280
-inconsistentColor rgb 17920 17920 17920
-topShadowColor rgb 55808 55808 55808
-botShadowColor rgb 17920 17920 17920
-controlPv "$(P)OutputPolarity"
-indicatorPv "$(P)OutputPolarity"
-font "helvetica-medium-r-12.0"
-endObjectProperties
-
-# (Menu Button)
-object activeMenuButtonClass
-beginObjectProperties
-major 4
-minor 0
-release 0
-x 18
-y 513
+y 538
 w 100
 h 20
 fgColor rgb 0 0 0
@@ -2463,7 +2323,7 @@ major 4
 minor 0
 release 0
 x 18
-y 488
+y 513
 w 100
 h 20
 fgColor rgb 0 0 0
@@ -2476,12 +2336,43 @@ indicatorPv "$(P)LNEStretcherEnable"
 font "helvetica-medium-r-12.0"
 endObjectProperties
 
-endGroup
-
-visPv "CALC\\\{(A)\}($(P)Model)"
-visInvert
-visMin 0
-visMax 1
+# (Menu Button)
+object activeMenuButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 18
+y 488
+w 100
+h 20
+fgColor rgb 0 0 0
+bgColor rgb 29440 57088 65280
+inconsistentColor rgb 17920 17920 17920
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+controlPv "$(P)OutputPolarity"
+indicatorPv "$(P)OutputPolarity"
+font "helvetica-medium-r-12.0"
 endObjectProperties
 
+# (Menu Button)
+object activeMenuButtonClass
+beginObjectProperties
+major 4
+minor 0
+release 0
+x 18
+y 438
+w 100
+h 20
+fgColor rgb 0 0 0
+bgColor rgb 29440 57088 65280
+inconsistentColor rgb 17920 17920 17920
+topShadowColor rgb 55808 55808 55808
+botShadowColor rgb 17920 17920 17920
+controlPv "$(P)InputPolarity"
+indicatorPv "$(P)InputPolarity"
+font "helvetica-medium-r-12.0"
+endObjectProperties
 
