@@ -540,6 +540,7 @@ void drvSIS3820::setAcquireMode(SIS38XXAcquireMode_t acquireMode)
 void drvSIS3820::setOpModeReg()
 {
   int inputMode;
+  int inputPolarity;
   int outputMode;
   int outputPolarity;
   int maxOutputMode;
@@ -548,6 +549,7 @@ void drvSIS3820::setOpModeReg()
   epicsUInt32 operationRegister = 0;
 
   getIntegerParam(SIS38XXInputMode_, &inputMode);
+  getIntegerParam(SIS38XXInputPolarity_, &inputPolarity);
   getIntegerParam(SIS38XXOutputMode_, &outputMode);
   getIntegerParam(SIS38XXOutputPolarity_, &outputPolarity);
   if (firmwareVersion_ >= 0x0111) {
@@ -565,6 +567,7 @@ void drvSIS3820::setOpModeReg()
    * requested by the correct number of bits, and add to the register. */
   if (inputMode < 0 || inputMode > 5) inputMode = 0;
   operationRegister |= (inputMode << SIS3820_INPUT_MODE_SHIFT);
+  if (inputPolarity == INPUT_POLARITY_INVERTED) operationRegister |= SIS3820_CONTROL_INPUTS_INVERT;
 
   /* Check that output mode is in the allowable range. If so, shift the mode
    * requested by the correct number of bits, and add to the register. */
