@@ -246,6 +246,16 @@ record(mbbo, "$(P)InputMode") {
   field(VAL,  "3")
 }
 
+record(bo, "$(P)InputPolarity") {
+  field(PINI, "YES")
+  field(DESC, "SIS38XX input polarity")
+  field(DTYP, "asynInt32")
+  field(OUT,  "@asyn($(PORT) 0)SIS38XX_INPUT_POLARITY")
+  field(ZNAM, "Normal")
+  field(ONAM, "Inverted")
+}
+
+
 record(mbbo, "$(P)OutputMode") {
   field(PINI, "YES")
   field(DESC, "SIS38XX output mode")

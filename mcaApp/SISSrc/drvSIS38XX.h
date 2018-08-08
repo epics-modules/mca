@@ -36,6 +36,7 @@
 #define SIS38XXCurrentChannelString         "SIS38XX_CURRENT_CHANNEL"
 #define SIS38XXAcquireModeString            "SIS38XX_ACQUIRE_MODE"
 #define SIS38XXInputModeString              "SIS38XX_INPUT_MODE"
+#define SIS38XXInputPolarityString          "SIS38XX_INPUT_POLARITY"
 #define SIS38XXOutputModeString             "SIS38XX_OUTPUT_MODE"
 #define SIS38XXOutputPolarityString         "SIS38XX_OUTPUT_POLARITY"
 #define SIS38XXSoftwareChannelAdvanceString "SIS38XX_SOFTWARE_CHANNEL_ADVANCE"
@@ -63,6 +64,11 @@ typedef enum {
     OUTPUT_POLARITY_NORMAL,
     OUTPUT_POLARITY_INVERTED
 } SIS38XXOutputPolarity_t;
+
+typedef enum {
+    INPUT_POLARITY_NORMAL,
+    INPUT_POLARITY_INVERTED
+} SIS38XXInputPolarity_t;
 
 typedef enum {
     MODEL_SIS3801,
@@ -155,6 +161,7 @@ class drvSIS38XX : public asynPortDriver
   int SIS38XXCurrentChannel_;
   int SIS38XXAcquireMode_;
   int SIS38XXInputMode_;
+  int SIS38XXInputPolarity_;
   int SIS38XXOutputMode_;
   int SIS38XXOutputPolarity_;
   int SIS38XXSoftwareChannelAdvance_;
