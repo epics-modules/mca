@@ -10,17 +10,18 @@ include $(TOP)/configure/CONFIG
 DBD += mcaDante.dbd
 DBD += mcaDanteSupport.dbd
 
-LIBRARY_IOC_Linux += mcaDante
-PROD_IOC_Linux    += mcaDanteApp
+USR_CXXFLAGS_Linux += -std=c++11
+#LIBRARY_IOC_Linux += mcaDante
+#PROD_IOC_Linux    += mcaDanteApp
 
 # WIN32 uses WinPcap
-LIBRARY_IOC_WIN32   += mcaDante
-PROD_IOC_WIN32      += mcaDanteApp
+#LIBRARY_IOC_WIN32   += mcaDante
+#PROD_IOC_WIN32      += mcaDanteApp
 LIB_SYS_LIBS_WIN32  += ws2_32
 PROD_SYS_LIBS_WIN32 += ws2_32
 
 ## <name>_registerRecordDeviceDriver.cpp will be created from <name>.dbd
-mcaDante_SRCS += dante.cpp
+#mcaDante_SRCS += dante.cpp
 
 mcaDante_LIBS += asyn 
 mcaDante_LIBS += $(EPICS_BASE_IOC_LIBS)
@@ -39,7 +40,8 @@ mcaDanteApp_LIBS   += $(EPICS_BASE_IOC_LIBS)
 
 
 #=============================
-PROD_IOC += danteTest
+PROD_IOC_Linux += danteTest1
+PROD_IOC_WIN32 += danteTest1
 danteTest1_SRC   += danteTest1.cpp
 danteTest1_LIBS  += XGL_DPP
 
