@@ -638,7 +638,9 @@ asynStatus drvAmptek::parseConfiguration()
     parseConfigInt("HVSE=", amptekSetHighVoltage_);
     
     // Detector temperature
-    parseConfigDouble("TECS=", amptekSetDetTemp_);
+    if ((dppType_ == dppDP5) || (dppType_ == dppPX5)) {
+        parseConfigDouble("TECS=", amptekSetDetTemp_);
+    }
 
     // MCS low channel
     parseConfigInt("MCSL=", amptekMCSLowChannel_);
