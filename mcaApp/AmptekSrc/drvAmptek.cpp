@@ -195,7 +195,6 @@ asynStatus drvAmptek::connectDevice()
         return asynError;
     }
     readConfigurationFromHardware();
-    dppType_ = (dp5DppTypes)CH_.DP5Stat.m_DP5_Status.DEVICE_ID;
     strTemp = CH_.DP5Stat.GetDeviceNameFromVal(CH_.DP5Stat.m_DP5_Status.DEVICE_ID);
     setStringParam(amptekModel_, strTemp.c_str());
     setIntegerParam(amptekSerialNumber_, CH_.DP5Stat.m_DP5_Status.SerialNumber);
@@ -859,9 +858,11 @@ asynStatus drvAmptek::readConfigurationFromHardware()
     }
     if (CH_.HwCfgReady) {        // config is ready
       haveConfigFromHW_ = true;
+      dppType_ = (dp5DppTypes)CH_.DP5Stat.m_DP5_Status.DEVICE_ID;
+      return parseConfiguration();
     }
     
-    return parseConfiguration();
+    return asynError;
 }
 
 
