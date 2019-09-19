@@ -225,6 +225,9 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
             driverName, functionName, command);
         return asynError;
     }
+    asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+        "%s::%s called CH_.SendCommand(%d) OK\n",
+        driverName, functionName, command);
     return asynSuccess;
 }
 
