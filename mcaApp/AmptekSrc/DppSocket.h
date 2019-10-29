@@ -52,14 +52,14 @@ public:
 	void NotCDppSocket2();
 
 	void SetTimeOut(long tv_sec, long tv_usec);		// set socket timout to new value
-	int SendNetFinderBroadCast(int m_rand);
+	int SendNetFinderBroadCast(int m_rand, int intf);
 
 	int UDPSendTo(const unsigned char * buf, int len, const char* lpIP, int nPort);
 	void SetBlockingMode();
 	int UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort);
 	int UDPRecvFromNfAddr(unsigned char * buf, int len, char* lpIP, int &nPort);
 
-	int BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszHostAddress = NULL, int nFlags = 0);
+	int BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszInterface, int nFlags = 0);
 	int UDP_recvfrom_TimeOut();
 	int GetLocalSocketInfo();
 
@@ -92,6 +92,8 @@ public:
 	int NumDevices;					// Number of devices found by NetFinder
 	char DppAddr[20];				// hold DPP device IP Address
 	unsigned long ulNetFinderAddr;  // 
+	unsigned int numIntf;
+	char Intf[10][20];
 
 protected:
 	SOCKET m_hDppSocket;			// holds current socket descriptor

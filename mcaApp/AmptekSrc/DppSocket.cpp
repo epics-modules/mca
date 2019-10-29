@@ -5,6 +5,13 @@
 #include "DppSocket.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
 CDppSocket::CDppSocket()
 {
 	m_rand = 0;
@@ -29,6 +36,30 @@ CDppSocket::CDppSocket()
 		} else {
 			//cout << "DppSocket created" << endl;
 			m_nStartupOK = true;
+		}
+
+		memset(Intf, 0, sizeof(Intf));
+		numIntf = 0;
+
+		struct ifconf ifc;
+		struct ifreq ifr[10];
+		unsigned int ifc_num, i;
+		ifc.ifc_len = sizeof(ifr);
+		ifc.ifc_ifcu.ifcu_buf = (caddr_t)ifr;
+
+		if (ioctl(m_hDppSocket, SIOCGIFCONF, &ifc) == 0) {
+			ifc_num = ifc.ifc_len / sizeof(struct ifreq);
+			printf("%d interfaces found\n", ifc_num);
+			for (i = 0; i < ifc_num; i++) {
+				if (strcmp(ifr[i].ifr_name, "lo") != 0) {
+					strcpy(Intf[numIntf], ifr[i].ifr_name);
+					numIntf++;
+				}
+			}
+		}
+		printf("collected have %d interface(s):\n", numIntf);
+		for (i = 0; i < numIntf; i++) {
+			printf("[%d] interface name = %s\n", i, Intf[i]);
 		}
 	#endif
 	timeout.tv_sec = 0;			// 0 sec, 50 msec timeout for recvfrom
@@ -108,7 +139,7 @@ void CDppSocket::NotCDppSocket2() {
 }
 
 // Send Dpp Style NetFinder Broadcast Identity Request Packets
-int CDppSocket::SendNetFinderBroadCast(int m_rand)
+int CDppSocket::SendNetFinderBroadCast(int m_rand, int intf)
 {
 	int iRetSock;
 #ifdef WIN32
@@ -131,37 +162,41 @@ int CDppSocket::SendNetFinderBroadCast(int m_rand)
 	}
 	buff[2] = (m_rand >> 8);
 	buff[3] = (m_rand & 0x00FF);
-	iRetSock = BroadCastSendTo(buff, 6, 3040, NULL);
+	iRetSock = BroadCastSendTo(buff, 6, 3040, Intf[intf]);
 	if(iRetSock==SOCKET_ERROR) { return iRetSock; }
 	return 0;
 }
 
-int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszHostAddress, int nFlags)
+int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszInterface, int nFlags)
 {
 	sockaddr_in sockAddr;
 	int iRet;
 
 	memset(&sockAddr,0,sizeof(sockAddr));
 
-	char *lpszAscii;
-	if (lpszHostAddress != NULL)		// broadcast only
+	if (lpszInterface != NULL)
 	{
-		return false;
+		printf("broadcast interface set to %s..\n", lpszInterface);
+		int bcast;
+		char bcAddr[INET_ADDRSTRLEN] = {0};
+		struct ifreq ifr;
+		strcpy(ifr.ifr_name, lpszInterface);
+                if (ioctl(m_hDppSocket, SIOCGIFBRDADDR, &ifr) == 0) {
+			bcast = ((struct sockaddr_in *)(&ifr.ifr_broadaddr))->sin_addr.s_addr;
+			inet_ntop(AF_INET, &bcast, bcAddr, INET_ADDRSTRLEN);
+			printf("interface %s broadcast address %s\n", lpszInterface, bcAddr);
+			sockAddr.sin_addr.s_addr = bcast;
+		} else {
+			return SOCKET_ERROR;
+		}
 	}
 	else
 	{
-		lpszAscii = NULL;
+		printf("using broadcast address 255.255.255.255\n");
+		sockAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
 	}
 
 	sockAddr.sin_family = AF_INET;
-
-	if (lpszAscii == NULL)
-		sockAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-	else
-	{
-		return SOCKET_ERROR;
-	}
-
 	sockAddr.sin_port = htons((u_short)nHostPort);
 	iRet = sendto(m_hDppSocket, (char *)lpBuf, nBufLen, nFlags, (sockaddr *)&sockAddr, sizeof(sockAddr));
 	return iRet;
@@ -216,7 +251,7 @@ int CDppSocket::UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort
         if (bSocketDebug) printf("UDPRecvFrom data done %d\r\n", nRcv);
         if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
 	      nPort = ntohs(SockAddress.sin_port);
-        nPort = 3040;
+        // nPort = 3040;
         if (bSocketDebug) printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
     } else {
         nRcv = 0;

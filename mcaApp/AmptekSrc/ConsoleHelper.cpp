@@ -129,32 +129,38 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
     //seed random number generator        // this must be done to provide a new unique rand 
     srand((unsigned)time(NULL));        // Seed the random-number generator with current time
 
-    if (bNewSearch) {
-        DppSock->m_rand = DppSock->CreateRand();    // this rand is returned by responding dpps
-    }
-    DppSock->SendNetFinderBroadCast(DppSock->m_rand);
-    nPort = 3040;
-    Sleep(100);            // give netfinder time for devices to respond
-    printf("Searching for Amptek modules on network:\n");
-    do {                // get all the responding devices from netfinder LAN broadcast
-        memset(&szDPP,0,sizeof(szDPP));
-#ifdef WIN32
-        iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
-#else
-        iSize = DppSock->UDPRecvFromNfAddr(szBuffer, 1024, szDPP, nPort);
-#endif
-        //printf("size: %d\n", iSize);
-        if (iSize > 0) {
-            if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {    // test if from our broadcast 
-                printf("  Address: %s  Port: %d   bytes:%d\n",szDPP,nPort,iSize);
-                DppSock->AddAddress(szDPP, addrArr, iDpps);
-                iDpps++;
-            }
-        } else {
-            iNetFinderLoops += MAX_ENTRIES;        // exit loop
+    unsigned int intf;
+    // loop through the detected interfaces and send out the NetFinder packet
+    // try to get possible response(s)
+    for (intf = 0; intf < DppSock->numIntf; intf++) {
+
+        if (bNewSearch) {
+            DppSock->m_rand = DppSock->CreateRand();    // this rand is returned by responding dpps
         }
-        iNetFinderLoops++;
-    } while ((iSize > 0) && (iNetFinderLoops < MAX_ENTRIES));
+        DppSock->SendNetFinderBroadCast(DppSock->m_rand, intf);
+        nPort = 3040;
+        Sleep(100);            // give netfinder time for devices to respond
+        printf("Searching for Amptek modules on network:\n");
+        do {                // get all the responding devices from netfinder LAN broadcast
+            memset(&szDPP,0,sizeof(szDPP));
+#ifdef WIN32
+            iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
+#else
+            iSize = DppSock->UDPRecvFromNfAddr(szBuffer, 1024, szDPP, nPort);
+#endif
+            //printf("size: %d\n", iSize);
+            if (iSize > 0) {
+                if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {    // test if from our broadcast 
+                    printf("  Address: %s  Port: %d   bytes:%d\n",szDPP,nPort,iSize);
+                    DppSock->AddAddress(szDPP, addrArr, iDpps);
+                    iDpps++;
+                }
+            } else {
+                iNetFinderLoops += MAX_ENTRIES;        // exit loop
+            }
+            iNetFinderLoops++;
+        } while ((iSize > 0) && (iNetFinderLoops < MAX_ENTRIES));
+    }
     printf("Found %d Amptek units\n", iDpps);
     return iDpps;
 }
