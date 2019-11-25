@@ -340,6 +340,8 @@ unsigned char values[];
    int s,base_address,response,actual,i;
    struct icb_module_info_struct *entry;
    struct ncp_hcmd_sendicb sendicb;
+   
+   memset(&sendicb, 0, sizeof(sendicb));
 
    entry = &icb_module_info[index];
 
