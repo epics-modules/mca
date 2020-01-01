@@ -7,17 +7,19 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 errlogInit(20000)
 
 epicsEnvSet PREFIX mcaTest:
+epicsEnvSet ADDRESS 0X3ED
+epicsEnvSet INTERFACE eno1
 #var aimDebug 20
 #var icbDebug 20
 
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans, 
 #           maxSignals, maxSequences, ethernetDevice)
-AIMConfig("AIM1/1", 0x3ED, 1, 2048, 1, 1, "eno1")
-AIMConfig("AIM1/2", 0x3ED, 2, 2048, 8, 1, "eno1")
+AIMConfig("AIM1/1", $(ADDRESS), 1, 2048, 1, 1, $(INTERFACE))
+AIMConfig("AIM1/2", $(ADDRESS), 2, 2048, 8, 1, $(INTERFACE))
 
 mcaAIMShowModules
 
-#AIMConfig("DSA2000", 0x8058, 1, 2048, 1, 1, "fei0")
+#AIMConfig("DSA2000", $(ADDRESS), 1, 2048, 1, 1, "$(INTERFACE)")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
 dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=$(PREFIX),M=aim_adc3,DTYP=asynMCA,INP=@asyn(AIM1/2 2),NCHAN=2048")
@@ -37,15 +39,15 @@ icbShowModules
 #      2 = HVPS
 #      3 = TCA
 #      4 = DSP
-icbConfig("icbAdc1", 0x3ED, 5, 0)
+icbConfig("icbAdc1", $(ADDRESS), 5, 0)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_adc.db", "P=$(PREFIX),ADC=adc1,PORT=icbAdc1")
-icbConfig("icbAmp1", 0x3ED, 3, 1)
+icbConfig("icbAmp1", $(ADDRESS), 3, 1)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_amp.db", "P=$(PREFIX),AMP=amp1,PORT=icbAmp1")
-icbConfig("icbHvps1", 0x3ED, 2, 2)
+icbConfig("icbHvps1", $(ADDRESS), 2, 2)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_hvps.db", "P=$(PREFIX),HVPS=hvps1,PORT=icbHvps1,LIMIT=6000")
-icbConfig("icbTca1", 0x3ED, 8, 3)
+icbConfig("icbTca1", $(ADDRESS), 8, 3)
 dbLoadRecords("$(MCA)/mcaApp/Db/icb_tca.db", "P=$(PREFIX),TCA=tca1,MCA=aim_adc1,PORT=icbTca1")
-#icbConfig("icbDsp1", 0x8058, 0, 4)
+#icbConfig("icbDsp1", $(ADDRESS), 0, 4)
 #dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=$(PREFIX),DSP=dsp1,PORT=icbDsp1")
 
 #asynSetTraceMask "AIM1/1",0,0xff
