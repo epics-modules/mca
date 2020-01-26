@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>SIS38XXTest</name>
+  <x>334</x>
+  <y>152</y>
+  <width>159</width>
+  <height>41</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>Start</text>
+    <x>9</x>
+    <y>10</y>
+    <width>50</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #9</name>
+    <actions>
+      <action type="open_display">
+        <file>SIS38XX.opi</file>
+        <macros>
+          <M>mca</M>
+          <P>SIS:3801:</P>
+        </macros>
+        <target>tab</target>
+        <description>SIS3801 MCS</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX.opi</file>
+        <macros>
+          <M>mca</M>
+          <P>SIS:3820:</P>
+        </macros>
+        <target>tab</target>
+        <description>SIS3820 MCS</description>
+      </action>
+      <action type="open_display">
+        <file>scaler32_full.opi</file>
+        <macros>
+          <P>SIS:3801:</P>
+          <S>scaler1</S>
+        </macros>
+        <target>tab</target>
+        <description>SIS3801 Scaler</description>
+      </action>
+      <action type="open_display">
+        <file>scaler32_full.opi</file>
+        <macros>
+          <P>SIS:3820:</P>
+          <S>scaler1</S>
+        </macros>
+        <target>tab</target>
+        <description>SIS3820 Scaler</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>66</x>
+    <y>11</y>
+    <width>66</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+</display>

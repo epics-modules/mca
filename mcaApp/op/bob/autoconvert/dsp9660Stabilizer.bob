@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>dsp9660Stabilizer</name>
+  <x>272</x>
+  <y>129</y>
+  <width>645</width>
+  <height>420</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>285</x>
+    <y>243</y>
+    <width>75</width>
+    <height>35</height>
+    <line_color>
+      <color red="78" green="165" blue="249">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="78" green="165" blue="249">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #9</name>
+    <x>285</x>
+    <y>63</y>
+    <width>75</width>
+    <height>35</height>
+    <line_color>
+      <color red="78" green="165" blue="249">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="78" green="165" blue="249">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>147</x>
+    <y>4</y>
+    <width>350</width>
+    <height>39</height>
+    <line_color>
+      <color red="78" green="165" blue="249">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="78" green="165" blue="249">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #15</name>
+    <text>DSP 9660 Stabilizer Control</text>
+    <x>160</x>
+    <y>11</y>
+    <width>324</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #18</name>
+    <x>10</x>
+    <y>280</y>
+    <width>621</width>
+    <height>63</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #21</name>
+      <x>501</x>
+      <width>120</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="textupdate" version="2.0.0">
+        <name>text update #24</name>
+        <pv_name>$(P)$(DSP)SZER</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <background_color>
+          <color red="235" green="241" blue="181">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <horizontal_alignment>1</horizontal_alignment>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #28</name>
+        <text>Value</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #31</name>
+      <x>376</x>
+      <width>120</width>
+      <height>63</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #34</name>
+        <text>Ratio</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="textentry" version="3.0.0">
+        <name>text entry #37</name>
+        <pv_name>$(P)$(DSP)ZRAT</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="scrollbar" version="2.0.0">
+        <name>valuator #41</name>
+        <pv_name>$(P)$(DSP)ZRAT</pv_name>
+        <x>10</x>
+        <y>43</y>
+        <bar_length>1.0</bar_length>
+        <increment>0.10000000149011612</increment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #45</name>
+      <x>251</x>
+      <width>120</width>
+      <height>63</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="scrollbar" version="2.0.0">
+        <name>valuator #48</name>
+        <pv_name>$(P)$(DSP)ZSPC</pv_name>
+        <x>10</x>
+        <y>43</y>
+        <bar_length>1.0</bar_length>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #52</name>
+        <text>Spacing</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="textentry" version="3.0.0">
+        <name>text entry #55</name>
+        <pv_name>$(P)$(DSP)ZSPC</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #59</name>
+      <x>126</x>
+      <width>120</width>
+      <height>63</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #62</name>
+        <text>Window</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="textentry" version="3.0.0">
+        <name>text entry #65</name>
+        <pv_name>$(P)$(DSP)ZWND</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="scrollbar" version="2.0.0">
+        <name>valuator #69</name>
+        <pv_name>$(P)$(DSP)ZWND</pv_name>
+        <x>10</x>
+        <y>43</y>
+        <bar_length>1.0</bar_length>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #73</name>
+      <width>121</width>
+      <height>63</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #76</name>
+        <text>Centroid</text>
+        <width>121</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="textentry" version="3.0.0">
+        <name>text entry #79</name>
+        <pv_name>$(P)$(DSP)ZCNT</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <width>101</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="scrollbar" version="2.0.0">
+        <name>valuator #83</name>
+        <pv_name>$(P)$(DSP)ZCNT</pv_name>
+        <x>10</x>
+        <y>43</y>
+        <width>101</width>
+        <bar_length>1.0</bar_length>
+        <increment>128.0</increment>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #87</name>
+    <x>10</x>
+    <y>350</y>
+    <width>620</width>
+    <height>41</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #90</name>
+      <width>120</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="combo" version="2.0.0">
+        <name>menu #93</name>
+        <pv_name>$(P)$(DSP)ZMOD</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #96</name>
+        <text>Mode</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #99</name>
+      <x>125</x>
+      <width>120</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="combo" version="2.0.0">
+        <name>menu #102</name>
+        <pv_name>$(P)$(DSP)ZCOR</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #105</name>
+        <text>Range</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #108</name>
+      <x>250</x>
+      <width>120</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="combo" version="2.0.0">
+        <name>menu #111</name>
+        <pv_name>$(P)$(DSP)ZDIV</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #114</name>
+        <text>Corr. div.</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #117</name>
+      <x>375</x>
+      <width>120</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="textupdate" version="2.0.0">
+        <name>text update #120</name>
+        <pv_name>$(P)$(DSP)ZOVF</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <foreground_color>
+          <color red="0" green="216" blue="0">
+          </color>
+        </foreground_color>
+        <background_color>
+          <color red="0" green="0" blue="0">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #124</name>
+        <text>Overflow</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #127</name>
+      <x>500</x>
+      <width>120</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="textupdate" version="2.0.0">
+        <name>text update #130</name>
+        <pv_name>$(P)$(DSP)ZOVR</pv_name>
+        <x>10</x>
+        <y>21</y>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <foreground_color>
+          <color red="0" green="216" blue="0">
+          </color>
+        </foreground_color>
+        <background_color>
+          <color red="0" green="0" blue="0">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #134</name>
+        <text>Overrange</text>
+        <width>120</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #137</name>
+    <x>10</x>
+    <y>100</y>
+    <width>620</width>
+    <height>111</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #140</name>
+      <y>70</y>
+      <width>620</width>
+      <height>41</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="group" version="2.0.0">
+        <name>composite #143</name>
+        <width>120</width>
+        <height>41</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="label" version="2.0.0">
+          <name>text #146</name>
+          <text>Mode</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+        <widget type="combo" version="2.0.0">
+          <name>menu #149</name>
+          <pv_name>$(P)$(DSP)GMOD</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <height>20</height>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #152</name>
+        <x>125</x>
+        <width>120</width>
+        <height>41</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="combo" version="2.0.0">
+          <name>menu #155</name>
+          <pv_name>$(P)$(DSP)GCOR</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <height>20</height>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #158</name>
+          <text>Range</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #161</name>
+        <x>250</x>
+        <width>120</width>
+        <height>41</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="combo" version="2.0.0">
+          <name>menu #164</name>
+          <pv_name>$(P)$(DSP)GDIV</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <height>20</height>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #167</name>
+          <text>Corr. div.</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #170</name>
+        <x>375</x>
+        <width>120</width>
+        <height>41</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="label" version="2.0.0">
+          <name>text #173</name>
+          <text>Overflow</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+        <widget type="textupdate" version="2.0.0">
+          <name>text update #176</name>
+          <pv_name>$(P)$(DSP)GOVF</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="0" green="216" blue="0">
+            </color>
+          </foreground_color>
+          <background_color>
+            <color red="0" green="0" blue="0">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #180</name>
+        <x>500</x>
+        <width>120</width>
+        <height>41</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="textupdate" version="2.0.0">
+          <name>text update #183</name>
+          <pv_name>$(P)$(DSP)GOVR</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="0" green="216" blue="0">
+            </color>
+          </foreground_color>
+          <background_color>
+            <color red="0" green="0" blue="0">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #187</name>
+          <text>Overrange</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #190</name>
+      <width>620</width>
+      <height>63</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="group" version="2.0.0">
+        <name>composite #193</name>
+        <x>500</x>
+        <width>120</width>
+        <height>41</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="textupdate" version="2.0.0">
+          <name>text update #196</name>
+          <pv_name>$(P)$(DSP)SGN</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <background_color>
+            <color red="235" green="241" blue="181">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <horizontal_alignment>1</horizontal_alignment>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #200</name>
+          <text>Value</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #203</name>
+        <x>375</x>
+        <width>120</width>
+        <height>63</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="scrollbar" version="2.0.0">
+          <name>valuator #206</name>
+          <pv_name>$(P)$(DSP)GRAT</pv_name>
+          <x>10</x>
+          <y>43</y>
+          <bar_length>1.0</bar_length>
+          <increment>0.10000000149011612</increment>
+        </widget>
+        <widget type="textentry" version="3.0.0">
+          <name>text entry #210</name>
+          <pv_name>$(P)$(DSP)GRAT</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #214</name>
+          <text>Ratio</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #217</name>
+        <x>250</x>
+        <width>120</width>
+        <height>63</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="scrollbar" version="2.0.0">
+          <name>valuator #220</name>
+          <pv_name>$(P)$(DSP)GSPC</pv_name>
+          <x>10</x>
+          <y>43</y>
+          <bar_length>1.0</bar_length>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #224</name>
+          <text>Spacing</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+        <widget type="textentry" version="3.0.0">
+          <name>text entry #227</name>
+          <pv_name>$(P)$(DSP)GSPC</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #231</name>
+        <x>125</x>
+        <width>120</width>
+        <height>63</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="label" version="2.0.0">
+          <name>text #234</name>
+          <text>Window</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+        <widget type="textentry" version="3.0.0">
+          <name>text entry #237</name>
+          <pv_name>$(P)$(DSP)GWND</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+        <widget type="scrollbar" version="2.0.0">
+          <name>valuator #241</name>
+          <pv_name>$(P)$(DSP)GWND</pv_name>
+          <x>10</x>
+          <y>43</y>
+          <bar_length>1.0</bar_length>
+        </widget>
+      </widget>
+      <widget type="group" version="2.0.0">
+        <name>composite #245</name>
+        <width>120</width>
+        <height>63</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="label" version="2.0.0">
+          <name>text #248</name>
+          <text>Centroid</text>
+          <width>120</width>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <horizontal_alignment>1</horizontal_alignment>
+        </widget>
+        <widget type="textentry" version="3.0.0">
+          <name>text entry #251</name>
+          <pv_name>$(P)$(DSP)GCNT</pv_name>
+          <x>10</x>
+          <y>21</y>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="16.0">
+            </font>
+          </font>
+          <background_color>
+            <color red="115" green="223" blue="255">
+            </color>
+          </background_color>
+          <format>1</format>
+          <show_units>false</show_units>
+          <border_alarm_sensitive>false</border_alarm_sensitive>
+        </widget>
+        <widget type="scrollbar" version="2.0.0">
+          <name>valuator #255</name>
+          <pv_name>$(P)$(DSP)GCNT</pv_name>
+          <x>10</x>
+          <y>43</y>
+          <bar_length>1.0</bar_length>
+          <increment>128.0</increment>
+        </widget>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #259</name>
+    <text>Gain</text>
+    <x>298</x>
+    <y>68</y>
+    <width>48</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #262</name>
+    <x>5</x>
+    <y>60</y>
+    <width>630</width>
+    <height>170</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #265</name>
+    <x>4</x>
+    <y>240</y>
+    <width>630</width>
+    <height>170</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #268</name>
+    <text>Zero</text>
+    <x>298</x>
+    <y>248</y>
+    <width>48</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

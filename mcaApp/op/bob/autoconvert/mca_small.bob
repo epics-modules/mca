@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>mca_small</name>
+  <x>108</x>
+  <y>317</y>
+  <width>452</width>
+  <height>246</height>
+  <background_color>
+    <color red="200" green="200" blue="200">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <width>440</width>
+    <line_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #9</name>
+    <text>Reading</text>
+    <x>260</x>
+    <y>36</y>
+    <height>10</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="10.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(M).RDNG</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="choice" version="2.0.0">
+    <name>choice button #13</name>
+    <pv_name>$(P)$(M).READ</pv_name>
+    <x>260</x>
+    <y>23</y>
+    <height>14</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+    <items>
+      <item>Item 1</item>
+      <item>Item 2</item>
+    </items>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #16</name>
+    <actions>
+      <action type="open_display">
+        <file>mca.opi</file>
+        <target>replace</target>
+        <description>MCA With ROI's</description>
+      </action>
+      <action type="open_display">
+        <file>mcaSetup.opi</file>
+        <target>tab</target>
+        <description>MCA Setup</description>
+      </action>
+      <action type="open_display">
+        <file>mcaCalibration.opi</file>
+        <target>tab</target>
+        <description>MCA Calibration</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>375</x>
+    <y>23</y>
+    <width>20</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #21</name>
+    <text>More</text>
+    <x>400</x>
+    <y>26</y>
+    <width>35</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="xyplot" version="2.0.0">
+    <name>cartesian plot #24</name>
+    <x>70</x>
+    <y>46</y>
+    <width>380</width>
+    <height>200</height>
+    <title>$(P)$(M)</title>
+    <x_axis>
+      <title>channel</title>
+      <autoscale>true</autoscale>
+      <log_scale>false</log_scale>
+      <minimum>0.0</minimum>
+      <maximum>100.0</maximum>
+      <show_grid>false</show_grid>
+      <title_font>
+        <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+        </font>
+      </title_font>
+      <scale_font>
+        <font name="Default" family="Liberation Sans" style="REGULAR" size="14.0">
+        </font>
+      </scale_font>
+      <visible>true</visible>
+    </x_axis>
+    <y_axes>
+      <y_axis>
+        <title>counts</title>
+        <autoscale>true</autoscale>
+        <log_scale>false</log_scale>
+        <minimum>0.0</minimum>
+        <maximum>100.0</maximum>
+        <show_grid>false</show_grid>
+        <title_font>
+          <font name="Default Bold" family="Liberation Sans" style="BOLD" size="14.0">
+          </font>
+        </title_font>
+        <scale_font>
+          <font name="Default" family="Liberation Sans" style="REGULAR" size="14.0">
+          </font>
+        </scale_font>
+        <visible>true</visible>
+      </y_axis>
+    </y_axes>
+    <traces>
+      <trace>
+        <name>$(traces[0].y_pv)</name>
+        <x_pv></x_pv>
+        <y_pv>$(P)$(M).VAL</y_pv>
+        <err_pv></err_pv>
+        <axis>0</axis>
+        <trace_type>1</trace_type>
+        <color>
+          <color red="0" green="0" blue="0">
+          </color>
+        </color>
+        <line_width>1</line_width>
+        <line_style>0</line_style>
+        <point_type>0</point_type>
+        <point_size>10</point_size>
+        <visible>true</visible>
+      </trace>
+    </traces>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #31</name>
+    <text>Acquiring</text>
+    <x>340</x>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(M).ACQG</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="polyline" version="2.0.0">
+    <name>polyline #35</name>
+    <y>20</y>
+    <width>442</width>
+    <height>2</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <points>
+      <point x="1.0" y="1.0">
+      </point>
+      <point x="441.0" y="1.0">
+      </point>
+    </points>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #39</name>
+    <text>($(P)$(M))</text>
+    <x>200</x>
+    <y>3</y>
+    <width>140</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #42</name>
+    <x>195</x>
+    <y>115</y>
+    <width>50</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #45</name>
+      <width>50</width>
+      <height>20</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="textupdate" version="2.0.0">
+        <name>text update #48</name>
+        <pv_name>$(P)$(M).PORT</pv_name>
+        <x>35</x>
+        <width>15</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <foreground_color>
+          <color red="10" green="0" blue="184">
+          </color>
+        </foreground_color>
+        <background_color>
+          <color red="236" green="236" blue="236">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <horizontal_alignment>1</horizontal_alignment>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #52</name>
+        <text>ADC#</text>
+        <y>2</y>
+        <width>35</width>
+        <height>14</height>
+        <auto_size>true</auto_size>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #55</name>
+    <text>RealTime</text>
+    <x>11</x>
+    <y>132</y>
+    <width>50</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #58</name>
+    <pv_name>$(P)$(M).ERTM</pv_name>
+    <x>11</x>
+    <y>149</y>
+    <width>50</width>
+    <height>13</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #62</name>
+    <pv_name>$(P)$(M).PRTM</pv_name>
+    <x>11</x>
+    <y>165</y>
+    <width>50</width>
+    <height>13</height>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #66</name>
+    <text>LiveTime</text>
+    <x>11</x>
+    <y>77</y>
+    <width>50</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #69</name>
+    <pv_name>$(P)$(M).ELTM</pv_name>
+    <x>11</x>
+    <y>94</y>
+    <width>50</width>
+    <height>13</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="236" green="236" blue="236">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #73</name>
+    <pv_name>$(P)$(M).PLTM</pv_name>
+    <x>11</x>
+    <y>110</y>
+    <width>50</width>
+    <height>13</height>
+    <background_color>
+      <color red="200" green="200" blue="200">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #77</name>
+    <x>4</x>
+    <y>48</y>
+    <width>60</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #80</name>
+      <width>60</width>
+      <height>20</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="group" version="2.0.0">
+        <name>composite #83</name>
+        <y>10</y>
+        <width>60</width>
+        <height>10</height>
+        <style>3</style>
+        <transparent>true</transparent>
+        <widget type="label" version="2.0.0">
+          <name>text #86</name>
+          <text>LIVE TIME</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why3.O</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #90</name>
+          <text>REAL TIME</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why3.P</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #94</name>
+          <text>ROI 1</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why1.M</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #98</name>
+          <text>ROI 2</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why1.N</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #102</name>
+          <text>ROI 3</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why1.O</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #106</name>
+          <text>ROI 4</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why1.P</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #110</name>
+          <text>ROI 5</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why2.M</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #114</name>
+          <text>ROI 6</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why2.N</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #118</name>
+          <text>ROI 7</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why2.O</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #122</name>
+          <text>ROI 8</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why2.P</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #126</name>
+          <text>ROI 9</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why3.M</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #130</name>
+          <text>ROI 10</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why3.N</pv_name>
+            </rule>
+          </rules>
+        </widget>
+        <widget type="label" version="2.0.0">
+          <name>text #134</name>
+          <text>USER</text>
+          <width>60</width>
+          <height>10</height>
+          <font>
+            <font family="Liberation Sans" style="REGULAR" size="10.0">
+            </font>
+          </font>
+          <foreground_color>
+            <color red="253" green="0" blue="0">
+            </color>
+          </foreground_color>
+          <horizontal_alignment>1</horizontal_alignment>
+          <rules>
+            <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+              <exp bool_exp="!(pv0!=0)">
+                <value>false</value>
+              </exp>
+              <pv_name>$(P)$(M)Why4</pv_name>
+            </rule>
+          </rules>
+        </widget>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #138</name>
+        <text>STOPPED BY</text>
+        <width>60</width>
+        <height>10</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="10.0">
+          </font>
+        </font>
+        <auto_size>true</auto_size>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #141</name>
+    <pv_name>$(P)$(M).DTYP</pv_name>
+    <width>200</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>6</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #145</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(M)EraseStart</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(M)EraseStart</pv_name>
+    <text>Erase&amp;Start</text>
+    <x>3</x>
+    <y>23</y>
+    <width>85</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #148</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(M)Erase</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(M)Erase</pv_name>
+    <text>Erase</text>
+    <x>148</x>
+    <y>23</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #151</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(M)Start</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(M)Start</pv_name>
+    <text>Start</text>
+    <x>93</x>
+    <y>23</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #154</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)$(M)Stop</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)$(M)Stop</pv_name>
+    <text>Stop</text>
+    <x>203</x>
+    <y>23</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #157</name>
+    <text>DeadTime</text>
+    <x>10</x>
+    <y>186</y>
+    <width>50</width>
+    <height>14</height>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #160</name>
+    <pv_name>$(P)$(M).IDTIM</pv_name>
+    <x>10</x>
+    <y>203</y>
+    <width>50</width>
+    <height>13</height>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>1</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="progressbar" version="2.0.0">
+    <name>bar #164</name>
+    <pv_name>$(P)$(M).IDTIM</pv_name>
+    <x>5</x>
+    <y>219</y>
+    <width>60</width>
+    <height>16</height>
+  </widget>
+</display>
