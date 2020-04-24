@@ -20,6 +20,7 @@
 #include <epicsExit.h>
 #include <iocsh.h>
 #include <cantProceed.h>
+#include <osiSock.h>
 
 #include <drvAsynIPPort.h>
 #include <asynOctetSyncIO.h>
@@ -169,10 +170,23 @@ asynStatus drvAmptek::connectDevice()
     int build=0;
     static const char *functionName = "connectDevice";
 
+    struct in_addr addr;
+    if (hostToIPAddr(addressInfo_, &addr)) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s ERROR: Cannot resolve address: %s\n",
+            driverName, functionName, addressInfo_);
+        return asynError;
+    }
+
+    char dotaddr[] = "255.255.255.255";
+    /* inet_ntoa() is not thread safe, and ipAddrToDottedIP() includes the port number */
+    epicsInt32 my_addr = ntohl(addr.s_addr);
+    snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 12) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
+
     if (interfaceType_ == DppInterfaceEthernet) {
         CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
     }
-    if (CH_.ConnectDpp(interfaceType_, addressInfo_)) {
+    if (CH_.ConnectDpp(interfaceType_, dotaddr)) {
         asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
             "%s::%s DPP device %s connected, total devices found=%d\n",
             driverName, functionName, addressInfo_, CH_.NumDevices);
