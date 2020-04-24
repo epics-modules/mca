@@ -180,6 +180,7 @@ asynStatus drvAmptek::connectDevice()
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
             driverName, functionName, addressInfo_, CH_.NumDevices);
+        return asynError;
     }
     CH_.DP5Stat.m_DP5_Status.SerialNumber = 0;
     if (CH_.SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
