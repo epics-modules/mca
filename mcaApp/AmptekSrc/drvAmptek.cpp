@@ -181,7 +181,7 @@ asynStatus drvAmptek::connectDevice()
     char dotaddr[] = "255.255.255.255";
     /* inet_ntoa() is not thread safe, and ipAddrToDottedIP() includes the port number */
     epicsInt32 my_addr = ntohl(addr.s_addr);
-    snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 12) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
+    snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 16) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
 
     if (interfaceType_ == DppInterfaceEthernet) {
         CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
