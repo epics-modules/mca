@@ -57,7 +57,7 @@ static void exitHandlerC(void *arg)
 }
 }
 
-drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo)
+drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo, int directMode)
    : asynPortDriver(portName, 
                     MAX_SCAS, /* Maximum address */
                     0, /* Unused, number of parameters */
@@ -139,8 +139,10 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     interfaceType_ = (DppInterface_t)interfaceType;
     switch(interfaceType_) {
         case DppInterfaceEthernet:
+        break;
         case DppInterfaceUSB:
         case DppInterfaceSerial:
+        directMode = 0;
         break;
         default:
             asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -149,6 +151,7 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
             return;
     }
     addressInfo_ = epicsStrDup(addressInfo);
+    directMode_  = directMode;
     
     status = connectDevice();
     if (status) {
@@ -162,6 +165,20 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
 void drvAmptek::exitHandler()
 {
     CH_.Close_Connection();
+}
+
+bool drvAmptek::directConnect(char* addr)
+{
+    if (! directMode_)
+        return false;
+
+    CH_.isConnected = false;
+    CH_.NumDevices = 0;
+    CH_.DppSocket_Connect_Direct_DPP(addr);
+    CH_.isConnected = CH_.DppSocket_isConnected;
+    CH_.NumDevices = CH_.DppSocket_NumDevices;
+
+    return CH_.isConnected;
 }
 
 asynStatus drvAmptek::connectDevice()
@@ -186,7 +203,18 @@ asynStatus drvAmptek::connectDevice()
     if (interfaceType_ == DppInterfaceEthernet) {
         CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
     }
-    if (CH_.ConnectDpp(interfaceType_, dotaddr)) {
+    if (directMode_) {
+        if (directConnect(dotaddr)) {
+            asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+                "%s::%s DPP device %s connected\n",
+                driverName, functionName, addressInfo_);
+        } else {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
+                driverName, functionName, addressInfo_, CH_.NumDevices);
+            return asynError;
+        }
+    } else if (CH_.ConnectDpp(interfaceType_, dotaddr)) {
         asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
             "%s::%s DPP device %s connected, total devices found=%d\n",
             driverName, functionName, addressInfo_, CH_.NumDevices);
@@ -910,9 +938,9 @@ void drvAmptek::report(FILE *fp, int details)
 }
 
 extern "C" {
-int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo)
+int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo, int directMode)
 {
-    new drvAmptek(portName, interfaceType, addressInfo);
+    new drvAmptek(portName, interfaceType, addressInfo, directMode);
     return asynSuccess;
 }
 
@@ -920,13 +948,15 @@ int drvAmptekConfigure(const char *portName, int interfaceType, const char *addr
 static const iocshArg configArg0 = { "portName", iocshArgString};
 static const iocshArg configArg1 = { "interface", iocshArgInt};
 static const iocshArg configArg2 = { "address info", iocshArgString};
+static const iocshArg configArg3 = { "direct mode", iocshArgInt};
 static const iocshArg * const configArgs[] = {&configArg0,
                                               &configArg1,
-                                              &configArg2};
-static const iocshFuncDef configFuncDef = {"drvAmptekConfigure", 3, configArgs};
+                                              &configArg2,
+                                              &configArg3};
+static const iocshFuncDef configFuncDef = {"drvAmptekConfigure", 4, configArgs};
 static void configCallFunc(const iocshArgBuf *args)
 {
-    drvAmptekConfigure(args[0].sval, args[1].ival, args[2].sval);
+    drvAmptekConfigure(args[0].sval, args[1].ival, args[2].sval, args[3].ival);
 }
 
 void drvAmptekRegister(void)
