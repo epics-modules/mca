@@ -618,7 +618,7 @@
     The mca/iocBoot/iocAmptek contains example startup scripts for the Amptek detectors.</p>
   <p>
     The command to configure the Amptek driver is drvAmptekConfigure().</p>
-  <pre>int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo)
+  <pre>int drvAmptekConfigure(const char *portName, int interfaceType, const char *addressInfo, int directMode)
   The arguments are:
       portName:            # The name of the asyn port to be created
       interfaceType:       # The interface to use: 0=Ethernet, 1=USB, 2=RS-232
@@ -626,6 +626,7 @@
                            # For Ethernet this is the IP address of the module.
                            # For USB this argument is not used.
                            # RS-232 is not currently supported.
+      directMode:          # Enable broadcast-less connection: 0=use broadcast, 1=skip broadcast
 </pre>
   <h2 id="Restrictions">
     Restrictions</h2>
