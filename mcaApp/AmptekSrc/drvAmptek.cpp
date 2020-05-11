@@ -261,6 +261,9 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
     static const char *functionName = "sendCommand";
     bool status=true;
     
+    if (CH_.isConnected == false)
+        return asynDisconnected;
+
     status = CH_.SendCommand(command);
     if (status == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
@@ -332,6 +335,9 @@ asynStatus drvAmptek::sendCommandString(string commandString)
 {
     asynStatus status;
     static const char *functionName = "sendCommandString";
+
+    if (CH_.isConnected == false)
+        return asynDisconnected;
 
     configOptions_.HwCfgDP5Out = commandString;
     asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
@@ -721,14 +727,18 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
     asynStatus status=asynSuccess;
     int addr;
 
+    if (CH_.isConnected == false)
+        return asynDisconnected;
+
     getAddress(pasynUser, &addr);
     /* Set the parameter in the parameter library. */
     status = setIntegerParam(addr, command, value);
     if (command == mcaStartAcquire_) {
         if (!acquiring_) {
-            acquiring_ = true;
-                status = sendCommand(XMTPT_ENABLE_MCA_MCS);
-            setIntegerParam(mcaAcquiring_, acquiring_);
+            if ((status = sendCommand(XMTPT_ENABLE_MCA_MCS)) == asynSuccess) {
+                acquiring_ = true;
+                setIntegerParam(mcaAcquiring_, acquiring_);
+            }
         }
     }  
     else if (command == mcaStopAcquire_) {
@@ -739,13 +749,16 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         memset(pData_, 0, numChannels_ * sizeof(epicsInt32));
     }
     else if (command == mcaReadStatus_) {
-        status = sendCommand(XMTPT_SEND_STATUS);
-        CH_.ReceiveData();
-        setDoubleParam(amptekSlowCounts_,  CH_.DP5Stat.m_DP5_Status.SlowCount);
-        setDoubleParam(amptekFastCounts_,  CH_.DP5Stat.m_DP5_Status.FastCount);
-        setDoubleParam(amptekDetTemp_,     CH_.DP5Stat.m_DP5_Status.DET_TEMP);
-        setDoubleParam(amptekBoardTemp_,   CH_.DP5Stat.m_DP5_Status.DP5_TEMP);
-        setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
+        if ((status = sendCommand(XMTPT_SEND_STATUS)) == asynSuccess) {
+            if (CH_.ReceiveData()) {
+                setDoubleParam(amptekSlowCounts_,  CH_.DP5Stat.m_DP5_Status.SlowCount);
+                setDoubleParam(amptekFastCounts_,  CH_.DP5Stat.m_DP5_Status.FastCount);
+                setDoubleParam(amptekDetTemp_,     CH_.DP5Stat.m_DP5_Status.DET_TEMP);
+                setDoubleParam(amptekBoardTemp_,   CH_.DP5Stat.m_DP5_Status.DP5_TEMP);
+                setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
+            } else
+                status = asynError;
+        }
     }
     else if (command == amptekLoadConfigFile_) {
         string configFileName;
@@ -793,10 +806,9 @@ asynStatus drvAmptek::readInt32(asynUser *pasynUser, epicsInt32 *value)
         mcaEnable = CH_.DP5Stat.m_DP5_Status.MCA_EN;
         if (countDone || realTimeDone || liveTimeDone || mcsDone || !mcaEnable) {
             // Some preset is reached.  If acquiring_ is true then stop detector
-            if (acquiring_) {
-                status = sendCommand(XMTPT_DISABLE_MCA_MCS);
+            if (acquiring_ && (status = sendCommand(XMTPT_DISABLE_MCA_MCS)) == asynSuccess) {
+                acquiring_ = 0;
             }
-            acquiring_ = 0;
         } else {
             acquiring_ = 1;
         }
@@ -836,6 +848,9 @@ asynStatus drvAmptek::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
     asynStatus status=asynSuccess;
     int addr;
     
+    if (CH_.isConnected == false)
+        return asynDisconnected;
+
     getAddress(pasynUser, &addr);
     /* Set the parameter in the parameter library. */
     status = setDoubleParam(addr, command, value);
@@ -853,9 +868,14 @@ asynStatus drvAmptek::readInt32Array(asynUser *pasynUser,
 {
     int numChannels;
     int i;
+    asynStatus status;
     static const char *functionName="readInt32Array";
 
-    sendCommand(XMTPT_SEND_SPECTRUM_STATUS);
+    if ((status = sendCommand(XMTPT_SEND_SPECTRUM_STATUS)) != asynSuccess) {
+        *nactual = 0;
+        return status;
+    }
+
     if (CH_.ReceiveData() == false) {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling ReceiveData() for XMTPT_SEND_SPECTRUM_STATUS\n",
