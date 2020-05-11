@@ -75,6 +75,8 @@ class drvAmptek : public asynPortDriver
   asynStatus readInt32Array(asynUser *pasynUser, epicsInt32 *data, 
                             size_t maxChans, size_t *nactual);
   virtual void report(FILE *fp, int details);
+  virtual asynStatus connect(asynUser *pasynUser);
+  virtual asynStatus disconnect(asynUser *pasynUser);
 
   // These are the methods that are new to this class
   void exitHandler();
@@ -147,7 +149,7 @@ class drvAmptek : public asynPortDriver
   private:
   CConsoleHelper CH_;
   CONFIG_OPTIONS configOptions_;
-  asynStatus connectDevice();
+  asynStatus connectDevice(asynUser *pasynUser);
   bool       directConnect(char* address);
   asynStatus findModule();
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
@@ -167,6 +169,7 @@ class drvAmptek : public asynPortDriver
   DppInterface_t interfaceType_;
   char *addressInfo_;
   bool directMode_;
+  int  failedSends_;
   epicsInt32 *pData_;
   size_t numChannels_;
 };
