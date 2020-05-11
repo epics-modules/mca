@@ -46,6 +46,8 @@ static const char *scaOutputLevelStrings[]  = {"OFF", "HIGH", "LOW"};
 #define MAX_SCAS 8
 // Timeout when waiting for a response
 #define TIMEOUT  0.01
+// Number of failed sends needed to disconnect
+#define MAX_FAILED_SENDS 10
 
 static const char *driverName = "drvAmptek";
 
@@ -69,7 +71,6 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
                     0) /* Default stack size*/
 
 {
-    asynStatus status;
     const char *functionName = "drvAmptek";
 
     // Uncomment this line to enable asynTraceFlow during the constructor
@@ -152,14 +153,47 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
     }
     addressInfo_ = epicsStrDup(addressInfo);
     directMode_  = directMode;
-    
-    status = connectDevice();
-    if (status) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s cannot connect to device on interface type=%d addressInfo=%s, status=%d\n",
-            driverName, functionName, interfaceType_, addressInfo_, status);
-    }
+    failedSends_ = 0;
+
     epicsAtExit(exitHandlerC, this);
+}
+
+asynStatus drvAmptek::connect(asynUser *pasynUser)
+{
+    int addr;
+    getAddress(pasynUser, &addr);
+
+    if (addr > 0)
+        return CH_.isConnected ? asynSuccess : asynError;
+
+    if (CH_.isConnected == false) {
+        asynStatus status = connectDevice(pasynUser);
+        if (status != asynSuccess) {
+            /* the connection itself might be successful but the subsequent initialization might have failed */
+            CH_.isConnected = false;
+            CH_.NumDevices  = 0;
+            return status;
+        }
+
+        failedSends_ = 0;
+        pasynManager->exceptionConnect(pasynUser);
+    }
+
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::disconnect(asynUser *pasynUser)
+{
+    if (CH_.isConnected == false)
+        return asynSuccess;
+
+    CH_.Close_Connection();
+    CH_.isConnected = false;
+    CH_.NumDevices  = 0;
+
+    pasynManager->exceptionDisconnect(pasynUser);
+
+    return asynSuccess;
 }
 
 void drvAmptek::exitHandler()
@@ -181,17 +215,22 @@ bool drvAmptek::directConnect(char* addr)
     return CH_.isConnected;
 }
 
-asynStatus drvAmptek::connectDevice()
+asynStatus drvAmptek::connectDevice(asynUser *pasynUser)
 {
     string strTemp;
     int build=0;
     static const char *functionName = "connectDevice";
 
+    if (addressInfo_ == NULL) {
+        /* drvAmptekConfigure() was called with invalid interface type */
+        return asynError;
+    }
+
     struct in_addr addr;
     if (hostToIPAddr(addressInfo_, &addr)) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s ERROR: Cannot resolve address: %s\n",
-            driverName, functionName, addressInfo_);
+        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+            "Cannot resolve address: %s",
+            addressInfo_);
         return asynError;
     }
 
@@ -205,36 +244,34 @@ asynStatus drvAmptek::connectDevice()
     }
     if (directMode_) {
         if (directConnect(dotaddr)) {
-            asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
                 "%s::%s DPP device %s connected\n",
                 driverName, functionName, addressInfo_);
         } else {
-            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-                "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
-                driverName, functionName, addressInfo_, CH_.NumDevices);
+            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+                "Network DPP device %s not found, total devices found=%d",
+                addressInfo_, CH_.NumDevices);
             return asynError;
         }
     } else if (CH_.ConnectDpp(interfaceType_, dotaddr)) {
-        asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
+        asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
             "%s::%s DPP device %s connected, total devices found=%d\n",
             driverName, functionName, addressInfo_, CH_.NumDevices);
     } else {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
-            driverName, functionName, addressInfo_, CH_.NumDevices);
+        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+            "Network DPP device %s not found, total devices found=%d",
+            addressInfo_, CH_.NumDevices);
         return asynError;
     }
     CH_.DP5Stat.m_DP5_Status.SerialNumber = 0;
     if (CH_.SendCommand(XMTPT_SEND_STATUS) == false) {    // request status
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s error calling SendCommand for XMTPT_SEND_STATUS\n",
-            driverName, functionName);
+        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+            "error calling SendCommand for XMTPT_SEND_STATUS");
         return asynError;
     }
     if (CH_.ReceiveData() == false) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s error calling ReceiveData() for XMTPT_SEND_STATUS\n",
-            driverName, functionName);
+        epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
+            "calling ReceiveData() for XMTPT_SEND_STATUS");
         return asynError;
     }
     readConfigurationFromHardware();
@@ -253,7 +290,6 @@ asynStatus drvAmptek::connectDevice()
     CH_.CreateConfigOptions(&configOptions_, "", CH_.DP5Stat, false);
     
     return asynSuccess;
-
 }
 
 asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
@@ -269,8 +305,15 @@ asynStatus drvAmptek::sendCommand(TRANSMIT_PACKET_TYPE command)
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling CH_.SendCommand(%d)\n",
             driverName, functionName, command);
+        if (++failedSends_ > MAX_FAILED_SENDS) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s too many failed status queries, disconnecting\n",
+                driverName, functionName);
+            disconnect(pasynUserSelf);
+        }
         return asynError;
     }
+    failedSends_ = 0;
     asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
         "%s::%s called CH_.SendCommand(%d) OK\n",
         driverName, functionName, command);
@@ -348,8 +391,15 @@ asynStatus drvAmptek::sendCommandString(string commandString)
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
             "%s::%s error calling CH_.SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
             driverName, functionName, commandString.c_str());
+        if (++failedSends_ > MAX_FAILED_SENDS) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s too many failed status queries, disconnecting\n",
+                driverName, functionName);
+            disconnect(pasynUserSelf);
+        }
         return asynError;
     }
+    failedSends_ = 0;
     status = readConfigurationFromHardware();
     return status;
 }
