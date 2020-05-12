@@ -63,8 +63,8 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
    : asynPortDriver(portName, 
                     MAX_SCAS, /* Maximum address */
                     0, /* Unused, number of parameters */
-                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask, /* Interface mask */
-                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                   /* Interrupt mask */
+                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask | asynOptionMask, /* Interface mask */
+                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                                    /* Interrupt mask */
                     ASYN_CANBLOCK, /* asynFlags.  This driver can block and is not multi-device */
                     1, /* Autoconnect */
                     0, /* Default priority */
@@ -192,6 +192,43 @@ asynStatus drvAmptek::disconnect(asynUser *pasynUser)
     CH_.NumDevices  = 0;
 
     pasynManager->exceptionDisconnect(pasynUser);
+
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::readOption(asynUser *pasynUser, const char *key, char *value, int maxChars)
+{
+    int size;
+
+    if (epicsStrCaseCmp(key, "hostInfo") == 0)
+        size = epicsSnprintf(value, maxChars, "%s", addressInfo_);
+    else {
+        epicsSnprintf(pasynUser->errorMessage,pasynUser->errorMessageSize,
+                                                "Unsupported key \"%s\"", key);
+        return asynError;
+    }
+
+    if (size >= maxChars) {
+        epicsSnprintf(pasynUser->errorMessage,pasynUser->errorMessageSize,
+                            "Value buffer for key '%s' is too small.", key);
+        return asynError;
+    }
+
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::writeOption(asynUser *pasynUser, const char *key, const char *value)
+{
+    if (epicsStrCaseCmp(key, "hostInfo") == 0) {
+        free(addressInfo_);
+        addressInfo_ = epicsStrDup(value);
+        disconnect(pasynUser);
+    }
+    else if (epicsStrCaseCmp(key, "") != 0) {
+        epicsSnprintf(pasynUser->errorMessage,pasynUser->errorMessageSize,
+                                                "Unsupported key \"%s\"", key);
+        return asynError;
+    }
 
     return asynSuccess;
 }
