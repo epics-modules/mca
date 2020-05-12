@@ -154,6 +154,7 @@ class drvAmptek : public asynPortDriver
   CONFIG_OPTIONS configOptions_;
   asynStatus connectDevice(asynUser *pasynUser);
   bool       directConnect(char* address);
+  void       setParamsAlarm(int alarmStatus, int alarmSeverity);
   asynStatus findModule();
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
   asynStatus sendCommandString(string commandString);
