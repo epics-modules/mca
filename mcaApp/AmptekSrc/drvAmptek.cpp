@@ -21,6 +21,7 @@
 #include <iocsh.h>
 #include <cantProceed.h>
 #include <osiSock.h>
+#include <alarm.h>
 
 #include <drvAsynIPPort.h>
 #include <asynOctetSyncIO.h>
@@ -212,6 +213,7 @@ asynStatus drvAmptek::disconnect(asynUser *pasynUser)
     CH_.NumDevices  = 0;
 
     pasynManager->exceptionDisconnect(pasynUser);
+    setParamsAlarm(COMM_ALARM, INVALID_ALARM);
 
     return asynSuccess;
 }
@@ -251,6 +253,19 @@ asynStatus drvAmptek::writeOption(asynUser *pasynUser, const char *key, const ch
     }
 
     return asynSuccess;
+}
+
+void drvAmptek::setParamsAlarm(int alarmStatus, int alarmSeverity)
+{
+    for (int addr = 0; addr < MAX_SCAS; ++addr) {
+        int numParams = 0;
+        getNumParams(addr, &numParams);
+        for (int i = 0; i < numParams; ++i) {
+            setParamAlarmStatus(addr, i, alarmStatus);
+            setParamAlarmSeverity(addr, i, alarmSeverity);
+        }
+        callParamCallbacks(addr);
+    }
 }
 
 void drvAmptek::exitHandler()
@@ -346,6 +361,8 @@ asynStatus drvAmptek::connectDevice(asynUser *pasynUser)
   
     CH_.CreateConfigOptions(&configOptions_, "", CH_.DP5Stat, false);
     
+    setParamsAlarm(NO_ALARM, NO_ALARM);
+
     return asynSuccess;
 }
 
