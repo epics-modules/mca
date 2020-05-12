@@ -49,6 +49,11 @@ static const char *scaOutputLevelStrings[]  = {"OFF", "HIGH", "LOW"};
 // Number of failed sends needed to disconnect
 #define MAX_FAILED_SENDS 10
 
+#if ASYN_VERSION > 4 || (ASYN_VERSION == 4 && ASYN_REVISION > 39) || defined(HAVE_ASYN_CONNECT_WINDOW_FIX)
+#undef HAVE_ASYN_CONNECT_WINDOW_FIX
+#define HAVE_ASYN_CONNECT_WINDOW_FIX
+#endif
+
 static const char *driverName = "drvAmptek";
 
 extern "C" {
@@ -63,8 +68,8 @@ drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addres
    : asynPortDriver(portName, 
                     MAX_SCAS, /* Maximum address */
                     0, /* Unused, number of parameters */
-                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask, /* Interface mask */
-                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                   /* Interrupt mask */
+                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask | asynOptionMask, /* Interface mask */
+                    asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                                    /* Interrupt mask */
                     ASYN_CANBLOCK, /* asynFlags.  This driver can block and is not multi-device */
                     1, /* Autoconnect */
                     0, /* Default priority */
@@ -163,8 +168,8 @@ asynStatus drvAmptek::connect(asynUser *pasynUser)
     int addr;
     getAddress(pasynUser, &addr);
 
-    if (addr)
-#if ASYN_VERSION > 4 || (ASYN_VERSION == 4 && ASYN_REVISION > 39) || HAVE_ASYN_CONNECT_WINDOW_FIX
+    if (addr > 0)
+#ifdef HAVE_ASYN_CONNECT_WINDOW_FIX
         return CH_.isConnected ? asynSuccess : asynError;
 #else
         return asynSuccess;
@@ -176,7 +181,7 @@ asynStatus drvAmptek::connect(asynUser *pasynUser)
             /* the connection itself might be successful but the subsequent initialization might have failed */
             CH_.isConnected = false;
             CH_.NumDevices  = 0;
-#if ASYN_VERSION > 4 || (ASYN_VERSION == 4 && ASYN_REVISION > 39) || HAVE_ASYN_CONNECT_WINDOW_FIX
+#ifdef HAVE_ASYN_CONNECT_WINDOW_FIX
             return status;
 #else
             asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s::connectDevice ERROR %s\n", driverName, pasynUser->errorMessage);
@@ -192,14 +197,58 @@ asynStatus drvAmptek::connect(asynUser *pasynUser)
 
 asynStatus drvAmptek::disconnect(asynUser *pasynUser)
 {
-    if (CH_.isConnected == false)
+    if (CH_.isConnected == false) {
+#ifndef HAVE_ASYN_CONNECT_WINDOW_FIX
+        int connected = 1;
+        pasynManager->isConnected(pasynUser, &connected);
+        if (connected)
+            pasynManager->exceptionDisconnect(pasynUser);
+#endif
         return asynSuccess;
+    }
 
     CH_.Close_Connection();
     CH_.isConnected = false;
     CH_.NumDevices  = 0;
 
     pasynManager->exceptionDisconnect(pasynUser);
+
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::readOption(asynUser *pasynUser, const char *key, char *value, int maxChars)
+{
+    int size;
+
+    if (epicsStrCaseCmp(key, "hostInfo") == 0)
+        size = epicsSnprintf(value, maxChars, "%s", addressInfo_);
+    else {
+        epicsSnprintf(pasynUser->errorMessage,pasynUser->errorMessageSize,
+                                                "Unsupported key \"%s\"", key);
+        return asynError;
+    }
+
+    if (size >= maxChars) {
+        epicsSnprintf(pasynUser->errorMessage,pasynUser->errorMessageSize,
+                            "Value buffer for key '%s' is too small.", key);
+        return asynError;
+    }
+
+    return asynSuccess;
+}
+
+asynStatus drvAmptek::writeOption(asynUser *pasynUser, const char *key, const char *value)
+{
+    if (epicsStrCaseCmp(key, "hostInfo") == 0) {
+        free(addressInfo_);
+        addressInfo_ = epicsStrDup(value);
+        disconnect(pasynUser);
+    }
+    else if (epicsStrCaseCmp(key, "") != 0) {
+        epicsSnprintf(pasynUser->errorMessage,pasynUser->errorMessageSize,
+                                                "Unsupported key \"%s\"", key);
+        return asynError;
+    }
 
     return asynSuccess;
 }

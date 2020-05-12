@@ -77,6 +77,9 @@ class drvAmptek : public asynPortDriver
   virtual void report(FILE *fp, int details);
   virtual asynStatus connect(asynUser *pasynUser);
   virtual asynStatus disconnect(asynUser *pasynUser);
+  virtual asynStatus readOption(asynUser *pasynUser, const char *key, char *value, int maxChars);
+  virtual asynStatus writeOption(asynUser *pasynUser, const char *key, const char *value);
+
 
   // These are the methods that are new to this class
   void exitHandler();
