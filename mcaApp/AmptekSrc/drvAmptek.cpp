@@ -411,7 +411,7 @@ asynStatus drvAmptek::saveConfigurationFile(string fileName)
             driverName, functionName, fileName.c_str());
         return asynError;
     }
-    fprintf(out,"%s\n",CH_.HwCfgDP5.c_str());
+    fprintf(out,"%s",CH_.HwCfgDP5.c_str());
     fclose(out);
     return asynSuccess;
 }
