@@ -19,7 +19,7 @@
 #include <asynPortDriver.h>
 #include <epicsTypes.h>
 
-#include <ConsoleHelper.h>
+#include <UniConsoleHelper.h>
 
 #define amptekInputPolarityString   "AMPTEK_INPUT_POLARITY"
 #define amptekClockString           "AMPTEK_CLOCK"
@@ -145,7 +145,7 @@ class drvAmptek : public asynPortDriver
   int amptekSCAOutputLevel_;
  
   private:
-  CConsoleHelper CH_;
+  CUniConsoleHelper CH_;
   CONFIG_OPTIONS configOptions_;
   asynStatus connectDevice();
   bool       directConnect(char* address);

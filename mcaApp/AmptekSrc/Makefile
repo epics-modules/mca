@@ -56,6 +56,7 @@ mcaAmptek_SRCS += ParsePacket.cpp
 mcaAmptek_SRCS += SendCommand.cpp 
 mcaAmptek_SRCS += NetFinder.cpp 
 
+mcaAmptek_SRCS += UniConsoleHelper.cpp
 mcaAmptek_SRCS += drvAmptek.cpp
 
 mcaAmptek_LIBS += asyn 
