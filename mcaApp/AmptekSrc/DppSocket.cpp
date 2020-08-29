@@ -215,7 +215,7 @@ int CDppSocket::UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort
     if (nRcv > 0) {
         if (bSocketDebug) printf("UDPRecvFrom data done %d\r\n", nRcv);
         if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
-	      nPort = ntohs(SockAddress.sin_port);
+        nPort = ntohs(SockAddress.sin_port);
         nPort = 3040;
         if (bSocketDebug) printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
     } else {

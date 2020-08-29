@@ -9,7 +9,6 @@
 #include <vector>
 #include "DppImportExport.h"      // Shareable library configuration
 #include "DppSocket.h"            // Socket Support
-#include "DppLibUsb.h"            // LibUsb Support
 #include "DP5Protocol.h"        // DPP Protocol Support
 #include "ParsePacket.h"        // Packet Parser
 #include "SendCommand.h"        // Command Generator
@@ -25,12 +24,6 @@ typedef struct _SpectrumFileType {
     string strSpectrumStatus;
 } SpectrumFileType;
 
-typedef enum {
-    DppInterfaceEthernet,
-    DppInterfaceUSB,
-    DppInterfaceSerial
-} DppInterface_t;
-
 const bool bConsoleHelperDebug = false;
 
 class IMPORT_EXPORT CConsoleHelper
@@ -39,15 +32,6 @@ public:
     CConsoleHelper(void);
     ~CConsoleHelper(void);
 
-    /// Interface-independent variables and methods
-    bool isConnected;
-    int NumDevices;
-    DppInterface_t interfaceType;
-    bool ConnectDpp(DppInterface_t interfaceType, const char *addressInfo);
-    void Close_Connection();
-    bool SendCommand(TRANSMIT_PACKET_TYPE XmtCmd);
-    bool SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions);
-  
     /// dpp socket communications class.
     CDppSocket DppSocket;
     /// DppSocket is connected if true.
@@ -71,23 +55,6 @@ public:
     //void doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send[]);
     int doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send[]);
     void doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[]);
-
-    /// LibUsb communications class.
-    CDppLibUsb DppLibUsb;
-    /// LibUsb is connected if true.
-    bool LibUsb_isConnected;
-    /// LibUsb number of devices found.
-    int  LibUsb_NumDevices;
-    /// LibUsb connect to the default DPP.
-    bool LibUsb_Connect_Default_DPP();
-    /// LibUsb close the current connection.
-    void LibUsb_Close_Connection();
-    /// LibUsb send a command that does not require additional processing.
-    bool LibUsb_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd);
-    /// LibUsb send a command that requires configuration options processing.
-    bool LibUsb_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions);
-    ///  LibUsb receive data.
-    bool LibUsb_ReceiveData();
 
     // communications helper functions
 

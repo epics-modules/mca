@@ -15,7 +15,7 @@ bool CSendCommand::TestPacketCkSumOK(unsigned char Data[])
     long CS;
 	long PktLen;
 	unsigned char CHKSUM_MSB;
-	unsigned char CHKSUM_LSB;
+    //unsigned char CHKSUM_LSB;
     
 	PktLen = (Data[4] * 256) + Data[5];
     CS = Data[0] + Data[1] + Data[2] + Data[3] + Data[4] + Data[5];
@@ -26,8 +26,8 @@ bool CSendCommand::TestPacketCkSumOK(unsigned char Data[])
     }
     CS = (CS ^ 0xFFFF) + 1;
     CHKSUM_MSB = (unsigned char)((CS & 0xFF00) / 256);	// calculated checksum
-    CHKSUM_LSB = (unsigned char)(CS & 0xFF);
-	if ((Data[PktLen + 6] == CHKSUM_MSB) && (Data[PktLen + 7] == CHKSUM_LSB)) {
+    //CHKSUM_LSB = (unsigned char)(CS & 0xFF);
+	if ((Data[PktLen + 6] == CHKSUM_MSB) && (Data[PktLen + 7] == (CS & 0xFF))) {
 		return true;
 	} else {
 		return false;
@@ -352,7 +352,7 @@ bool CSendCommand::DP5_CMD_Config(unsigned char Buffer[], TRANSMIT_PACKET_TYPE X
 			strCfg += "CLCK=?;"; // FPGA clock
 			strCfg += "TPEA=?;"; // peak time
 			strCfg += "GAIN=?;"; // gain
-			if (CfgOptions.DppType == devtypeMCA8000D) {
+			if (CfgOptions.DppType == dppMCA8000D) {
 				strCfg += "GAIA=?;"; // coarse gain
 			}
 			strCfg += "MCAS=?;"; // mca mode
@@ -367,7 +367,7 @@ bool CSendCommand::DP5_CMD_Config(unsigned char Buffer[], TRANSMIT_PACKET_TYPE X
 			strCfg += "PRET=?;"; // preset actual time
 			strCfg += "PRER=?;"; // preset real time
 			strCfg += "PREC=?;"; // preset count
-			if (CfgOptions.DppType == devtypeMCA8000D) {
+			if (CfgOptions.DppType == dppMCA8000D) {
 				strCfg += "PREL=?;"; // preset real time
 			}
 			strCfg += "HVSE=?;"; // high voltage setting for manufacuting test

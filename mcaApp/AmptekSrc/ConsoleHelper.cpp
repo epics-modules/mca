@@ -12,104 +12,11 @@ CConsoleHelper::CConsoleHelper(void)
 {
     DppSocket_isConnected = false;
     DppSocket_NumDevices = 0;
-    DppLibUsb.NumDevices = 0;
-    LibUsb_isConnected = false;
-    LibUsb_NumDevices = 0;
     DppStatusString = "";
 }
 
 CConsoleHelper::~CConsoleHelper(void)
 {
-}
-
-bool CConsoleHelper::ConnectDpp(DppInterface_t ifaceType, const char *addressInfo)
-{
-    interfaceType = ifaceType;
-    bool status = false;
-    
-    isConnected = false;
-    NumDevices = 0;
-    switch(interfaceType) {
-        case DppInterfaceEthernet:
-            status = DppSocket_Connect_Default_DPP((char *)addressInfo);
-            isConnected = DppSocket_isConnected;
-            NumDevices = DppSocket_NumDevices;
-            break;
-        
-        case DppInterfaceUSB:
-            status = LibUsb_Connect_Default_DPP();
-            isConnected = LibUsb_isConnected;
-            NumDevices = LibUsb_NumDevices;
-           break;
-        
-        case DppInterfaceSerial:
-            break;
-            
-        default:
-            break;
-    }
-    return status;
-}
-
-void CConsoleHelper::Close_Connection()
-{
-    switch(interfaceType) {
-        case DppInterfaceEthernet:
-            DppSocket_Close_Connection();
-            break;
-        
-        case DppInterfaceUSB:
-            LibUsb_Close_Connection();
-            break;
-        
-        case DppInterfaceSerial:
-            break;
-            
-        default:
-            break;
-    }
-}
-
-bool CConsoleHelper::SendCommand(TRANSMIT_PACKET_TYPE command)
-{
-    switch(interfaceType) {
-        case DppInterfaceEthernet:
-            return DppSocket_SendCommand(command);
-            break;
-        
-        case DppInterfaceUSB:
-            return LibUsb_SendCommand(command);
-            break;
-        
-        case DppInterfaceSerial:
-            return false;
-            break;
-        
-        default:
-            return false;
-            break;
-    }
-}
-
-bool CConsoleHelper::SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions)
-{
-    switch(interfaceType) {
-        case DppInterfaceEthernet:
-            return DppSocket_SendCommand_Config(XmtCmd, CfgOptions);
-            break;
-        
-        case DppInterfaceUSB:
-            return LibUsb_SendCommand_Config(XmtCmd, CfgOptions);
-            break;
-        
-        case DppInterfaceSerial:
-            return false;
-            break;
-            
-        default:
-            return false;
-            break;
-    }
 }
 
 int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20], bool bNewSearch)
@@ -124,9 +31,9 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
     int iNetFinderLoops = 0;
 
     //CDppSocket DppSock;
-    // printf("Port: %d\r\n",    DppSock->GetLocalSocketInfo());
+    // printf("Port: %d\r\n",   DppSock->GetLocalSocketInfo());
 
-    //seed random number generator        // this must be done to provide a new unique rand 
+    //seed random number generator      // this must be done to provide a new unique rand 
     srand((unsigned)time(NULL));        // Seed the random-number generator with current time
 
     if (bNewSearch) {
@@ -134,7 +41,7 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
     }
     DppSock->SendNetFinderBroadCast(DppSock->m_rand);
     nPort = 3040;
-    Sleep(100);            // give netfinder time for devices to respond
+    Sleep(100);         // give netfinder time for devices to respond
     printf("Searching for Amptek modules on network:\n");
     do {                // get all the responding devices from netfinder LAN broadcast
         memset(&szDPP,0,sizeof(szDPP));
@@ -145,13 +52,13 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
 #endif
         //printf("size: %d\n", iSize);
         if (iSize > 0) {
-            if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) {    // test if from our broadcast 
-                printf("  Address: %s  Port: %d   bytes:%d\n",szDPP,nPort,iSize);
+            if (DppSock->HaveNetFinderPacket(szBuffer,DppSock->m_rand,iSize)) { // test if from our broadcast 
+                printf("Address: %s  Port: %d   bytes:%d\n",szDPP,nPort,iSize);
                 DppSock->AddAddress(szDPP, addrArr, iDpps);
                 iDpps++;
             }
         } else {
-            iNetFinderLoops += MAX_ENTRIES;        // exit loop
+            iNetFinderLoops += MAX_ENTRIES;     // exit loop
         }
         iNetFinderLoops++;
     } while ((iSize > 0) && (iNetFinderLoops < MAX_ENTRIES));
@@ -163,14 +70,14 @@ int CConsoleHelper::doNetFinderBroadcast(CDppSocket *DppSock, char addrArr[][20]
 //{
 //    unsigned char szBuffer[1024]={0};
 //    char szDPP[20]={0};
-//    unsigned char szIn[100]={ 0xF5, 0xFA, 0x03, 0x07, 0x00, 0x00, 0xFE, 0x07 };    // Request Netfinder Packet
+//    unsigned char szIn[100]={ 0xF5, 0xFA, 0x03, 0x07, 0x00, 0x00, 0xFE, 0x07 }; // Request Netfinder Packet
 //    int nPort;
 //    int iSize;
 //    //char szDPP_Send[20]={"192.168.0.238"};
 //
-//    printf("Port: %d\r\n",    DppSock->GetLocalSocketInfo());
+//    printf("Port: %d\r\n",  DppSock->GetLocalSocketInfo());
 //    nPort = 10001;
-//    //DppSock->SetTimeOut(1,0);        // uncomment this line to set the timeout to 1 sec
+//    //DppSock->SetTimeOut(1,0);     // uncomment this line to set the timeout to 1 sec
 //    DppSock->UDPSendTo(szIn, 8, szDPP_Send, 10001);
 //    // only one read is needed for request netfinder "0x02, 0x03" command
 //    iSize = DppSock->UDPRecvFrom(szBuffer, 1024, szDPP, nPort);
@@ -182,10 +89,10 @@ int CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send
 {
     unsigned char szBuffer[1024];
     char szDPP[20];
-    unsigned char szIn[100]={ 0xF5, 0xFA, 0x03, 0x07, 0x00, 0x00, 0xFE, 0x07 };    // Request Netfinder Packet
+    unsigned char szIn[100]={ 0xF5, 0xFA, 0x03, 0x07, 0x00, 0x00, 0xFE, 0x07 }; // Request Netfinder Packet
     int nPort;
     int iSize;
-    CNetFinder FindDpp;                    // netfinder helper class
+    CNetFinder FindDpp;                 // netfinder helper class
     int iBufferSize;
     int idxBuff;
     int iNumDevices;
@@ -195,11 +102,11 @@ int CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send
     memset(&szDPP,0,sizeof(szDPP));
     //char szDPP_Send[20]={"192.168.0.238"};
 
-    if (bConsoleHelperDebug) printf("Port: %d\r\n",    DppSock->GetLocalSocketInfo());
+    if (bConsoleHelperDebug) printf("Port: %d\r\n", DppSock->GetLocalSocketInfo());
     if (bConsoleHelperDebug) printf("IP: %s\r\n", szDPP_Send);
     if (bConsoleHelperDebug) nPort = 10001;
     if (bConsoleHelperDebug) printf("nPort: %d\r\n",    nPort);
-    //DppSock->SetTimeOut(1,0);        // uncomment this line to set the timeout to 1 sec
+    //DppSock->SetTimeOut(1,0);     // uncomment this line to set the timeout to 1 sec
     DppSock->UDPSendTo(szIn, 8, szDPP_Send, 10001);
     Sleep(50);
     // only one read is needed for request netfinder "0x02, 0x03" command
@@ -216,7 +123,7 @@ int CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send
         (szBuffer[2] == 0x82) && 
         (szBuffer[3] == 0x08)) {
         iBufferSize = (int)(szBuffer[4] << 8) + (int)szBuffer[5];
-        if (iBufferSize < iSize) {    // fix the buffer for NetFinder class
+        if (iBufferSize < iSize) {  // fix the buffer for NetFinder class
             for(idxBuff=0;idxBuff<iBufferSize;idxBuff++){
                 szBuffer[idxBuff] = szBuffer[idxBuff+6];
             }
@@ -225,7 +132,7 @@ int CConsoleHelper::doAmptekNetFinderPacket(CDppSocket *DppSock, char szDPP_Send
             }
             // have Amptek protocol Netfinder packet
             iNumDevices = 1;
-            if (FindDpp.LastEntry == NO_ENTRIES) {    // Add entry
+            if (FindDpp.LastEntry == NO_ENTRIES) {  // Add entry
                 FindDpp.LastEntry = 0;
                 FindDpp.AddEntry(&FindDpp.DppEntries[FindDpp.LastEntry], szBuffer, nPort);
                 DppSock->ulNetFinderAddr = FindDpp.DppEntries[0].SockAddr;
@@ -246,16 +153,16 @@ void CConsoleHelper::doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[])
 {
     unsigned char szData[24648]={0}; // largest possible IN packet
     char szDPP[20]={0};
-    unsigned char szIn[100]={ 0xF5, 0xFA, 0x02, 0x03, 0x00, 0x00, 0xFE, 0x0C };        // Request Spectum and Status
+    unsigned char szIn[100]={ 0xF5, 0xFA, 0x02, 0x03, 0x00, 0x00, 0xFE, 0x0C };     // Request Spectum and Status
     int nPort;
     int iSize;
     int iTotal=0;
     int iDataLoops = 0;
     //char szDPP_Send[20]={"192.168.0.238"};
 
-    if (bConsoleHelperDebug) printf("Port: %d\r\n",    DppSock->GetLocalSocketInfo());
+    if (bConsoleHelperDebug) printf("Port: %d\r\n", DppSock->GetLocalSocketInfo());
     nPort = 10001;
-    //DppSock->SetTimeOut(1,0);        // uncomment this line to set the timeout to 1 sec
+    //DppSock->SetTimeOut(1,0);     // uncomment this line to set the timeout to 1 sec
     DppSock->UDPSendTo(szIn, 8, szDPP_Send, 10001);
     iTotal = 0;
     do {        // get all the spectrum packets and status
@@ -265,12 +172,12 @@ void CConsoleHelper::doSpectrumAndStatus(CDppSocket *DppSock, char szDPP_Send[])
         if (iSize > 0) {
             printf("bytes:%d\r\n", iSize);
             if (iTotal+iSize>24648) {
-                iDataLoops += 50;    // exit loop when done
-                break;                // this is an error, exit loop
+                iDataLoops += 50;   // exit loop when done
+                break;              // this is an error, exit loop
             }
             iTotal += iSize;
         } else {
-            iDataLoops += 50;        // exit loop when done
+            iDataLoops += 50;       // exit loop when done
         }
         iDataLoops++;
     } while ((iSize > 0) && (iDataLoops < 50));  // there can be up to 48 packets
@@ -410,7 +317,36 @@ bool CConsoleHelper::DppSocket_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
     return (bMessageSent);
 }
 
-
+// COMMAND (CONFIG_OPTIONS Needed)
+//                    Command Description
+//
+// XMTPT_SEND_CONFIG_PACKET_TO_HW (HwCfgDP5Out,SendCoarseFineGain,PC5_PRESENT,DppType)
+//                    Processes a configuration string for errors before sending
+//                            Allows only one gain setting type (coarse,fine OR total gain)
+//                            Removes commands from string that should not be sent to device type
+// XMTPT_SEND_CONFIG_PACKET_EX (HwCfgDP5Out)
+//                    Sends the a configuration with minimal error checking
+// XMTPT_FULL_READ_CONFIG_PACKET (PC5_PRESENT,DppType)
+//                    Creates and sends a full readback command
+void CConsoleHelper::CreateConfigOptions(CONFIG_OPTIONS *CfgOptions, string strCfg, CDP5Status DP5Stat, bool bUseCoarseFineGain)
+{
+    // ==== ==== This application supports Communications for DPP Devices Below
+    //DEVICE_ID==0; //DP5       
+    //DEVICE_ID==1; //PX5
+    //DEVICE_ID==2; //DP5G
+    //DEVICE_ID==3; //MCA8000D
+    //DEVICE_ID==4; //TB5
+    //DEVICE_ID==5; //DP5X
+    CfgOptions->DppType = DP5Stat.m_DP5_Status.DEVICE_ID + 5;    //5 is added to get the Acquisition Device type
+    CfgOptions->DppType = DP5Stat.m_DP5_Status.DEVICE_ID;       // DPP id to test for supported options
+    CfgOptions->HwCfgDP5Out = strCfg;                           //configuration, if being sent, empty otherwise
+    CfgOptions->PC5_PRESENT = DP5Stat.m_DP5_Status.PC5_PRESENT; //PC5 present indicator (accepts pc5 cfg commands)
+    // bUseCoarseFineGain=true;  //uses GAIA,GAIF (coarse with fine gain);  
+    // bUseCoarseFineGain=false; //uses GAIN (total gain);
+    CfgOptions->SendCoarseFineGain = bUseCoarseFineGain;        //select gain configuration control commands
+    CfgOptions->isDP5_RevDxGains = DP5Stat.m_DP5_Status.isDP5_RevDxGains;
+    CfgOptions->DPP_ECO = DP5Stat.m_DP5_Status.DPP_ECO;
+}
 
 // COMMAND (CONFIG_OPTIONS Needed)
 //                    Command Description
@@ -456,149 +392,6 @@ bool CConsoleHelper::DppSocket_ReceiveData()
     return (bDataReceived);
 }
 
-bool CConsoleHelper::LibUsb_Connect_Default_DPP()
-{
-
-    // flag is for notifications, if already connect will return dusbStatNoAction
-    // use bDeviceConnected to detect connection
-    DppLibUsb.InitializeLibusb();
-    LibUsb_isConnected = false;
-    LibUsb_NumDevices = 0;
-    DppLibUsb.NumDevices = DppLibUsb.CountDP5LibusbDevices();
-    if (DppLibUsb.NumDevices > 1) {
-        // choose dpp device here or default to first device
-    } else if (DppLibUsb.NumDevices == 1) {
-        // default to first device
-    } else {
-    }
-    if (DppLibUsb.NumDevices > 0) {
-        DppLibUsb.CurrentDevice = 1;    // set to default device
-        DppLibUsb.DppLibusbHandle = DppLibUsb.FindUSBDevice(DppLibUsb.CurrentDevice); //connect
-        if (DppLibUsb.bDeviceConnected) { // connection detected
-            LibUsb_isConnected = true;
-            LibUsb_NumDevices = DppLibUsb.NumDevices;
-        }
-    } else {
-        LibUsb_isConnected = false;
-        LibUsb_NumDevices = 0;
-    }
-    return (LibUsb_isConnected);
-}
-
-void CConsoleHelper::LibUsb_Close_Connection()
-{
-    if (DppLibUsb.bDeviceConnected) { // clean-up: close usb connection
-        DppLibUsb.bDeviceConnected = false;
-        DppLibUsb.CloseUSBDevice(DppLibUsb.DppLibusbHandle);
-        LibUsb_isConnected = false;
-        LibUsb_NumDevices = 0;
-        DppLibUsb.DeinitializeLibusb();
-    }
-}
-
-bool CConsoleHelper::LibUsb_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
-{
-    bool bHaveBuffer;
-    int bSentPkt;
-    bool bMessageSent;
-
-    bMessageSent = false;
-    if (DppLibUsb.bDeviceConnected) { 
-        memset(&DP5Proto.BufferOUT[0],0,sizeof(DP5Proto.BufferOUT));
-        bHaveBuffer = (bool) SndCmd.DP5_CMD(DP5Proto.BufferOUT, XmtCmd);
-        if (bHaveBuffer) {
-            bSentPkt = DppLibUsb.SendPacketUSB(DppLibUsb.DppLibusbHandle, DP5Proto.BufferOUT, DP5Proto.PacketIn);
-            if (bSentPkt) {
-                bMessageSent = true;
-            }
-        }
-    }
-    return (bMessageSent);
-}
-
-// COMMAND (CONFIG_OPTIONS Needed)
-//                    Command Description
-//
-// XMTPT_SEND_CONFIG_PACKET_TO_HW (HwCfgDP5Out,SendCoarseFineGain,PC5_PRESENT,DppType)
-//                    Processes a configuration string for errors before sending
-//                            Allows only one gain setting type (coarse,fine OR total gain)
-//                            Removes commands from string that should not be sent to device type
-// XMTPT_SEND_CONFIG_PACKET_EX (HwCfgDP5Out)
-//                    Sends the a configuration with minimal error checking
-// XMTPT_FULL_READ_CONFIG_PACKET (PC5_PRESENT,DppType)
-//                    Creates and sends a full readback command
-void CConsoleHelper::CreateConfigOptions(CONFIG_OPTIONS *CfgOptions, string strCfg, CDP5Status DP5Stat, bool bUseCoarseFineGain)
-{
-    // ACQ_DEVICE_TYPE
-    //        devtypeMCA8000A=0;    //MCA8000A
-    //        devtypeDP4=1;        //DP4
-    //        devtypePX4=2;        //PX4
-    //        devtypeDP4EMUL=3;    //DP5,FW5,DP4 emulation
-    //        devtypePX4EMUL=4;    //DP5,FW5,Px4 emulation
-    // ==== ==== This application DOES NOT SUPPORT Communications for DPP Devices Above
-    // ==== ==== This application supports Communications for DPP Devices Below
-    //        devtypeDP5=5;        //DP5,FW6
-    //        devtypePX5=6;        //PX5
-    //        devtypeDP5G=7;        //DP5G
-    //      devtypeDMCA=8;        //Digital MCA
-    // ==== ==== This application supports Communications for DPP Devices Below
-    //DEVICE_ID==0; //DP5        
-    //DEVICE_ID==1; //PX5
-    //DEVICE_ID==2; //DP5G
-    //DEVICE_ID==3; //DMCA
-    CfgOptions->DppType = DP5Stat.m_DP5_Status.DEVICE_ID + 5;    //5 is added to get the Acquisition Device type
-    CfgOptions->HwCfgDP5Out = strCfg;                            //configuration, if being sent, empty otherwise
-    CfgOptions->PC5_PRESENT = DP5Stat.m_DP5_Status.PC5_PRESENT; //PC5 present indicator (accepts pc5 cfg commands)
-    // bUseCoarseFineGain=true;  //uses GAIA,GAIF (coarse with fine gain);  
-    // bUseCoarseFineGain=false; //uses GAIN (total gain);
-    CfgOptions->SendCoarseFineGain = bUseCoarseFineGain;        //select gain configuration control commands
-    CfgOptions->isDP5_RevDxGains = DP5Stat.m_DP5_Status.isDP5_RevDxGains;
-    CfgOptions->DPP_ECO = DP5Stat.m_DP5_Status.DPP_ECO;
-}
-
-// COMMAND (CONFIG_OPTIONS Needed)
-//                    Command Description
-//
-// XMTPT_SEND_CONFIG_PACKET_TO_HW (HwCfgDP5Out,SendCoarseFineGain,PC5_PRESENT,DppType)
-//                    Processes a configuration string for errors before sending
-//                            Allows only one gain setting type (coarse,fine OR total gain)
-//                            Removes commands from string that should not be sent to device type
-// XMTPT_SEND_CONFIG_PACKET_EX (HwCfgDP5Out)
-//                    Sends the a configuration with minimal error checking
-// XMTPT_FULL_READ_CONFIG_PACKET (PC5_PRESENT,DppType)
-//                    Creates and sends a full readback command
-bool CConsoleHelper::LibUsb_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions)
-{
-    bool bHaveBuffer;
-    int bSentPkt;
-    bool bMessageSent;
-
-    bMessageSent = false;
-    if (DppLibUsb.bDeviceConnected) {
-        memset(&DP5Proto.BufferOUT[0],0,sizeof(DP5Proto.BufferOUT));
-        bHaveBuffer = (bool) SndCmd.DP5_CMD_Config(DP5Proto.BufferOUT, XmtCmd, CfgOptions);
-        if (bHaveBuffer) {
-            bSentPkt = DppLibUsb.SendPacketUSB(DppLibUsb.DppLibusbHandle, DP5Proto.BufferOUT, DP5Proto.PacketIn);
-            if (bSentPkt) {
-                bMessageSent = true;
-            }
-        }
-    }
-    return (bMessageSent);
-}
-
-bool CConsoleHelper::LibUsb_ReceiveData()
-{
-    bool bDataReceived;
-
-    bDataReceived = true;
-    if (DppLibUsb.bDeviceConnected) { 
-        bDataReceived = ReceiveData();
-    }
-    return (bDataReceived);
-}
-
-
 /** ReceiveData receives the incoming packet, 
  *  parses the packet, 
  *  then routes the packet to its final destination for further processing.
@@ -608,7 +401,6 @@ bool CConsoleHelper::ReceiveData()
 {
     bool bDataReceived;
 
-  if (!isConnected) return false;
     bDataReceived = true;
     ParsePkt.DppState.ReqProcess = ParsePkt.ParsePacket(DP5Proto.PacketIn, &DP5Proto.PIN);
     switch (ParsePkt.DppState.ReqProcess) {
@@ -673,12 +465,12 @@ void CConsoleHelper::ClearConfigReadFormatFlags()
 {
     // configuration readback format control flags
     // these flags control how the configuration readback is formatted and processed
-    DisplayCfg = false;            // format configuration for display
-    DisplaySca = false;            // format sca for display (sca config sent separately)
+    DisplayCfg = false;         // format configuration for display
+    DisplaySca = false;         // format sca for display (sca config sent separately)
     CfgReadBack = false;        // format configuration for general readback
     SaveCfg = false;            // format configuration for file save
-    PrintCfg = false;            // format configuration for print
-    HwCfgReady = false;            // configuration ready flag
+    PrintCfg = false;           // format configuration for print
+    HwCfgReady = false;         // configuration ready flag
     ScaReadBack = false;        // sca readback ready flag
 }
 
@@ -843,15 +635,15 @@ string CConsoleHelper::GetCmdData(string strCmd, string strCfgData)
     string strCmdData;
 
     strCmdData = "";
-    if (strCfgData.length() < 7) { return strCmdData; }    // no data
-    if (strCmd.length() != 4) {    return strCmdData; }        // bad command
+    if (strCfgData.length() < 7) { return strCmdData; } // no data
+    if (strCmd.length() != 4) { return strCmdData; }        // bad command
     iCmd = (int)strCfgData.find(strCmd+"=",0);
-    if (iCmd == -1) { return strCmdData; }            // cmd not found    
+    if (iCmd == -1) { return strCmdData; }          // cmd not found    
     iStart = (int)strCfgData.find("=",iCmd);                         
-    if (iStart == -1) { return strCmdData; }        // data start not found    
+    if (iStart == -1) { return strCmdData; }        // data start not found 
     iEnd = (int)strCfgData.find(";",iCmd);
-    if (iEnd == -1) {return strCmdData; }            // data end found    
-    if (iStart >= iEnd) { return strCmdData; }        // data error
+    if (iEnd == -1) {return strCmdData; }           // data end found   
+    if (iStart >= iEnd) { return strCmdData; }      // data error
     strCmdData = strCfgData.substr(iStart+1,(iEnd - (iStart+1)));
     return strCmdData;
 }
@@ -863,17 +655,17 @@ string CConsoleHelper::ReplaceCmdDesc(string strCmd, string strCfgData)
     string strDesc;
 
     strNew = "";
-    if (strCfgData.length() < 7) { return strCfgData; }    // no data
-    if (strCmd.length() != 4) {    return strCfgData; }        // bad command
+    if (strCfgData.length() < 7) { return strCfgData; } // no data
+    if (strCmd.length() != 4) { return strCfgData; }        // bad command
     iCmd = (int)strCfgData.find(strCmd+"=",0);
-    if (iCmd == -1) { return strCfgData; }                        // cmd not found    
+    if (iCmd == -1) { return strCfgData; }                      // cmd not found    
 
     strDesc = GetCmdDesc(strCmd);
-    if (strDesc.length() == 0) { return strCfgData; }        // cmd desc  not found
+    if (strDesc.length() == 0) { return strCfgData; }       // cmd desc  not found
     iStart = (int)strCfgData.find("=",iCmd);                         
-    if (iStart != (iCmd + 4)) { return strCfgData; }            // data start not found    
+    if (iStart != (iCmd + 4)) { return strCfgData; }            // data start not found 
     if (iCmd <= 0) {    // usually left string has iCmd-1
-        iCmd = 1;        // in this case left has 0 chars, set offset
+        iCmd = 1;       // in this case left has 0 chars, set offset
     }
     strNew = strCfgData.substr(0,iCmd-1) + strDesc + strCfgData.substr(iStart);
     return strNew;
@@ -886,19 +678,19 @@ string CConsoleHelper::AppendCmdDesc(string strCmd, string strCfgData)
     string strDesc;
 
     strNew = "";
-    if (strCfgData.length() < 7) { return strCfgData; }    // no data
-    if (strCmd.length() != 4) {    return strCfgData; }        // bad command
+    if (strCfgData.length() < 7) { return strCfgData; } // no data
+    if (strCmd.length() != 4) { return strCfgData; }        // bad command
     iCmd = (int)strCfgData.find(strCmd+"=",0);
-    if (iCmd == -1) { return strCfgData; }                        // cmd not found    
+    if (iCmd == -1) { return strCfgData; }                      // cmd not found    
     iEnd = (int)strCfgData.find(";",iCmd);
-    if (iEnd == -1) {return strCfgData; }            // data end found    
+    if (iEnd == -1) {return strCfgData; }           // data end found   
     iStart = (int)strCfgData.find("=",iCmd);                         
-    if (iStart != (iCmd + 4)) { return strCfgData; }            // data start not found    
-    if (iStart >= iEnd) { return strCfgData; }        // data error
+    if (iStart != (iCmd + 4)) { return strCfgData; }            // data start not found 
+    if (iStart >= iEnd) { return strCfgData; }      // data error
     strDesc = GetCmdDesc(strCmd);
-    if (strDesc.length() == 0) { return strCfgData; }        // cmd desc  not found
+    if (strDesc.length() == 0) { return strCfgData; }       // cmd desc  not found
     strNew = strCfgData.substr(0,iEnd+1) + "    " + strDesc + strCfgData.substr(iEnd+1);
-     return strNew;
+    return strNew;
 }
 
 string CConsoleHelper::GetCmdDesc(string strCmd)
@@ -1108,8 +900,8 @@ void CConsoleHelper::ConsoleGraph(long lData[], long chan, bool bLog, std::strin
     std::string strRow;
 
     if (strStatus.length() > 0) {
-        std::vector<string> vstr = Split(strStatus,"\r\n",true,true);    // create rows
-        for(iRow=0;iRow<(size_t)vstr.size();iRow++) {                    // copy to plot
+        std::vector<string> vstr = Split(strStatus,"\r\n",true,true);   // create rows
+        for(iRow=0;iRow<(size_t)vstr.size();iRow++) {                   // copy to plot
             strRow = vstr[iRow];
             iRowLen = (unsigned int)strRow.length();
             for(iCol=0;iCol<iRowLen;iCol++){
@@ -1142,7 +934,7 @@ string CConsoleHelper::CreateMCAData(long m_larDataBuffer[], SpectrumFileType sf
         return ("");
     }
     strText = "";
-       strMCA = "";
+    strMCA = "";
     switch(sfInfo.m_iNumChan){
         case 16384:
             strADC = "6";
@@ -1190,7 +982,7 @@ string CConsoleHelper::CreateMCAData(long m_larDataBuffer[], SpectrumFileType sf
     strMCA += sfInfo.strSpectrumConfig;
     strMCA += "<<DP5 CONFIGURATION END>>\r\n";
     strMCA += "<<DPP STATUS>>\r\n";
-    strMCA += sfInfo.strSpectrumStatus;    // this functin is included in most examples
+    strMCA += sfInfo.strSpectrumStatus; // this functin is included in most examples
     strMCA += "<<DPP STATUS END>>\r\n";
     return (strMCA);
 }

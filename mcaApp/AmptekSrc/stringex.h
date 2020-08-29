@@ -1,10 +1,10 @@
 #pragma once
 #ifndef STRINGEX_H
 #define STRINGEX_H
-//#pragma warning(disable:4996)  // uses _vsnprintf, disable warning, can use _CRT_SECURE_NO_WARNINGS
-//#ifdef _MSC_VER
+#ifdef _MSC_VER
+	#pragma warning(disable:4996)  // uses _vsnprintf, disable warning, can use _CRT_SECURE_NO_WARNINGS
 //	#define _CRT_SECURE_NO_WARNINGS
-//#endif
+#endif
 #include <stdio.h>
 #include <stdarg.h>
 #include <cstdarg>
