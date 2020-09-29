@@ -745,7 +745,10 @@ asynStatus drvAmptek::writeInt32(asynUser *pasynUser, epicsInt32 value)
         setDoubleParam(amptekFastCounts_,  CH_.DP5Stat.m_DP5_Status.FastCount);
         setDoubleParam(amptekDetTemp_,     CH_.DP5Stat.m_DP5_Status.DET_TEMP);
         setDoubleParam(amptekBoardTemp_,   CH_.DP5Stat.m_DP5_Status.DP5_TEMP);
-        setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
+        if (CH_.DP5Stat.m_DP5_Status.DEVICE_ID != dppDP5G)
+            setDoubleParam(amptekHighVoltage_, CH_.DP5Stat.m_DP5_Status.HV);
+        else
+            setDoubleParam(amptekHighVoltage_, amptekSetHighVoltage_);
     }
     else if (command == amptekLoadConfigFile_) {
         string configFileName;
