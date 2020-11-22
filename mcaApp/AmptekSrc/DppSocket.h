@@ -29,6 +29,8 @@
 	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <unistd.h>
+  #include <net/if.h>
+  #include <sys/ioctl.h>
 	#define Sleep(x) usleep((x)*1000)
 #endif
 using namespace std;
