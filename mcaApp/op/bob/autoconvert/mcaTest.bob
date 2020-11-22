@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>mcaTest</name>
+  <x>718</x>
+  <y>188</y>
+  <width>330</width>
+  <height>145</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #6</name>
+    <actions>
+      <action type="open_display">
+        <file>mca.opi</file>
+        <macros>
+          <M>aim_adc1</M>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>AIM MCA display #1</description>
+      </action>
+      <action type="open_display">
+        <file>mca.opi</file>
+        <macros>
+          <M>aim_adc2</M>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>AIM MCA display #2</description>
+      </action>
+      <action type="open_display">
+        <file>xxIcbAdc.opi</file>
+        <macros>
+          <ADC>adc1</ADC>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>Canberra ADC</description>
+      </action>
+      <action type="open_display">
+        <file>xxIcbAmp.opi</file>
+        <macros>
+          <AMP>amp1</AMP>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>Canberra Amp</description>
+      </action>
+      <action type="open_display">
+        <file>xxIcbHVPS.opi</file>
+        <macros>
+          <HVPS>hvps1</HVPS>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>Canberra HVPS</description>
+      </action>
+      <action type="open_display">
+        <file>xxIcbTCA.opi</file>
+        <macros>
+          <P>mcaTest:</P>
+          <TCA>tca1</TCA>
+        </macros>
+        <target>tab</target>
+        <description>Canberra TCA</description>
+      </action>
+      <action type="open_display">
+        <file>dsp9660Gain.opi</file>
+        <macros>
+          <DSP>dsp1</DSP>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>Canberra DSP 9660</description>
+      </action>
+      <action type="open_display">
+        <file>mcaStdRecords.opi</file>
+        <macros>
+          <P>mcaTest:</P>
+          <R>aim_adc1</R>
+        </macros>
+        <target>tab</target>
+        <description>AIM #1 std records</description>
+      </action>
+      <action type="open_display">
+        <file>DSA2000_HVPS.opi</file>
+        <macros>
+          <HVPS>hvps1:</HVPS>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>DSA-2000 HVPS</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>11</x>
+    <y>60</y>
+    <width>61</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #17</name>
+    <text>Canberra MCA electronics</text>
+    <x>77</x>
+    <y>60</y>
+    <width>240</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #20</name>
+    <x>7</x>
+    <y>17</y>
+    <width>310</width>
+    <height>30</height>
+    <line_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="153" green="255" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #23</name>
+    <text>MCA Test</text>
+    <x>114</x>
+    <y>19</y>
+    <width>96</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #26</name>
+    <actions>
+      <action type="open_display">
+        <file>mca.opi</file>
+        <macros>
+          <M>mca1</M>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>Rontec MCA</description>
+      </action>
+      <action type="open_display">
+        <file>RontecXFlash.opi</file>
+        <macros>
+          <M>mca1</M>
+          <P>mcaTest:</P>
+          <PORT>serial1</PORT>
+          <R>Rontec1</R>
+        </macros>
+        <target>tab</target>
+        <description>Rontec Setup</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>11</x>
+    <y>85</y>
+    <width>61</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #30</name>
+    <text>Rontec MCA electronics</text>
+    <x>77</x>
+    <y>85</y>
+    <width>220</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #33</name>
+    <actions>
+      <action type="open_display">
+        <file>mca.opi</file>
+        <macros>
+          <M>mca1</M>
+          <P>mcaTest:</P>
+        </macros>
+        <target>tab</target>
+        <description>Amptek MCA</description>
+      </action>
+      <action type="open_display">
+        <file>Amptek.opi</file>
+        <macros>
+          <M>mca1</M>
+          <P>mcaTest:</P>
+          <R>Amptek1:</R>
+        </macros>
+        <target>tab</target>
+        <description>Amptek Setup</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>11</x>
+    <y>110</y>
+    <width>61</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #37</name>
+    <text>Amptek MCA electronics</text>
+    <x>77</x>
+    <y>110</y>
+    <width>220</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

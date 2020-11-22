@@ -1,0 +1,881 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>xxIcbTCA</name>
+  <x>583</x>
+  <y>255</y>
+  <width>575</width>
+  <height>335</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #6</name>
+    <x>3</x>
+    <y>4</y>
+    <width>400</width>
+    <height>25</height>
+    <line_color>
+      <color red="60" green="180" blue="32">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="60" green="180" blue="32">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #9</name>
+    <text>ICB TCA</text>
+    <x>13</x>
+    <y>4</y>
+    <width>84</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #13</name>
+    <text>Can't Communicate</text>
+    <x>218</x>
+    <y>8</y>
+    <width>170</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="222" green="19" blue="9">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)$(TCA)STATUS.SEVR</pv_name>
+      </rule>
+    </rules>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #17</name>
+    <text>$(P)$(TCA)</text>
+    <x>103</x>
+    <y>7</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="235" green="241" blue="181">
+      </color>
+    </foreground_color>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #20</name>
+    <x>10</x>
+    <y>45</y>
+    <width>135</width>
+    <height>92</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #23</name>
+      <width>135</width>
+      <height>38</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #26</name>
+        <text>Output Polarity</text>
+        <width>135</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="combo" version="2.0.0">
+        <name>menu #29</name>
+        <pv_name>$(P)$(TCA)POLARITY</pv_name>
+        <x>27</x>
+        <y>18</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #32</name>
+      <x>22</x>
+      <y>54</y>
+      <width>90</width>
+      <height>38</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="combo" version="2.0.0">
+        <name>menu #35</name>
+        <pv_name>$(P)$(TCA)PUR_ENABLE</pv_name>
+        <x>4</x>
+        <y>18</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #38</name>
+        <text>PUR Enable</text>
+        <width>90</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #41</name>
+    <x>155</x>
+    <y>45</y>
+    <width>117</width>
+    <height>92</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #44</name>
+      <width>117</width>
+      <height>38</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #47</name>
+        <text>ICR Threshold</text>
+        <width>117</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="combo" version="2.0.0">
+        <name>menu #50</name>
+        <pv_name>$(P)$(TCA)THRESHOLD</pv_name>
+        <x>18</x>
+        <y>18</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #53</name>
+      <x>18</x>
+      <y>54</y>
+      <width>80</width>
+      <height>38</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #56</name>
+        <text>PUR AMP</text>
+        <x>9</x>
+        <width>63</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="combo" version="2.0.0">
+        <name>menu #59</name>
+        <pv_name>$(P)$(TCA)PUR_AMP</pv_name>
+        <y>18</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #62</name>
+    <text>SCA 1</text>
+    <x>9</x>
+    <y>182</y>
+    <width>53</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #65</name>
+    <text>Gate</text>
+    <x>81</x>
+    <y>165</y>
+    <width>63</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #68</name>
+    <pv_name>$(P)$(TCA)SCA1_GATE</pv_name>
+    <x>72</x>
+    <y>182</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #71</name>
+    <text>PUR</text>
+    <x>171</x>
+    <y>165</y>
+    <width>63</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #74</name>
+    <pv_name>$(P)$(TCA)SCA1_PUR</pv_name>
+    <x>162</x>
+    <y>182</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #77</name>
+    <text>Low</text>
+    <x>266</x>
+    <y>165</y>
+    <width>63</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #80</name>
+    <pv_name>$(P)$(TCA)SCA1_LOW</pv_name>
+    <x>252</x>
+    <y>182</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #84</name>
+    <text>%</text>
+    <x>333</x>
+    <y>185</y>
+    <width>9</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="scrollbar" version="2.0.0">
+    <name>valuator #87</name>
+    <pv_name>$(P)$(TCA)SCA1_LOW</pv_name>
+    <x>252</x>
+    <y>203</y>
+    <width>80</width>
+    <bar_length>1.0</bar_length>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #91</name>
+    <text>High</text>
+    <x>362</x>
+    <y>165</y>
+    <width>70</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #94</name>
+    <pv_name>$(P)$(TCA)SCA1_HI</pv_name>
+    <x>352</x>
+    <y>182</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #98</name>
+    <text>%</text>
+    <x>433</x>
+    <y>185</y>
+    <width>9</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="scrollbar" version="2.0.0">
+    <name>valuator #101</name>
+    <pv_name>$(P)$(TCA)SCA1_HI</pv_name>
+    <x>352</x>
+    <y>203</y>
+    <width>80</width>
+    <bar_length>1.0</bar_length>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #105</name>
+    <text>SCA 2</text>
+    <x>9</x>
+    <y>233</y>
+    <width>53</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #108</name>
+    <pv_name>$(P)$(TCA)SCA2_GATE</pv_name>
+    <x>72</x>
+    <y>233</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #111</name>
+    <pv_name>$(P)$(TCA)SCA2_PUR</pv_name>
+    <x>162</x>
+    <y>233</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="scrollbar" version="2.0.0">
+    <name>valuator #114</name>
+    <pv_name>$(P)$(TCA)SCA2_LOW</pv_name>
+    <x>252</x>
+    <y>254</y>
+    <width>80</width>
+    <bar_length>1.0</bar_length>
+  </widget>
+  <widget type="scrollbar" version="2.0.0">
+    <name>valuator #118</name>
+    <pv_name>$(P)$(TCA)SCA2_HI</pv_name>
+    <x>352</x>
+    <y>254</y>
+    <width>80</width>
+    <bar_length>1.0</bar_length>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #122</name>
+    <text>SCA 3</text>
+    <x>9</x>
+    <y>284</y>
+    <width>53</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #125</name>
+    <pv_name>$(P)$(TCA)SCA3_GATE</pv_name>
+    <x>72</x>
+    <y>284</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #128</name>
+    <pv_name>$(P)$(TCA)SCA3_PUR</pv_name>
+    <x>162</x>
+    <y>284</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #131</name>
+    <x>252</x>
+    <y>284</y>
+    <width>90</width>
+    <height>41</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #134</name>
+      <pv_name>$(P)$(TCA)SCA3_LOW</pv_name>
+      <width>80</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #138</name>
+      <text>%</text>
+      <x>81</x>
+      <y>3</y>
+      <width>9</width>
+      <height>15</height>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="scrollbar" version="2.0.0">
+      <name>valuator #141</name>
+      <pv_name>$(P)$(TCA)SCA3_LOW</pv_name>
+      <y>21</y>
+      <width>80</width>
+      <bar_length>1.0</bar_length>
+    </widget>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #145</name>
+    <pv_name>$(P)$(TCA)SCA3_HI</pv_name>
+    <x>352</x>
+    <y>284</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #149</name>
+    <text>%</text>
+    <x>433</x>
+    <y>287</y>
+    <width>9</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="scrollbar" version="2.0.0">
+    <name>valuator #152</name>
+    <pv_name>$(P)$(TCA)SCA3_HI</pv_name>
+    <x>352</x>
+    <y>305</y>
+    <width>80</width>
+    <bar_length>1.0</bar_length>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #156</name>
+    <pv_name>$(P)$(TCA)SCA2_LOW</pv_name>
+    <x>252</x>
+    <y>233</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #160</name>
+    <text>%</text>
+    <x>333</x>
+    <y>236</y>
+    <width>9</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #163</name>
+    <pv_name>$(P)$(TCA)SCA2_HI</pv_name>
+    <x>352</x>
+    <y>233</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #167</name>
+    <text>%</text>
+    <x>433</x>
+    <y>236</y>
+    <width>9</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #170</name>
+    <text>ROIs to SCAs</text>
+    <x>461</x>
+    <y>184</y>
+    <width>96</width>
+    <height>18</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #173</name>
+    <text>Enable</text>
+    <x>478</x>
+    <y>215</y>
+    <width>62</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #176</name>
+    <pv_name>$(P)$(TCA)ROI_SCA_ENABLE</pv_name>
+    <x>469</x>
+    <y>233</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #179</name>
+    <pv_name>$(P)$(TCA)SCA_CAL</pv_name>
+    <x>469</x>
+    <y>284</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="scrollbar" version="2.0.0">
+    <name>valuator #183</name>
+    <pv_name>$(P)$(TCA)SCA_CAL</pv_name>
+    <x>469</x>
+    <y>305</y>
+    <width>80</width>
+    <bar_length>1.0</bar_length>
+    <increment>0.0010000000474974513</increment>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #187</name>
+    <text>Calibration</text>
+    <x>460</x>
+    <y>266</y>
+    <width>99</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #190</name>
+    <x>454</x>
+    <y>172</y>
+    <width>110</width>
+    <height>155</height>
+    <line_width>1</line_width>
+    <line_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="0" green="0" blue="0">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #194</name>
+    <x>400</x>
+    <y>45</y>
+    <width>120</width>
+    <height>90</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #197</name>
+      <x>11</x>
+      <width>99</width>
+      <height>38</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #200</name>
+        <text>Status Rate</text>
+        <width>99</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="combo" version="2.0.0">
+        <name>menu #203</name>
+        <pv_name>$(P)$(TCA)READBACK.SCAN</pv_name>
+        <x>9</x>
+        <y>18</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #206</name>
+      <y>54</y>
+      <width>120</width>
+      <height>36</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #209</name>
+        <text>Status</text>
+        <x>33</x>
+        <width>54</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="textupdate" version="2.0.0">
+        <name>text update #212</name>
+        <pv_name>$(P)$(TCA)STATUS</pv_name>
+        <y>21</y>
+        <width>120</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <background_color>
+          <color red="235" green="241" blue="181">
+          </color>
+        </background_color>
+        <format>1</format>
+        <show_units>false</show_units>
+        <horizontal_alignment>1</horizontal_alignment>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #216</name>
+    <x>282</x>
+    <y>45</y>
+    <width>108</width>
+    <height>94</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #219</name>
+      <x>9</x>
+      <y>54</y>
+      <width>90</width>
+      <height>40</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="combo" version="2.0.0">
+        <name>menu #222</name>
+        <pv_name>$(P)$(TCA)TCA_SELECT</pv_name>
+        <x>4</x>
+        <y>20</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #225</name>
+        <text>Select TCA</text>
+        <width>90</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+    </widget>
+    <widget type="group" version="2.0.0">
+      <name>composite #228</name>
+      <width>108</width>
+      <height>38</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #231</name>
+        <text>Enable SCA's</text>
+        <width>108</width>
+        <height>15</height>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <horizontal_alignment>1</horizontal_alignment>
+      </widget>
+      <widget type="combo" version="2.0.0">
+        <name>menu #234</name>
+        <pv_name>$(P)$(TCA)SCA_ENABLE</pv_name>
+        <x>13</x>
+        <y>18</y>
+        <width>80</width>
+        <height>20</height>
+        <background_color>
+          <color red="115" green="223" blue="255">
+          </color>
+        </background_color>
+        <border_alarm_sensitive>false</border_alarm_sensitive>
+      </widget>
+    </widget>
+  </widget>
+</display>

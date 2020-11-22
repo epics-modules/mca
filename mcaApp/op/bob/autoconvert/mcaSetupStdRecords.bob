@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>mcaSetupStdRecords</name>
+  <x>700</x>
+  <y>423</y>
+  <width>270</width>
+  <height>450</height>
+  <background_color>
+    <color red="200" green="200" blue="200">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>MCA Setup</text>
+    <x>90</x>
+    <y>1</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #9</name>
+    <x>90</x>
+    <y>421</y>
+    <width>174</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="combo" version="2.0.0">
+      <name>menu #12</name>
+      <pv_name>$(P)$(R)ClientWait</pv_name>
+      <x>84</x>
+      <width>90</width>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #15</name>
+      <text>Client wait</text>
+      <y>3</y>
+      <width>77</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #18</name>
+    <x>62</x>
+    <y>396</y>
+    <width>202</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #21</name>
+      <text>Wait for client</text>
+      <y>3</y>
+      <width>105</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>menu #24</name>
+      <pv_name>$(P)$(R)EnableWait</pv_name>
+      <x>112</x>
+      <width>90</width>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #27</name>
+    <x>55</x>
+    <y>371</y>
+    <width>209</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #30</name>
+      <text>Check done every</text>
+      <y>3</y>
+      <width>112</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>menu #33</name>
+      <pv_name>$(P)$(R)ReadStatus.SCAN</pv_name>
+      <x>119</x>
+      <width>90</width>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #36</name>
+    <x>34</x>
+    <y>346</y>
+    <width>230</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #39</name>
+      <text>Read spectrum every</text>
+      <y>3</y>
+      <width>133</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="combo" version="2.0.0">
+      <name>menu #42</name>
+      <pv_name>$(P)$(R)Read.SCAN</pv_name>
+      <x>140</x>
+      <width>90</width>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #45</name>
+    <x>48</x>
+    <y>321</y>
+    <width>216</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #48</name>
+      <pv_name>$(P)$(R)Prescale</pv_name>
+      <x>126</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #52</name>
+      <text>MCS Ext. Prescale</text>
+      <y>3</y>
+      <width>119</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #55</name>
+    <x>34</x>
+    <y>296</y>
+    <width>230</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #58</name>
+      <pv_name>$(P)$(R)DwellTime</pv_name>
+      <x>140</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>2</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #62</name>
+      <text>MCS Int. Dwell Time</text>
+      <y>3</y>
+      <width>133</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #65</name>
+    <x>62</x>
+    <y>271</y>
+    <width>202</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="combo" version="2.0.0">
+      <name>menu #68</name>
+      <pv_name>$(P)$(R)ChannelAdvance</pv_name>
+      <x>112</x>
+      <width>90</width>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #71</name>
+      <text>Channel Advance</text>
+      <y>3</y>
+      <width>105</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #74</name>
+    <x>139</x>
+    <y>246</y>
+    <width>125</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="combo" version="2.0.0">
+      <name>menu #77</name>
+      <pv_name>$(P)$(R)AcquireMode</pv_name>
+      <x>35</x>
+      <width>90</width>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #80</name>
+      <text>Mode</text>
+      <y>3</y>
+      <width>28</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #83</name>
+    <x>76</x>
+    <y>171</y>
+    <width>188</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #86</name>
+      <pv_name>$(P)$(R)PresetCounts</pv_name>
+      <x>98</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #90</name>
+      <text>Preset Counts</text>
+      <y>3</y>
+      <width>91</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #93</name>
+    <x>41</x>
+    <y>146</y>
+    <width>223</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #96</name>
+      <pv_name>$(P)$(R)PresetHighChannel</pv_name>
+      <x>133</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #100</name>
+      <text>Preset End Channel</text>
+      <y>3</y>
+      <width>126</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #103</name>
+    <x>27</x>
+    <y>121</y>
+    <width>237</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #106</name>
+      <pv_name>$(P)$(R)PresetLowChannel</pv_name>
+      <x>147</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #110</name>
+      <text>Preset Start Channel</text>
+      <y>3</y>
+      <width>140</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #113</name>
+    <x>55</x>
+    <y>96</y>
+    <width>209</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #116</name>
+      <pv_name>$(P)$(R)PresetReal</pv_name>
+      <x>119</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #120</name>
+      <text>Preset Real Time</text>
+      <y>3</y>
+      <width>112</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #123</name>
+    <x>55</x>
+    <y>71</y>
+    <width>209</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #126</name>
+      <pv_name>$(P)$(R)PresetLive</pv_name>
+      <x>119</x>
+      <width>90</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #130</name>
+      <text>Preset Live Time</text>
+      <y>3</y>
+      <width>112</width>
+      <height>14</height>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #133</name>
+    <pv_name>$(P)$(R)NumChannels</pv_name>
+    <x>174</x>
+    <y>46</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #137</name>
+    <text>Number of channels</text>
+    <x>41</x>
+    <y>49</y>
+    <width>126</width>
+    <height>14</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #140</name>
+    <pv_name>$(P)$(R).NMAX</pv_name>
+    <x>174</x>
+    <y>26</y>
+    <width>90</width>
+    <height>15</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="235" green="241" blue="181">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #144</name>
+    <text>Max. number of channels</text>
+    <x>6</x>
+    <y>26</y>
+    <width>161</width>
+    <height>14</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #147</name>
+    <pv_name>$(P)$(R).HIGH</pv_name>
+    <x>174</x>
+    <y>196</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #151</name>
+    <text>Dead Time Warning (%)</text>
+    <x>26</x>
+    <y>199</y>
+    <width>147</width>
+    <height>14</height>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #154</name>
+    <pv_name>$(P)$(R).HIHI</pv_name>
+    <x>174</x>
+    <y>221</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #158</name>
+    <text>Dead Time Error (%)</text>
+    <x>40</x>
+    <y>225</y>
+    <width>133</width>
+    <height>14</height>
+    <auto_size>true</auto_size>
+  </widget>
+</display>

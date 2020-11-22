@@ -1,0 +1,1623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<display version="2.0.0">
+  <name>SIS38XX</name>
+  <x>155</x>
+  <y>131</y>
+  <width>680</width>
+  <height>650</height>
+  <background_color>
+    <color red="187" green="187" blue="187">
+    </color>
+  </background_color>
+  <grid_visible>false</grid_visible>
+  <grid_step_x>5</grid_step_x>
+  <widget type="label" version="2.0.0">
+    <name>text #6</name>
+    <text>Acquire</text>
+    <x>217</x>
+    <y>68</y>
+    <width>60</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #9</name>
+    <x>4</x>
+    <y>40</y>
+    <width>350</width>
+    <height>605</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #12</name>
+    <x>12</x>
+    <y>47</y>
+    <width>200</width>
+    <height>60</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #15</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)EraseAll</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)EraseAll</pv_name>
+    <text>Erase</text>
+    <x>113</x>
+    <y>79</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #18</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)EraseStart</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)EraseStart</pv_name>
+    <text>Erase/Start</text>
+    <x>18</x>
+    <y>79</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #21</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)StartAll</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)StartAll</pv_name>
+    <text>Start</text>
+    <x>18</x>
+    <y>54</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #24</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)StopAll</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)StopAll</pv_name>
+    <text>Stop</text>
+    <x>113</x>
+    <y>54</y>
+    <width>90</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #27</name>
+    <x>40</x>
+    <y>5</y>
+    <width>600</width>
+    <height>25</height>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #30</name>
+    <text>SIS3820/3801 MCS Control  $(P)</text>
+    <x>160</x>
+    <y>6</y>
+    <width>360</width>
+    <height>25</height>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="255" green="255" blue="255">
+      </color>
+    </foreground_color>
+    <horizontal_alignment>1</horizontal_alignment>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #33</name>
+    <x>18</x>
+    <y>162</y>
+    <width>217</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #36</name>
+      <pv_name>$(P)PresetReal</pv_name>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #40</name>
+      <text>Preset time</text>
+      <x>107</x>
+      <width>110</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #43</name>
+    <x>15</x>
+    <y>137</y>
+    <width>230</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textupdate" version="2.0.0">
+      <name>text update #46</name>
+      <pv_name>$(P)ElapsedReal</pv_name>
+      <width>103</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <foreground_color>
+        <color red="10" green="0" blue="184">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="187" green="187" blue="187">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <horizontal_alignment>2</horizontal_alignment>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #50</name>
+      <text>Elapsed time</text>
+      <x>110</x>
+      <width>120</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #53</name>
+    <x>18</x>
+    <y>212</y>
+    <width>248</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #56</name>
+      <pv_name>$(P)Prescale</pv_name>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #60</name>
+      <text>Ext. prescale</text>
+      <x>107</x>
+      <width>141</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #63</name>
+    <x>28</x>
+    <y>112</y>
+    <width>157</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="group" version="2.0.0">
+      <name>composite #66</name>
+      <width>90</width>
+      <height>20</height>
+      <style>3</style>
+      <transparent>true</transparent>
+      <widget type="label" version="2.0.0">
+        <name>text #69</name>
+        <text>Acquiring</text>
+        <width>90</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <foreground_color>
+          <color red="45" green="127" blue="0">
+          </color>
+        </foreground_color>
+        <horizontal_alignment>1</horizontal_alignment>
+        <rules>
+          <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+            <exp bool_exp="!(pv0!=0)">
+              <value>false</value>
+            </exp>
+            <pv_name>$(P)Acquiring</pv_name>
+          </rule>
+        </rules>
+      </widget>
+      <widget type="label" version="2.0.0">
+        <name>text #73</name>
+        <text>Done</text>
+        <x>50</x>
+        <width>40</width>
+        <font>
+          <font family="Liberation Sans" style="REGULAR" size="16.0">
+          </font>
+        </font>
+        <foreground_color>
+          <color red="222" green="19" blue="9">
+          </color>
+        </foreground_color>
+        <horizontal_alignment>1</horizontal_alignment>
+        <rules>
+          <rule name="vis_if_zero" prop_id="visible" out_exp="false">
+            <exp bool_exp="!(pv0==0)">
+              <value>false</value>
+            </exp>
+            <pv_name>$(P)Acquiring</pv_name>
+          </rule>
+        </rules>
+      </widget>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #77</name>
+      <text>Status</text>
+      <x>97</x>
+      <width>60</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #80</name>
+    <x>18</x>
+    <y>337</y>
+    <width>257</width>
+    <height>21</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="combo" version="2.0.0">
+      <name>menu #83</name>
+      <pv_name>$(P)UserLED</pv_name>
+      <y>1</y>
+      <height>20</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #86</name>
+      <text>User output/LED</text>
+      <x>107</x>
+      <width>150</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #89</name>
+    <x>18</x>
+    <y>363</y>
+    <width>248</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <rules>
+      <rule name="vis_if_not_zero" prop_id="visible" out_exp="false">
+        <exp bool_exp="!(pv0!=0)">
+          <value>false</value>
+        </exp>
+        <pv_name>$(P)Model</pv_name>
+      </rule>
+    </rules>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #92</name>
+      <pv_name>$(P)MUXOutput</pv_name>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #96</name>
+      <text>MUX output(1-32)</text>
+      <x>107</x>
+      <width>141</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #100</name>
+    <pv_name>$(P)InputMode</pv_name>
+    <x>18</x>
+    <y>413</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #103</name>
+    <text>Input mode</text>
+    <x>125</x>
+    <y>413</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="rectangle" version="2.0.0">
+    <name>rectangle #106</name>
+    <x>365</x>
+    <y>40</y>
+    <width>310</width>
+    <height>480</height>
+    <line_width>2</line_width>
+    <line_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </line_color>
+    <background_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </background_color>
+    <transparent>true</transparent>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #109</name>
+    <actions>
+      <action type="open_display">
+        <file>SIS38XX_8_plots.opi</file>
+        <macros>
+          <A>1</A>
+          <B>2</B>
+          <C>3</C>
+          <D>4</D>
+          <E>5</E>
+          <F>6</F>
+          <G>7</G>
+          <H>8</H>
+          <P>$(P)mca</P>
+        </macros>
+        <target>tab</target>
+        <description>Inputs 1-8</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_8_plots.opi</file>
+        <macros>
+          <A>9</A>
+          <B>10</B>
+          <C>11</C>
+          <D>12</D>
+          <E>13</E>
+          <F>14</F>
+          <G>15</G>
+          <H>16</H>
+          <P>$(P)mca</P>
+        </macros>
+        <target>tab</target>
+        <description>Inputs 9-16</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_8_plots.opi</file>
+        <macros>
+          <A>17</A>
+          <B>18</B>
+          <C>19</C>
+          <D>20</D>
+          <E>21</E>
+          <F>22</F>
+          <G>23</G>
+          <H>24</H>
+          <P>$(P)mca</P>
+        </macros>
+        <target>tab</target>
+        <description>Inputs 17-24</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_8_plots.opi</file>
+        <macros>
+          <A>25</A>
+          <B>26</B>
+          <C>27</C>
+          <D>28</D>
+          <E>29</E>
+          <F>30</F>
+          <G>31</G>
+          <H>32</H>
+          <P>$(P)mca</P>
+        </macros>
+        <target>tab</target>
+        <description>Inputs 25-32</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>375</x>
+    <y>55</y>
+    <width>60</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #115</name>
+    <text>Combined Plots</text>
+    <x>439</x>
+    <y>55</y>
+    <width>120</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #118</name>
+    <actions>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca1</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 1</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca2</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 2</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca3</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 3</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca4</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 4</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca5</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 5</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca6</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 6</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca7</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 7</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca8</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 8</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>375</x>
+    <y>80</y>
+    <width>60</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #128</name>
+    <text>Individual Plots 1-8</text>
+    <x>439</x>
+    <y>80</y>
+    <width>180</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #131</name>
+    <actions>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca9</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 9</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca10</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 10</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca11</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 11</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca12</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 12</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca13</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 13</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca14</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 4</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca15</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 15</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca16</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 16</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>375</x>
+    <y>105</y>
+    <width>60</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #141</name>
+    <text>Individual Plots 9-16</text>
+    <x>439</x>
+    <y>105</y>
+    <width>180</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #144</name>
+    <actions>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca17</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 17</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca18</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 18</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca19</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 19</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca20</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 20</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca21</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 21</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca22</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 22</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca23</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 23</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca24</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 24</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>375</x>
+    <y>130</y>
+    <width>60</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #154</name>
+    <text>Individual Plots 17-24</text>
+    <x>439</x>
+    <y>130</y>
+    <width>180</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #157</name>
+    <actions>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca25</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 25</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca26</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 26</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca27</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 27</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca28</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 28</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca29</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 29</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca30</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 30</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca31</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 31</description>
+      </action>
+      <action type="open_display">
+        <file>SIS38XX_plot.opi</file>
+        <macros>
+          <M>mca32</M>
+        </macros>
+        <target>tab</target>
+        <description>Channel 32</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>375</x>
+    <y>155</y>
+    <width>60</width>
+    <height>20</height>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #167</name>
+    <text>Individual Plots 25-32</text>
+    <x>439</x>
+    <y>155</y>
+    <width>180</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #170</name>
+    <pv_name>$(P)CurrentChannel</pv_name>
+    <x>375</x>
+    <y>232</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #174</name>
+    <text>Current channel</text>
+    <x>460</x>
+    <y>232</y>
+    <width>180</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #177</name>
+    <pv_name>$(P)EnableClientWait</pv_name>
+    <x>375</x>
+    <y>257</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #180</name>
+    <text>Wait for client</text>
+    <x>460</x>
+    <y>257</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #183</name>
+    <pv_name>$(P)ClientWait</pv_name>
+    <x>375</x>
+    <y>282</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #186</name>
+    <text>Client Wait</text>
+    <x>460</x>
+    <y>282</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>related display #189</name>
+    <actions>
+      <action type="open_display">
+        <file>asynRecord.opi</file>
+        <macros>
+          <R>Asyn</R>
+        </macros>
+        <target>tab</target>
+        <description>asyn record</description>
+      </action>
+    </actions>
+    <text></text>
+    <x>376</x>
+    <y>307</y>
+    <width>80</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #192</name>
+    <text>Asyn record</text>
+    <x>460</x>
+    <y>307</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #195</name>
+    <pv_name>$(P)AcquireMode</pv_name>
+    <x>18</x>
+    <y>388</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <foreground_color>
+      <color red="10" green="0" blue="184">
+      </color>
+    </foreground_color>
+    <background_color>
+      <color red="187" green="187" blue="187">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <horizontal_alignment>2</horizontal_alignment>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #199</name>
+    <text>Acquire mode</text>
+    <x>125</x>
+    <y>388</y>
+    <width>141</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #202</name>
+    <text>Channel 1 source</text>
+    <x>125</x>
+    <y>312</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #205</name>
+    <pv_name>$(P)Channel1Source</pv_name>
+    <x>18</x>
+    <y>312</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #208</name>
+    <x>18</x>
+    <y>287</y>
+    <width>257</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #211</name>
+      <text>Software chan. advance</text>
+      <x>107</x>
+      <width>150</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="action_button" version="3.0.0">
+      <name>message button #214</name>
+      <actions>
+        <action type="write_pv">
+          <pv_name>$(P)SoftwareChannelAdvance</pv_name>
+          <value>1</value>
+          <description>Write</description>
+        </action>
+      </actions>
+      <pv_name>$(P)SoftwareChannelAdvance</pv_name>
+      <text>Advance</text>
+      <y>1</y>
+      <height>18</height>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+    </widget>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #217</name>
+    <text>Count on start</text>
+    <x>125</x>
+    <y>262</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #220</name>
+    <pv_name>$(P)CountOnStart</pv_name>
+    <x>18</x>
+    <y>262</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #223</name>
+    <x>376</x>
+    <y>345</y>
+    <width>235</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textupdate" version="2.0.0">
+      <name>text update #226</name>
+      <pv_name>$(P)SNL_Connected</pv_name>
+      <width>130</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <foreground_color>
+        <color red="255" green="255" blue="255">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="0" green="0" blue="0">
+        </color>
+      </background_color>
+      <format>6</format>
+      <show_units>false</show_units>
+      <horizontal_alignment>1</horizontal_alignment>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #230</name>
+      <text>SNL Status</text>
+      <x>135</x>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #233</name>
+    <x>376</x>
+    <y>370</y>
+    <width>276</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textupdate" version="2.0.0">
+      <name>text update #236</name>
+      <pv_name>$(P)Model</pv_name>
+      <width>130</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <foreground_color>
+        <color red="10" green="0" blue="184">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="187" green="187" blue="187">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <horizontal_alignment>2</horizontal_alignment>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #240</name>
+      <text>Model</text>
+      <x>135</x>
+      <width>141</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #243</name>
+    <x>376</x>
+    <y>395</y>
+    <width>276</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textupdate" version="2.0.0">
+      <name>text update #246</name>
+      <pv_name>$(P)Firmware</pv_name>
+      <width>130</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <foreground_color>
+        <color red="10" green="0" blue="184">
+        </color>
+      </foreground_color>
+      <background_color>
+        <color red="187" green="187" blue="187">
+        </color>
+      </background_color>
+      <format>4</format>
+      <show_units>false</show_units>
+      <horizontal_alignment>2</horizontal_alignment>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #250</name>
+      <text>Firmware</text>
+      <x>135</x>
+      <width>141</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #253</name>
+    <pv_name>$(P)ChannelAdvance</pv_name>
+    <x>18</x>
+    <y>237</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #256</name>
+    <text>Channel advance source</text>
+    <x>125</x>
+    <y>237</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #259</name>
+    <x>375</x>
+    <y>205</y>
+    <width>245</width>
+    <height>22</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="label" version="2.0.0">
+      <name>text #262</name>
+      <text># channels to use</text>
+      <x>85</x>
+      <y>1</y>
+      <width>160</width>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #265</name>
+      <pv_name>$(P)NuseAll</pv_name>
+      <width>80</width>
+      <height>22</height>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>1</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+  </widget>
+  <widget type="textupdate" version="2.0.0">
+    <name>text update #269</name>
+    <pv_name>$(P)MaxChannels</pv_name>
+    <x>375</x>
+    <y>180</y>
+    <width>80</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>1</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #273</name>
+    <text>Max. # of channels</text>
+    <x>460</x>
+    <y>180</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="group" version="2.0.0">
+    <name>composite #276</name>
+    <x>18</x>
+    <y>187</y>
+    <width>207</width>
+    <height>20</height>
+    <style>3</style>
+    <transparent>true</transparent>
+    <widget type="textentry" version="3.0.0">
+      <name>text entry #279</name>
+      <pv_name>$(P)Dwell</pv_name>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <background_color>
+        <color red="115" green="223" blue="255">
+        </color>
+      </background_color>
+      <format>2</format>
+      <show_units>false</show_units>
+      <border_alarm_sensitive>false</border_alarm_sensitive>
+    </widget>
+    <widget type="label" version="2.0.0">
+      <name>text #283</name>
+      <text>Dwell time</text>
+      <x>107</x>
+      <font>
+        <font family="Liberation Sans" style="REGULAR" size="16.0">
+        </font>
+      </font>
+      <auto_size>true</auto_size>
+    </widget>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #286</name>
+    <pv_name>$(P)ReadAll.SCAN</pv_name>
+    <x>18</x>
+    <y>613</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #289</name>
+    <text>Read rate</text>
+    <x>125</x>
+    <y>613</y>
+    <width>90</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="action_button" version="3.0.0">
+    <name>message button #292</name>
+    <actions>
+      <action type="write_pv">
+        <pv_name>$(P)DoReadAll.VAL</pv_name>
+        <value>1</value>
+        <description>Write</description>
+      </action>
+    </actions>
+    <pv_name>$(P)DoReadAll.VAL</pv_name>
+    <text>Read</text>
+    <x>225</x>
+    <y>613</y>
+    <width>50</width>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #295</name>
+    <pv_name>$(P)OutputMode</pv_name>
+    <x>18</x>
+    <y>463</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #298</name>
+    <text>Output mode</text>
+    <x>125</x>
+    <y>463</y>
+    <width>110</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #301</name>
+    <pv_name>$(P)LNEOutputPolarity</pv_name>
+    <x>18</x>
+    <y>538</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #304</name>
+    <text>LNE output polarity</text>
+    <x>125</x>
+    <y>538</y>
+    <width>190</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #307</name>
+    <pv_name>$(P)LNEStretcherEnable</pv_name>
+    <x>18</x>
+    <y>513</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #310</name>
+    <text>LNE output stretcher</text>
+    <x>125</x>
+    <y>513</y>
+    <width>200</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #313</name>
+    <pv_name>$(P)LNEOutputDelay</pv_name>
+    <x>18</x>
+    <y>563</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>2</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #317</name>
+    <text>LNE output delay</text>
+    <x>125</x>
+    <y>563</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="textentry" version="3.0.0">
+    <name>text entry #320</name>
+    <pv_name>$(P)LNEOutputWidth</pv_name>
+    <x>18</x>
+    <y>588</y>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <format>2</format>
+    <show_units>false</show_units>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #324</name>
+    <text>LNE output width</text>
+    <x>125</x>
+    <y>588</y>
+    <width>160</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #327</name>
+    <text>Output polarity</text>
+    <x>125</x>
+    <y>488</y>
+    <width>150</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #330</name>
+    <pv_name>$(P)OutputPolarity</pv_name>
+    <x>18</x>
+    <y>488</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+  <widget type="label" version="2.0.0">
+    <name>text #333</name>
+    <text>Input polarity</text>
+    <x>125</x>
+    <y>438</y>
+    <width>140</width>
+    <font>
+      <font family="Liberation Sans" style="REGULAR" size="16.0">
+      </font>
+    </font>
+    <auto_size>true</auto_size>
+  </widget>
+  <widget type="combo" version="2.0.0">
+    <name>menu #336</name>
+    <pv_name>$(P)InputPolarity</pv_name>
+    <x>18</x>
+    <y>438</y>
+    <height>20</height>
+    <background_color>
+      <color red="115" green="223" blue="255">
+      </color>
+    </background_color>
+    <border_alarm_sensitive>false</border_alarm_sensitive>
+  </widget>
+</display>

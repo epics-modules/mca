@@ -1252,7 +1252,7 @@ int nmc_sendcmd(int module, int command, void *data, int dsize, void *response,
     /* Note, this code is specific to Ethernet. It will need
      * a little work if other networks are ever supported */
 
-    if (aimDebug > 7) errlogPrintf("(nmc_sendcmd): enter\n");
+    if (aimDebug > 7) errlogPrintf("(nmc_sendcmd): enter module=%d\n", module);
 
     MODULE_INTERLOCK_ON(module);
 
@@ -1315,6 +1315,12 @@ int nmc_sendcmd(int module, int command, void *data, int dsize, void *response,
      * Send the command - try i->max_tries times to get a valid response
      */
     for (tries=0; tries < i->max_tries; tries++) {
+        if (aimDebug > 10) {
+            int i;
+            errlogPrintf("(nmc_sendcmd): calling nmc_putmsg to write %d bytes packet=\n", cmdsize);
+            for (i=0; i<cmdsize; i++) errlogPrintf("%.2x ", ((u_char *)m->out_pkt)[i]);
+            errlogPrintf("\n");
+        }
         if ((s=nmc_putmsg(module, m->out_pkt, cmdsize)) == ERROR) goto done;
 
         /*
@@ -1352,6 +1358,12 @@ int nmc_sendcmd(int module, int command, void *data, int dsize, void *response,
 
         if(*size > rsize) *size = rsize;
         if(*size != 0) memcpy(response, m->in_pkt->ncp_packet_data, *size);
+        if (aimDebug > 10) {
+            int i;
+            errlogPrintf("(nmc_sendcmd): received %d bytes message=\n", *size);
+            for (i=0; i<*size; i++) errlogPrintf("%.2x ", ((u_char *)response)[i]);
+            errlogPrintf("\n");
+        }
         /* Success ! */
         s = OK;
         goto done;

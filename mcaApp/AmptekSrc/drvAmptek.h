@@ -65,7 +65,7 @@ class drvAmptek : public asynPortDriver
 {
   
   public:
-  drvAmptek(const char *portName, int interfaceType, const char *addressInfo);
+  drvAmptek(const char *portName, int interfaceType, const char *addressInfo, int directMode);
 
   // These are the methods we override from asynPortDriver
   asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
@@ -148,6 +148,7 @@ class drvAmptek : public asynPortDriver
   CConsoleHelper CH_;
   CONFIG_OPTIONS configOptions_;
   asynStatus connectDevice();
+  bool       directConnect(char* address);
   asynStatus findModule();
   asynStatus sendCommand(TRANSMIT_PACKET_TYPE command);
   asynStatus sendCommandString(string commandString);
@@ -165,6 +166,7 @@ class drvAmptek : public asynPortDriver
   bool haveConfigFromHW_;
   DppInterface_t interfaceType_;
   char *addressInfo_;
+  bool directMode_;
   epicsInt32 *pData_;
   size_t numChannels_;
 };

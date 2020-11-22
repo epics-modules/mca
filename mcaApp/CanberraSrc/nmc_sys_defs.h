@@ -55,6 +55,7 @@
   #else
     #include <libnet.h>
     #include <pcap.h>
+    #undef SOCKET
   #endif
 #endif
 #include <errlog.h>
