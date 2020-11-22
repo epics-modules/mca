@@ -7,9 +7,11 @@
 #include <iostream>          // For cout and cerr
 #include <string>            // For string
 #include <stdio.h>
+#include <ellLib.h>
+#include <osiSock.h>
+
 #ifdef WIN32
-	#include <winsock2.h>
-	typedef int socklen_t;
+  typedef int socklen_t;
 	typedef char raw_type;
 	#include <time.h>
 	#pragma comment(lib, "Ws2_32.lib")
@@ -29,8 +31,6 @@
 	#include <arpa/inet.h>
 	#include <netdb.h>
 	#include <unistd.h>
-  #include <net/if.h>
-  #include <sys/ioctl.h>
 	#define Sleep(x) usleep((x)*1000)
 #endif
 using namespace std;
@@ -61,7 +61,7 @@ public:
 	int UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort);
 	int UDPRecvFromNfAddr(unsigned char * buf, int len, char* lpIP, int &nPort);
 
-	int BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszInterface, int nFlags = 0);
+	int BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, sockaddr_in sockAddr, int nFlags = 0);
 	int UDP_recvfrom_TimeOut();
 	int GetLocalSocketInfo();
 
@@ -95,7 +95,7 @@ public:
 	char DppAddr[20];				// hold DPP device IP Address
 	unsigned long ulNetFinderAddr;  // 
 	unsigned int numIntf;
-	char Intf[10][20];
+  ELLLIST broadcastList;
 
 protected:
 	SOCKET m_hDppSocket;			// holds current socket descriptor
