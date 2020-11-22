@@ -11,52 +11,31 @@ CDppSocket::CDppSocket()
 {
 	m_rand = 0;
 
-	#ifdef WIN32
-	    WSADATA wsaData;
-		WORD wVersionRequested = MAKEWORD( 2, 2 );
-		int iResult = WSAStartup( wVersionRequested, &wsaData);
-		if (iResult != 0) {
-				m_nStartupOK = false;
-		} else {
-				m_nStartupOK = true;
-		}
-		m_hDppSocket = socket(AF_INET, SOCK_DGRAM, 0);	// CDppSocket Socktype is always UDP
-	#else
-		//if ((m_hDppSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-		//if ((m_hDppSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-		if ((m_hDppSocket = socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
-			fcntl(m_hDppSocket, F_SETFL, O_NONBLOCK); // set to non-blocking
-			cout << "DppSocket creation failed (socket())" << endl;
-			m_nStartupOK = false;
-		} else {
-			//cout << "DppSocket created" << endl;
-			m_nStartupOK = true;
-		}
+	m_nStartupOK = false;
+  if (osiSockAttach() == 0) {
+    printf("osiSockAttach failed\n");
+    return;
+  }
+	if ((m_hDppSocket = epicsSocketCreate(AF_INET, SOCK_DGRAM, 0)) < 0) {	// CDppSocket Socktype is always UDP
+    printf("epicsSocketCreate failed\n");
+    return;
+  }  
 
-		memset(Intf, 0, sizeof(Intf));
-		numIntf = 0;
+  osiSockAddr addr;
+  ellInit ( &broadcastList );
+  addr.ia.sin_family = AF_UNSPEC;
+  osiSockDiscoverBroadcastAddresses(&broadcastList, m_hDppSocket, &addr );
+  numIntf = ellCount(&broadcastList);
+  printf( "Found %d broadcast interfaces ...\n", numIntf);
+  printf ( "Broadcast list ...\n" );
+  osiSockAddrNode *pNode = (osiSockAddrNode *) ellFirst (&broadcastList);
+  while (pNode) {
+      char buf[64];
+      ipAddrToA ( &pNode->addr.ia, buf, sizeof ( buf ) );
+      printf ( "%s\n", buf );
+      pNode = (osiSockAddrNode *) ellNext ( &pNode->node );
+  }
 
-		struct ifconf ifc;
-		struct ifreq ifr[10];
-		unsigned int ifc_num, i;
-		ifc.ifc_len = sizeof(ifr);
-		ifc.ifc_ifcu.ifcu_buf = (caddr_t)ifr;
-
-		if (ioctl(m_hDppSocket, SIOCGIFCONF, &ifc) == 0) {
-			ifc_num = ifc.ifc_len / sizeof(struct ifreq);
-			printf("%d interfaces found\n", ifc_num);
-			for (i = 0; i < ifc_num; i++) {
-				if (strcmp(ifr[i].ifr_name, "lo") != 0) {
-					strcpy(Intf[numIntf], ifr[i].ifr_name);
-					numIntf++;
-				}
-			}
-		}
-		printf("collected have %d interface(s):\n", numIntf);
-		for (i = 0; i < numIntf; i++) {
-			printf("[%d] interface name = %s\n", i, Intf[i]);
-		}
-	#endif
 	timeout.tv_sec = 0;			// 0 sec, 50 msec timeout for recvfrom
 	timeout.tv_usec = 50000;		// reset timeout with SetTimeOut
 	sockaddr_in sin;
@@ -157,39 +136,18 @@ int CDppSocket::SendNetFinderBroadCast(int m_rand, int intf)
 	}
 	buff[2] = (m_rand >> 8);
 	buff[3] = (m_rand & 0x00FF);
-	iRetSock = BroadCastSendTo(buff, 6, 3040, Intf[intf]);
+  osiSockAddrNode *pNode = (osiSockAddrNode *) ellNth (&broadcastList, intf+1);
+	iRetSock = BroadCastSendTo(buff, 6, 3040, pNode->addr.ia);
 	if(iRetSock==SOCKET_ERROR) { return iRetSock; }
 	return 0;
 }
 
-int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszInterface, int nFlags)
+int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, sockaddr_in sockAddr, int nFlags)
 {
-	sockaddr_in sockAddr;
 	int iRet;
-
-	memset(&sockAddr,0,sizeof(sockAddr));
-
-	if (lpszInterface != NULL)
-	{
-		printf("broadcast interface set to %s..\n", lpszInterface);
-		int bcast;
-		char bcAddr[INET_ADDRSTRLEN] = {0};
-		struct ifreq ifr;
-		strcpy(ifr.ifr_name, lpszInterface);
-                if (ioctl(m_hDppSocket, SIOCGIFBRDADDR, &ifr) == 0) {
-			bcast = ((struct sockaddr_in *)(&ifr.ifr_broadaddr))->sin_addr.s_addr;
-			inet_ntop(AF_INET, &bcast, bcAddr, INET_ADDRSTRLEN);
-			printf("interface %s broadcast address %s\n", lpszInterface, bcAddr);
-			sockAddr.sin_addr.s_addr = bcast;
-		} else {
-			return SOCKET_ERROR;
-		}
-	}
-	else
-	{
-		printf("using broadcast address 255.255.255.255\n");
-		sockAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-	}
+  char buf[64];
+  ipAddrToA (&sockAddr, buf, sizeof(buf) );
+  printf("interface broadcast address %s\n", buf);
 
 	sockAddr.sin_family = AF_INET;
 	sockAddr.sin_port = htons((u_short)nHostPort);
