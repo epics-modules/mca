@@ -6,11 +6,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/socket.h>
 
 CDppSocket::CDppSocket()
 {
@@ -25,7 +20,7 @@ CDppSocket::CDppSocket()
 		} else {
 				m_nStartupOK = true;
 		}
-		m_hDppSocket = WSASocket(AF_INET,SOCK_DGRAM,0, 0, 0, 0);	// CDppSocket Socktype is always UDP
+		m_hDppSocket = socket(AF_INET, SOCK_DGRAM, 0);	// CDppSocket Socktype is always UDP
 	#else
 		//if ((m_hDppSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
 		//if ((m_hDppSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
