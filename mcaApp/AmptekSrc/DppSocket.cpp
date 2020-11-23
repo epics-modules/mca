@@ -5,32 +5,37 @@
 #include "DppSocket.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
+
 CDppSocket::CDppSocket()
 {
 	m_rand = 0;
 
-	#ifdef WIN32
-	    WSADATA wsaData;
-		WORD wVersionRequested = MAKEWORD( 2, 2 );
-		int iResult = WSAStartup( wVersionRequested, &wsaData);
-		if (iResult != 0) {
-				m_nStartupOK = false;
-		} else {
-				m_nStartupOK = true;
-		}
-		m_hDppSocket = WSASocket(AF_INET,SOCK_DGRAM,0, 0, 0, 0);	// CDppSocket Socktype is always UDP
-	#else
-		//if ((m_hDppSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-		//if ((m_hDppSocket = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
-		if ((m_hDppSocket = socket(PF_INET, SOCK_DGRAM, 0)) < 0) {
-			fcntl(m_hDppSocket, F_SETFL, O_NONBLOCK); // set to non-blocking
-			cout << "DppSocket creation failed (socket())" << endl;
-			m_nStartupOK = false;
-		} else {
-			//cout << "DppSocket created" << endl;
-			m_nStartupOK = true;
-		}
-	#endif
+	m_nStartupOK = false;
+  if (osiSockAttach() == 0) {
+    printf("osiSockAttach failed\n");
+    return;
+  }
+	if ((m_hDppSocket = epicsSocketCreate(AF_INET, SOCK_DGRAM, 0)) < 0) {	// CDppSocket Socktype is always UDP
+    printf("epicsSocketCreate failed\n");
+    return;
+  }  
+
+  osiSockAddr addr;
+  ellInit ( &broadcastList );
+  addr.ia.sin_family = AF_UNSPEC;
+  osiSockDiscoverBroadcastAddresses(&broadcastList, m_hDppSocket, &addr );
+  numIntf = ellCount(&broadcastList);
+  printf( "Found %d broadcast interfaces ...\n", numIntf);
+  printf ( "Broadcast list ...\n" );
+  osiSockAddrNode *pNode = (osiSockAddrNode *) ellFirst (&broadcastList);
+  while (pNode) {
+      char buf[64];
+      ipAddrToA ( &pNode->addr.ia, buf, sizeof ( buf ) );
+      printf ( "%s\n", buf );
+      pNode = (osiSockAddrNode *) ellNext ( &pNode->node );
+  }
+
 	timeout.tv_sec = 0;			// 0 sec, 50 msec timeout for recvfrom
 	timeout.tv_usec = 50000;		// reset timeout with SetTimeOut
 	sockaddr_in sin;
@@ -108,7 +113,7 @@ void CDppSocket::NotCDppSocket2() {
 }
 
 // Send Dpp Style NetFinder Broadcast Identity Request Packets
-int CDppSocket::SendNetFinderBroadCast(int m_rand)
+int CDppSocket::SendNetFinderBroadCast(int m_rand, int intf)
 {
 	int iRetSock;
 #ifdef WIN32
@@ -131,37 +136,20 @@ int CDppSocket::SendNetFinderBroadCast(int m_rand)
 	}
 	buff[2] = (m_rand >> 8);
 	buff[3] = (m_rand & 0x00FF);
-	iRetSock = BroadCastSendTo(buff, 6, 3040, NULL);
+  osiSockAddrNode *pNode = (osiSockAddrNode *) ellNth (&broadcastList, intf+1);
+	iRetSock = BroadCastSendTo(buff, 6, 3040, pNode->addr.ia);
 	if(iRetSock==SOCKET_ERROR) { return iRetSock; }
 	return 0;
 }
 
-int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszHostAddress, int nFlags)
+int CDppSocket::BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, sockaddr_in sockAddr, int nFlags)
 {
-	sockaddr_in sockAddr;
 	int iRet;
-
-	memset(&sockAddr,0,sizeof(sockAddr));
-
-	char *lpszAscii;
-	if (lpszHostAddress != NULL)		// broadcast only
-	{
-		return false;
-	}
-	else
-	{
-		lpszAscii = NULL;
-	}
+  char buf[64];
+  ipAddrToA (&sockAddr, buf, sizeof(buf) );
+  printf("interface broadcast address %s\n", buf);
 
 	sockAddr.sin_family = AF_INET;
-
-	if (lpszAscii == NULL)
-		sockAddr.sin_addr.s_addr = htonl(INADDR_BROADCAST);
-	else
-	{
-		return SOCKET_ERROR;
-	}
-
 	sockAddr.sin_port = htons((u_short)nHostPort);
 	iRet = sendto(m_hDppSocket, (char *)lpBuf, nBufLen, nFlags, (sockaddr *)&sockAddr, sizeof(sockAddr));
 	return iRet;
@@ -216,7 +204,7 @@ int CDppSocket::UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort
         if (bSocketDebug) printf("UDPRecvFrom data done %d\r\n", nRcv);
         if (lpIP != NULL) strcpy(lpIP, inet_ntoa (SockAddress.sin_addr));
 	      nPort = ntohs(SockAddress.sin_port);
-        nPort = 3040;
+        // nPort = 3040;
         if (bSocketDebug) printf("UDPRecvFrom Address: %s  Port: %d   bytes:%d\r\n",lpIP,nPort,nRcv);
     } else {
         nRcv = 0;

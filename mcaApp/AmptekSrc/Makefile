@@ -91,6 +91,7 @@ mcaAmptekApp_DBD += sscanSupport.dbd
 #=============================
 gccDppConsoleInet_SRCS += gccDppConsoleInet.cpp 
 gccDppConsoleInet_LIBS += mcaAmptek
+gccDppConsoleInet_LIBS += $(EPICS_BASE_IOC_LIBS)
 gccDppConsoleInet_SYS_LIBS_Linux += usb-1.0
 gccDppConsoleInet_LIBS_WIN32 += libusb-1.0
 

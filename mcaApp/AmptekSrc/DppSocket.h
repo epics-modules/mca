@@ -7,9 +7,11 @@
 #include <iostream>          // For cout and cerr
 #include <string>            // For string
 #include <stdio.h>
+#include <ellLib.h>
+#include <osiSock.h>
+
 #ifdef WIN32
-	#include <winsock2.h>
-	typedef int socklen_t;
+  typedef int socklen_t;
 	typedef char raw_type;
 	#include <time.h>
 	#pragma comment(lib, "Ws2_32.lib")
@@ -52,14 +54,14 @@ public:
 	void NotCDppSocket2();
 
 	void SetTimeOut(long tv_sec, long tv_usec);		// set socket timout to new value
-	int SendNetFinderBroadCast(int m_rand);
+	int SendNetFinderBroadCast(int m_rand, int intf);
 
 	int UDPSendTo(const unsigned char * buf, int len, const char* lpIP, int nPort);
 	void SetBlockingMode();
 	int UDPRecvFrom(unsigned char * buf, int len, char* lpIP, int &nPort);
 	int UDPRecvFromNfAddr(unsigned char * buf, int len, char* lpIP, int &nPort);
 
-	int BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, const char *lpszHostAddress = NULL, int nFlags = 0);
+	int BroadCastSendTo(const void* lpBuf, int nBufLen, unsigned int nHostPort, sockaddr_in sockAddr, int nFlags = 0);
 	int UDP_recvfrom_TimeOut();
 	int GetLocalSocketInfo();
 
@@ -92,6 +94,8 @@ public:
 	int NumDevices;					// Number of devices found by NetFinder
 	char DppAddr[20];				// hold DPP device IP Address
 	unsigned long ulNetFinderAddr;  // 
+	unsigned int numIntf;
+  ELLLIST broadcastList;
 
 protected:
 	SOCKET m_hDppSocket;			// holds current socket descriptor
