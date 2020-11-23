@@ -9,6 +9,26 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-9 (23-Nov-2020)</h2>
+  <ul>
+    <li>Amptek driver
+      <ul>
+        <li>Support optional direct connection rather than broadcast search via command line
+          argument to drvAmptekConfigure(). Thanks to Krisztian Loki for this.</li>
+        <li>Broadcast to all network interfaces when searching for modules. Previously it
+          only searched a single interface. Thanks to Hinko Kocevar for this. NOTE: this is
+          implemented on both Linux and Windows. However, the current version has not yet
+          been tested due to lack of access to hardware to test with.</li>
+      </ul>
+    </li>
+    <li>Added additional debugging output to the Canberra driver. Discovered that it is
+      not possible to communicate with the Canberra AIM from 10 Gbit interface cards,
+      even if the AIM is connected to a a 10/100/1000 Mbit switch. The reason for this
+      is not clear. Most messages are sent and received fine, but some are not.</li>
+    <li>Added CI support using ci-script and Travis. Thanks to Benjamin Bradnick for this.</li>
+    <li>Added OPI autoconvert files for CSS/Phoebus.</li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-8 (9-Aug-2019)</h2>
   <ul>
     <li>Added support for a new InputPolarity record for the SIS3820. This allows selecting
