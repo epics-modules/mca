@@ -4,6 +4,12 @@
 <head>
   <title>synApps EPICS mca module</title>
   <meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type" />
+  <style type="text/css">
+    .style1
+    {
+      height: 25px;
+    }
+  </style>
 </head>
 <body>
   <h1 style="text-align: center">
@@ -42,8 +48,10 @@
   <p>
     From <a href="http://www.amptek.com/">Amptek</a></p>
   <ul>
-    <li>CdTe, Si-PIN and Silicon Drift Detectors (SDD) with built-in DP5 digital signal
-      processing MCAs.</li>
+    <li>The digital pulse processing MCAs integrated into the X-123 CdTe, SDD, and Si-PIN
+      detectors</li>
+    <li>The standalone PX5 digital pulse processing MCA and power-supply</li>
+    <li>The MCA8000D standalone MCA which works with analog pulse shaping electronics</li>
   </ul>
   <p>
     From <a href="http://www.struck.de/">Struck Innovative Systems</a></p>
@@ -91,13 +99,149 @@
     <tbody>
       <tr align="center">
         <th>
-          Module version</th>
+          Module version
+        </th>
         <th>
-          Requires module</th>
+          Requires module
+        </th>
         <th>
-          Release needed</th>
+          Release needed
+        </th>
         <th>
-          Required for</th>
+          Required for
+        </th>
+      </tr>
+      <tr>
+        <td rowspan="8">
+          7-9</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.15.7 or 7.0.4.1</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-41</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td>
+          seq</td>
+        <td>
+          2-2-5</td>
+        <td>
+          SNL support for SIS38XX</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          3-6</td>
+        <td>
+          Scaler record for SIS38XX</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          3-7-3</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-11-3</td>
+        <td>
+          Needed by calc</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-7-2</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          5-19</td>
+        <td>
+          Save/restore</td>
+      </tr>
+      <tr>
+        <td rowspan="8">
+          7-8</td>
+        <td>
+          EPICS base</td>
+        <td>
+          3.15.7 or 7.0.4</td>
+        <td>
+          Base support</td>
+      </tr>
+      <tr>
+        <td>
+          asyn</td>
+        <td>
+          4-36</td>
+        <td>
+          Driver support</td>
+      </tr>
+      <tr>
+        <td class="style1">
+          seq</td>
+        <td class="style1">
+          2-2-5</td>
+        <td class="style1">
+          SNL support for SIS38XX</td>
+      </tr>
+      <tr>
+        <td>
+          std</td>
+        <td>
+          3-6</td>
+        <td>
+          Scaler record for SIS38XX</td>
+      </tr>
+      <tr>
+        <td>
+          calc</td>
+        <td>
+          3-7-3</td>
+        <td>
+          Transform record</td>
+      </tr>
+      <tr>
+        <td>
+          sscan</td>
+        <td>
+          2-11-3</td>
+        <td>
+          Needed by calc</td>
+      </tr>
+      <tr>
+        <td>
+          busy</td>
+        <td>
+          1-7-2</td>
+        <td>
+          Busy record</td>
+      </tr>
+      <tr>
+        <td>
+          autosave</td>
+        <td>
+          5-19</td>
+        <td>
+          Save/restore</td>
       </tr>
       <tr>
         <td rowspan="8">
