@@ -31,6 +31,6 @@ set_requestfile_path($(AUTOSAVE), "asApp/Db")
 set_requestfile_path($(CALC),     "calcApp/Db")
 set_requestfile_path($(MCA),      "mcaApp/Db")
 set_requestfile_path($(SSCAN),    "sscanApp/Db")
-set_requestfile_path($(STD),      "stdApp/Db")
+set_requestfile_path($(SCALER),      "db")
 
 #dbLoadRecords("$(AUTOSAVE)/asApp/Db/save_restoreStatus.db", "P=SIS:")
