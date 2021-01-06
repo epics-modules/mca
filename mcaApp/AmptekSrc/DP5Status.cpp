@@ -373,14 +373,14 @@ void CDP5Status::Process_Diagnostics(Packet_In PIN, DiagDataType *dd, int device
     dd->SRAMTestPass = (dd->SRAMTestData == 0xFFFFFF);
     dd->TempOffset = PIN.DATA[180] + 256 * (PIN.DATA[180] > 127);  // 8-bit signed value
 
-	if ((device_type == devtypeDP5) || (device_type == devtypeDP5X)) {
+	if ((device_type == dppDP5) || (device_type == dppDP5X)) {
 		for(idxVal=0;idxVal<10;idxVal++){
 			dd->ADC_V[idxVal] = (float)((((PIN.DATA[5 + idxVal * 2] & 3) * 256) + PIN.DATA[6 + idxVal * 2]) * 2.44 / 1024.0 * DP5_ADC_Gain[idxVal]); // convert counts to engineering units (C or V)
 		}
 		dd->ADC_V[7] = dd->ADC_V[7] + dd->ADC_V[6] * (float)(1.0 - DP5_ADC_Gain[7]);  // -5.5V is a function of +5.5V
 		dd->strTempRaw = strfn.Format("%   #.0f0C", dd->ADC_V[0] - 271.3);
 		dd->strTempCal = strfn.Format("%   #.0f0C", (dd->ADC_V[0] - 280.0 + dd->TempOffset));
-	} else if (device_type == devtypePX5) {
+	} else if (device_type == dppPX5) {
         for(idxVal=0;idxVal<11;idxVal++){
             dd->ADC_V[idxVal] = (float)((((PIN.DATA[5 + idxVal * 2] & 15) * 256) + PIN.DATA[6 + idxVal * 2]) * 3.0 / 4096.0 * PX5_ADC_Gain[idxVal]);   // convert counts to engineering units (C or V)
 		}
@@ -459,7 +459,7 @@ string CDP5Status::DiagnosticsToString(DiagDataType dd, int device_type)
         strDiag += "ERROR @ 0x" + FmtHex(dd.SRAMTestData, 6) + "\r\n";
     }
 
-	if ((device_type == devtypeDP5) || (device_type == devtypeDP5X)) {
+	if ((device_type == dppDP5) || (device_type == dppDP5X)) {
 		strDiag += "DP5 Temp (raw): " + dd.strTempRaw + "\r\n";
 		strDiag += "DP5 Temp (cal'd): " + dd.strTempCal + "\r\n";
 		strDiag += "PWR: " + FmtPc5Pwr(dd.ADC_V[2]) + "\r\n";
@@ -500,7 +500,7 @@ string CDP5Status::DiagnosticsToString(DiagDataType dd, int device_type)
 		} else {
 			strDiag += "PC5: Not Present\r\n";
 		}
-	} else if (device_type == devtypePX5) {
+	} else if (device_type == dppPX5) {
 		strDiag += "PX5 Temp (raw): " + dd.strTempRaw + "\r\n";
 		strDiag += "PX5 Temp (cal'd): " + dd.strTempCal + "\r\n";
 		//strDiag += "PWR: " + FmtPc5Pwr(dd.ADC_V[0]) + "\r\n";
@@ -547,7 +547,7 @@ string CDP5Status::DiagStrPX5Option(DiagDataType dd, int device_type)
         strDiag += "ERROR @ 0x" + FmtHex(dd.SRAMTestData, 6) + "\r\n";
     }
 
-	if (device_type == devtypePX5) {
+	if (device_type == dppPX5) {
 		strDiag += "PX5 Temp (raw): " + dd.strTempRaw + "\r\n";
 		strDiag += "PX5 Temp (cal'd): " + dd.strTempCal + "\r\n";
 		strDiag += "9V: " + FmtPc5Pwr(dd.ADC_V[0]) + "\r\n";

@@ -27,6 +27,8 @@ public:
 	std::string RemWhitespace(std::string strLine);
 	/// Reads a DPP configuration from a file.
 	std::string GetDP5CfgStr(std::string strFilename);
+	/// Reads a SCA configuration from a file.
+	std::string GetDP5ScaStr(std::string strFilename);
 	std::string CreateResTestReadBackCmd(bool bSendCoarseFineGain, int DppType);
 	/// Generates a configuration readback command from a list of all commands.
 	std::string CreateFullReadBackCmd(bool PC5_PRESENT, int DppType, bool isDP5_RevDxGains, unsigned char DPP_ECO);

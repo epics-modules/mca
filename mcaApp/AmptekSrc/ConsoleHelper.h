@@ -47,7 +47,7 @@ public:
     void Close_Connection();
     bool SendCommand(TRANSMIT_PACKET_TYPE XmtCmd);
     bool SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONFIG_OPTIONS CfgOptions);
-  
+
     /// dpp socket communications class.
     CDppSocket DppSocket;
     /// DppSocket is connected if true.
@@ -98,8 +98,8 @@ public:
     /// DPP packet parsing.
     CParsePacket ParsePkt;
     /// DPP status processing.
-    CDP5Status DP5Stat;            
-    
+    CDP5Status DP5Stat;
+
     // DPP packet processing functions.
 
     /// Processes DPP data from all communication interfaces (USB,RS232,INET)
@@ -162,7 +162,7 @@ public:
     /// Total gain display string.
     string strGainDisplayValue;
     /// Acquisition mode. (0=MCA, 1=MCS)
-    int AcqMode;                
+    int AcqMode;
 
     // configuration presets for display (status updates preset progress)
 
