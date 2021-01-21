@@ -52,5 +52,6 @@ public:
 	string PID2_TextToString(string strPacketSource, unsigned char PID2);
 	/// Parses incoming DPP packet, tests packet, populates packet information, sets packet state.
 	long ParsePacket(unsigned char P[], Packet_In *PIN);
+	string ParseCmd(string strPacketSource, Packet_In *PIN);
 };
 

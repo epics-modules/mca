@@ -641,10 +641,11 @@ bool CConsoleHelper::ReceiveData()
         case preqProcessCfgRead:
             ProcessCfgReadEx(DP5Proto.PIN, ParsePkt.DppState);
             break;
-        //case preqProcessAck:
+        case preqProcessAck:
         //    ProcessAck(DP5Proto.PIN.PID2);
-        //    break;
-        //case preqProcessError:
+            break;
+        case preqProcessError:
+cerr << "Error recevied" << endl;
         //    DisplayError(DP5Proto.PIN, ParsePkt.DppState);
         //    break;
         default:
