@@ -25,6 +25,8 @@
       not possible to communicate with the Canberra AIM from 10 Gbit interface cards,
       even if the AIM is connected to a a 10/100/1000 Mbit switch. The reason for this
       is not clear. Most messages are sent and received fine, but some are not.</li>
+    <li>Fix to allow building the Canberra driver on Centos 8 by undefining SOCKET when
+      using libnet and libpcap.</li>
     <li>Added CI support using ci-script and Travis. Thanks to Benjamin Bradnick for this.</li>
     <li>Added OPI autoconvert files for CSS/Phoebus.</li>
   </ul>
