@@ -188,19 +188,19 @@ asynStatus drvAmptek::connectDevice()
     static const char *functionName = "connectDevice";
 
     struct in_addr addr;
-    if (hostToIPAddr(addressInfo_, &addr)) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s ERROR: Cannot resolve address: %s\n",
-            driverName, functionName, addressInfo_);
-        return asynError;
-    }
 
     char dotaddr[] = "255.255.255.255";
     /* inet_ntoa() is not thread safe, and ipAddrToDottedIP() includes the port number */
-    epicsInt32 my_addr = ntohl(addr.s_addr);
-    snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 16) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
-
     if (interfaceType_ == DppInterfaceEthernet) {
+        if (hostToIPAddr(addressInfo_, &addr)) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s ERROR: Cannot resolve address: %s\n",
+                driverName, functionName, addressInfo_);
+            return asynError;
+        }
+        epicsInt32 my_addr = ntohl(addr.s_addr);
+        snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 16) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
+
         CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
     }
     if (directMode_) {
