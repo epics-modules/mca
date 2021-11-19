@@ -203,6 +203,10 @@ asynStatus drvAmptek::connectDevice()
 
         CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
     }
+    else
+    {
+    	snprintf(dotaddr, sizeof(dotaddr), addressInfo_);
+    }
     if (directMode_) {
         if (directConnect(dotaddr)) {
             asynPrint(pasynUserSelf, ASYN_TRACEIO_DRIVER,
@@ -220,7 +224,7 @@ asynStatus drvAmptek::connectDevice()
             driverName, functionName, addressInfo_, CH_.NumDevices);
     } else {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
+            "%s::%s ERROR: DPP device %s not found, total devices found=%d\n",
             driverName, functionName, addressInfo_, CH_.NumDevices);
         return asynError;
     }
