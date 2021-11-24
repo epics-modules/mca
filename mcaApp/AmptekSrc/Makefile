@@ -40,6 +40,7 @@ ifeq ($(LINUX_LIBUSB-1.0_INSTALLED),YES)
   PROD_IOC_Linux    += mcaAmptekApp
   PROD_IOC_Linux    += gccDppConsoleInet
   PROD_IOC_Linux    += amptekTest1
+  PROD_IOC_Linux    += amptekTest2
 endif
 
 USR_INCLUDES_Linux += -I/usr/include/libusb-1.0
@@ -102,6 +103,13 @@ amptekTest1_LIBS += mcaAmptek
 amptekTest1_LIBS += $(EPICS_BASE_IOC_LIBS)
 amptekTest1_SYS_LIBS_Linux += usb-1.0
 amptekTest1_LIBS_WIN32 += libusb-1.0
+
+#=============================
+amptekTest2_SRCS += amptekTest2.cpp
+amptekTest2_LIBS += mcaAmptek
+amptekTest2_LIBS += $(EPICS_BASE_IOC_LIBS)
+amptekTest2_SYS_LIBS_Linux += usb-1.0
+amptekTest2_LIBS_WIN32 += libusb-1.0
 
 include $(TOP)/configure/RULES
 #----------------------------------------
