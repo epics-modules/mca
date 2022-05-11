@@ -167,7 +167,7 @@ class drvAmptek : public asynPortDriver
   DppInterface_t interfaceType_;
   char *addressInfo_;
   bool directMode_;
-  epicsInt32 *pData_;
+  epicsInt32 *pData_ = NULL;
   size_t numChannels_;
 };
 
