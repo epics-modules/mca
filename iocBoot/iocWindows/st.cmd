@@ -7,13 +7,14 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 errlogInit(20000)
 
 epicsEnvSet PREFIX mcaTest:
-epicsEnvSet ADDRESS 0X3ED
+#epicsEnvSet ADDRESS 0X3ED
+epicsEnvSet ADDRESS 0X6E6
 # 1. \Device\NPF_{B5CB1272-43CF-4855-A2B6-F0974E097D0E} (Intel(R) Ethernet Connection (5) I219-LM)
 # 2. \Device\NPF_{31BDF62B-376D-48C8-9F87-3D152A3F6473} (Intel(R) Ethernet 10G 2P X550-t Adapter)
 # 3. \Device\NPF_{7314A851-AA79-4A9C-937F-F8C73BC7BB75} (Intel(R) Ethernet 10G 2P X550-t Adapter)
-#epicsEnvSet INTERFACE " \\Device\\NPF_{B5CB1272-43CF-4855-A2B6-F0974E097D0E}"
-epicsEnvSet INTERFACE " \\Device\\NPF_{7314A851-AA79-4A9C-937F-F8C73BC7BB75}"
-
+#epicsEnvSet INTERFACE "\\Device\\NPF_{B5CB1272-43CF-4855-A2B6-F0974E097D0E}"
+#epicsEnvSet INTERFACE "\\Device\\NPF_{7314A851-AA79-4A9C-937F-F8C73BC7BB75}"
+epicsEnvSet INTERFACE "\\Device\\NPF_{3BD8078E-A967-48D1-8B49-A21FA38B19F0}"
 #var aimDebug 20
 #var icbDebug 20
 
