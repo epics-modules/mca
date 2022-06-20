@@ -47,7 +47,7 @@
   #include <sockLib.h>
   #include <net/if_llc.h>
   #include "llc.h"
-#elif defined (CYGWIN32) || defined(_WIN32)
+#elif defined(_WIN32)
   #include <pcap.h>
 #else
   #ifdef USE_SOCKETS
