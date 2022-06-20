@@ -64,6 +64,27 @@
   <p>
     To configure the DP5 to use a static IP address use the Firmware Manager software
     from Amptek.</p>
+  <p>
+    When using USB with a single DP5 MCA, the serial number does not have to be
+    specified (i.e. can be left blank).  If there are multiple DP5 MCA, you
+    should specify the device you want to connect to by the serial number,
+    otherwise the first DP5 MCA to enumerate will be connected.
+    The serial number should be on a label on the chassis.  It can also be
+    found by repeating the following for each DP5 MCA:
+  <ol>
+    <li>connect a single DP5 MCA (disconnect or power down the others)
+    <li>run mcaAmptekApp with a single mca record without specifying a
+      serial number
+    <li>caget $(P)$(R)SerialNumber
+  </ol>
+  <p>
+    or by looping though the following with values of $(index) from 1 to the
+    number of detectors plugged in and powered up:
+  <ol>
+    <li>running amptekTest2 -d $(index)
+    <li>look for the serial number in the output
+  </ol>
+  amptekTest2 is included in this module.
   <h2 id="Software_architecture">
     Software architecture</h2>
   <p>
@@ -627,9 +648,11 @@
       interfaceType:       # The interface to use: 0=Ethernet, 1=USB, 2=RS-232
       addressInfo          # The device address information. 
                            # For Ethernet this is the IP address of the module.
-                           # For USB this argument is not used.
+                           # For USB, this argument may be the serial number
+                           #   or left blank for the default unit.
                            # RS-232 is not currently supported.
-      directMode:          # Enable broadcast-less connection: 0=use broadcast, 1=skip broadcast
+      directMode:          # Enable broadcast-less connection: 0=use broadcast,
+                           #   1=skip broadcast
 </pre>
   <h2 id="Restrictions">
     Restrictions</h2>
