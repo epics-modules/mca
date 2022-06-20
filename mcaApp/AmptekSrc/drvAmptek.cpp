@@ -60,14 +60,13 @@ static void exitHandlerC(void *arg)
 drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo, int directMode)
    : asynPortDriver(portName, 
                     MAX_SCAS, /* Maximum address */
-                    0, /* Unused, number of parameters */
                     asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask, /* Interface mask */
                     asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                   /* Interrupt mask */
                     ASYN_CANBLOCK, /* asynFlags.  This driver can block and is not multi-device */
                     1, /* Autoconnect */
                     0, /* Default priority */
-                    0) /* Default stack size*/
-
+                    0), /* Default stack size*/
+    pData_(NULL)
 {
     asynStatus status;
     const char *functionName = "drvAmptek";
@@ -188,20 +187,24 @@ asynStatus drvAmptek::connectDevice()
     static const char *functionName = "connectDevice";
 
     struct in_addr addr;
-    if (hostToIPAddr(addressInfo_, &addr)) {
-        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s ERROR: Cannot resolve address: %s\n",
-            driverName, functionName, addressInfo_);
-        return asynError;
-    }
 
     char dotaddr[] = "255.255.255.255";
     /* inet_ntoa() is not thread safe, and ipAddrToDottedIP() includes the port number */
-    epicsInt32 my_addr = ntohl(addr.s_addr);
-    snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 16) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
-
     if (interfaceType_ == DppInterfaceEthernet) {
+        if (hostToIPAddr(addressInfo_, &addr)) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s ERROR: Cannot resolve address: %s\n",
+                driverName, functionName, addressInfo_);
+            return asynError;
+        }
+        epicsInt32 my_addr = ntohl(addr.s_addr);
+        snprintf(dotaddr, sizeof(dotaddr), "%d.%d.%d.%d", (my_addr >> 24) & 0xFF, (my_addr >> 16) & 0xFF, (my_addr >> 8) & 0xFF, (my_addr) & 0xFF);
+
         CH_.DppSocket.SetTimeOut((long)(TIMEOUT), (long)((TIMEOUT-(int)TIMEOUT)*1e6));
+    }
+    else
+    {
+    	snprintf(dotaddr, sizeof(dotaddr), addressInfo_);
     }
     if (directMode_) {
         if (directConnect(dotaddr)) {
@@ -220,7 +223,7 @@ asynStatus drvAmptek::connectDevice()
             driverName, functionName, addressInfo_, CH_.NumDevices);
     } else {
         asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
-            "%s::%s ERROR: Network DPP device %s not found, total devices found=%d\n",
+            "%s::%s ERROR: DPP device %s not found, total devices found=%d\n",
             driverName, functionName, addressInfo_, CH_.NumDevices);
         return asynError;
     }

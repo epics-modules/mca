@@ -36,10 +36,8 @@
  * SUCH DAMAGE.
  */
 
-/*
- * For backwards compatibility.
- *
- * Note to OS vendors: do NOT get rid of this file!  Some applications
- * might expect to be able to include <pcap-bpf.h>.
- */
-#include <pcap/bpf.h>
+#define	IPH_AF_INET	2		/* Matches Solaris's AF_INET */
+#define	IPH_AF_INET6	26		/* Matches Solaris's AF_INET6 */
+
+#define	IPNET_OUTBOUND		1
+#define	IPNET_INBOUND		2

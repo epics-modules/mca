@@ -7,8 +7,10 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 errlogInit(20000)
 
 epicsEnvSet PREFIX mcaTest:
-epicsEnvSet ADDRESS 0X3ED
-epicsEnvSet INTERFACE eno1
+#epicsEnvSet ADDRESS 0X3ED
+epicsEnvSet ADDRESS 0X6E6
+#epicsEnvSet INTERFACE eno1
+epicsEnvSet INTERFACE p5p1
 #epicsEnvSet INTERFACE enp23s0f1
 #var aimDebug 20
 #var icbDebug 20

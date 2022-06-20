@@ -1,3 +1,4 @@
+/* -*- Mode: c; tab-width: 8; indent-tabs-mode: 1; c-basic-offset: 8; -*- */
 /*
  * Copyright (c) 1993, 1994, 1995, 1996, 1997
  *	The Regents of the University of California.  All rights reserved.
@@ -31,13 +32,53 @@
  * SUCH DAMAGE.
  */
 
+#ifndef lib_pcap_socket_h
+#define lib_pcap_socket_h
+
 /*
- * For backwards compatibility.
- *
- * Note to OS vendors: do NOT get rid of this file!  Many applications
- * expect to be able to include <pcap.h>, and at least some of them
- * go through contortions in their configure scripts to try to detect
- * OSes that have "helpfully" moved pcap.h to <pcap/pcap.h> without
- * leaving behind a <pcap.h> file.
+ * Some minor differences between sockets on various platforms.
+ * We include whatever sockets are needed for Internet-protocol
+ * socket access on UN*X and Windows.
  */
-#include <pcap/pcap.h>
+#ifdef _WIN32
+  /* Need windef.h for defines used in winsock2.h under MingW32 */
+  #ifdef __MINGW32__
+    #include <windef.h>
+  #endif
+  #include <winsock2.h>
+  #include <ws2tcpip.h>
+
+  /*
+   * Winsock doesn't have this POSIX type; it's used for the
+   * tv_usec value of struct timeval.
+   */
+  typedef long suseconds_t;
+#else /* _WIN32 */
+  #include <sys/types.h>
+  #include <sys/socket.h>
+  #include <netdb.h>		/* for struct addrinfo/getaddrinfo() */
+  #include <netinet/in.h>	/* for sockaddr_in, in BSD at least */
+  #include <arpa/inet.h>
+
+  /*!
+   * \brief In Winsock, a socket handle is of type SOCKET; in UN*X, it's
+   * a file descriptor, and therefore a signed integer.
+   * We define SOCKET to be a signed integer on UN*X, so that it can
+   * be used on both platforms.
+   */
+  #ifndef SOCKET
+    #define SOCKET int
+  #endif
+
+  /*!
+   * \brief In Winsock, the error return if socket() fails is INVALID_SOCKET;
+   * in UN*X, it's -1.
+   * We define INVALID_SOCKET to be -1 on UN*X, so that it can be used on
+   * both platforms.
+   */
+  #ifndef INVALID_SOCKET
+    #define INVALID_SOCKET -1
+  #endif
+#endif /* _WIN32 */
+
+#endif /* lib_pcap_socket_h */
