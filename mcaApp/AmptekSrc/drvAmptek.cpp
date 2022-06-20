@@ -60,14 +60,13 @@ static void exitHandlerC(void *arg)
 drvAmptek::drvAmptek(const char *portName, int interfaceType, const char *addressInfo, int directMode)
    : asynPortDriver(portName, 
                     MAX_SCAS, /* Maximum address */
-                    0, /* Unused, number of parameters */
                     asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask | asynDrvUserMask, /* Interface mask */
                     asynInt32Mask | asynInt32ArrayMask | asynFloat64Mask | asynOctetMask,                   /* Interrupt mask */
                     ASYN_CANBLOCK, /* asynFlags.  This driver can block and is not multi-device */
                     1, /* Autoconnect */
                     0, /* Default priority */
-                    0) /* Default stack size*/
-
+                    0), /* Default stack size*/
+    pData_(NULL)
 {
     asynStatus status;
     const char *functionName = "drvAmptek";
