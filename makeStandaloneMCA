@@ -1,0 +1,42 @@
+DESTINATION=/home/epics/public_html/pub/mcaStandalone_$1
+
+find . -name 'auto_settings*.sav*_*' -exec rm -fv {} \;
+find . -name 'core.*' -exec rm -fv {} \;
+pushd ..
+
+tar czf $DESTINATION.tgz \
+asyn-*/db \
+asyn-*/opi \
+autosave-*/asApp/Db/ \
+autosave-*/asApp/op/ \
+sscan-*/sscanApp/Db/ \
+sscan-*/sscanApp/op/ \
+areaDetector-*/ADCore/db/ \
+areaDetector-*/ADCore/ADApp/op/ \
+mca-*/documentation \
+mca-*/mcaApp/Db \
+mca-*/mcaApp/op \
+mca-*/bin/win* \
+mca-*/bin/linux* \
+mca-*/dbd/ \
+mca-*/iocBoot
+
+rm -f $DESTINATION.zip
+zip -r -q $DESTINATION.zip   \
+asyn-*/db \
+asyn-*/opi \
+autosave-*/asApp/Db/ \
+autosave-*/asApp/op/ \
+sscan-*/sscanApp/Db/ \
+sscan-*/sscanApp/op/ \
+areaDetector-*/ADCore/db/ \
+areaDetector-*/ADCore/ADApp/op/ \
+mca-*/documentation \
+mca-*/mcaApp/Db \
+mca-*/mcaApp/op \
+mca-*/bin/win* \
+mca-*/bin/linux* \
+mca-*/dbd/ \
+mca-*/iocBoot \
+--exclude '*.svn*' --exclude '*/O.*'
+popd
