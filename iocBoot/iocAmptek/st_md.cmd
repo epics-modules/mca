@@ -32,7 +32,7 @@ dbLoadRecords("$(ASYN)/db/asynRecord.db","P=mcaTest:,R=asyn1,PORT=Amptek1,ADDR=0
 dbLoadRecords("$(ASYN)/db/asynRecord.db","P=mcaTest:,R=asyn2,PORT=Amptek2,ADDR=0,OMAX=256,IMAX=256")
 dbLoadRecords("$(ASYN)/db/asynRecord.db","P=mcaTest:,R=asyn3,PORT=Amptek3,ADDR=0,OMAX=256,IMAX=256")
 
-< save_restore.cmd
+< ../save_restore.cmd
 
 iocInit()
 

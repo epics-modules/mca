@@ -17,7 +17,7 @@ dbLoadTemplate("Amptek_SCAs.substitutions")
 
 dbLoadRecords("$(ASYN)/db/asynRecord.db","P=mcaTest:,R=asyn1,PORT=Amptek1,ADDR=0,OMAX=256,IMAX=256")
 
-< save_restore.cmd
+< ../save_restore.cmd
 
 iocInit()
 

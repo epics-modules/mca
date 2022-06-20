@@ -9,7 +9,7 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 # AIMConfig(portName, ethernet_address, portNumber(1 or 2), maxChans,
 #           maxSignals, maxSequences, ethernetDevice)
 AIMConfig("AIM1/1", 0x8058, 1, 2048, 1, 1, "eth1")
-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
+dbLoadRecords("$(MCA)/db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
 
 #icbConfig(portName, module, ethernetAddress, icbAddress, moduleType)
 #   portName to give to this asyn port
@@ -22,10 +22,10 @@ dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP
 #      3 = TCA
 #      4 = DSP
 icbConfig("icbDsp1", 0x8058, 0, 4)
-dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
+dbLoadRecords("$(MCA)/db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
 
 DSA2000Config("DSA2000",0x8058)
-dbLoadRecords("$(MCA)/mcaApp/Db/DSA2000_HVPS.db", "P=mcaTest:,HVPS=hvps1:,PORT=DSA2000,LIMIT=5000")
+dbLoadRecords("$(MCA)/db/DSA2000_HVPS.db", "P=mcaTest:,HVPS=hvps1:,PORT=DSA2000,LIMIT=5000")
 
 
 #asynSetTraceMask "AIM1/1",0,0xff
@@ -33,7 +33,7 @@ dbLoadRecords("$(MCA)/mcaApp/Db/DSA2000_HVPS.db", "P=mcaTest:,HVPS=hvps1:,PORT=D
 #asynSetTraceMask "icbHvps1",0,0xff
 #asynSetTraceMask "DSA2000",0,0xff
 
-< save_restore.cmd
+< ../save_restore.cmd
 
 set_pass0_restoreFile("DSA2000_settings.sav")
 set_pass1_restoreFile("DSA2000_settings.sav")

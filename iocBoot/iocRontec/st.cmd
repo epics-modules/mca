@@ -28,12 +28,12 @@ RontecConfig(Rontec1, serial1, 0)
 #asynSetTraceMask(Rontec1, 0, 255)
 #asynSetTraceIOMask(Rontec1, 0, 2)
 
-dbLoadRecords("../../mcaApp/Db/mca.db","P=mcaTest:,M=mca1,NCHAN=1024,DTYP=asynMCA,INP=@asyn(Rontec1)")
-dbLoadRecords("../../mcaApp/Db/RontecXFlash.db","P=mcaTest:,R=Rontec1,PORT=serial1")
+dbLoadRecords("../../db/mca.db","P=mcaTest:,M=mca1,NCHAN=1024,DTYP=asynMCA,INP=@asyn(Rontec1)")
+dbLoadRecords("../../db/RontecXFlash.db","P=mcaTest:,R=Rontec1,PORT=serial1")
 
 dbLoadRecords("$(ASYN)/db/asynRecord.db","P=mcaTest:,R=serial1,PORT=serial1,ADDR=0,OMAX=256,IMAX=256")
 
-< save_restore.cmd
+< ../save_restore.cmd
 
 iocInit()
 
