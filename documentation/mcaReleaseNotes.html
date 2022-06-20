@@ -9,6 +9,44 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
+    Release 7-10 (20-Jun-2022)</h2>
+  <ul>
+    <li>mcaRecord
+      <ul>
+        <li>Fixed bug with memory corruption when calculating ROIs.</li>
+      </ul>
+    </li>
+    <li>devMcaAysn
+      <ul>
+        <li>Fixed bug that was causing memory corruption on 64-bit Linux. Changed "long" to
+          epicsInt32.</li>
+      </ul>
+    </li>
+    <li>Amptek driver
+      <ul>
+        <li>Support for multiple USB devices by specifying a serial number in the configuration
+          command. Thanks to Ru Igarashi for this.</li>
+      </ul>
+    </li>
+    <li>SIS38xx driver
+      <ul>
+        <li>Fix bug when stopping scaler manually, it was not setting acquiring_=0.</li>
+      </ul>
+    </li>
+    <li>Canberra driver
+      <ul>
+        <li>Changed from using the WinPcap library to the Npcap library. WinPcap is no longer
+          supported. Npcap is the replacement. It is free for up to 5 machines. As with the
+          previous WinPcamp support, the mca module contains only the include files and .lib
+          files. The Npcap package must be installed on the Windows IOC machine because that
+          provides the required .dll and driver files. </li>
+      </ul>
+    </li>
+    <li>Changed to use the "scaler" module rather than the "std" module for scaler record
+      support.</li>
+    <li>Removed support for Cygwin. This support has not actually worked for many years.</li>
+  </ul>
+  <h2 style="text-align: center">
     Release 7-9 (23-Nov-2020)</h2>
   <ul>
     <li>Amptek driver
