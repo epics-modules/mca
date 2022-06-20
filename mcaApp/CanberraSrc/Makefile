@@ -25,7 +25,6 @@ INC         += nmcmsgdef.h icb_sys_defs.h ndtypes.h campardef.h
 # Linux 2.6.13 and later USE_SOCKETS                           This requires LLC socket support in kernel
 # Linux any version      USE_LIBNET                 libnet, libpcap
 # Darwin                 USE_LIBNET                 libnet, libpcap
-# Cygwin                 USE_WINPCAP                WinPcap
 # WIN32                  USE_WINPCAP                WinPcap
 
 
