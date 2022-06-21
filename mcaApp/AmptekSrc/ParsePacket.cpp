@@ -176,7 +176,27 @@ long CParsePacket::ParsePacket(unsigned char P[], Packet_In *PIN)
 //        End If
 //    Next X
 
+string CParsePacket::ParseCmd(string strPacketSource, Packet_In *PIN)
+{
+	string strCmd;
+	strCmd = "";
+	switch (PIN->PID2)
+	{
+        case PID2_ACK_BAD_PARAM:
+        case PID2_ACK_PC5_NOT_PRESENT:
+        case PID2_ACK_UNRECOG:
+		if (PIN->LEN)
+		{
+			char data[255];
+			snprintf(data, 255, "%.*s", PIN->LEN, PIN->DATA);
+			strCmd = strPacketSource + "(Last) Offending command: " + data;
+		}
+		else
+			strCmd = strPacketSource + "I2C packet";
+	}
 
+	return strCmd;
+}
 
 
 

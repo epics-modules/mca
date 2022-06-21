@@ -332,7 +332,7 @@ asynStatus drvAmptek::sendConfigurationFile(string fileName)
 
 asynStatus drvAmptek::sendCommandString(string commandString)
 {
-    asynStatus status;
+    asynStatus status = asynSuccess;
     static const char *functionName = "sendCommandString";
 
     configOptions_.HwCfgDP5Out = commandString;
@@ -346,7 +346,24 @@ asynStatus drvAmptek::sendCommandString(string commandString)
             driverName, functionName, commandString.c_str());
         return asynError;
     }
-    status = readConfigurationFromHardware();
+    if (CH_.ReceiveData() == false) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error in response for CH_.SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+            driverName, functionName, commandString.c_str());
+        status = asynError;
+    } else {
+        string error = CH_.ParsePkt.ParseCmd(CH_.ParsePkt.PID2_TextToString("Send config", CH_.DP5Proto.PIN.PID2), &CH_.DP5Proto.PIN);
+        if (error.length()) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s ACK error %s\n",
+                driverName, functionName, error.c_str());
+            status = asynError;
+        }
+    }
+    // Some commands could have made it to the hardware, read back configuration
+    asynStatus readbackStatus = readConfigurationFromHardware();
+    if (status == asynSuccess)
+        status = readbackStatus;
     return status;
 }
 
