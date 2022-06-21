@@ -110,21 +110,12 @@
     #else
       #include "ntddndis.h"
     #endif
-  #else
-    /* We would like to include these files on Cygwin too, but that generates problems with syntax conflicts 
-     * so we cheat and define a few things here.  This is all for using the function to get the MAC address
-     * so maybe we can find a cleaner way to do this. */
-    typedef void* LPADAPTER;
-    typedef void* PPACKET_OID_DATA;
-    LPADAPTER *PacketOpenAdapter(char *AdapterName);
-    int PacketRequest(LPADAPTER AdapterObject, int Set, void *OidData);
-    #define OID_802_3_PERMANENT_ADDRESS   0x01010101
   #endif
 #endif
 
 /* PCAP timeout in ms */
 /* On Windows we can use -1, but on Linux that leads to 100% CPU utilization */
-#if defined(_WIN32) || defined(CYGWIN32)
+#if defined(_WIN32)
   #define PCAP_TIMEOUT -1
 #else
   #define PCAP_TIMEOUT 0

@@ -80,6 +80,10 @@ public:
     int  LibUsb_NumDevices;
     /// LibUsb connect to the default DPP.
     bool LibUsb_Connect_Default_DPP();
+    /// LibUsb connect to the specified DPP.
+    bool LibUsb_Connect_DPP( int idx);
+    /// LibUsb connect to the specified DPP by Serial Number.
+    bool LibUsb_Connect_DPP_by_SN( unsigned int sn);
     /// LibUsb close the current connection.
     void LibUsb_Close_Connection();
     /// LibUsb send a command that does not require additional processing.

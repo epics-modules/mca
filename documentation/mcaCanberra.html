@@ -56,13 +56,12 @@
     its own driver described below.
   </p>
   <p>
-    The AIM and ICB device support runs on vxWorks, Linux, and Windows (win32-x86 and
-    cygwin-x86). It should also build and run on other Unix systems, including Mac OS
+    The AIM and ICB device support runs on vxWorks, Linux, and Windows (win32-x86, windows-x64).
+    It should also build and run on other Unix systems, including Mac OS
     X, as long as the <a href="http://www.packetfactory.net/libnet/">libnet</a> and
     <a href="http://www.tcpdump.org/pcap.htm/">libpcap</a> libraries are available and
     installed. Note that Linux often comes with libpcap installed, but libnet often
-    needs to be obtained separately. On Cygwin it is not necessary to install libnet,
-    and only the WinPcap driver, as explained in the Cygwin notes below.
+    needs to be obtained separately.
   </p>
   <p>
     The device support for the Canberra hardware uses the following:</p>
@@ -111,9 +110,9 @@
         <li>ei0 for Motorola 68 boards with vxWorks. </li>
         <li>dc0 for PowerPC boards with vxWorks</li>
         <li>eth0 or eth1 for network cards on Linux</li>
-        <li>\Device\NPF_{8ECC055D-047F-11D1-A537-0000F8753ED1} for Windows (Cygwin). The very
+        <li>\Device\NPF_{8ECC055D-047F-11D1-A537-0000F8753ED1} for Windows. The very
           long hex number is unique for each computer. How to determine this number is described
-          in the Cygwin section below.</li>
+          in the Windows section below.</li>
       </ul>
     </li>
   </ul>
@@ -346,7 +345,7 @@ epics> mcaAIMFreeModule 1 1
   </p>
   <p>
     The long number at the end is unique to each network card. The simplest way to get
-    this name is to run with the example startup script in iocBoot/iocCygwin/st.cmd
+    this name is to run with the example startup script in iocBoot/iocWindows/st.cmd
     with the string provided in the distribution. This will fail, but the driver will
     then print out a list of all the valid network device names on your system, along
     with their descriptions. Find the one that describes the network that your Canberra

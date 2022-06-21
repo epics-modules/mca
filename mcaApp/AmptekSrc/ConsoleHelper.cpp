@@ -37,7 +37,19 @@ bool CConsoleHelper::ConnectDpp(DppInterface_t ifaceType, const char *addressInf
             break;
         
         case DppInterfaceUSB:
-            status = LibUsb_Connect_Default_DPP();
+	    if(strlen(addressInfo)) {
+		    int sn = atoi(addressInfo);
+		    if( sn) {
+			    status = LibUsb_Connect_DPP_by_SN( sn);
+		    }
+		    else
+		    {
+		    	status = 0;
+		    }
+	    }
+	    else {
+		    status = LibUsb_Connect_Default_DPP();
+	    }
             isConnected = LibUsb_isConnected;
             NumDevices = LibUsb_NumDevices;
            break;
@@ -489,6 +501,80 @@ bool CConsoleHelper::LibUsb_Connect_Default_DPP()
         LibUsb_NumDevices = 0;
     }
     return (LibUsb_isConnected);
+}
+
+bool CConsoleHelper::LibUsb_Connect_DPP( int idx)
+{
+
+	// flag is for notifications, if already connect will return dusbStatNoAction
+	// use bDeviceConnected to detect connection
+	DppLibUsb.InitializeLibusb();
+	LibUsb_isConnected = false;
+	LibUsb_NumDevices = 0;
+	DppLibUsb.NumDevices = DppLibUsb.CountDP5LibusbDevices();
+	if (DppLibUsb.NumDevices > 1) {
+		// choose dpp device here or default to first device
+		DppLibUsb.CurrentDevice = idx;	// set to default device
+	} else if (DppLibUsb.NumDevices == 1) {
+		// default to first device
+		DppLibUsb.CurrentDevice = 1;	// set to default device
+	} else {
+	}
+	if (DppLibUsb.NumDevices > 0) {
+		DppLibUsb.DppLibusbHandle = DppLibUsb.FindUSBDevice(DppLibUsb.CurrentDevice); //connect
+		if (DppLibUsb.bDeviceConnected) { // connection detected
+			LibUsb_isConnected = true;
+			LibUsb_NumDevices = DppLibUsb.NumDevices;
+		}
+	} else {
+		LibUsb_isConnected = false;
+		LibUsb_NumDevices = 0;
+	}
+	return (LibUsb_isConnected);
+}
+
+bool CConsoleHelper::LibUsb_Connect_DPP_by_SN( unsigned int sn)
+{
+
+	int i;
+	bool bufConnected = isConnected;
+	// flag is for notifications, if already connect will return dusbStatNoAction
+	// use bDeviceConnected to detect connection
+	DppLibUsb.InitializeLibusb();
+	LibUsb_isConnected = false;
+	LibUsb_NumDevices = 0;
+	DppLibUsb.NumDevices = DppLibUsb.CountDP5LibusbDevices();
+	if (DppLibUsb.NumDevices > 0) {
+		for( i = 1; i <= DppLibUsb.NumDevices; i++) {
+			DppLibUsb.CurrentDevice = i;
+			DppLibUsb.DppLibusbHandle = DppLibUsb.FindUSBDevice(DppLibUsb.CurrentDevice); //connect
+			if (DppLibUsb.bDeviceConnected) { // connection detected
+				// get serial number
+				if( LibUsb_SendCommand(XMTPT_SEND_STATUS)) {
+					// setting isConnected here is a kluge
+					// to get around a test in ReceiveData()
+					isConnected = true;
+					if (LibUsb_ReceiveData()) {
+						if( DP5Stat.m_DP5_Status.SerialNumber == sn) {
+							LibUsb_isConnected = true;
+							LibUsb_NumDevices = DppLibUsb.NumDevices;
+							break;
+						}
+					} else {
+						// unsetting isConnected here
+						// is a kluge to get around a
+						// test in ReceiveData()
+						isConnected = bufConnected;
+					}
+				}
+				if( !LibUsb_isConnected) {
+					DppLibUsb.bDeviceConnected = false;
+					DppLibUsb.CloseUSBDevice(DppLibUsb.DppLibusbHandle);
+				}
+			}
+		}
+	}
+	return (LibUsb_isConnected);
 }
 
 void CConsoleHelper::LibUsb_Close_Connection()

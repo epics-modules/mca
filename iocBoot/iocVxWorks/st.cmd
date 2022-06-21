@@ -17,8 +17,8 @@ mcaCanberra_registerRecordDeviceDriver(pdbbase)
 #           maxSignals, maxSequences, ethernetDevice)
 AIMConfig("AIM1/1", 0x59e, 1, 2048, 1, 1, "dc0")
 AIMConfig("AIM1/2", 0x59e, 2, 2048, 1, 1, "dc0")
-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
-dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
+dbLoadRecords("$(MCA)/db/mca.db", "P=mcaTest:,M=aim_adc1,DTYP=asynMCA,INP=@asyn(AIM1/1 0),NCHAN=2048")
+dbLoadRecords("$(MCA)/db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP=@asyn(AIM1/2 0),NCHAN=2048")
 
 #icbConfig(portName, module, ethernetAddress, icbAddress, moduleType)
 #   portName to give to this asyn port
@@ -31,15 +31,15 @@ dbLoadRecords("$(MCA)/mcaApp/Db/mca.db", "P=mcaTest:,M=aim_adc2,DTYP=asynMCA,INP
 #      3 = TCA
 #      4 = DSP
 icbConfig("icbAdc1", 0x59e, 5, 0)
-dbLoadRecords("$(MCA)/mcaApp/Db/icb_adc.db", "P=mcaTest:,ADC=adc1,PORT=icbAdc1")
+dbLoadRecords("$(MCA)/db/icb_adc.db", "P=mcaTest:,ADC=adc1,PORT=icbAdc1")
 icbConfig("icbAmp1", 0x59e, 3, 1)
-dbLoadRecords("$(MCA)/mcaApp/Db/icb_amp.db", "P=mcaTest:,AMP=amp1,PORT=icbAmp1")
+dbLoadRecords("$(MCA)/db/icb_amp.db", "P=mcaTest:,AMP=amp1,PORT=icbAmp1")
 icbConfig("icbHvps1", 0x59e, 2, 2)
-dbLoadRecords("$(MCA)/mcaApp/Db/icb_hvps.db", "P=mcaTest:,HVPS=hvps1,PORT=icbHvps1,LIMIT=1000")
+dbLoadRecords("$(MCA)/db/icb_hvps.db", "P=mcaTest:,HVPS=hvps1,PORT=icbHvps1,LIMIT=1000")
 icbConfig("icbTca1", 0x59e, 8, 3)
-dbLoadRecords("$(MCA)/mcaApp/Db/icb_tca.db", "P=mcaTest:,TCA=tca1,MCA=aim_adc2,PORT=icbTca1")
+dbLoadRecords("$(MCA)/db/icb_tca.db", "P=mcaTest:,TCA=tca1,MCA=aim_adc2,PORT=icbTca1")
 #icbConfig("icbDsp1", 0x8058, 0, 4)
-#dbLoadRecords("$(MCA)/mcaApp/Db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
+#dbLoadRecords("$(MCA)/db/icbDsp.db", "P=mcaTest:,DSP=dsp1,PORT=icbDsp1")
 
 nmc_show_modules
 

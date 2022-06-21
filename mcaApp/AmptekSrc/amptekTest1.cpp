@@ -129,7 +129,10 @@ int main(int argc, char * argv[])
 	
 	strcpy(szDPP_Send, argv[1]);
 
-	if (! chdpp.DppSocket_Connect_Default_DPP(szDPP_Send)) { return 1;}
+	// Uncomment for Ethernet test
+	//if (! chdpp.DppSocket_Connect_Default_DPP(szDPP_Send)) { return 1;}
+	// Uncomment for USB test
+	if (! chdpp.LibUsb_Connect_Default_DPP()) { return 1;}
 	
   // Get the DPP Status
 	chdpp.DP5Stat.m_DP5_Status.SerialNumber = 0;

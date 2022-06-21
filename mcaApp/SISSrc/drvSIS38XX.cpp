@@ -286,6 +286,7 @@ asynStatus drvSIS38XX::writeInt32(asynUser *pasynUser, epicsInt32 value)
       acquiring_ = true;
     } else {
       stopScaler();
+      acquiring_ = false;
     }
     setIntegerParam(scalerDone_, 0);
   }

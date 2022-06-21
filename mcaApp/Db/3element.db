@@ -4,9 +4,11 @@
 # Database for 3 element detector.  Note that this is a much simpler and
 # more reliable version of the database.
 
-grecord(fanout,"$(P)EraseStart") {
-        field(LNK1,"$(P)EraseAll.PROC  PP MS")
-        field(LNK2,"$(P)StartAll.PROC  PP MS")
+grecord(dfanout,"$(P)EraseStart") {
+        field(VAL, "1")
+	field(OUTA,"$(P)$(BASENAME)1.ERST  PP NMS")
+	field(OUTB,"$(P)$(BASENAME)2.ERST  PP NMS")
+	field(OUTC,"$(P)$(BASENAME)3.ERST  PP NMS")
 }
 
 grecord(dfanout,"$(P)EraseAll") {

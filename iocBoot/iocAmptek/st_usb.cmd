@@ -1,12 +1,13 @@
+<envPaths
 epicsEnvSet(STARTUP,$(TOP)/iocBoot/$(IOC))
 
 dbLoadDatabase("$(MCA)/dbd/mcaAmptekApp.dbd",0,0)
 mcaAmptekApp_registerRecordDeviceDriver(pdbbase) 
 
 # Use this line for Ethernet
-drvAmptekConfigure(Amptek1, 0, "164.54.160.201")
+#drvAmptekConfigure(Amptek1, 0, "164.54.160.201")
 # Use this line for USB
-#drvAmptekConfigure(Amptek1, 1, "")
+drvAmptekConfigure(Amptek1, 1, "")
 
 #asynSetTraceMask(Amptek1, 0, 9)
 asynSetTraceIOMask(Amptek1, 0, 2)
