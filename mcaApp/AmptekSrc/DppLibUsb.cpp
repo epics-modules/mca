@@ -76,6 +76,8 @@ libusb_device_handle * CDppLibUsb::FindUSBDevice(int idxAmptekDevice)
 					bDeviceConnected = true; // have interface
 				} else {
 					fprintf(stderr, "libusb_claim_interface error %s\n", libusb_strerror((libusb_error)r));
+					libusb_close(handle);
+					handle = NULL;
 				}
 			} else {
 				fprintf(stderr, "Unable to find a dpp device.\n");
