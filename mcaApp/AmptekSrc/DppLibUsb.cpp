@@ -44,7 +44,7 @@ libusb_device_handle * CDppLibUsb::FindUSBDevice(int idxAmptekDevice)
 	bDeviceConnected = false;
 	devcnt = libusb_get_device_list(NULL, &devs);
 	if (devcnt < 0) {
-		fprintf(stderr, "failed to get device list");
+		fprintf(stderr, "failed to get device list: %s\n", libusb_strerror((libusb_error)devcnt));
 		return NULL;
 	}
 	for (iDev = 0; iDev < devcnt; iDev++) {
@@ -67,7 +67,7 @@ libusb_device_handle * CDppLibUsb::FindUSBDevice(int idxAmptekDevice)
 	if (found) {
 		r = libusb_open(found, &handle);
 		if (r < 0) {
-			fprintf(stderr, libusb_strerror((libusb_error)r));
+			fprintf(stderr, "Cannot open USB device: %s\n", libusb_strerror((libusb_error)r));
 			handle = NULL;
 		} else {
 			if (handle != NULL) {
@@ -125,15 +125,15 @@ int CDppLibUsb::SendPacketUSB(libusb_device_handle *devh, unsigned char data_out
 			if (bytes_transferred > 0) {
 				return bytes_transferred;
 			} else {
-				fprintf(stderr, "No data received in bulk transfer (%d)\n", result);
+				fprintf(stderr, "No data received in bulk transfer: %s\n", libusb_strerror(libusb_error)result));
 				return -1;
 			}
 		} else {
-			fprintf(stderr, "Error receiving data via bulk transfer %d\n", result);
+			fprintf(stderr, "Error receiving data via bulk transfer: %s\n", libusb_strerror(libusb_error)result));
 			return result;
 		}
 	} else {
-		fprintf(stderr, "Error sending data via bulk transfer %d\n", result);
+		fprintf(stderr, "Error sending data via bulk transfer: %s\n", libusb_strerror(libusb_error)result));
 		return result;
 	}
   	return 0;
@@ -157,8 +157,10 @@ int CDppLibUsb::CountDP5LibusbDevices()
 	int iDppCount=0;
 
 	ssize_t cnt = libusb_get_device_list (NULL, &devs); 
-	if (cnt < 0)
+	if (cnt < 0) {
+		fprintf(stderr, "failed to get device list: %s\n", libusb_strerror((libusb_error)cnt));
 		return (-1);
+	}
 	int nr = 0, i = 0;
 	struct libusb_device_descriptor desc;
 	for (i = 0; i < cnt; ++i)
@@ -185,7 +187,7 @@ void CDppLibUsb::PrintDevices()
 
 	cnt = libusb_get_device_list(NULL, &devs);
 	if (cnt < 0) {
-		fprintf(stderr, "failed to get device list");
+		fprintf(stderr, "failed to get device list: %s\n", libusb_strerror((libusb_error)cnt));
 		return;
 	}
 
