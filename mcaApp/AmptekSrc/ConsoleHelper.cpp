@@ -600,7 +600,7 @@ bool CConsoleHelper::LibUsb_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
         bHaveBuffer = (bool) SndCmd.DP5_CMD(DP5Proto.BufferOUT, XmtCmd);
         if (bHaveBuffer) {
             bSentPkt = DppLibUsb.SendPacketUSB(DppLibUsb.DppLibusbHandle, DP5Proto.BufferOUT, DP5Proto.PacketIn);
-            if (bSentPkt) {
+            if (bSentPkt > 0) {
                 bMessageSent = true;
             }
         }
@@ -661,7 +661,7 @@ bool CConsoleHelper::LibUsb_SendCommand_Config(TRANSMIT_PACKET_TYPE XmtCmd, CONF
         bHaveBuffer = (bool) SndCmd.DP5_CMD_Config(DP5Proto.BufferOUT, XmtCmd, CfgOptions);
         if (bHaveBuffer) {
             bSentPkt = DppLibUsb.SendPacketUSB(DppLibUsb.DppLibusbHandle, DP5Proto.BufferOUT, DP5Proto.PacketIn);
-            if (bSentPkt) {
+            if (bSentPkt > 0) {
                 bMessageSent = true;
             }
         }
