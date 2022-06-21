@@ -392,7 +392,7 @@ asynStatus drvAmptek::saveConfigurationFile(string fileName)
             driverName, functionName, fileName.c_str());
         return asynError;
     }
-    fprintf(out,"%s\n",CH_.HwCfgDP5.c_str());
+    fprintf(out,"[DP5 Configuration File]\r\n%s",CH_.HwCfgDP5.c_str());
     fclose(out);
     return asynSuccess;
 }
@@ -412,8 +412,7 @@ asynStatus drvAmptek::sendConfigurationFile(string fileName)
     //static const char *functionName="sendConfigurationFile";
 
     isPC5Present = CH_.DP5Stat.m_DP5_Status.PC5_PRESENT;
-    // Note: we need to add 5 to the DEVICE_ID to get the deviceType used by AsciiCmdUtil.RemoveCmdByDeviceType
-    DppType = CH_.DP5Stat.m_DP5_Status.DEVICE_ID+5;
+    DppType = CH_.DP5Stat.m_DP5_Status.DEVICE_ID;
     isDP5_RevDxGains = CH_.DP5Stat.m_DP5_Status.isDP5_RevDxGains;
     DPP_ECO = CH_.DP5Stat.m_DP5_Status.DPP_ECO;
 
@@ -437,7 +436,7 @@ asynStatus drvAmptek::sendConfigurationFile(string fileName)
 
 asynStatus drvAmptek::sendCommandString(string commandString)
 {
-    asynStatus status;
+    asynStatus status = asynSuccess;
     static const char *functionName = "sendCommandString";
 
     if (CH_.isConnected == false)
@@ -456,7 +455,24 @@ asynStatus drvAmptek::sendCommandString(string commandString)
         return asynError;
     }
     failedSends_ = 0;
-    status = readConfigurationFromHardware();
+    if (CH_.ReceiveData() == false) {
+        asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+            "%s::%s error in response for CH_.SendCommand_Config(XMTPT_SEND_CONFIG_PACKET_EX, %s)\n",
+            driverName, functionName, commandString.c_str());
+        status = asynError;
+    } else {
+        string error = CH_.ParsePkt.ParseCmd(CH_.ParsePkt.PID2_TextToString("Send config", CH_.DP5Proto.PIN.PID2), &CH_.DP5Proto.PIN);
+        if (error.length()) {
+            asynPrint(pasynUserSelf, ASYN_TRACE_ERROR,
+                "%s::%s ACK error %s\n",
+                driverName, functionName, error.c_str());
+            status = asynError;
+        }
+    }
+    // Some commands could have made it to the hardware, read back configuration
+    asynStatus readbackStatus = readConfigurationFromHardware();
+    if (status == asynSuccess)
+        status = readbackStatus;
     return status;
 }
 

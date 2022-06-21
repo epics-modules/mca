@@ -81,7 +81,7 @@ typedef struct DP5_DP4_FORMAT_STATUS
 typedef struct _DiagDataType
 {
     float ADC_V[12];
-    float PC5_V[3];
+    float PC5_V[4];
     bool PC5_PRESENT;
     long PC5_SN;
     unsigned char Firmware;
