@@ -38,50 +38,139 @@ string CAsciiCmdUtilities::RemWhitespace(string strLine)
 	}
 }
 
+//read and format [DP5 Configuration File]
 string CAsciiCmdUtilities::GetDP5CfgStr(string strFilename)
 {
 	FILE *txtFile;
 	char chLine[LINE_MAX];
 	string strCfg;
 	string strLine;
-	long bytesCfg;
-	long bytesLine;
-	long bytesTotal;
 	long lPos;
 	char ch;
+	bool bCfgSection;
+	int iCmpCfg;
+	long lPosCfg;
 	stringex strfn;
 
+	bCfgSection = false;
+	iCmpCfg = 1;
 	if (( txtFile = fopen(strFilename.c_str(), "r")) == NULL) {  // Can't open input file
 		return "";
 	}
 	strCfg = "";
 	while((fgets(chLine, LINE_MAX, txtFile)) != NULL) {
 		strLine = strfn.Format("%s",chLine);
-		bytesCfg = (long)strCfg.length();
-		bytesLine = (long)strLine.length();
-		bytesTotal = bytesCfg + bytesLine;
-		if (bytesTotal >= DP5_MAX_CFG_SIZE) {			// if over command size quit
-			break; 
-		} else {
-			strLine = MakeUpper(strLine);			// make all uppercase
-			lPos = (long)strLine.find(';');					// find the delimiter (-1=not found,0=commented line)
+		lPosCfg = (long)strLine.find('[');				// find a section (-1=not found,0=section found,>0=undefined)
+		if (lPosCfg == 0) {								// Locate DP5 Configuration Section
+			iCmpCfg = (long)strLine.find("[DP5 Configuration File]");
+			if (iCmpCfg == 0) {							// Configuration Section Found
+				bCfgSection = true;
+			} else {									// Non-Configuration Section Found
+				bCfgSection = false;
+			}
+		}
+		if (bCfgSection) {								// Save Configuration Section Only
+			strLine = MakeUpper(strLine);				// make all uppercase
+			lPos = (long)strLine.find(';');				// find the delimiter (-1=not found,0=commented line)
 			if (lPos > 0) {								// if has delimiter that is not first char
-				strLine = strLine.substr(0,lPos + 1);			// remove string right of delimiter
+				strLine = strLine.substr(0,lPos + 1);	// remove string right of delimiter
 				ch = strLine.at(0);					
 				if ((ch >= 'A') && (ch <= 'Z')) {		// if is valid value
 					strLine = RemWhitespace(strLine);	// remove whitespace in command sequence
-					if (strLine.length() > 1) {		// check if command w/delimiter left
-						strCfg += strLine;			// add to command string
+					if (strLine.length() > 1) {			// check if command w/delimiter left
+						strCfg += strLine;				// add to command string
 					}
 				}
 			}
 		}
+		strLine = "";
 	}
-	fclose(txtFile);							
-	if (!(strCfg.length() > 0)) {
-		return "";
-	} else {
+	fclose(txtFile);
+	if (strCfg.length() > 0) {
 		return strCfg;
+	} else {
+		return "";
+	}
+}
+
+//read and format [DP5 SCA Configuration]
+string CAsciiCmdUtilities::GetDP5ScaStr(string strFilename)
+{
+	FILE *txtFile;
+	char chLine[LINE_MAX];
+	string strCfg;
+	string strLine;
+	long lPos;
+	char ch;
+	bool bCfgSection;
+	int iCmpCfg;
+	long lPosCfg;
+	stringex strfn;
+	char chScaOld;
+	char chSCA;
+	int iScaBytes;
+	string strScaIdx;
+	string strScaCmd = "";
+
+	bCfgSection = false;
+	iCmpCfg = 1;
+	if (( txtFile = fopen(strFilename.c_str(), "r")) == NULL) {  // Can't open input file
+		return "";
+	}
+	chScaOld = '0';
+	chSCA = '9';
+	strCfg = "";
+	while((fgets(chLine, LINE_MAX, txtFile)) != NULL) {
+		strLine = strfn.Format("%s",chLine);
+		lPosCfg = (long)strLine.find('[');				// find a section (-1=not found,0=section found,>0=undefined)
+		if (lPosCfg == 0) {								// Locate DP5 Configuration Section
+			iCmpCfg = (long)strLine.find("[DP5 SCA Configuration]");
+			if (iCmpCfg == 0) {							// Configuration Section Found
+				bCfgSection = true;
+			} else {									// Non-Configuration Section Found
+				bCfgSection = false;
+			}
+		}
+		if (bCfgSection) {								// Save Configuration Section Only
+			strLine = MakeUpper(strLine);				// make all uppercase
+			lPos = (long)strLine.find(';');				// find the delimiter (-1=not found,0=commented line)
+			if (lPos > 0) {								// if has delimiter that is not first char
+				strLine = strLine.substr(0,lPos + 1);	// remove string right of delimiter
+				ch = strLine.at(0);					
+				if ((ch >= 'A') && (ch <= 'Z')) {		// if is valid value
+					strLine = RemWhitespace(strLine);	// remove whitespace in command sequence
+					if (strLine.length() > 1) {			// check if command w/delimiter left
+						//strCfg += strLine;				// add to command string
+						//strcat(strCfg,chLine);				// add to command string
+						chSCA = strLine.at(4);				// determine SCA Index
+						// remove index from SCA Command to create DPP ASCII Command format
+						if ((chSCA > '0') && (chSCA < '9')) {
+							if (chSCA != chScaOld) {		// Is same as current index?
+								chScaOld = chSCA;			// if no, save current index
+								// insert index command into string (SCAI=%c;)
+								strScaIdx = strfn.Format("SCAI=%c;",chSCA);
+								strCfg += strScaIdx;				// add sca index command to string
+								strScaIdx = "";
+							}
+							strScaCmd = strLine.substr(0,4);
+							for (iScaBytes=5;iScaBytes<=lPos;iScaBytes++) {	
+								strScaCmd += strLine.at(iScaBytes);
+							}
+							strCfg += strScaCmd;				// add to command string
+						} else {	// no index to remove, cmd was saved with SCAI command
+							strCfg += strLine;					// add to command string
+						}
+					}
+				}
+			}
+		}
+		strLine = "";
+	}
+	fclose(txtFile);
+	if (strCfg.length() > 0) {
+		return strCfg;
+	} else {
+		return "";
 	}
 }
 
@@ -90,7 +179,7 @@ string CAsciiCmdUtilities::CreateResTestReadBackCmd(bool bSendCoarseFineGain, in
 	string strCfg("");
     bool isINOF;
 
-    isINOF = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
+    isINOF = (DppType != dppDP5G) && (DppType != dppTB5);
 	strCfg = "";
 	strCfg += "CLCK=?;";
 	strCfg += "TPEA=?;";
@@ -127,13 +216,13 @@ string CAsciiCmdUtilities::CreateFullReadBackCmd(bool PC5_PRESENT, int DppType, 
 	bool isDP5_DxK=false;
 	bool isDP5_DxL=false;
 
-	if (DppType == devtypeMCA8000D) {
+	if (DppType == dppMCA8000D) {
 		strCfg = CreateFullReadBackCmdMCA8000D(DppType);
 		return strCfg;
 	}
 
 	// DP5 Rev Dx K,L needs PAPZ
-	if ((DppType == devtypeDP5) && isDP5_RevDxGains) {
+	if ((DppType == dppDP5) && isDP5_RevDxGains) {
 		if ((DPP_ECO & 0x0F) == 0x0A) {
 			isDP5_DxK = true;
 		}
@@ -142,17 +231,17 @@ string CAsciiCmdUtilities::CreateFullReadBackCmd(bool PC5_PRESENT, int DppType, 
 		}
 	}
 
-    isHVSE = (((DppType != devtypePX5) && PC5_PRESENT) || DppType == devtypePX5);
-    isPAPS = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
-    isTECS = (((DppType == devtypeDP5) && PC5_PRESENT) || (DppType == devtypePX5) || (DppType == devtypeDP5X));
-    isVOLU = (DppType == devtypePX5);
-    isCON1 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
-    isCON2 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
-    isINOF = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
-    isSCTC = (DppType == devtypeDP5G) || (DppType == devtypeTB5);
-    isBOOT = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
-	isGATE = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
-	isPAPZ = (DppType == devtypePX5) || isDP5_DxK || isDP5_DxL;
+    isHVSE = (((DppType != dppPX5) && PC5_PRESENT) || DppType == dppPX5);
+    isPAPS = (DppType != dppDP5G) && (DppType != dppTB5);
+    isTECS = (((DppType == dppDP5) && PC5_PRESENT) || (DppType == dppPX5) || (DppType == dppDP5X));
+    isVOLU = (DppType == dppPX5);
+    isCON1 = ((DppType != dppDP5) && (DppType != dppDP5X));
+    isCON2 = ((DppType != dppDP5) && (DppType != dppDP5X));
+    isINOF = (DppType != dppDP5G) && (DppType != dppTB5);
+    isSCTC = (DppType == dppDP5G) || (DppType == dppTB5);
+    isBOOT = ((DppType == dppDP5) || (DppType == dppDP5X));
+	isGATE = ((DppType == dppDP5) || (DppType == dppDP5X));
+	isPAPZ = (DppType == dppPX5) || isDP5_DxK || isDP5_DxL;
 
 	strCfg = "";
 	strCfg += "RESC=?;";
@@ -220,7 +309,7 @@ string CAsciiCmdUtilities::CreateFullReadBackCmdMCA8000D(int DppType)
 {
 	string strCfg("");
 
-	if (DppType == devtypeMCA8000D) {
+	if (DppType == dppMCA8000D) {
 		strCfg += "RESC=?;";
 		strCfg += "PURE=?;";
 		strCfg += "MCAS=?;";
@@ -297,13 +386,13 @@ string CAsciiCmdUtilities::RemoveCmdByDeviceType(string strCfgDataIn, bool PC5_P
 	bool isDP5_DxL=false;
 
 	strCfgData = strCfgDataIn;
-	if (DppType == devtypeMCA8000D) {
+	if (DppType == dppMCA8000D) {
 		strCfgData = Remove_MCA8000D_Cmds(strCfgData,DppType);
 		return strCfgData;
 	}
 
 	// DP5 Rev Dx K,L needs PAPZ
-	if ((DppType == devtypeDP5) && isDP5_RevDxGains) {
+	if ((DppType == dppDP5) && isDP5_RevDxGains) {
 		if ((DPP_ECO & 0x0F) == 0x0A) {
 			isDP5_DxK = true;
 		}
@@ -312,18 +401,18 @@ string CAsciiCmdUtilities::RemoveCmdByDeviceType(string strCfgDataIn, bool PC5_P
 		}
 	}
 
-    isHVSE = (((DppType != devtypePX5) && PC5_PRESENT) || DppType == devtypePX5);
-    isPAPS = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
-    isTECS = (((DppType == devtypeDP5) && PC5_PRESENT) || (DppType == devtypePX5) || (DppType == devtypeDP5X));
-    isVOLU = (DppType == devtypePX5);
-    isCON1 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
-    isCON2 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
-    isINOF = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
-	isSCTC = (DppType == devtypeDP5G) || (DppType == devtypeTB5);
-    isBOOT = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
-	isGATE = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
-	isPAPZ = (DppType == devtypePX5) || isDP5_DxK || isDP5_DxL;
-	isPREL = (DppType == devtypeMCA8000D);
+    isHVSE = (((DppType != dppPX5) && PC5_PRESENT) || DppType == dppPX5);
+    isPAPS = (DppType != dppDP5G) && (DppType != dppTB5);
+    isTECS = (((DppType == dppDP5) && PC5_PRESENT) || (DppType == dppPX5) || (DppType == dppDP5X));
+    isVOLU = (DppType == dppPX5);
+    isCON1 = ((DppType != dppDP5) && (DppType != dppDP5X));
+    isCON2 = ((DppType != dppDP5) && (DppType != dppDP5X));
+    isINOF = (DppType != dppDP5G) && (DppType != dppTB5);
+	isSCTC = (DppType == dppDP5G) || (DppType == dppTB5);
+    isBOOT = ((DppType == dppDP5) || (DppType == dppDP5X));
+	isGATE = ((DppType == dppDP5) || (DppType == dppDP5X));
+	isPAPZ = (DppType == dppPX5) || isDP5_DxK || isDP5_DxL;
+	isPREL = (DppType == dppMCA8000D);
 	if (!isHVSE) { strCfgData = RemoveCmd("HVSE", strCfgData); }  //High Voltage Bias
 	if (!isPAPS) { strCfgData = RemoveCmd("PAPS", strCfgData); }  //Preamp Voltage
 	if (!isTECS) { strCfgData = RemoveCmd("TECS", strCfgData); }  //Cooler Temperature
@@ -357,23 +446,23 @@ string CAsciiCmdUtilities::RemoveCmdByDeviceTypeDP5DxK(string strCfgDataIn, bool
 	bool isPREL;
 
 	strCfgData = strCfgDataIn;
-	//if (DppType == devtypeMCA8000D) {
+	//if (DppType == dppMCA8000D) {
 	//	strCfgData = Remove_MCA8000D_Cmds(strCfgData,DppType);
 	//	return strCfgData;
 	//}
-    isHVSE = (((DppType != devtypePX5) && PC5_PRESENT) || DppType == devtypePX5);
-    isPAPS = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
-    isTECS = (((DppType == devtypeDP5) && PC5_PRESENT) || (DppType == devtypePX5) || (DppType == devtypeDP5X));
-    isVOLU = (DppType == devtypePX5);
-    isCON1 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
-    isCON2 = ((DppType != devtypeDP5) && (DppType != devtypeDP5X));
-    isINOF = (DppType != devtypeDP5G) && (DppType != devtypeTB5);
-	isSCTC = (DppType == devtypeDP5G) || (DppType == devtypeTB5);
-    isBOOT = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
-	isGATE = ((DppType == devtypeDP5) || (DppType == devtypeDP5X));
-	//isPAPZ = (DppType == devtypePX5);		// DP5 Rev Dx K,L needs PAPZ
+    isHVSE = (((DppType != dppPX5) && PC5_PRESENT) || DppType == dppPX5);
+    isPAPS = (DppType != dppDP5G) && (DppType != dppTB5);
+    isTECS = (((DppType == dppDP5) && PC5_PRESENT) || (DppType == dppPX5) || (DppType == dppDP5X));
+    isVOLU = (DppType == dppPX5);
+    isCON1 = ((DppType != dppDP5) && (DppType != dppDP5X));
+    isCON2 = ((DppType != dppDP5) && (DppType != dppDP5X));
+    isINOF = (DppType != dppDP5G) && (DppType != dppTB5);
+	isSCTC = (DppType == dppDP5G) || (DppType == dppTB5);
+    isBOOT = ((DppType == dppDP5) || (DppType == dppDP5X));
+	isGATE = ((DppType == dppDP5) || (DppType == dppDP5X));
+	//isPAPZ = (DppType == dppPX5);		// DP5 Rev Dx K,L needs PAPZ
 	isPAPZ = true;							// DP5 Rev Dx K,L needs PAPZ
-	isPREL = (DppType == devtypeMCA8000D);
+	isPREL = (DppType == dppMCA8000D);
 	if (!isHVSE) { strCfgData = RemoveCmd("HVSE", strCfgData); }  //High Voltage Bias
 	if (!isPAPS) { strCfgData = RemoveCmd("PAPS", strCfgData); }  //Preamp Voltage
 	if (!isTECS) { strCfgData = RemoveCmd("TECS", strCfgData); }  //Cooler Temperature
@@ -395,7 +484,7 @@ string CAsciiCmdUtilities::Remove_MCA8000D_Cmds(string strCfgDataIn, int DppType
 	string strCfgData;
 	
 	strCfgData = strCfgDataIn;
-	if (DppType == devtypeMCA8000D) {
+	if (DppType == dppMCA8000D) {
 		strCfgData = RemoveCmd("CLCK", strCfgData);
 		strCfgData = RemoveCmd("TPEA", strCfgData);
 		strCfgData = RemoveCmd("GAIF", strCfgData);

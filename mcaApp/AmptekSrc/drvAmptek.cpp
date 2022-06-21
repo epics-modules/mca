@@ -288,7 +288,7 @@ asynStatus drvAmptek::saveConfigurationFile(string fileName)
             driverName, functionName, fileName.c_str());
         return asynError;
     }
-    fprintf(out,"%s\n",CH_.HwCfgDP5.c_str());
+    fprintf(out,"[DP5 Configuration File]\r\n%s",CH_.HwCfgDP5.c_str());
     fclose(out);
     return asynSuccess;
 }
@@ -308,8 +308,7 @@ asynStatus drvAmptek::sendConfigurationFile(string fileName)
     //static const char *functionName="sendConfigurationFile";
 
     isPC5Present = CH_.DP5Stat.m_DP5_Status.PC5_PRESENT;
-    // Note: we need to add 5 to the DEVICE_ID to get the deviceType used by AsciiCmdUtil.RemoveCmdByDeviceType
-    DppType = CH_.DP5Stat.m_DP5_Status.DEVICE_ID+5;
+    DppType = CH_.DP5Stat.m_DP5_Status.DEVICE_ID;
     isDP5_RevDxGains = CH_.DP5Stat.m_DP5_Status.isDP5_RevDxGains;
     DPP_ECO = CH_.DP5Stat.m_DP5_Status.DPP_ECO;
 

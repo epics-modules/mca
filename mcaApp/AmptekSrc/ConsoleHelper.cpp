@@ -621,25 +621,15 @@ bool CConsoleHelper::LibUsb_SendCommand(TRANSMIT_PACKET_TYPE XmtCmd)
 //                    Creates and sends a full readback command
 void CConsoleHelper::CreateConfigOptions(CONFIG_OPTIONS *CfgOptions, string strCfg, CDP5Status DP5Stat, bool bUseCoarseFineGain)
 {
-    // ACQ_DEVICE_TYPE
-    //        devtypeMCA8000A=0;    //MCA8000A
-    //        devtypeDP4=1;        //DP4
-    //        devtypePX4=2;        //PX4
-    //        devtypeDP4EMUL=3;    //DP5,FW5,DP4 emulation
-    //        devtypePX4EMUL=4;    //DP5,FW5,Px4 emulation
-    // ==== ==== This application DOES NOT SUPPORT Communications for DPP Devices Above
-    // ==== ==== This application supports Communications for DPP Devices Below
-    //        devtypeDP5=5;        //DP5,FW6
-    //        devtypePX5=6;        //PX5
-    //        devtypeDP5G=7;        //DP5G
-    //      devtypeDMCA=8;        //Digital MCA
     // ==== ==== This application supports Communications for DPP Devices Below
     //DEVICE_ID==0; //DP5        
     //DEVICE_ID==1; //PX5
     //DEVICE_ID==2; //DP5G
-    //DEVICE_ID==3; //DMCA
-    CfgOptions->DppType = DP5Stat.m_DP5_Status.DEVICE_ID + 5;    //5 is added to get the Acquisition Device type
-    CfgOptions->HwCfgDP5Out = strCfg;                            //configuration, if being sent, empty otherwise
+    //DEVICE_ID==3; //MCA8000D
+    //DEVICE_ID==4; //TB5
+    //DEVICE_ID==5; //DP5X
+    CfgOptions->DppType = DP5Stat.m_DP5_Status.DEVICE_ID;       // DPP id to test for supported options
+    CfgOptions->HwCfgDP5Out = strCfg;                           //configuration, if being sent, empty otherwise
     CfgOptions->PC5_PRESENT = DP5Stat.m_DP5_Status.PC5_PRESENT; //PC5 present indicator (accepts pc5 cfg commands)
     // bUseCoarseFineGain=true;  //uses GAIA,GAIF (coarse with fine gain);  
     // bUseCoarseFineGain=false; //uses GAIN (total gain);

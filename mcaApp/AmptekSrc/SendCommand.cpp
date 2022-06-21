@@ -352,7 +352,7 @@ bool CSendCommand::DP5_CMD_Config(unsigned char Buffer[], TRANSMIT_PACKET_TYPE X
 			strCfg += "CLCK=?;"; // FPGA clock
 			strCfg += "TPEA=?;"; // peak time
 			strCfg += "GAIN=?;"; // gain
-			if (CfgOptions.DppType == devtypeMCA8000D) {
+			if (CfgOptions.DppType == dppMCA8000D) {
 				strCfg += "GAIA=?;"; // coarse gain
 			}
 			strCfg += "MCAS=?;"; // mca mode
@@ -367,7 +367,7 @@ bool CSendCommand::DP5_CMD_Config(unsigned char Buffer[], TRANSMIT_PACKET_TYPE X
 			strCfg += "PRET=?;"; // preset actual time
 			strCfg += "PRER=?;"; // preset real time
 			strCfg += "PREC=?;"; // preset count
-			if (CfgOptions.DppType == devtypeMCA8000D) {
+			if (CfgOptions.DppType == dppMCA8000D) {
 				strCfg += "PREL=?;"; // preset real time
 			}
 			strCfg += "HVSE=?;"; // high voltage setting for manufacuting test
