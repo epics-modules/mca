@@ -4,7 +4,7 @@ include $(TOP)/configure/CONFIG
 # Always built mcaSrc, device-independent
 DIRS += mcaSrc
 
-# Support libraries for Canberra under Cygwin
+# Support libraries for Canberra under Windows
 DIRS += CanberraSupport
 
 # Support for Canberra Ethernet acquisition devices

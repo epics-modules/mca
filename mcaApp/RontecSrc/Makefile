@@ -34,7 +34,6 @@ mcaRontecApp_LIBS += busy
 mcaRontecApp_LIBS += calc sscan autosave
 mcaRontecApp_LIBS += asyn
 mcaRontecApp_LIBS += seq pv
-mcaRontecApp_SYS_LIBS_cygwin32 += $(CYGWIN_RPC_LIB)
 mcaRontecApp_LIBS += $(EPICS_BASE_IOC_LIBS)
 
 mcaRontecApp_SYS_LIBS_solaris += socket

@@ -403,8 +403,11 @@ field to all listeners.  monitor() does this.
     proi = (struct roi *)&pmca->r0lo;\
     for (i=0; i<NUM_ROI; i++, proi++) {\
         DATA_TYPE *pbg = (DATA_TYPE *)pmca->pbg;\
-        if (proi->lo >= 0 && proi->hi >= proi->lo) {\
-            pbg[proi->lo] = pbg[proi->hi] = ymax;\
+        lo = proi->lo; \
+        hi = proi->hi;\
+        if (hi > max) hi = max; \
+        if (lo >= 0 && hi >= lo) {\
+            pbg[lo] = pbg[hi] = ymax;\
         }\
     }\
 

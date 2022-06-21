@@ -109,7 +109,7 @@ static long init_record(mcaRecord *pmca)
 
     /* Allocate asynMcaPvt private structure */
     pPvt = callocMustSucceed(1, sizeof(mcaAsynPvt), "devMcaAsyn init_record()");
-    pPvt->data = callocMustSucceed(pmca->nmax, sizeof(long), 
+    pPvt->data = callocMustSucceed(pmca->nmax, sizeof(epicsInt32), 
                                    "devMcaAsyn init_record()");
     /* Create asynUser */
     pasynUser = pasynManager->createAsynUser(asynCallback, 0);
@@ -406,7 +406,7 @@ static long read_array(mcaRecord *pmca)
     asynUser *pasynUser = pPvt->pasynUser;
 
     /* Copy data from private buffer to record */
-    memcpy(pmca->bptr, pPvt->data, pPvt->nread*sizeof(long));  
+    memcpy(pmca->bptr, pPvt->data, pPvt->nread*sizeof(epicsInt32));  
     pmca->udf=0;
     pmca->nord = pPvt->nread;
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 

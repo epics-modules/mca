@@ -11,12 +11,12 @@ TEMPLATE_TOP=$(EPICS_BASE)/templates/makeBaseApp/top
 SUPPORT=/corvette/home/epics/devel
 
 # Transform record
-CALC=$(SUPPORT)/calc-3-7-3
+CALC=$(SUPPORT)/calc-3-7-4
 # If calc was built with sscan, we must link against it
-SSCAN=$(SUPPORT)/sscan-2-11-3
+SSCAN=$(SUPPORT)/sscan-2-11-5
 
 # Busy record 
-BUSY=$(SUPPORT)/busy-1-7-2
+BUSY=$(SUPPORT)/busy-1-7-3
 
 # Scaler record
 SCALER=$(SUPPORT)/scaler-4-0
@@ -25,16 +25,16 @@ SCALER=$(SUPPORT)/scaler-4-0
 SNCSEQ=$(SUPPORT)/seq-2-2-5
 
 # save_restore
-AUTOSAVE=$(SUPPORT)/autosave-5-10
+AUTOSAVE=$(SUPPORT)/autosave-5-10-2
 
 # ASYN - for device/driver support
-ASYN=$(SUPPORT)/asyn-4-41
+ASYN=$(SUPPORT)/asyn-4-42
 
 # MCA - this module
 MCA=$(SUPPORT)/mca-7-9
 
 # EPICS_BASE usually appears last so other apps can override stuff:
-EPICS_BASE=/corvette/usr/local/epics-devel/base-7.0.4
+EPICS_BASE=/corvette/usr/local/epics-devel/base-7.0.6.1
 
 #Capfast users may need the following definitions
 #CAPFAST_TEMPLATES=
