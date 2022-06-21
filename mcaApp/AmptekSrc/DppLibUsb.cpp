@@ -127,15 +127,15 @@ int CDppLibUsb::SendPacketUSB(libusb_device_handle *devh, unsigned char data_out
 			if (bytes_transferred > 0) {
 				return bytes_transferred;
 			} else {
-				fprintf(stderr, "No data received in bulk transfer: %s\n", libusb_strerror(libusb_error)result));
+				fprintf(stderr, "No data received in bulk transfer: %s\n", libusb_strerror((libusb_error)result));
 				return -1;
 			}
 		} else {
-			fprintf(stderr, "Error receiving data via bulk transfer: %s\n", libusb_strerror(libusb_error)result));
+			fprintf(stderr, "Error receiving data via bulk transfer: %s\n", libusb_strerror((libusb_error)result));
 			return result;
 		}
 	} else {
-		fprintf(stderr, "Error sending data via bulk transfer: %s\n", libusb_strerror(libusb_error)result));
+		fprintf(stderr, "Error sending data via bulk transfer: %s\n", libusb_strerror((libusb_error)result));
 		return result;
 	}
   	return 0;
