@@ -10,6 +10,6 @@ It contains:
 * Drivers for the DP5 based MCAs (e.g. PX5) and detectors (e.g. X-123) from [Amptek](http://www.amptek.com)
 
 Additional information:
-* [Home page](https://cars.uchicago.edu/software/epics/mca.html)
-* [Documentation](https://cars.uchicago.edu/software/epics/mcaDoc.html)
-* [Release notes](https://cars.uchicago.edu/software/epics/mcaReleaseNotes.html)
+* [Home page](https://epics-modules.github.io/mca)
+* [Documentation](https://epics-modules.github.io/mca/mcaDoc.html)
+* [Release notes](https://epics-modules.github.io/mca/mcaReleaseNotes.html)
