@@ -9,7 +9,7 @@
   <h1 style="text-align: center">
     mca Release Notes</h1>
   <h2 style="text-align: center">
-    Release 7-10 (XXX-Jun-2022)</h2>
+    Release 7-10 (25-Nov-2022)</h2>
   <ul>
     <li>mcaRecord
       <ul>
@@ -51,9 +51,15 @@
           provides the required .dll and driver files.</li>
       </ul>
     </li>
+    <li>iocBoot/ioc*</li>
+      <ul>
+        <li>Changed from loading databases from mca/mcaApp/Db/* to mca/db</li>
+        <li>Moved save_restore.cmd from each directory to single copy in iocBoot</li>
+      </ul>
     <li>Changed to use the "scaler" module rather than the "std" module for scaler record
       support.</li>
     <li>Removed support for Cygwin. This support has not actually worked for many years.</li>
+    <li>Moved HTML documentation to Github pages, https://epics-modules.github.io/mca.<li>
   </ul>
   <h2 style="text-align: center">
     Release 7-9 (23-Nov-2020)</h2>
