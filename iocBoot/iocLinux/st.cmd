@@ -8,10 +8,13 @@ errlogInit(20000)
 
 epicsEnvSet PREFIX mcaTest:
 #epicsEnvSet ADDRESS 0X3ED
-epicsEnvSet ADDRESS 0X6E6
+#epicsEnvSet ADDRESS 0X6E6
+epicsEnvSet ADDRESS 0X59E
 #epicsEnvSet INTERFACE eno1
-epicsEnvSet INTERFACE p5p1
+#epicsEnvSet INTERFACE p5p1
 #epicsEnvSet INTERFACE enp23s0f1
+#epicsEnvSet INTERFACE eno8303
+epicsEnvSet INTERFACE enp0s31f6
 #var aimDebug 20
 #var icbDebug 20
 
