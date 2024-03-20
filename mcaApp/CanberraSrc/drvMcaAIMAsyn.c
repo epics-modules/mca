@@ -357,7 +357,7 @@ static asynStatus AIMWrite(void *drvPvt, asynUser *pasynUser,
             /* If AIM was acquiring, turn it back on */
             if (pPvt->acquiring)
                 status = nmc_acqu_setstate(pPvt->module, pPvt->adc, 1);
-                break;
+            break;
         case mcaReadStatus:
             /* The status will be the same for each signal on a port.
              * We optimize by not reading the status if this is not
@@ -528,7 +528,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
              "mcaAIMAsynDriver::AIMReadData entry, signal=%d, maxChans=%d\n", 
-             signal, maxChans);
+             signal, (int)maxChans);
 
     address = pPvt->seq_address + pPvt->maxChans*signal*4;
  
@@ -548,7 +548,7 @@ static asynStatus int32ArrayRead(void *drvPvt, asynUser *pasynUser,
     }
     asynPrint(pasynUser, ASYN_TRACE_FLOW, 
               "(mcaAIMAsynDriver [%s signal=%d]): read %d chans, status=%d\n", 
-              pPvt->portName, signal, maxChans, status);
+              pPvt->portName, signal, (int)maxChans, status);
     *nactual = maxChans;
     return(asynSuccess);
 }
@@ -557,7 +557,7 @@ static asynStatus int32ArrayWrite(void *drvPvt, asynUser *pasynUser,
                                   epicsInt32 *data, size_t maxChans)
 {
     mcaAIMPvt *pPvt = (mcaAIMPvt *)drvPvt;
-    int address;
+    //int address;
     int signal;
 
     if (maxChans > pPvt->maxChans) maxChans = pPvt->maxChans;
@@ -566,9 +566,9 @@ static asynStatus int32ArrayWrite(void *drvPvt, asynUser *pasynUser,
 
     asynPrint(pasynUser, ASYN_TRACE_FLOW,
              "mcaAIMAsynDriver::AIMWrtieData entry, signal=%d, maxChans=%d\n",
-             signal, maxChans);
+             signal, (int)maxChans);
 
-    address = pPvt->seq_address + pPvt->maxChans*signal*4;
+    //address = pPvt->seq_address + pPvt->maxChans*signal*4;
 
     /* There seems to be a way to write the AIM memory, with SETHOSTMEM,
      * but there is no callable function to do it yet */
