@@ -114,11 +114,12 @@
 #endif
 
 /* PCAP timeout in ms */
-/* On Windows we can use -1, but on Linux that leads to 100% CPU utilization */
+/* On Windows we can use -1 to receive packets immediately, but on Linux that is not valid. 
+   On Linux we use 10 ms for the packet_bufffer_delay. */
 #if defined(_WIN32)
   #define PCAP_TIMEOUT -1
 #else
-  #define PCAP_TIMEOUT 0
+  #define PCAP_TIMEOUT 10
 #endif
 
 struct nmc_module_info_struct *nmc_module_info; /* Keeps info on modules */
