@@ -348,6 +348,7 @@ bool CConsoleHelper::DppSocket_Connect_Direct_DPP(char szDPP_Send[])
 {
     unsigned long lTestAddr;
     unsigned long lDppAddr;
+    interfaceType = DppInterfaceEthernet;
     DppSocket_isConnected = false;
     DppSocket.deviceConnected = false;
     DppSocket_NumDevices = 0;
