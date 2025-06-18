@@ -1,0 +1,144 @@
+record(stringin,"$(P)$(R)Model") {
+    field(DESC,"Caen Model Name")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))CAEN_MODEL_NAME")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)ModelNumber") {
+    field(DESC,"Caen Model Number")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_MODEL")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)Channels") {
+    field(DESC,"Caen Number of Channels")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_CHANNELS")
+    field(SCAN, "I/O Intr")
+}
+
+record(mbbi,"$(P)$(R)FormFactor") {
+    field(DESC,"Caen Form Factor")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_FORM_FACTOR")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "VME64")
+    field(ONST, "VME64x")
+    field(TWST, "Desktop")
+    field(FRST, "NIM")
+}
+
+# If they include new families in this library, a new approach might be needed.
+record(mbbi,"$(P)$(R)FamilyCode") {
+    field(DESC,"Caen Family Code")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_FAMILY_CODE")
+    field(SCAN, "I/O Intr")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(FRVL, "4")
+    field(FVVL, "5")
+    field(SXVL, "6")
+    field(SVVL, "7")
+    field(EIVL, "8")
+    field(NIVL, "9")
+    field(TEVL, "11")
+    field(ELVL, "12")
+    field(TVVL, "13")
+    field(TTVL, "14")
+    field(FTVL, "15")
+    field(ZRST, "xx724")
+    field(ONST, "xx721")
+    field(TWST, "xx731")
+    field(THST, "xx720")
+    field(FRST, "xx740")
+    field(FVST, "xx751")
+    field(SXST, "xx742")
+    field(SVST, "xx780")
+    field(EIST, "xx761")
+    field(NIST, "xx743")
+    field(TEST, "xx730")
+    field(ELST, "xx790")
+    field(TVST, "xx781")
+    field(TTST, "xx725")
+    field(FTST, "xx782")
+}
+
+record(stringin,"$(P)$(R)ROC_Firmware") {
+    field(DESC,"Caen ROC Firmware")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))CAEN_ROC_FIRMWARE")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringin,"$(P)$(R)AMC_Firmware") {
+    field(DESC,"Caen AMC Firmware")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))CAEN_AMC_FIRMWARE")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)SerialNumber") {
+    field(DESC,"Caen Serial Number")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_SERIAL_NUMBER")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringin,"$(P)$(R)MezzanineSerNum") {
+    field(DESC,"Caen Mezzanine Serial Number")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))CAEN_MEZZ_SER_NUM")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)PCBRevision") {
+    field(DESC,"Caen Number of Channels")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_PCB_REV")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)ADC_Nbits") {
+    field(DESC,"Caen ADC Number of Bits")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_ADC_NBITS")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)SAM_Correction") {
+    field(DESC,"Caen SAM Correction")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_SAM_CORRECTION")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)COMM_Handle") {
+    field(DESC,"Caen COMM Handle")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_COMM_HANDLE")
+    field(SCAN, "I/O Intr")
+}
+
+record(longin,"$(P)$(R)VME_Handle") {
+    field(DESC,"Caen VME Handle")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT))CAEN_VME_HANDLE")
+    field(SCAN, "I/O Intr")
+}
+
+record(stringin,"$(P)$(R)License") {
+    field(DESC,"Caen License Number")
+    field(DTYP, "asynOctetRead")
+    field(INP, "@asyn($(PORT))CAEN_LICENSE")
+    field(SCAN, "I/O Intr")
+}
+
