@@ -1,0 +1,143 @@
+grecord(calc,"$(P)$(M)CheckACQG") {
+    field(INPA,"$(P)$(M1).ACQG CP MS")
+    field(INPB,"$(P)$(M2).ACQG CP MS")
+    field(INPC,"$(P)$(M3).ACQG CP MS")
+    field(INPD,"$(P)$(M4).ACQG CP MS")
+    field(INPE,"$(P)$(M5).ACQG CP MS")
+    field(INPF,"$(P)$(M6).ACQG CP MS")
+    field(INPG,"$(P)$(M7).ACQG CP MS")
+    field(INPH,"$(P)$(M8).ACQG CP MS")
+    field(CALC,"(a||b||c||d||e||f||g||h)?1:0")
+}
+
+grecord(dfanout,"$(P)$(M)EraseAll") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUTA,"$(P)$(M1).ERAS  PP MS")
+    field(OUTB,"$(P)$(M2).ERAS  PP MS")
+    field(OUTC,"$(P)$(M3).ERAS  PP MS")
+    field(OUTD,"$(P)$(M4).ERAS  PP MS")
+    field(OUTE,"$(P)$(M5).ERAS  PP MS")
+    field(OUTF,"$(P)$(M6).ERAS  PP MS")
+    field(OUTG,"$(P)$(M7).ERAS  PP MS")
+    field(OUTH,"$(P)$(M8).ERAS  PP MS")
+}
+
+grecord(dfanout,"$(P)$(M)EraseStartAll") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUTA,"$(P)$(M1).ERST  PP MS")
+    field(OUTB,"$(P)$(M2).ERST  PP MS")
+    field(OUTC,"$(P)$(M3).ERST  PP MS")
+    field(OUTD,"$(P)$(M4).ERST  PP MS")
+    field(OUTE,"$(P)$(M5).ERST  PP MS")
+    field(OUTF,"$(P)$(M6).ERST  PP MS")
+    field(OUTG,"$(P)$(M7).ERST  PP MS")
+    field(OUTH,"$(P)$(M8).ERST  PP MS")
+}
+
+grecord(dfanout,"$(P)$(M)StartAll") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUTA,"$(P)$(M1).STRT  PP MS")
+    field(OUTB,"$(P)$(M2).STRT  PP MS")
+    field(OUTC,"$(P)$(M3).STRT  PP MS")
+    field(OUTD,"$(P)$(M4).STRT  PP MS")
+    field(OUTE,"$(P)$(M5).STRT  PP MS")
+    field(OUTF,"$(P)$(M6).STRT  PP MS")
+    field(OUTG,"$(P)$(M7).STRT  PP MS")
+    field(OUTH,"$(P)$(M8).STRT  PP MS")
+}
+
+grecord(dfanout,"$(P)$(M)StopAll") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUTA,"$(P)$(M1).STOP  PP MS")
+    field(OUTB,"$(P)$(M2).STOP  PP MS")
+    field(OUTC,"$(P)$(M3).STOP  PP MS")
+    field(OUTD,"$(P)$(M4).STOP  PP MS")
+    field(OUTE,"$(P)$(M5).STOP  PP MS")
+    field(OUTF,"$(P)$(M6).STOP  PP MS")
+    field(OUTG,"$(P)$(M7).STOP  PP MS")
+    field(OUTH,"$(P)$(M8).STOP  PP MS")
+}
+
+
+grecord(dfanout,"$(P)$(M)ReadAll") {
+    field(SCAN,"1 second")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUTA,"$(P)$(M1).READ  PP MS")
+    field(OUTB,"$(P)$(M2).READ  PP MS")
+    field(OUTC,"$(P)$(M3).READ  PP MS")
+    field(OUTD,"$(P)$(M4).READ  PP MS")
+    field(OUTE,"$(P)$(M5).READ  PP MS")
+    field(OUTF,"$(P)$(M6).READ  PP MS")
+    field(OUTG,"$(P)$(M7).READ  PP MS")
+    field(OUTH,"$(P)$(M8).READ  PP MS")
+}
+
+grecord(bo,"$(P)$(M)Status") {
+    field(SDIS,"$(P)$(M)CheckACQG NPP NMS")
+    field(DISV,"0")
+    field(SCAN,".1 second")
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(M)StatusAll.PROC  CA NMS")
+}
+
+grecord(dfanout,"$(P)$(M)StatusAll") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUTA,"$(P)$(M1).PROC  PP MS")
+    field(OUTB,"$(P)$(M2).PROC  PP MS")
+    field(OUTC,"$(P)$(M3).PROC  PP MS")
+    field(OUTD,"$(P)$(M4).PROC  PP MS")
+    field(OUTE,"$(P)$(M5).PROC  PP MS")
+    field(OUTF,"$(P)$(M6).PROC  PP MS")
+    field(OUTG,"$(P)$(M7).PROC  PP MS")
+    field(OUTH,"$(P)$(M8).PROC  PP MS")
+}
+
+grecord(ao,"$(P)$(M)PollPeriod") {
+    field(DESC, "Polling period of internal thread")
+    field(EGU, "s")
+    field(DTYP, "asynFloat64")
+    field(OUT,"@asyn($(PORT),0)CAEN_POLLPERIOD")
+}
+
+grecord(ai,"$(P)$(M)PollPeriod_RBV") {
+    field(DESC, "Polling period of internal thread")
+    field(EGU, "s")
+    field(DTYP, "asynFloat64")
+    field(INP,"@asyn($(PORT),0)CAEN_POLLPERIOD")
+    field(PINI, "YES")
+}
+
+grecord(longout,"$(P)$(M)WhichRegister") {
+    field(DESC, "Select which register to manipulate")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)CAEN_REGADDR")
+}
+
+grecord(longin,"$(P)$(M)WriteRegisterValue") {
+    field(DESC, "Write register value")
+    field(UDF, "0")
+}
+
+grecord(longout,"$(P)$(M)WriteRegister") {
+    field(DOL, "$(P)$(M)WriteRegisterValue")
+    field(OMSL, "closed_loop")
+    field(DESC, "Write register")
+    field(DTYP, "asynInt32")
+    field(OUT,"@asyn($(PORT),0)CAEN_REGISTER")
+    field(UDF, "0")
+}
+
+grecord(longin,"$(P)$(M)ReadRegister") {
+    field(SDIS,"$(P)$(M)WhichRegister")
+    field(DISV,"0")
+    field(DESC, "Read register")
+    field(DTYP, "asynInt32")
+    field(INP,"@asyn($(PORT),0)CAEN_REGISTER")
+}

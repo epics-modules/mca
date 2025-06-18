@@ -1,0 +1,509 @@
+#TODO: Write correct description for each parameter
+record(longin,"$(P)$(R):ADC_Temp") {
+    field(DESC,"ADC Temp for $(PORT) $(CHAN)")
+    field(DTYP, "asynInt32")
+    field(INP, "@asyn($(PORT) $(CHAN))CAEN_BOARD_TEMP")
+    field(SCAN, "1 second")
+}
+
+grecord(calc,"$(P)$(R):CheckACQG") {
+    field(INPA,"$(P)$(R).ACQG CP MS")
+    field(CALC,"a?1:2")
+}
+
+grecord(bo,"$(P)$(R):Erase") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(R).ERAS  PP MS")
+    field(ONAM,"Erase")
+    field(ZNAM,"Done")
+}
+
+grecord(bo,"$(P)$(R):EraseStart") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(R).ERST  PP MS")
+    field(ONAM,"EraseStart")
+    field(ZNAM,"Done")
+}
+grecord(bo,"$(P)$(R):Start") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(R).STRT  PP MS")
+    field(ONAM,"Start")
+    field(ZNAM,"Done")
+}
+
+grecord(bo,"$(P)$(R):Stop") {
+    field(OMSL,"closed_loop")
+    field(DOL,"1")
+    field(OUT,"$(P)$(R).STOP  CA MS")
+    field(ONAM,"Stop")
+    field(ZNAM,"Done")
+}
+
+grecord(longout,"$(P)$(R):Threshold") {
+    field(DESC,"Slow threshold")
+    field(EGU, "LSB")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TRIG_THRESH")
+    field(FLNK, "$(P)$(R):SlowThreshold_RBV")
+    alias("$(P)$(R):SlowThreshold")
+}
+
+grecord(longin,"$(P)$(R):Threshold_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "LSB")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TRIG_THRESH")
+    alias("$(P)$(R):SlowThreshold_RBV")
+}
+
+grecord(longout,"$(P)$(R):TrapRise") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TRAP_RISE")
+    field(FLNK, "$(P)$(R):TrapRise_RBV")
+}
+
+grecord(longin,"$(P)$(R):TrapRise_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TRAP_RISE")
+}
+
+grecord(longout,"$(P)$(R):TrapFlatTop") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TRAP_FT")
+    field(FLNK, "$(P)$(R):TrapFlatTop_RBV")
+}
+
+grecord(longin,"$(P)$(R):TrapFlatTop_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TRAP_FT")
+}
+
+grecord(longout,"$(P)$(R):DecayTime") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_DECAY_TIME")
+    field(FLNK, "$(P)$(R):DecayTime_RBV")
+}
+
+grecord(longin,"$(P)$(R):DecayTime_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_DECAY_TIME")
+}
+
+grecord(longout,"$(P)$(R):FlatTopDelay") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_FLAT_DELAY")
+    field(FLNK, "$(P)$(R):FlatTopDelay_RBV")
+}
+
+grecord(longin,"$(P)$(R):FlatTopDelay_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_FLAT_DELAY")
+}
+
+grecord(longout,"$(P)$(R):TrigFiltSmoo") {
+    field(DESC,"Slow threshold")
+    field(EGU, "samples")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TRIG_FILT_SMOO")
+    field(FLNK, "$(P)$(R):TrigFiltSmoo_RBV")
+}
+
+grecord(longin,"$(P)$(R):TrigFiltSmoo_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "samples")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TRIG_FILT_SMOO")
+}
+
+grecord(longout,"$(P)$(R):InputRiseTime") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_INPUT_RISE")
+    field(FLNK, "$(P)$(R):InputRiseTime_RBV")
+}
+
+grecord(longin,"$(P)$(R):InputRiseTime_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_INPUT_RISE")
+}
+
+grecord(longout,"$(P)$(R):TrigHoldOff") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TRIG_HOFF")
+    field(FLNK, "$(P)$(R):TrigHoldOff_RBV")
+}
+
+grecord(longin,"$(P)$(R):TrigHoldOff_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TRIG_HOFF")
+}
+
+grecord(longout,"$(P)$(R):DCOffset") {
+    field(DESC,"Slow threshold")
+    field(EGU, "LSB")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_DC_OFFSET")
+    field(FLNK, "$(P)$(R):DCOffset_RBV")
+}
+
+grecord(longin,"$(P)$(R):DCOffset_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "LSB")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_DC_OFFSET")
+}
+
+grecord(longout,"$(P)$(R):PreTrigSize") {
+    field(DESC,"Slow threshold")
+    field(EGU, "samples")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_PRETRIG_SIZE")
+    field(FLNK, "$(P)$(R):PreTrigSize_RBV")
+}
+
+grecord(longin,"$(P)$(R):PreTrigSize_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "samples")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_PRETRIG_SIZE")
+}
+
+grecord(bo,"$(P)$(R):PulsePolarity") {
+    field(DESC,"Slow threshold")
+    field(ZNAM, "Positive")
+    field(ONAM, "Negative")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_PULSE_POL")
+    field(FLNK, "$(P)$(R):PulsePolarity_RBV")
+}
+
+grecord(bi,"$(P)$(R):PulsePolarity_RBV") {
+    field(DESC,"Slow threshold")
+    field(PINI,"YES")
+    field(ZNAM, "Positive")
+    field(ONAM, "Negative")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_PULSE_POL")
+}
+
+grecord(mbbo,"$(P)$(R):NBaseline") {
+    field(DESC,"Slow threshold")
+    field(ZRST, "0 samples")
+    field(ONST, "16 samples")
+    field(TWST, "64 samples")
+    field(THST, "256 samples")
+    field(FRST, "1024 samples")
+    field(FVST, "4096 samples")
+    field(SXST, "16384 samples")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(FRVL, "4")
+    field(FVVL, "5")
+    field(SXVL, "6")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_NSBL")
+    field(FLNK, "$(P)$(R):NBaseline_RBV")
+}
+
+grecord(mbbi,"$(P)$(R):NBaseline_RBV") {
+    field(DESC,"Slow threshold")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(ZRST, "0 samples")
+    field(ONST, "16 samples")
+    field(TWST, "64 samples")
+    field(THST, "256 samples")
+    field(FRST, "1024 samples")
+    field(FVST, "4096 samples")
+    field(SXST, "16384 samples")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(FRVL, "4")
+    field(FVVL, "5")
+    field(SXVL, "6")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_NSBL")
+}
+
+grecord(mbbo,"$(P)$(R):NSPeak") {
+    field(DESC,"Slow threshold")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "1 sample")
+    field(ONST, "4 samples")
+    field(TWST, "16 samples")
+    field(THST, "64 samples")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_NSPK")
+    field(FLNK, "$(P)$(R):NSPeak_RBV")
+}
+
+grecord(mbbi,"$(P)$(R):NSPeak_RBV") {
+    field(DESC,"Slow threshold")
+    field(PINI,"YES")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "1 sample")
+    field(ONST, "4 samples")
+    field(TWST, "16 samples")
+    field(THST, "64 samples")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_NSPK")
+}
+
+grecord(longout,"$(P)$(R):PeakHoldOff") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_PKHO")
+    field(FLNK, "$(P)$(R):PeakHoldOff_RBV")
+}
+
+grecord(longin,"$(P)$(R):PeakHoldOff_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_PKHO")
+}
+
+grecord(longout,"$(P)$(R):BLHoldOff") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_BLHO")
+    field(FLNK, "$(P)$(R):BLHoldOff_RBV")
+}
+
+grecord(longin,"$(P)$(R):BLHoldOff_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_BLHO")
+}
+
+grecord(ao,"$(P)$(R):EnergyNF") {
+    field(DESC,"Slow threshold")
+    field(DTYP, "asynFloat64")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_ENF")
+    field(FLNK, "$(P)$(R):EnergyNF_RBV")
+}
+
+grecord(ai,"$(P)$(R):EnergyNF_RBV") {
+    field(DESC,"Slow threshold")
+    field(PINI,"YES")
+    field(DTYP, "asynFloat64")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_ENF")
+}
+
+grecord(mbbo,"$(P)$(R):Decimation") {
+    field(DESC,"Slow threshold")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "No decimation")
+    field(ONST, "2 samples (50 MSps)")
+    field(TWST, "4 samples (25 MSps)")
+    field(THST, "8 samples (12.5 MSps)")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_DECIMATION")
+    field(FLNK, "$(P)$(R):Decimation_RBV")
+}
+
+grecord(mbbi,"$(P)$(R):Decimation_RBV") {
+    field(DESC,"Slow threshold")
+    field(PINI,"YES")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "No decimation")
+    field(ONST, "2 samples (50 MSps)")
+    field(TWST, "4 samples (25 MSps)")
+    field(THST, "8 samples (12.5 MSps)")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_DECIMATION")
+}
+
+grecord(mbbo,"$(P)$(R):DecGain") {
+    field(DESC,"Slow threshold")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "1x Gain")
+    field(ONST, "2x Gain")
+    field(TWST, "4x Gain")
+    field(THST, "8x Gain")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_DEC_GAIN")
+    field(FLNK, "$(P)$(R):DecGain_RBV")
+}
+
+grecord(mbbi,"$(P)$(R):DecGain_RBV") {
+    field(DESC,"Slow threshold")
+    field(PINI,"YES")
+    field(ZRVL, "0")
+    field(ONVL, "1")
+    field(TWVL, "2")
+    field(THVL, "3")
+    field(ZRST, "1x Gain")
+    field(ONST, "2x Gain")
+    field(TWST, "4x Gain")
+    field(THST, "8x Gain")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_DEC_GAIN")
+}
+
+grecord(bo,"$(P)$(R):TrigWin") {
+    field(DESC,"Slow threshold")
+    field(ZNAM, "Disabled")
+    field(ONAM, "Enabled")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TRIG_WIN")
+    field(FLNK, "$(P)$(R):TrigWin_RBV")
+}
+
+grecord(bi,"$(P)$(R):TrigWin_RBV") {
+    field(DESC,"Slow threshold")
+    field(ZNAM, "Disabled")
+    field(ONAM, "Enabled")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TRIG_WIN")
+}
+
+grecord(longout,"$(P)$(R):TWWDT") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(DRVL, "0")
+    field(DRVH, "65535")
+    field(DTYP, "asynInt32")
+    field(OUT, "@asyn($(PORT) $(CHAN))CAEN_TW_WDT")
+    field(FLNK, "$(P)$(R):TWWDT_RBV")
+}
+
+grecord(longin,"$(P)$(R):TWWDT_RBV") {
+    field(DESC,"Slow threshold")
+    field(EGU, "ns")
+    field(PINI,"YES")
+    field(DTYP, "asynInt32")
+    field(SCAN, "Passive")
+    field(INP,"@asyn($(PORT) $(CHAN))CAEN_TW_WDT")
+}
+
+# This is the MCA record itself
+grecord(mca,"$(P)$(R)") {
+    field(DTYP,"$(DTYP)")
+    field(FLNK,"0")
+    field(PINI,"YES")
+    field(NMAX,"$(NCHAN)")
+    field(PREC,"2")
+    field(NUSE,"$(NCHAN)")
+    field(INP, "@asyn($(PORT) $(CHAN))")
+# Alarm setpoints, severity and hysteresis for deadtime
+    field(HIHI,"70.")
+    field(HHSV,"MAJOR")
+    field(HIGH,"40.")
+    field(HSV,"MINOR")
+    field(LOLO,"0.")
+    field(LLSV,"NO_ALARM")
+    field(LOW,"0.")
+    field(LSV,"NO_ALARM")
+    field(HYST,"2.")
+}
+
+record(longin,"$(P)$(R):Counts") {
+    field(DESC,"Slow counts")
+    field(EGU, "counts")
+    field(INP,"$(P)$(R).ACT CP")
+    alias("$(P)$(R):SlowCounts")
+}
