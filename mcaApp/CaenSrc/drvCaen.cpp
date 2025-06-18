@@ -6,7 +6,6 @@
 // This module provides the driver support for the MCA asyn device support layer
 // for C.A.E.N. MCAs that support the CAENDigitizer library.
 //
-//
 
 #include <stdlib.h>
 #include <stddef.h>
@@ -256,38 +255,6 @@ asynStatus drvCaen::connect(asynUser *pasynUser)
     // Catchall at the end
     return asynSuccess;
 }
-
-//asynStatus drvCaen::disconnect(asynUser *pasynUser)
-//{
-//    static const char *functionName = "disconnectDevice";
-//    asynStatus ret;
-//
-//    // Disconnect from the digitizer
-//    if(isConnected_ == true){
-//        ret = disconnectDevice();
-//
-//        int addr;
-//        getAddress(pasynUser, &addr);
-//
-//        if (ret == asynSuccess){
-//            isConnected_ = false;
-//            asynPrint(pasynUser, ASYN_TRACEIO_DRIVER,
-//                    "%s::%s Digitizer (%s) disconnected\n",
-//                    driverName, functionName, portName);
-//        }
-//        else{
-//            epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,
-//                    "%s::%s Digitizer (%s) not disconnected\nError code = %d\n",
-//                    driverName, functionName, portName, ret);
-//            return asynError;
-//        }
-//    }
-//
-//    pasynManager->exceptionDisconnect(pasynUser);
-//    setParamsAlarm(COMM_ALARM, INVALID_ALARM);
-//
-//    return asynSuccess;
-//}
 
 void drvCaen::setParamsAlarm(int alarmStatus, int alarmSeverity)
 {
@@ -989,8 +956,6 @@ asynStatus drvCaen::writeFloat64(asynUser *pasynUser, epicsFloat64 value)
         }
         epicsSnprintf(pasynUser->errorMessage, pasynUser->errorMessageSize,"Setting energy normalization factor, ret = %d\n",ret);
     }
-//    else (command == caenPollPeriod_){
-
 
     /* Set the parameter in the parameter library. */
     status = setDoubleParam(addr, command, value);
