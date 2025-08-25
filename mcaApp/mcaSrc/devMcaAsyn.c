@@ -97,7 +97,7 @@ mcaAsynDset devMcaAsyn = {
 };
 epicsExportAddress(dset, devMcaAsyn);
 
-
+
 static long init_record(mcaRecord *pmca)
 {
     asynUser *pasynUser;
@@ -225,7 +225,7 @@ static long findDrvInfo(mcaRecord *pmca, asynUser *pasynUser, char *drvInfoStrin
     return(0);
 }
 
-
+
 static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
 {
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pmca->dpvt;
@@ -338,7 +338,7 @@ static long send_msg(mcaRecord *pmca, mcaCommand command, void *parg)
     return(0);
 }
 
-
+
 static void asynCallback(asynUser *pasynUser)
 {
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pasynUser->userPvt;
@@ -399,7 +399,7 @@ static void asynCallback(asynUser *pasynUser)
     }
 }
 
-
+
 static long read_array(mcaRecord *pmca)
 {
     mcaAsynPvt *pPvt = (mcaAsynPvt *)pmca->dpvt;
