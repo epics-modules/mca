@@ -23,6 +23,10 @@ RontecSrc_DEPEND_DIRS = mcaSrc
 DIRS += AmptekSrc
 AmptekSrc_DEPEND_DIRS = mcaSrc
 
+# Support for CAEN Digitizers
+DIRS += CaenSrc
+CaenSrc_DEPEND_DIRS = mcaSrc
+
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *db*))
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *Db*))
 DIRS := $(DIRS) $(filter-out $(DIRS), $(wildcard *op*))
