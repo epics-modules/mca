@@ -422,7 +422,7 @@ typedef struct icb_module_info_struct {
         char failed;            /* flag: module has asserted its "failed" indication */
         char initialize;        /* flag: module should be initialized (by POLL_CONTROLLER) */
         char attention;         /* flag: module attention has been set */
-        int (*handler)();       /* address of a routine that handles reset/svc rqst for this type of module */
+        LONG (*handler)(LONG, ICB_PARAM_LIST *, LONG);       /* address of a routine that handles reset/svc rqst for this type of module */
         ICB_CCNIM_ANY  *pcache; /* Pointer to cache structure for this module */
         int module_sn;          /* the module serial number (unique to every module) */
         signed char r0_read;    /* Bits read from module's register 0   */

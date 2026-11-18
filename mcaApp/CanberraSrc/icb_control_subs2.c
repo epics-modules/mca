@@ -398,7 +398,7 @@ int index;
    int s;
    int lsn, msn;
    struct icb_module_info_struct *entry;
-   static int (*handler_list[])() = {
+   static LONG (*handler_list[])(LONG, ICB_PARAM_LIST *, LONG) = {
          NULL,           /* Type 0:              */
          NULL,           /* Type 1: RPI (none)   */
          NULL,           /* Type 2:              */
