@@ -36,9 +36,9 @@
 volatile int devMCA_softDebug = 0;
 
 /* Create DSET */
-static long init_record();
-static long send_msg();
-static long read_array();
+static long init_record(mcaRecord *pmca);
+static long send_msg(mcaRecord *pmca, unsigned long msg, void *parg);
+static long read_array(mcaRecord *pmca);
 typedef struct {
 	long		number;
 	DEVSUPFUN	report;
@@ -53,10 +53,10 @@ MCA_SOFT_DSET devMCA_soft = {
 	6,
 	NULL,
 	NULL,
-	init_record,
+	(DEVSUPFUN) init_record,
 	NULL,
-	send_msg,
-	read_array
+	(DEVSUPFUN) send_msg,
+	(DEVSUPFUN) read_array
 };
 epicsExportAddress(dset, devMCA_soft);
 

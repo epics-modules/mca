@@ -120,41 +120,41 @@ epicsExportAddress(int, mcaRecordDebug);
 /* Create RSET - Record Support Entry Table*/
 #define report NULL
 #define initialize NULL
-static long init_record();
-static long process();
-static long special();
+static long init_record(mcaRecord *pmca, int pass);
+static long process(mcaRecord *pmca);
+static long special(struct dbAddr *paddr, int after);
 #define get_value NULL
-static long cvt_dbaddr();
-static long get_array_info();
-static long put_array_info();
-static long get_units();
-static long get_precision();
+static long cvt_dbaddr(struct dbAddr *paddr);
+static long get_array_info(struct dbAddr *paddr, long *no_elements, long *offset);
+static long put_array_info(struct dbAddr *paddr, long nNew);
+static long get_units(struct dbAddr *paddr, char *units);
+static long get_precision(struct dbAddr *paddr, long *precision);
 #define get_enum_str NULL
 #define get_enum_strs NULL
 #define put_enum_str NULL
-static long get_graphic_double();
-static long get_control_double();
-static long get_alarm_double();
+static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd);
+static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd);
+static long get_alarm_double(struct dbAddr *paddr, struct dbr_alDouble *pad);
 
 rset mcaRSET={
     RSETNUMBER,
     report,
     initialize,
-    init_record,
-    process,
-    special,
+    (RECSUPFUN) init_record,
+    (RECSUPFUN) process,
+    (RECSUPFUN) special,
     get_value,
-    cvt_dbaddr,
-    get_array_info,
-    put_array_info,
-    get_units,
-    get_precision,
+    (RECSUPFUN) cvt_dbaddr,
+    (RECSUPFUN) get_array_info,
+    (RECSUPFUN) put_array_info,
+    (RECSUPFUN) get_units,
+    (RECSUPFUN) get_precision,
     get_enum_str,
     get_enum_strs,
     put_enum_str,
-    get_graphic_double,
-    get_control_double,
-    get_alarm_double };
+    (RECSUPFUN) get_graphic_double,
+    (RECSUPFUN) get_control_double,
+    (RECSUPFUN) get_alarm_double };
 epicsExportAddress(rset, mcaRSET);
 
 struct mcaDSET { /* mca DSET */
@@ -170,9 +170,9 @@ struct mcaDSET { /* mca DSET */
 /*sizes of field types (see dbFldTypes.h) */
 static int sizeofTypes[] = {0,1,1,2,2,4,4,4,8};
 
-static void mcaAlarm();
-static void monitor();
-static long readValue();
+static void mcaAlarm(mcaRecord *pmca);
+static void monitor(mcaRecord *pmca);
+static long readValue(mcaRecord *pmca);
 
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -458,32 +458,32 @@ static long init_record(mcaRecord *pmca, int pass)
         return(S_dev_missingSup);
     }
     if (pdset->init_record) {
-        if ((status=(*pdset->init_record)(pmca))) return(status);
+        if ((status=(*(long(*)(mcaRecord*))pdset->init_record)(pmca))) return(status);
     }
     /* Initialize hardware to agree with the record */
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca, mcaChannelAdvanceSource, (void*)(&pmca->chas));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaNumChannels, (void *)(&pmca->nuse));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaSequence, (void *)(&pmca->seq));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaDwellTime, (void *)(&pmca->dwel));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPrescale, (void *)(&pmca->pscl));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetRealTime, (void *)(&pmca->prtm));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetLiveTime, (void *)(&pmca->pltm));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetCounts, (void *)(&pmca->pct));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetLowChannel, (void *)(&pmca->pctl));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetHighChannel, (void *)(&pmca->pcth));
-    status = (*pdset->send_msg)
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetSweeps, (void *)(&pmca->pswp));
-    status = (*pdset->send_msg) 
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca, mcaAcquireMode, (void *)(&pmca->mode));
     return(0);
 }
@@ -525,84 +525,84 @@ reprocess:
     if (pmca->newv) {
         if (NEWV_MARKED(M_CHAS)) {
             MARK(M_CHAS);
-            status = (*pdset->send_msg)
-                (pmca, mcaChannelAdvanceSource, (void *)(&pmca->chas), NULL);
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
+                (pmca, mcaChannelAdvanceSource, (void *)(&pmca->chas));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_CHAS);
         }
         if (NEWV_MARKED(M_NUSE)) {
             MARK(M_NUSE);
             if (pmca->nuse > pmca->nmax) pmca->nuse = pmca->nmax;
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaNumChannels, (void *)(&pmca->nuse));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_NUSE);
         }
         if (NEWV_MARKED(M_SEQ)) {
             MARK(M_SEQ);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaSequence, (void *)(&pmca->seq));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_SEQ);
         }
         if (NEWV_MARKED(M_DWEL)) {
             MARK(M_DWEL);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaDwellTime, (void *)(&pmca->dwel));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_DWEL);
         }
         if (NEWV_MARKED(M_PSCL)) {
             MARK(M_PSCL);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPrescale, (void *)(&pmca->pscl));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PSCL);
         }
         if (NEWV_MARKED(M_PRTM)) {
             MARK(M_PRTM);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetRealTime, (void *)(&pmca->prtm));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PRTM);
         }
         if (NEWV_MARKED(M_PLTM)) {
             MARK(M_PLTM);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetLiveTime, (void *)(&pmca->pltm));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PLTM);
         }
         if (NEWV_MARKED(M_PCT)) {
             MARK(M_PCT);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetCounts, (void *)(&pmca->pct));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PCT);
         }
         if (NEWV_MARKED(M_PCTL)) {
             MARK(M_PCTL);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetLowChannel, (void *)(&pmca->pctl));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PCTL);
         }
         if (NEWV_MARKED(M_PCTH)) {
             MARK(M_PCTH);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetHighChannel, (void *)(&pmca->pcth));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PCTH);
         }
         if (NEWV_MARKED(M_PSWP)) {
             MARK(M_PSWP);
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaPresetSweeps, (void *)(&pmca->pswp));
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_PSWP);
         }
         if (NEWV_MARKED(M_ERAS) || NEWV_MARKED(M_ERST)) {
-            status = (*pdset->send_msg)
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)
                 (pmca,  mcaErase, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
 
@@ -627,7 +627,7 @@ reprocess:
         }
         if (NEWV_MARKED(M_MODE)) {
             MARK(M_MODE);
-            status = (*pdset->send_msg) (pmca, pmca->mode, NULL);
+            status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg) (pmca, pmca->mode, NULL);
             if (status) {pmca->nack = 1; MARK(M_NACK);}
             NEWV_UNMARK(M_MODE);
         }
@@ -636,7 +636,7 @@ reprocess:
     /* Turn acquisition on or off.  Do this before reading device status */
     if (pmca->strt || NEWV_MARKED(M_ERST)) {
        if (mcaRecordDebug > 5) errlogPrintf("process: start acquisition.\n");
-       status = (*pdset->send_msg) (pmca, mcaStartAcquire, NULL);
+       status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg) (pmca, mcaStartAcquire, NULL);
        /* We force ACQG=1 when acquisition is turned on.  This is needed so that the logic
         * below will read the data when ACQG goes to 0, even if acquisition is so fast 
         * that ACQG is zero on the very first status read.
@@ -654,7 +654,7 @@ reprocess:
     }
     if (pmca->stop) {
        if (mcaRecordDebug > 5) errlogPrintf("process: stop acquisition.\n");
-       status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
+       status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg) (pmca, mcaStopAcquire, NULL);
        pmca->stop=0; MARK(M_STOP);
     }
 
@@ -667,7 +667,7 @@ read_status:
     rdns = pmca->rdns;  /* Save current state of rdns */
 
     if (mcaRecordDebug > 5) errlogPrintf("process: reading elapsed time, etc.\n");
-    status = (*pdset->send_msg)(pmca, mcaReadStatus, pmca->pstatus);
+    status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)(pmca, mcaReadStatus, pmca->pstatus);
     if (status) {
        if (mcaRecordDebug > 1) errlogPrintf("process: error sending mcaReadStatus\n");
        pmca->nack = 1; MARK(M_NACK);
@@ -762,7 +762,7 @@ read_data:
        recGblGetTimeStamp(pmca);
        pmca->rtim = pmca->time.secPastEpoch + pmca->time.nsec*1.e-9;
        MARK(M_RTIM);
-       status = (*pdset->send_msg)(pmca, mcaData, NULL);
+       status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg)(pmca, mcaData, NULL);
        pmca->read = 0; MARK(M_READ);
        if (status) {
           /* no ack from device support; go quiescent */
@@ -796,7 +796,7 @@ read_data:
 
     if (preset_reached) {
         if (mcaRecordDebug > 5) errlogPrintf("process: stop acquisition.\n");
-        status = (*pdset->send_msg) (pmca, mcaStopAcquire, NULL);
+        status = (*(long(*)(mcaRecord*,mcaCommand,void*))pdset->send_msg) (pmca, mcaStopAcquire, NULL);
     }
 
     /* Now we update the acqg field, since data have been read and ROIs computed. */
@@ -926,9 +926,7 @@ static long get_graphic_double(struct dbAddr *paddr, struct dbr_grDouble *pgd)
     recGblGetGraphicDouble(paddr,pgd);
     return(0);
 }
-static long get_control_double(paddr,pcd)
-struct dbAddr *paddr;
-struct dbr_ctrlDouble *pcd;
+static long get_control_double(struct dbAddr *paddr, struct dbr_ctrlDouble *pcd)
 {
     mcaRecord *pmca=(mcaRecord *)paddr->precord;
     int fieldIndex = dbGetFieldIndex(paddr);
@@ -1109,7 +1107,7 @@ static long readValue(mcaRecord *pmca)
     if (pmca->simm == menuYesNoNO) {
         /* Device support can change the NORD field, we need to detect this */
         nord_prev = pmca->nord;
-        status = (*pdset->read_array)(pmca);
+        status = (*(long(*)(mcaRecord*))pdset->read_array)(pmca);
         if (pmca->nord != nord_prev) MARK(M_NORD);
         return(status);
     }

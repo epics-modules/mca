@@ -90,7 +90,7 @@ mcaAsynDset devMcaAsyn = {
     6,
     NULL,
     NULL,
-    init_record,
+    (DEVSUPFUN)init_record,
     NULL,
     send_msg,
     read_array
@@ -357,7 +357,7 @@ static void asynCallback(asynUser *pasynUser)
        pPvt->pasynInt32Array->read(pPvt->asynInt32ArrayPvt, pasynUser, 
                                    pPvt->data, pmca->nuse, &pPvt->nread);
        dbScanLock((dbCommon *)pmca);
-       (*prset->process)(pmca);
+       ((long (*)(mcaRecord *))prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);
 
 
@@ -379,7 +379,7 @@ static void asynCallback(asynUser *pasynUser)
        pPvt->pasynFloat64->read(pPvt->asynFloat64Pvt, pasynUser, 
                                 &pPvt->dwellTime);
        dbScanLock((dbCommon *)pmca);
-       (*prset->process)(pmca);
+       ((long (*)(mcaRecord *))prset->process)(pmca);
        dbScanUnlock((dbCommon *)pmca);     
     } else {
         if (pmsg->interface == int32Type) {
