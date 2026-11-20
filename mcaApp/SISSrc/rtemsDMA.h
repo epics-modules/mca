@@ -55,7 +55,7 @@ static DMA_ID sysDmaCreate(DMA_CALLBACK callback, void *context) {
         return NULL;
     }
 
-    status = BSP_VMEDmaInstallISR(dmaChannel, callback, context);
+    status = BSP_VMEDmaInstallISR(dmaChannel, (BSP_VMEDmaIRQCallback)callback, context);
     if (status != 0) {
         printf("Error in BSP_VMEDmaInstallISR: code %d\n", status);
         return NULL;
